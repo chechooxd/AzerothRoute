@@ -53,6 +53,11 @@ function T:BootstrapAddon()
         "Libs/HereBeDragons/HereBeDragons-2.0.lua",
         "Libs/LibDataBroker-1.1/LibDataBroker-1.1.lua",
         "Libs/AceDB-3.0/AceDB-3.0.lua",
+        "Libs/AceConsole-3.0/AceConsole-3.0.lua",
+        "Libs/AceConfig-3.0/AceConfigRegistry-3.0/AceConfigRegistry-3.0.lua",
+        "Libs/AceConfig-3.0/AceConfigCmd-3.0/AceConfigCmd-3.0.lua",
+        "Libs/AceConfig-3.0/AceConfig-3.0.lua",
+        "Libs/AceDBOptions-3.0/AceDBOptions-3.0.lua",
         "Core/Compat.lua",
         "Core/Locale.lua",
         "Core/Storage.lua",
@@ -105,6 +110,7 @@ function T:BootstrapAddon()
         "UI/Menu/Options.lua",
         "UI/Menu/GuideMenu.lua",
         "UI/MinimapButton.lua",
+        "UI/Menu/Config.lua",
         "Data/Catalog.lua",
         "Guides/Autoload.lua",
     }
@@ -143,6 +149,7 @@ function T:RunAll()
         "Tests/test_ingame_arrow_progress_target.lua",
         "Tests/test_target_macro.lua",
         "Tests/test_ace3_profiles.lua",
+        "Tests/test_ace3_config_panel.lua",
     }
     for _, suitePath in ipairs(specSuites) do
         dofile(suitePath)

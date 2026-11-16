@@ -94,6 +94,7 @@ UI\Menu\DashboardWidgets.lua
 UI\Menu\Options.lua
 UI\Menu\GuideMenu.lua
 UI\MinimapButton.lua
+UI\Menu\Config.lua
 
 # SPEC-14B: Static Data & Guide Catalog
 Data\Catalog.lua

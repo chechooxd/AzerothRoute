@@ -30,7 +30,9 @@ function MinimapButton:GetSettings()
 end
 
 function MinimapButton:HandleClick(button)
-    if button == "RightButton" then
+    if _G.IsShiftKeyDown and _G.IsShiftKeyDown() then
+        if AR.Config then AR.Config:Open() end
+    elseif button == "RightButton" then
         if AR.GuideMenu and AR.GuideMenu.Toggle then AR.GuideMenu:Toggle() end
     elseif button == "MiddleButton" then
         if AR.TalentAdvisor and AR.TalentAdvisor.ToggleUI then AR.TalentAdvisor:ToggleUI() end
@@ -53,6 +55,7 @@ function MinimapButton:FillTooltip(tooltip)
     tooltip:AddLine(text("UI_MINIMAP_LEFT", "Left-click: show/hide guide"), 0.2, 1, 0.2)
     tooltip:AddLine(text("UI_MINIMAP_RIGHT", "Right-click: guide menu"), 0.2, 1, 0.2)
     tooltip:AddLine(text("UI_MINIMAP_MIDDLE", "Middle-click: talent advisor"), 0.2, 1, 0.2)
+    tooltip:AddLine(text("UI_MINIMAP_SHIFT", "Shift-click: options"), 0.2, 1, 0.2)
 end
 
 -- Returns true when the button is registered (now or earlier), false when a library is missing.

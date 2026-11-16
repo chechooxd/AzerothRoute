@@ -29,6 +29,15 @@ Step waypoints appear on the world map (zone and continent) and on the minimap
 through `HereBeDragons-Pins-2.0`; minimap pins stay on the edge when out of range.
 Without that library the addon falls back to its own pin placement.
 
+## Options & profiles
+
+`/ar config` (also `/ar opciones`, or Shift-click on the minimap button) opens the options
+panel, which is also listed in the Blizzard Interface Options. Tabs: Quests, Navigation,
+Merchants, Targeting, Interface and Profiles. Settings belong to an AceDB-3.0 profile; every
+character starts on the shared "Default" profile and can switch, copy, reset or delete
+profiles in the Profiles tab. Settings saved by older versions are moved into the profile
+the first time this version loads.
+
 ## Target macro
 
 Like RXPGuides, the addon keeps an account macro named `ARTargeting` up to date with the
@@ -50,9 +59,11 @@ bearing, and minimap radar offsets never mix coordinate spaces.
 
 ## Verification
 
-Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 83 passed, 0 failed` across 26 test suites). Client verification is pending:
+Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 94 passed, 0 failed` across 28 test suites). Client verification is pending:
 
 - Check the minimap button, its clicks and tooltip; move it, `/reload`, and check that it keeps its position.
+- `/ar config`: change a toggle, `/reload`, check it stuck; create a second profile, switch, check the toggle follows the profile.
+- After updating from an older version, check that your previous settings (auto-accept, bar positions) were kept.
 - Change a setting, `/reload`, and check that it persists (SavedVariables now rebind on `ADDON_LOADED`).
 - Check step pins on the zone map, continent map, and minimap edge.
 - Walk toward and away from a waypoint; the arrow must point up and green toward it, down and red away.

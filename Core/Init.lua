@@ -28,6 +28,8 @@ function AR:RegisterSlashCommands()
             end
         elseif msg == "minimap" then
             if AR.MinimapButton then AR.MinimapButton:Toggle() end
+        elseif msg == "config" or msg == "opciones" or msg == "options" then
+            if AR.Config then AR.Config:Open() end
         elseif msg == "macro" then
             if AR.TargetMacro then AR.TargetMacro:Update() end
             if _G.ShowMacroFrame and not (_G.InCombatLockdown and _G.InCombatLockdown()) then
@@ -106,6 +108,9 @@ function AR:Initialize()
         self.Storage:Initialize()
         if self.MinimapButton then
             self.MinimapButton:Initialize()
+        end
+        if self.Config then
+            self.Config:Initialize()
         end
     end)
 
