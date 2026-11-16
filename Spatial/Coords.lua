@@ -43,6 +43,8 @@ end
 
 function Coords:ToWorldYards(mapID, x, y)
     if not mapID or not x or not y then return nil, nil, nil end
+    if x > 1 then x = x / 100.0 end
+    if y > 1 then y = y / 100.0 end
     -- Prefer native C_Map.GetWorldPosFromMapPos when running in a client that exposes CreateVector2D
     if _G.C_Map and _G.C_Map.GetWorldPosFromMapPos and _G.CreateVector2D then
         local contID, worldPos = _G.C_Map.GetWorldPosFromMapPos(mapID, _G.CreateVector2D(x, y))

@@ -218,7 +218,9 @@ function Goal:GetText()
     elseif self.action == "ding" then
         return string.format("Reach Level %d", self.level or 1)
     elseif self.action == "goto" then
-        return string.format("Go to %.1f, %.1f", self.x or 0, self.y or 0)
+        local gx = (self.x and self.x <= 1) and (self.x * 100.0) or (self.x or 0)
+        local gy = (self.y and self.y <= 1) and (self.y * 100.0) or (self.y or 0)
+        return string.format("Go to %.1f, %.1f", gx, gy)
     end
     return self.text or self.target or self.param or self.action or ""
 end

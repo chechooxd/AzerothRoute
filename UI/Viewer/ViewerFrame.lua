@@ -1,6 +1,5 @@
--- AzerothRoute: ViewerFrame Step & Sticky Renderer + Real In-Game Frame Hierarchy (SPEC-12 / SPEC-17)
--- Implements 1-line-per-goal formatting, 3-stop progress background gradient, 0.5s white completion flash,
--- separated Stickies block below a 1px divider, a 7px interactive progress bar, and real WoW Frame objects.
+-- AzerothRoute: ViewerFrame Step & Sticky Renderer + Polished In-Game Frame Hierarchy (SPEC-12 / SPEC-17 / SPEC-20)
+-- Fixes header text collision, renders visible labeled [<], [>], and [Guides] buttons, and supports interactive step rows.
 
 local AR = _G.AzerothRoute
 local ViewerFrame = {
@@ -19,14 +18,42 @@ local ViewerFrame = {
 }
 AR.ViewerFrame = ViewerFrame
 
+local function getShortGuideTitle(fullTitle)
+    if not fullTitle then return "AzerothRoute" end
+    local short = fullTitle:match("([^\\]+)$") or fullTitle
+    return short
+end
+
+local function createStyledToolbarButton(parent, name, labelText, width, height)
+    local btn = AR.UI:Create("Button", parent, name)
+    btn:SetSize(width, height)
+    if btn.CreateTexture then
+        btn.bg = btn:CreateTexture(nil, "BACKGROUND")
+        btn.bg:SetAllPoints(btn)
+        btn.bg:SetColorTexture(0.18, 0.22, 0.30, 0.95)
+    end
+    if btn.CreateFontString then
+        btn.label = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        btn.label:SetPoint("CENTER", btn, "CENTER", 0, 0)
+        btn.label:SetText(labelText)
+    end
+    btn:SetScript("OnEnter", function(b)
+        if b.bg then b.bg:SetColorTexture(0.28, 0.36, 0.50, 1.0) end
+    end)
+    btn:SetScript("OnLeave", function(b)
+        if b.bg then b.bg:SetColorTexture(0.18, 0.22, 0.30, 0.95) end
+    end)
+    return btn
+end
+
 function ViewerFrame:Initialize()
     self.progressMode = "steps"
     self.lastGoalSnapshots = {}
     self.lineRows = {}
 
     local f = AR.UI:Create("Frame", _G.UIParent, "AzerothRouteViewerFrame")
-    f:SetSize(310, 240)
-    f:SetPoint("RIGHT", _G.UIParent, "RIGHT", -60, 80)
+    f:SetSize(330, 250)
+    f:SetPoint("RIGHT", _G.UIParent, "RIGHT", -50, 80)
     if f.SetMovable then f:SetMovable(true) end
     if f.EnableMouse then f:EnableMouse(true) end
     if f.RegisterForDrag then f:RegisterForDrag("LeftButton") end
@@ -42,22 +69,29 @@ function ViewerFrame:Initialize()
         f.bg = f:CreateTexture(nil, "BACKGROUND")
         f.bg:SetAllPoints(f)
         f.bg:SetColorTexture(bgProp.r, bgProp.g, bgProp.b, bgProp.a or 0.94)
+
+        f.headerBar = f:CreateTexture(nil, "ARTWORK")
+        f.headerBar:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
+        f.headerBar:SetSize(330, 28)
+        f.headerBar:SetColorTexture(0.12, 0.14, 0.20, 0.98)
     end
 
     if f.CreateFontString then
         self.titleText = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        self.titleText:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -8)
+        self.titleText:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -7)
+        if self.titleText.SetWidth then self.titleText:SetWidth(165) end
+        if self.titleText.SetWordWrap then self.titleText:SetWordWrap(false) end
+        self.titleText:SetJustifyH("LEFT")
         self.titleText:SetText("AzerothRoute")
 
         self.stepNumText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-        self.stepNumText:SetPoint("TOPRIGHT", f, "TOPRIGHT", -75, -8)
+        self.stepNumText:SetPoint("TOPRIGHT", f, "TOPRIGHT", -108, -8)
         self.stepNumText:SetText("Step 1")
     end
 
-    -- Toolbar Prev / Next / Menu buttons
-    self.prevButton = AR.UI:Create("Button", f, "AzerothRoutePrevButton")
-    self.prevButton:SetSize(22, 18)
-    self.prevButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -52, -5)
+    -- Visible, labeled toolbar buttons: [<] [>] [Guides]
+    self.prevButton = createStyledToolbarButton(f, "AzerothRoutePrevButton", "<", 22, 20)
+    self.prevButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -80, -4)
     self.prevButton:SetScript("OnClick", function()
         if AR.Progression then
             AR.Progression:PreviousStep()
@@ -65,9 +99,8 @@ function ViewerFrame:Initialize()
         end
     end)
 
-    self.nextButton = AR.UI:Create("Button", f, "AzerothRouteNextButton")
-    self.nextButton:SetSize(22, 18)
-    self.nextButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -28, -5)
+    self.nextButton = createStyledToolbarButton(f, "AzerothRouteNextButton", ">", 22, 20)
+    self.nextButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -54, -4)
     self.nextButton:SetScript("OnClick", function()
         if AR.Progression then
             AR.Progression:SkipStep(false)
@@ -75,9 +108,8 @@ function ViewerFrame:Initialize()
         end
     end)
 
-    self.menuButton = AR.UI:Create("Button", f, "AzerothRouteMenuButton")
-    self.menuButton:SetSize(22, 18)
-    self.menuButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -4, -5)
+    self.menuButton = createStyledToolbarButton(f, "AzerothRouteMenuButton", "Guides", 46, 20)
+    self.menuButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -4, -4)
     self.menuButton:SetScript("OnClick", function()
         if AR.GuideMenu and AR.GuideMenu.Toggle then
             AR.GuideMenu:Toggle()
@@ -95,8 +127,8 @@ function ViewerFrame:Initialize()
     -- Pre-allocate 20 visual StepLine rows
     for i = 1, self.LINES_PER_STEP do
         local row = AR.UI:Create("Button", f, "AzerothRouteStepLine" .. i)
-        row:SetSize(294, 20)
-        row:SetPoint("TOPLEFT", f, "TOPLEFT", 8, -28 - (i - 1) * 21)
+        row:SetSize(314, 20)
+        row:SetPoint("TOPLEFT", f, "TOPLEFT", 8, -32 - (i - 1) * 21)
         if row.CreateTexture then
             row.bg = row:CreateTexture(nil, "BACKGROUND")
             row.bg:SetAllPoints(row)
@@ -111,10 +143,20 @@ function ViewerFrame:Initialize()
             row.label:SetJustifyH("LEFT")
         end
         row:SetScript("OnClick", function(r)
-            if r._goal and r._goal.map and r._goal.x and r._goal.y and AR.Pointer then
+            if not r._goal then return end
+            if r._goal.confirm then
+                r._goal.confirmed = true
+                if AR.Progression then
+                    AR.Progression:TryToCompleteStep(true)
+                end
+                self:RefreshVisuals()
+                return
+            end
+            if r._goal.map and r._goal.x and r._goal.y and AR.Pointer then
                 AR.Pointer:PlaceStepPins({
                     { map = r._goal.map, x = r._goal.x, y = r._goal.y, title = r.label and r.label:GetText() or "Waypoint", objectiveIndex = i },
                 })
+                AR.Pointer:UpdateArrow(0)
             end
         end)
         row:Hide()
@@ -123,7 +165,7 @@ function ViewerFrame:Initialize()
 
     -- 7px interactive bottom progress bar
     self.progressBar = AR.UI:Create("Button", f, "AzerothRouteProgressBar")
-    self.progressBar:SetSize(294, AR.Skins:GetProp("progressBarHeight") or 7)
+    self.progressBar:SetSize(314, AR.Skins:GetProp("progressBarHeight") or 7)
     self.progressBar:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 8, 6)
     if self.progressBar.CreateTexture then
         self.progressBar.fill = self.progressBar:CreateTexture(nil, "ARTWORK")
@@ -265,10 +307,11 @@ function ViewerFrame:RefreshVisuals()
     local vm = self:RenderCurrentStep()
 
     if self.titleText and AR.Progression and AR.Progression.currentGuide then
-        self.titleText:SetText(AR.Progression.currentGuide.title or "AzerothRoute")
+        self.titleText:SetText(getShortGuideTitle(AR.Progression.currentGuide.title))
     end
     if self.stepNumText then
-        self.stepNumText:SetText("Step " .. tostring(vm.stepNum or 1))
+        local totalSteps = (AR.Progression and AR.Progression.currentGuide and #AR.Progression.currentGuide.steps) or 1
+        self.stepNumText:SetText(string.format("%d/%d", vm.stepNum or 1, totalSteps))
     end
 
     local rowIdx = 0
@@ -279,7 +322,7 @@ function ViewerFrame:RefreshVisuals()
             row._goal = line.goal
             if row.label then row.label:SetText(line.text) end
             if row.bg and line.bgColor then
-                row.bg:SetColorTexture(line.bgColor.r, line.bgColor.g, line.bgColor.b, 0.85)
+                row.bg:SetColorTexture(line.bgColor.r, line.bgColor.g, line.bgColor.b, 0.88)
             end
             if row.flash then
                 if line.flashDuration > 0 then
@@ -295,8 +338,8 @@ function ViewerFrame:RefreshVisuals()
 
     if self.stickySeparator then
         if vm.hasStickySeparator then
-            self.stickySeparator:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 8, -28 - rowIdx * 21)
-            self.stickySeparator:SetWidth(294)
+            self.stickySeparator:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 8, -32 - rowIdx * 21)
+            self.stickySeparator:SetWidth(314)
             self.stickySeparator:Show()
         else
             self.stickySeparator:Hide()

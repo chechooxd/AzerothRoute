@@ -99,8 +99,12 @@ function Parser:ParseGoalLine(line, step)
                 else
                     goal.map = tonumber(mapStr)
                 end
-                goal.x = tonumber(xStr)
-                goal.y = tonumber(yStr)
+                local rx = tonumber(xStr)
+                local ry = tonumber(yStr)
+                if rx and rx > 1 then rx = rx / 100.0 end
+                if ry and ry > 1 then ry = ry / 100.0 end
+                goal.x = rx
+                goal.y = ry
                 goal.dist = tonumber(distStr) or 8
             elseif cmd == "accept" or cmd == "turnin" then
                 goal.action = cmd
