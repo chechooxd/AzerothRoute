@@ -114,6 +114,6 @@ T:Describe("SPEC-16: Live WoW Client Event & Native API Bridge", function()
         MockWoW.inCombat = false
         MockWoW:FireEvent("PLAYER_REGEN_ENABLED")
         T:AssertFalse(AR.ActionBar.pendingCombatUpdate, "PLAYER_REGEN_ENABLED must flush queued secure action bar update")
-        T:AssertEqual(AR.ActionBar.buttons[1]:GetAttribute("macrotext1"), "/target Executor Arren\n/tm 8", "Button 1 macro must be populated after event")
+        T:AssertEqual(AR.ActionBar.buttons[1]:GetAttribute("macrotext1"), "/cleartarget\n/targetexact Executor Arren\n/tm 1", "Button 1 macro must be populated after event")
     end)
 end)
