@@ -136,6 +136,7 @@ function AR:Initialize()
         end
         if self.TaxiTracker and self.TaxiTracker.RegisterLiveEvents then
             self.TaxiTracker:RegisterLiveEvents()
+            self.TaxiTracker:SeedRacialStarters()
         end
         if self.ActionBar then
             self.ActionBar:Initialize()

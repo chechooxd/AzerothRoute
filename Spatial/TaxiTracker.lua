@@ -83,8 +83,20 @@ function TaxiTracker:InitializeForRace(race)
     AR.db.char.taxis = AR.db.char.taxis or {}
     local starters = self.RACIAL_STARTERS[race or "Scourge"] or {}
     for _, nodeName in ipairs(starters) do
-        AR.db.char.taxis[nodeName] = true
+        self:LearnTaxi(nodeName)
     end
+end
+
+-- Zygor marks the race's capital flight path as known for new characters. Done once per
+-- character so later real data (taxi map scans) is never overwritten.
+function TaxiTracker:SeedRacialStarters()
+    if not AR.db or not AR.db.char or AR.db.char.taxisSeeded then return false end
+    if not _G.UnitRace then return false end
+    local _, raceFile = _G.UnitRace("player")
+    if not raceFile then return false end
+    self:InitializeForRace(raceFile)
+    AR.db.char.taxisSeeded = true
+    return true
 end
 
 function TaxiTracker:KnowsTaxi(nodeName)

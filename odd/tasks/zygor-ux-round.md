@@ -12,9 +12,10 @@ Branch: feat/ar-13-ace3-libraries-fixes → master · Delivery: commit per packa
 ## Tasks
 - [x] T1 [S2] Arrow: arrival, ETA, next waypoint, no goto on taxi, distance color — inline · RED 6/6 → GREEN 105/105
 - [x] T2 [S3] Viewer: icons, check, past tense, step preview — inline · RED 5/5 → GREEN 110/110
-- [ ] T3 [S4] Seed racial starting flight paths once per character — inline
-- [ ] T4 [S1] Merge branch into master
+- [x] T3 [S4] Seed racial starting flight paths once per character — inline · RED 1/1 → GREEN 111/111
+- [x] T4 [S1] Merge branch into master (fast-forward)
 
 ## Log
 - L1 (2026-11-16): "Dale commitea siempre y pasa a main siempre porfa al finalizar, y continua con lo demás, cuando finalizes todo lo propuesto lo cargare al juego he iré probando y anotando cada detalle para otra ronda de mejoras"
 - L2: Package 1 committed as 6f7f294 before this document.
+- L3: Packages 2 (fe9e53e) and 3 (e021df5) committed; T3 seeds RACIAL_STARTERS via LearnTaxi once per character (char.taxisSeeded). Suite 111/111. Branch fast-forwarded into master for in-game testing. Out of scope kept: multi-hop travel routes.
