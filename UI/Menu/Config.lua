@@ -122,6 +122,7 @@ function Config:BuildOptions()
                     set = profileSet,
                 },
                 loadguidesfully = toggle("loadguidesfully", 2),
+                stepsound = toggle("stepsound", 3),
             }),
         },
     }

@@ -36,6 +36,22 @@ local function getShortGuideTitle(guide)
     return short
 end
 
+local function attachHintTooltip(button, localeKey)
+    if not button or not button.HookScript then return end
+    button:HookScript("OnEnter", function(b)
+        if _G.GameTooltip and _G.GameTooltip.SetOwner and AR.L then
+            _G.GameTooltip:SetOwner(b, "ANCHOR_BOTTOM")
+            for hint in tostring(AR.L:Get(localeKey)):gmatch("[^\n]+") do
+                _G.GameTooltip:AddLine(hint, 1, 1, 1)
+            end
+            _G.GameTooltip:Show()
+        end
+    end)
+    button:HookScript("OnLeave", function()
+        if _G.GameTooltip and _G.GameTooltip.Hide then _G.GameTooltip:Hide() end
+    end)
+end
+
 local function createStyledToolbarButton(parent, name, labelText, width, height)
     local btn = AR.UI:Create("Button", parent, name)
     btn:SetSize(width, height)
@@ -104,21 +120,20 @@ function ViewerFrame:Initialize()
     -- Visible, labeled toolbar buttons: [<] [>] [Talents] [Guides]
     self.prevButton = createStyledToolbarButton(f, "AzerothRoutePrevButton", "<", 20, 20)
     self.prevButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -142, -4)
-    self.prevButton:SetScript("OnClick", function()
-        if AR.Progression then
-            AR.Progression:PreviousStep()
-            self:RefreshVisuals()
-        end
+    self.prevButton:SetScript("OnClick", function(_, button)
+        self:OnPrevClick(button)
     end)
+    attachHintTooltip(self.prevButton, "UI_PREV_HINT")
 
     self.nextButton = createStyledToolbarButton(f, "AzerothRouteNextButton", ">", 20, 20)
     self.nextButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -118, -4)
-    self.nextButton:SetScript("OnClick", function()
-        if AR.Progression then
-            AR.Progression:SkipStep(false)
-            self:RefreshVisuals()
-        end
+    if self.nextButton.RegisterForClicks then
+        self.nextButton:RegisterForClicks("LeftButtonUp", "RightButtonUp")
+    end
+    self.nextButton:SetScript("OnClick", function(_, button)
+        self:OnNextClick(button)
     end)
+    attachHintTooltip(self.nextButton, "UI_NEXT_HINT")
 
     self.talentButton = createStyledToolbarButton(f, "AzerothRouteTalentButton", (AR.L and AR.L:Get("UI_TALENTS")) or "Talents", 56, 20)
     self.talentButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -58, -4)
@@ -198,8 +213,76 @@ function ViewerFrame:Initialize()
         self:RefreshVisuals()
     end)
 
+    -- Whole-window green flash when a step completes (Zygor's "ThinFlash" border cue).
+    if f.CreateTexture then
+        self.borderFlash = f:CreateTexture(nil, "OVERLAY")
+        self.borderFlash:SetAllPoints(f)
+        self.borderFlash:SetColorTexture(0.30, 0.90, 0.40, 1)
+        self.borderFlash:SetAlpha(0)
+        self.borderFlash:Hide()
+        if self.borderFlash.CreateAnimationGroup then
+            local ag = self.borderFlash:CreateAnimationGroup()
+            local fade = ag:CreateAnimation("Alpha")
+            fade:SetFromAlpha(0.35)
+            fade:SetToAlpha(0)
+            fade:SetDuration(0.6)
+            ag:SetScript("OnFinished", function() self.borderFlash:Hide() end)
+            self.borderFlashAnim = ag
+        end
+    end
+
+    -- "Guide complete" banner over the progress bar.
+    if f.CreateFontString then
+        self.completeText = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+        self.completeText:SetPoint("BOTTOM", f, "BOTTOM", 0, 16)
+        self.completeText:Hide()
+    end
+
     self.frame = f
     return f
+end
+
+local function modifierDown(fnName)
+    return _G[fnName] and _G[fnName]() and true or false
+end
+
+function ViewerFrame:OnNextClick(button)
+    local progression = AR.Progression
+    if not progression then return end
+    if button == "RightButton" then
+        progression:SkipToNextIncomplete()
+    elseif modifierDown("IsShiftKeyDown") then
+        progression:JumpSteps(10)
+    else
+        progression:SkipStep(false)
+    end
+    self:RefreshVisuals()
+end
+
+function ViewerFrame:OnPrevClick(button)
+    local progression = AR.Progression
+    if not progression then return end
+    if modifierDown("IsControlKeyDown") then
+        progression:GoToFirstStep()
+    else
+        progression:PreviousStep()
+    end
+    self:RefreshVisuals()
+end
+
+function ViewerFrame:FlashBorder()
+    self.borderFlashCount = (self.borderFlashCount or 0) + 1
+    if not self.borderFlash then return end
+    self.borderFlash:Show()
+    if self.borderFlashAnim then
+        self.borderFlashAnim:Stop()
+        self.borderFlashAnim:Play()
+    else
+        self.borderFlash:SetAlpha(0.35)
+        if _G.C_Timer and _G.C_Timer.After then
+            _G.C_Timer.After(0.6, function() self.borderFlash:Hide() end)
+        end
+    end
 end
 
 function ViewerFrame:CycleProgressMode()
@@ -325,6 +408,7 @@ function ViewerFrame:RenderCurrentStep()
         notice = notice,
         progressBarHeight = AR.Skins:GetProp("progressBarHeight"),
         progressMode = self.progressMode,
+        guideComplete = (AR.Progression and AR.Progression.guideComplete) == true,
     }
 end
 
@@ -396,6 +480,15 @@ function ViewerFrame:RefreshVisuals()
     for i = rowIdx + 1, self.LINES_PER_STEP do
         if self.lineRows[i] then
             self.lineRows[i]:Hide()
+        end
+    end
+
+    if self.completeText then
+        if vm.guideComplete then
+            self.completeText:SetText((AR.L and AR.L:Get("UI_GUIDE_COMPLETE")) or "Guide complete!")
+            self.completeText:Show()
+        else
+            self.completeText:Hide()
         end
     end
 

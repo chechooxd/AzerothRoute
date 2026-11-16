@@ -13,7 +13,7 @@ Branch: feat/ar-13-ace3-libraries-fixes · Delivery: ask-on-risk · Test runner:
 - [x] T1 [S2] Vendor Ace3 (AceDB, AceDBOptions, AceConfig, AceGUI, AceConsole) @ ac3d122 + TOC + NOTICES — inline · commit d3e0ded
 - [x] T2 [S3] AceDB-backed profile storage + one-time migration + readers + tests — inline · Risk: item 1 (stored data) · commit 50c39f0 · RED 5/5 → GREEN 88/88 · independent verifier PASS · native review approved+acknowledged (risk, reliability)
 - [x] T3 [S4] AceConfig options panel, `/ar config`, minimap shortcut, locale, tests — inline · GREEN 94/94
-- [ ] T4 [S5] Zygor arrow/flight UX analysis — read-only, pending
+- [x] T4 [S5] Zygor arrow/flight + step progression UX analysis — read-only, delegated (2 explorers) · delivered in chat 2026-11-16
 
 ## Log
 - L1 (2026-11-16): "revisa como funciona zygor en esas cosas y ahi sabras a que me refiero con el tema de la experiencia, pero me gustaria avcanzar con la fase 2 ahora para ver reales avances en el addon"
@@ -21,3 +21,5 @@ Branch: feat/ar-13-ace3-libraries-fixes · Delivery: ask-on-risk · Test runner:
 - L3: Ace3 release r1403 lacks 16001; upstream master `ac3d1225037e0dc74e025a72342c0f7824aae147` (2026-10-28) includes "AceDB-3.0: Compatibility with WoW Forever" and Forever realm keys. Pinned to it.
 - L4: T2 review: full slice exceeded the lens budget (vendored libs); reduced to base d3e0ded (278 lines), user granted, risk+reliability approved, acknowledged (authority burned). Reviewed boundary → 50c39f0. Independent verifier: 5/5 PASS, notes: degraded no-AceDB mode does not persist changes; stray legacy globals are ignored but never cleaned.
 - L5: T3 tests were written first but the first run failed on a test-helper bug (AceConfigRegistry uiName), so a clean RED was not observed; GREEN 94/94 after implementation. AceConfigDialog/AceGUI rendering is stubbed in tests; in-client check pending.
+- L6 (2026-11-16): "dale con el análisis de zygor y considera igualmente la experiencia que ofrece zygor en ir pasando la guia, el paso a paso, como se completan sus guias y pasas a la siguiente, todo eso porfa" — Gaps found vs Zygor: no resume of saved guide on login, no next-guide at guide end, no step-complete sound/border flash, no per-action icons or past-tense goal text, passive goals still get a background, no arrow "arrived" state or ETA, goto completes while on taxi, race starting flight paths never seeded (TaxiTracker:InitializeForRace unused), no Next right-click/Shift shortcuts.
+- L7 (2026-11-16): "dale con el paquete 1" — Implemented inline (uncommitted): Progression:RestoreSaved/OnGuideEnd/SkipToNextIncomplete/JumpSteps/GoToFirstStep/NotifyStepComplete, viewer border flash + "Guide complete!" + Next/Prev shortcuts and hint tooltips, profile.stepsound + options toggle, locale. Tests/test_guide_progression_ux.lua RED 5/5 → GREEN 99/99. Catalog: 24/55 guides have a valid `next`. Risk: none.

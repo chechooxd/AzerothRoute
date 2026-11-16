@@ -151,10 +151,18 @@ function AR:Initialize()
         end
         if self.ViewerFrame then
             self.ViewerFrame:Initialize()
-            if not self.Progression.currentGuide and self.GuideMenu then
-                local suggested = self.GuideMenu:FindSuggestedGuides()
-                if suggested[1] then
-                    self.Progression:LoadGuide(suggested[1])
+            if not self.Progression.currentGuide then
+                if self.Progression:RestoreSaved() then
+                    local guide = self.Progression.currentGuide
+                    local es = self.L and self.L:IsSpanish()
+                    local name = (es and guide.displayTitleES) or guide.displayTitleEN or guide.title
+                    local fmt = (self.L and self.L:Get("UI_GUIDE_RESUMED_FMT")) or "Resumed guide: %s (step %d)"
+                    self:Print(string.format(fmt, name, self.Progression.currentStep.num))
+                elseif self.GuideMenu then
+                    local suggested = self.GuideMenu:FindSuggestedGuides()
+                    if suggested[1] then
+                        self.Progression:LoadGuide(suggested[1])
+                    end
                 end
             end
             self.ViewerFrame:RefreshVisuals()

@@ -62,6 +62,7 @@ Storage.ProfileDefaults = {
     autobuy = true,
     loadguidesfully = false,
     style = "default",
+    stepsound = true,
 }
 
 -- Keys that used to live in AzerothRouteSavedDB.global and now belong to the profile.

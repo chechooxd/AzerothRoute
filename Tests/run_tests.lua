@@ -150,6 +150,7 @@ function T:RunAll()
         "Tests/test_target_macro.lua",
         "Tests/test_ace3_profiles.lua",
         "Tests/test_ace3_config_panel.lua",
+        "Tests/test_guide_progression_ux.lua",
     }
     for _, suitePath in ipairs(specSuites) do
         dofile(suitePath)
