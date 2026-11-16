@@ -177,14 +177,14 @@ T:Describe("Resume: visible localized secure targets", function()
         T:AssertTrue(AR.ActionBar.barFrame._moving)
         AR.ActionBar.barFrame._scripts.OnDragStop(AR.ActionBar.barFrame)
         T:AssertFalse(AR.ActionBar.barFrame._moving)
-        T:AssertEqual(AR.db.global.actionbar_pos.x, 120)
-        T:AssertEqual(AR.db.global.actionbar_pos.y, -40)
+        T:AssertEqual(AR.db.profile.actionbar_pos.x, 120)
+        T:AssertEqual(AR.db.profile.actionbar_pos.y, -40)
 
         AR.ActionBar.itemBarFrame:SetPoint("CENTER", _G.UIParent, "CENTER", 160, -90)
         AR.ActionBar.itemBarFrame._scripts.OnDragStart(AR.ActionBar.itemBarFrame)
         AR.ActionBar.itemBarFrame._scripts.OnDragStop(AR.ActionBar.itemBarFrame)
-        T:AssertEqual(AR.db.global.itembar_pos.x, 160)
-        T:AssertEqual(AR.db.global.itembar_pos.y, -90)
+        T:AssertEqual(AR.db.profile.itembar_pos.x, 160)
+        T:AssertEqual(AR.db.profile.itembar_pos.y, -90)
 
         -- Stepping to a step with no targets or items hides both boxes cleanly
         AR.Progression:FocusStep(2)

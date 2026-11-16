@@ -227,6 +227,17 @@ _G.UnitFactionGroup = function(unit)
     return MockWoW.player.faction, MockWoW.player.faction
 end
 
+-- Identity APIs AceDB-3.0 reads at load time.
+_G.UnitNameUnmodified = function(unit)
+    return MockWoW.player.name, MockWoW.player.realm
+end
+_G.strlenutf8 = function(s)
+    local _, n = tostring(s):gsub("[^\128-\191]", "")
+    return n
+end
+_G.GetCurrentRegion = function() return 1 end
+_G.GetCurrentRegionName = function() return "US" end
+
 _G.UnitRace = function(unit)
     return MockWoW.player.race, MockWoW.player.race
 end

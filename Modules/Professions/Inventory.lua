@@ -45,7 +45,7 @@ local function isGreySellable(info)
 end
 
 function Inventory:SellGreyItems()
-    if AR.db and AR.db.global and AR.db.global.autogrey == false then
+    if AR.db and AR.db.profile and AR.db.profile.autogrey == false then
         return 0
     end
     local sold = 0
@@ -64,7 +64,7 @@ function Inventory:SellGreyItems()
 end
 
 function Inventory:AutoRepair()
-    if AR.db and AR.db.global and AR.db.global.autorepair == false then
+    if AR.db and AR.db.profile and AR.db.profile.autorepair == false then
         return false
     end
     if _G.CanMerchantRepair and _G.CanMerchantRepair() and _G.RepairAllItems then
@@ -78,7 +78,7 @@ function Inventory:AutoRepair()
 end
 
 function Inventory:ExecuteAutoBuy()
-    if AR.db and AR.db.global and AR.db.global.autobuy == false then
+    if AR.db and AR.db.profile and AR.db.profile.autobuy == false then
         return 0
     end
     local needed = self:FindItemsToBuy()

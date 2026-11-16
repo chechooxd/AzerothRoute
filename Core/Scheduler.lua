@@ -31,7 +31,7 @@ function Scheduler:GetFrameBudgetMs()
     if _G.InCombatLockdown and _G.InCombatLockdown() then
         return 1
     end
-    if AR.db and AR.db.global and AR.db.global.loadguidesfully then
+    if AR.db and AR.db.profile and AR.db.profile.loadguidesfully then
         return 100
     end
     local fps = (_G.GetFramerate and _G.GetFramerate()) or 60

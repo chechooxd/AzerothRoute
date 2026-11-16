@@ -10,9 +10,9 @@ T:Describe("Resume: interaction identity", function()
         AR.Events:Reset()
         AR.Inventory._liveRegistered = false
         AR.Inventory:RegisterLiveEvents()
-        AR.db.global.autogrey = true
-        AR.db.global.autobuy = false
-        AR.db.global.autorepair = false
+        AR.db.profile.autogrey = true
+        AR.db.profile.autobuy = false
+        AR.db.profile.autorepair = false
         local guide = AR.Parser:ParseGuide("Test\\MerchantIdentity", [[
             step
                 vendor Blacksmith Rand##2116
@@ -37,7 +37,7 @@ T:Describe("Resume: interaction identity", function()
         AR.Parser:Reset()
         AR.Events:Reset()
         AR.db.char.taxis = {}
-        AR.db.global.autotaxi = true
+        AR.db.profile.autotaxi = true
         AR.TaxiTracker._liveRegistered = false
         AR.TaxiTracker:RegisterLiveEvents()
         local guide = AR.Parser:ParseGuide("Test\\FlightIdentity", [[

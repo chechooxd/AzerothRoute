@@ -100,8 +100,8 @@ end
 function ActionBar:SaveBarPosition(dbKey, frame)
     if not frame or not frame.GetPoint then return false end
     local point, _, relPoint, x, y = frame:GetPoint()
-    if point and AR.db and AR.db.global then
-        AR.db.global[dbKey] = {
+    if point and AR.db and AR.db.profile then
+        AR.db.profile[dbKey] = {
             point = point,
             relPoint = relPoint or point,
             x = x or 0,
@@ -115,7 +115,7 @@ end
 function ActionBar:RestoreBarPosition(dbKey, frame, defaultPoint)
     if not frame then return end
     frame:ClearAllPoints()
-    local saved = AR.db and AR.db.global and AR.db.global[dbKey]
+    local saved = AR.db and AR.db.profile and AR.db.profile[dbKey]
     if type(saved) == "table" and saved.point then
         frame:SetPoint(saved.point, _G.UIParent, saved.relPoint or saved.point, saved.x or 0, saved.y or 0)
     else
@@ -496,7 +496,7 @@ end
 function ActionBar:MarkMatchingUnit(unit)
     if not unit then return false end
     if not self:CanUseAutoRaidMark() then return false end
-    if AR.db and AR.db.global and AR.db.global.automark == false then return false end
+    if AR.db and AR.db.profile and AR.db.profile.automark == false then return false end
     if _G.IsInGroup and _G.IsInGroup() then
         local canMark = (_G.UnitIsGroupLeader and _G.UnitIsGroupLeader("player"))
             or (_G.UnitIsGroupAssistant and _G.UnitIsGroupAssistant("player"))

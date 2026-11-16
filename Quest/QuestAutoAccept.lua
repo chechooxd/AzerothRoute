@@ -83,7 +83,7 @@ end
 
 function QuestAutoAccept:ShouldAutoAccept(questID, questTitle)
     if self:IsLockedOut(questID) then return false end
-    if AR.db and AR.db.global and AR.db.global.autoaccept == false then
+    if AR.db and AR.db.profile and AR.db.profile.autoaccept == false then
         return false
     end
     for _, g in ipairs(self:GetActiveStepAndStickyGoals()) do
@@ -95,7 +95,7 @@ function QuestAutoAccept:ShouldAutoAccept(questID, questTitle)
     if inGuide then
         return not blocked
     end
-    if AR.db and AR.db.global and AR.db.global.autoacceptall == true then
+    if AR.db and AR.db.profile and AR.db.profile.autoacceptall == true then
         return true
     end
     return false
@@ -103,7 +103,7 @@ end
 
 function QuestAutoAccept:ShouldAutoTurnIn(questID, questTitle)
     if self:IsLockedOut(questID) then return false end
-    if AR.db and AR.db.global and AR.db.global.autoturnin == false then
+    if AR.db and AR.db.profile and AR.db.profile.autoturnin == false then
         return false
     end
     for _, g in ipairs(self:GetActiveStepAndStickyGoals()) do
@@ -115,7 +115,7 @@ function QuestAutoAccept:ShouldAutoTurnIn(questID, questTitle)
     if inGuide then
         return not blocked
     end
-    if AR.db and AR.db.global and AR.db.global.autoacceptall == true then
+    if AR.db and AR.db.profile and AR.db.profile.autoacceptall == true then
         return true
     end
     return false
@@ -223,7 +223,7 @@ function QuestAutoAccept:OnQuestComplete()
         return
     end
 
-    if AR.db and AR.db.global and AR.db.global.autoselectreward ~= false and AR.QuestReward and _G.GetQuestItemLink then
+    if AR.db and AR.db.profile and AR.db.profile.autoselectreward ~= false and AR.QuestReward and _G.GetQuestItemLink then
         local links = {}
         for i = 1, numChoices do
             table.insert(links, _G.GetQuestItemLink("choice", i) or "")

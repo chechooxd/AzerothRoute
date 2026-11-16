@@ -167,11 +167,11 @@ T:Describe("ARTargeting account macro", function()
             restore()
             restore = installMacroApi(s2)
             AR.TargetMacro:Reset()
-            AR.db.global.targetmacro = false
+            AR.db.profile.targetmacro = false
             AR.ActionBar:UpdateFromCurrentStep()
             T:AssertEqual(s2.created, 0, "Disabled setting leaves macros alone")
         end)
-        AR.db.global.targetmacro = true
+        AR.db.profile.targetmacro = true
         restore()
         if not ok then error(err, 0) end
     end)

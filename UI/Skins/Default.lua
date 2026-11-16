@@ -30,7 +30,7 @@ local Skins = {
 AR.Skins = Skins
 
 function Skins:GetProp(key)
-    local styleName = (AR.db and AR.db.global and AR.db.global.style) or "default"
+    local styleName = (AR.db and AR.db.profile and AR.db.profile.style) or "default"
     local style = self.styles[styleName] or self.styles.default
     return style[key]
 end

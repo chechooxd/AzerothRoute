@@ -23,7 +23,7 @@ function TargetMacro:Reset()
 end
 
 function TargetMacro:IsEnabled()
-    return not (AR.db and AR.db.global and AR.db.global.targetmacro == false)
+    return not (AR.db and AR.db.profile and AR.db.profile.targetmacro == false)
 end
 
 function TargetMacro:GetMarkerLines()

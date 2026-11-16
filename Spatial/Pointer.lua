@@ -438,7 +438,7 @@ function Pointer:SpawnCurveAnts(p1, p2, count)
 end
 
 function Pointer:CheckCorpseArrow()
-    if AR.db and AR.db.global and AR.db.global.corpsearrow == false then
+    if AR.db and AR.db.profile and AR.db.profile.corpsearrow == false then
         return false
     end
     if _G.UnitIsDeadOrGhost and _G.UnitIsDeadOrGhost("player") then

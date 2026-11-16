@@ -56,9 +56,9 @@ T:Describe("Phase 1: SavedVariables, HereBeDragons-Pins & minimap button", funct
 
         AR.Events:DispatchEvent("ADDON_LOADED", "AzerothRoute")
         T:AssertTrue(AR.db.global == _G.AzerothRouteSavedDB.global, "global must be the loaded SavedVariables table")
-        T:AssertEqual(AR.db.global.autoaccept, false, "Saved values must survive")
+        T:AssertEqual(AR.db.profile.autoaccept, false, "Saved values must survive")
         T:AssertEqual(AR.db.global.minimap.minimapPos, 42, "Saved minimap position must survive")
-        T:AssertEqual(AR.db.global.autoturnin, true, "Missing defaults must be filled in")
+        T:AssertEqual(AR.db.profile.autoturnin, true, "Missing defaults must be filled in")
         T:AssertEqual(AR.db.char.currentStepNum, 7, "Per-character values must survive")
         T:AssertTrue(AR.db.char == _G.AzerothRouteCharDB, "char must be the loaded per-character table")
     end)

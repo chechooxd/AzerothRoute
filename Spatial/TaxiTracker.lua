@@ -195,7 +195,7 @@ function TaxiTracker:OnTaxiMapOpened()
     local matchedSlot = self:HighlightTaxiDestination(destTarget)
     local reachable = matchedSlot and _G.TaxiNodeGetType and _G.TaxiNodeGetType(matchedSlot) == "REACHABLE"
     if shouldAutoFly and reachable and _G.TakeTaxiNode and not (_G.IsAltKeyDown and _G.IsAltKeyDown()) then
-        if not (AR.db and AR.db.global and AR.db.global.autotaxi == false) then
+        if not (AR.db and AR.db.profile and AR.db.profile.autotaxi == false) then
             if _G.GetNumRoutes then _G.GetNumRoutes(matchedSlot) end
             _G.TakeTaxiNode(matchedSlot)
         end
