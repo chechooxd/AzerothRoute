@@ -32,6 +32,11 @@ The libraries in this directory are vendored verbatim from the official `HereBeD
    - **Minor**: `52`; copied from the CurseForge-packaged copy bundled with RXPGuides (`@curseforge-project-slug: libdbicon-1-0@` header). Not re-verified against the upstream repository, which could not be fetched.
    - **Author**: funkydude. **License**: not verified here (the file carries no license header); confirm on the upstream project page before redistribution.
 
+7. **Ace3 subset** (`Libs/AceConsole-3.0`, `Libs/AceGUI-3.0`, `Libs/AceConfig-3.0`, `Libs/AceDB-3.0`, `Libs/AceDBOptions-3.0`)
+   - **Source**: https://github.com/WoWUIDev/Ace3 at commit `ac3d1225037e0dc74e025a72342c0f7824aae147` (2026-10-28), byte-identical directory copies. Pinned past `Release-r1403` because only master lists Interface 16001 and contains "AceDB-3.0: Compatibility with WoW Forever".
+   - **Minors**: AceDB 40, AceDBOptions per file header, AceConfigDialog/Registry/Cmd and AceGUI per file headers.
+   - **License**: BSD, Ace3 Development Team (`Libs/Ace3-LICENSE.txt`).
+
 ## Integration Scope
 
 `HereBeDragons-2.0` coordinate data APIs are integrated into `Spatial/Coords.lua`. `HereBeDragons-Pins-2.0` places world map and minimap pins in `Spatial/Pointer.lua` (native placement remains as a fallback). `LibDataBroker-1.1` + `LibDBIcon-1.0` provide the minimap launcher in `UI/MinimapButton.lua`. Ace3, targeting, SavedVariables, and party communications remain native to AzerothRoute.
