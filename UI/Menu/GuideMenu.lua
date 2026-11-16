@@ -1,4 +1,4 @@
--- AzerothRoute: Interactive 825x630 GuideMenu Command Center, Category Tabs, Guide List & Details Pane (SPEC-13 / SPEC-17 / SPEC-20)
+-- AzerothRoute: Interactive GuideMenu Command Center with Localization, Pagination & Talent Advisor Link (SPEC-13 / SPEC-17 / SPEC-20 / SPEC-21)
 
 local AR = _G.AzerothRoute
 local GuideMenu = {
@@ -6,18 +6,24 @@ local GuideMenu = {
     HEIGHT = 480,
     MAX_ROWS = 14,
     CATEGORIES = {
-        { id = "SUGGESTED", label = "Suggested" },
-        { id = "LEVELING",  label = "Leveling" },
-        { id = "DUNGEONS",  label = "Dungeons" },
-        { id = "PROFESSIONS", label = "Professions" },
-        { id = "GOLD",      label = "Gold" },
-        { id = "ALL",       label = "All Guides" },
+        { id = "SUGGESTED", labelKey = "UI_SUGGESTED" },
+        { id = "LEVELING",  labelKey = "UI_LEVELING" },
+        { id = "DUNGEONS",  labelKey = "UI_DUNGEONS" },
+        { id = "PROFESSIONS", labelKey = "UI_PROFESSIONS" },
+        { id = "GOLD",      labelKey = "UI_GOLD" },
+        { id = "ALL",       labelKey = "UI_ALL_GUIDES" },
     },
     activeCategory = "ALL",
+    pageOffset = 0,
     selectedGuide = nil,
     frame = nil,
+    headerText = nil,
     closeButton = nil,
     loadButton = nil,
+    talentButton = nil,
+    prevPageButton = nil,
+    nextPageButton = nil,
+    pageText = nil,
     categoryButtons = {},
     guideRowButtons = {},
     detailTitle = nil,
@@ -26,17 +32,48 @@ local GuideMenu = {
 }
 AR.GuideMenu = GuideMenu
 
-function GuideMenu:Reset()
-    self.activeCategory = "ALL"
-    self.selectedGuide = nil
-    self.frame = nil
-    self.closeButton = nil
-    self.loadButton = nil
-    self.categoryButtons = {}
-    self.guideRowButtons = {}
+local function LGet(key)
+    return (AR.L and AR.L:Get(key)) or key
 end
 
-local function createMenuButton(parent, name, labelText, width, height)
+local function LFormat(key, ...)
+    if AR.L and AR.L.Format then
+        return AR.L:Format(key, ...)
+    end
+    return string.format(key, ...)
+end
+
+local function getDisplayTitle(guide)
+    if not guide then return "" end
+    if AR.L and AR.L:IsSpanish() and guide.displayTitleES then
+        return guide.displayTitleES
+    end
+    if guide.displayTitleEN then
+        return guide.displayTitleEN
+    end
+    return guide.title or "Guide"
+end
+
+function GuideMenu:Reset()
+    self.activeCategory = "ALL"
+    self.pageOffset = 0
+    self.selectedGuide = nil
+    self.frame = nil
+    self.headerText = nil
+    self.closeButton = nil
+    self.loadButton = nil
+    self.talentButton = nil
+    self.prevPageButton = nil
+    self.nextPageButton = nil
+    self.pageText = nil
+    self.categoryButtons = {}
+    self.guideRowButtons = {}
+    self.detailTitle = nil
+    self.detailDesc = nil
+    self.detailMeta = nil
+end
+
+local function createMenuButton(parent, name, labelText, width, height, centered)
     local btn = AR.UI:Create("Button", parent, name)
     btn:SetSize(width, height)
     if btn.CreateTexture then
@@ -46,8 +83,13 @@ local function createMenuButton(parent, name, labelText, width, height)
     end
     if btn.CreateFontString then
         btn.label = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-        btn.label:SetPoint("LEFT", btn, "LEFT", 10, 0)
-        btn.label:SetJustifyH("LEFT")
+        if centered then
+            btn.label:SetPoint("CENTER", btn, "CENTER", 0, 0)
+            btn.label:SetJustifyH("CENTER")
+        else
+            btn.label:SetPoint("LEFT", btn, "LEFT", 10, 0)
+            btn.label:SetJustifyH("LEFT")
+        end
         btn.label:SetText(labelText)
     end
     return btn
@@ -99,15 +141,15 @@ function GuideMenu:InitializeFrame()
     end
 
     if f.CreateFontString then
-        f.header = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-        f.header:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -10)
-        f.header:SetText("AzerothRoute — Guide Center")
+        self.headerText = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+        self.headerText:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -10)
+        self.headerText:SetText(LGet("UI_GUIDE_MENU_TITLE"))
 
         self.detailTitle = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         self.detailTitle:SetPoint("TOPLEFT", f, "TOPLEFT", 488, -56)
         if self.detailTitle.SetWidth then self.detailTitle:SetWidth(210) end
         self.detailTitle:SetJustifyH("LEFT")
-        self.detailTitle:SetText("Select a Guide")
+        self.detailTitle:SetText(LGet("UI_SELECT_GUIDE"))
 
         self.detailMeta = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         self.detailMeta:SetPoint("TOPLEFT", f, "TOPLEFT", 488, -90)
@@ -119,11 +161,16 @@ function GuideMenu:InitializeFrame()
         self.detailDesc:SetPoint("TOPLEFT", f, "TOPLEFT", 488, -120)
         if self.detailDesc.SetWidth then self.detailDesc:SetWidth(210) end
         self.detailDesc:SetJustifyH("LEFT")
-        self.detailDesc:SetText("Click any guide on the left to inspect its steps and load it into the viewer.")
+        self.detailDesc:SetText(LGet("UI_SELECT_GUIDE_DESC"))
+
+        self.pageText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        self.pageText:SetPoint("BOTTOM", f, "BOTTOMLEFT", 313, 24)
+        self.pageText:SetJustifyH("CENTER")
+        self.pageText:SetText("1/1")
     end
 
     -- Top-right Close [X] button
-    self.closeButton = createMenuButton(f, "AzerothRouteGuideMenuClose", "X", 26, 24)
+    self.closeButton = createMenuButton(f, "AzerothRouteGuideMenuClose", "X", 26, 24, true)
     self.closeButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -8, -6)
     self.closeButton:SetScript("OnClick", function()
         f:Hide()
@@ -132,20 +179,21 @@ function GuideMenu:InitializeFrame()
     -- Left Sidebar Category Buttons
     self.categoryButtons = {}
     for idx, cat in ipairs(self.CATEGORIES) do
-        local cBtn = createMenuButton(f, "AzerothRouteCatBtn" .. idx, cat.label, 128, 28)
+        local cBtn = createMenuButton(f, "AzerothRouteCatBtn" .. idx, LGet(cat.labelKey), 128, 28, false)
         cBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 16, -52 - (idx - 1) * 32)
         cBtn._categoryID = cat.id
+        cBtn._labelKey = cat.labelKey
         cBtn:SetScript("OnClick", function()
             self:SelectCategory(cat.id)
         end)
         table.insert(self.categoryButtons, cBtn)
     end
 
-    -- Center Column Clickable Guide List Rows
+    -- Center Column Clickable Guide List Rows (14 per page)
     self.guideRowButtons = {}
     for r = 1, self.MAX_ROWS do
-        local rowBtn = createMenuButton(f, "AzerothRouteGuideRow" .. r, "", 298, 26)
-        rowBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 164, -52 - (r - 1) * 28)
+        local rowBtn = createMenuButton(f, "AzerothRouteGuideRow" .. r, "", 298, 24, false)
+        rowBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 164, -50 - (r - 1) * 26)
         rowBtn:SetScript("OnClick", function(btn)
             if btn._guide then
                 self:SelectGuide(btn._guide)
@@ -155,9 +203,34 @@ function GuideMenu:InitializeFrame()
         table.insert(self.guideRowButtons, rowBtn)
     end
 
-    -- Right Column "Load Guide" Action Button
-    self.loadButton = createMenuButton(f, "AzerothRouteLoadGuideButton", "Load Selected Guide", 210, 32)
-    self.loadButton:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 488, 24)
+    -- Pagination Controls at bottom of Center Column
+    self.prevPageButton = createMenuButton(f, "AzerothRouteGuidePrevPage", LGet("UI_PREV_PAGE"), 88, 22, true)
+    self.prevPageButton:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 164, 18)
+    self.prevPageButton:SetScript("OnClick", function()
+        self:PrevPage()
+    end)
+
+    self.nextPageButton = createMenuButton(f, "AzerothRouteGuideNextPage", LGet("UI_NEXT_PAGE"), 88, 22, true)
+    self.nextPageButton:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 374, 18)
+    self.nextPageButton:SetScript("OnClick", function()
+        self:NextPage()
+    end)
+
+    -- Right Column "Talents" Advisor Button
+    self.talentButton = createMenuButton(f, "AzerothRouteMenuTalentsButton", LGet("UI_TALENTS"), 210, 28, true)
+    self.talentButton:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 488, 62)
+    if self.talentButton.bg then
+        self.talentButton.bg:SetColorTexture(0.24, 0.34, 0.56, 1.0)
+    end
+    self.talentButton:SetScript("OnClick", function()
+        if AR.TalentAdvisor and AR.TalentAdvisor.ToggleUI then
+            AR.TalentAdvisor:ToggleUI()
+        end
+    end)
+
+    -- Right Column "Load Selected Guide" Action Button
+    self.loadButton = createMenuButton(f, "AzerothRouteLoadGuideButton", LGet("UI_LOAD_GUIDE"), 210, 32, true)
+    self.loadButton:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 488, 22)
     if self.loadButton.bg then
         self.loadButton.bg:SetColorTexture(0.14, 0.52, 0.28, 1.0)
     end
@@ -181,6 +254,13 @@ function GuideMenu:InitializeFrame()
     return f
 end
 
+local CATEGORY_ORDER = {
+    LEVELING = 1,
+    DUNGEONS = 2,
+    PROFESSIONS = 3,
+    GOLD = 4,
+}
+
 function GuideMenu:GetGuidesForCategory(categoryID)
     if categoryID == "SUGGESTED" then
         local sug = self:FindSuggestedGuides()
@@ -194,6 +274,16 @@ function GuideMenu:GetGuidesForCategory(categoryID)
         end
     end
     table.sort(list, function(a, b)
+        local pa = CATEGORY_ORDER[a.type and a.type:upper() or ""] or 9
+        local pb = CATEGORY_ORDER[b.type and b.type:upper() or ""] or 9
+        if pa ~= pb then
+            return pa < pb
+        end
+        local la = a.startlevel or 99
+        local lb = b.startlevel or 99
+        if la ~= lb then
+            return la < lb
+        end
         return (a.title or "") < (b.title or "")
     end)
     return list
@@ -204,14 +294,27 @@ function GuideMenu:SelectGuide(guide)
     if not guide then return end
 
     if self.detailTitle then
-        self.detailTitle:SetText(guide.title or "Guide")
+        self.detailTitle:SetText(getDisplayTitle(guide))
     end
     if self.detailMeta then
         local stepCount = guide.steps and #guide.steps or 0
-        self.detailMeta:SetText(string.format("Type: %s | Levels: %d-%d | Steps: %d", guide.type or "LEVELING", guide.startlevel or 1, guide.endlevel or 60, stepCount))
+        local typeLabel = guide.type or "LEVELING"
+        if AR.L then
+            local keyMap = {
+                LEVELING = "UI_LEVELING",
+                DUNGEONS = "UI_DUNGEONS",
+                PROFESSIONS = "UI_PROFESSIONS",
+                GOLD = "UI_GOLD",
+            }
+            if keyMap[typeLabel:upper()] then
+                typeLabel = AR.L:Get(keyMap[typeLabel:upper()])
+            end
+        end
+        self.detailMeta:SetText(LFormat("UI_GUIDE_META_FMT", typeLabel, guide.startlevel or 1, guide.endlevel or 60, stepCount))
     end
     if self.detailDesc then
-        self.detailDesc:SetText(guide.description or "Step-by-step route with automatic waypoint & quest tracking.")
+        local desc = (AR.L and AR.L:IsSpanish() and guide.descriptionES) or guide.description or LGet("UI_SELECT_GUIDE_DESC")
+        self.detailDesc:SetText(desc)
     end
 
     for _, rowBtn in ipairs(self.guideRowButtons) do
@@ -225,9 +328,17 @@ function GuideMenu:SelectGuide(guide)
     end
 end
 
-function GuideMenu:SelectCategory(categoryID)
-    self.activeCategory = categoryID or "ALL"
+function GuideMenu:RenderGuidePage()
+    if self.headerText then self.headerText:SetText(LGet("UI_GUIDE_MENU_TITLE")) end
+    if self.loadButton and self.loadButton.label then self.loadButton.label:SetText(LGet("UI_LOAD_GUIDE")) end
+    if self.talentButton and self.talentButton.label then self.talentButton.label:SetText(LGet("UI_TALENTS")) end
+    if self.prevPageButton and self.prevPageButton.label then self.prevPageButton.label:SetText(LGet("UI_PREV_PAGE")) end
+    if self.nextPageButton and self.nextPageButton.label then self.nextPageButton.label:SetText(LGet("UI_NEXT_PAGE")) end
+
     for _, cBtn in ipairs(self.categoryButtons) do
+        if cBtn.label and cBtn._labelKey then
+            cBtn.label:SetText(LGet(cBtn._labelKey))
+        end
         if cBtn.bg then
             if cBtn._categoryID == self.activeCategory then
                 cBtn.bg:SetColorTexture(0.24, 0.44, 0.72, 1.0)
@@ -238,14 +349,18 @@ function GuideMenu:SelectCategory(categoryID)
     end
 
     local guides = self:GetGuidesForCategory(self.activeCategory)
+    local total = #guides
+    local maxOff = math.max(0, math.floor((total - 1) / self.MAX_ROWS) * self.MAX_ROWS)
+    self.pageOffset = math.max(0, math.min(maxOff, self.pageOffset or 0))
+
     for i = 1, self.MAX_ROWS do
         local rowBtn = self.guideRowButtons[i]
-        local g = guides[i]
+        local g = guides[self.pageOffset + i]
         if rowBtn then
             if g then
                 rowBtn._guide = g
                 if rowBtn.label then
-                    rowBtn.label:SetText(g.title or "Guide")
+                    rowBtn.label:SetText(getDisplayTitle(g))
                 end
                 rowBtn:Show()
             else
@@ -255,8 +370,36 @@ function GuideMenu:SelectCategory(categoryID)
         end
     end
 
-    if guides[1] then
-        self:SelectGuide(guides[1])
+    local totalPages = math.max(1, math.ceil(total / self.MAX_ROWS))
+    local curPage = math.floor(self.pageOffset / self.MAX_ROWS) + 1
+    if self.pageText then
+        self.pageText:SetText(LFormat("UI_PAGE_FMT", curPage, totalPages))
+    end
+
+    local firstVisible = guides[self.pageOffset + 1]
+    if firstVisible then
+        self:SelectGuide(firstVisible)
+    end
+end
+
+function GuideMenu:SelectCategory(categoryID)
+    self.activeCategory = categoryID or "ALL"
+    self.pageOffset = 0
+    self:RenderGuidePage()
+end
+
+function GuideMenu:NextPage()
+    local guides = self:GetGuidesForCategory(self.activeCategory)
+    if (self.pageOffset + self.MAX_ROWS) < #guides then
+        self.pageOffset = self.pageOffset + self.MAX_ROWS
+        self:RenderGuidePage()
+    end
+end
+
+function GuideMenu:PrevPage()
+    if (self.pageOffset or 0) > 0 then
+        self.pageOffset = math.max(0, self.pageOffset - self.MAX_ROWS)
+        self:RenderGuidePage()
     end
 end
 

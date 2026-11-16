@@ -196,31 +196,64 @@ function Goal:GetText()
     if cur and max and max > 1 then
         suffix = string.format(" (%d/%d)", cur, max)
     end
+    local L = AR.L
+    local loc = AR.Localizers
+
     if self.action == "accept" then
-        return string.format("Accept %s", self.quest or "Quest")
+        local qName = (loc and self.questid and loc:GetTranslatedQuest(self.questid, self.quest)) or self.quest or "Quest"
+        return L:Format("GOAL_ACCEPT", qName)
     elseif self.action == "turnin" then
-        return string.format("Turn in %s", self.quest or "Quest")
+        local qName = (loc and self.questid and loc:GetTranslatedQuest(self.questid, self.quest)) or self.quest or "Quest"
+        return L:Format("GOAL_TURNIN", qName)
     elseif self.action == "kill" then
+        local tName = (loc and self.targetid and loc:GetTranslatedNPC(self.targetid, self.target)) or self.target or "Mob"
         local rem = (cur and max) and math.max(0, max - cur) or (self.count or 1)
         if rem > 1 then
-            return string.format("Kill %d %s%s", rem, self.target or "Mob", suffix)
+            return L:Format("GOAL_KILL_PLURAL", rem, tName, suffix)
         end
-        return string.format("Kill %s%s", self.target or "Mob", suffix)
+        return L:Format("GOAL_KILL", tName, suffix)
     elseif self.action == "get" or self.action == "buy" then
-        local verb = (self.action == "buy") and "Buy" or "Collect"
+        local iName = (loc and self.targetid and loc:GetTranslatedItem(self.targetid, self.target)) or self.target or "Item"
         local rem = (cur and max) and math.max(0, max - cur) or (self.count or 1)
-        if rem > 1 then
-            return string.format("%s %d %s%s", verb, rem, self.target or "Item", suffix)
+        if self.action == "buy" then
+            if rem > 1 then
+                return L:Format("GOAL_BUY_PLURAL", rem, iName, suffix)
+            end
+            return L:Format("GOAL_BUY", iName, suffix)
         end
-        return string.format("%s %s%s", verb, self.target or "Item", suffix)
+        if rem > 1 then
+            return L:Format("GOAL_COLLECT_PLURAL", rem, iName, suffix)
+        end
+        return L:Format("GOAL_COLLECT", iName, suffix)
     elseif self.action == "talk" then
-        return string.format("Talk to %s", self.target or "NPC")
+        local npcName = (loc and self.npcid and loc:GetTranslatedNPC(self.npcid, self.target)) or self.target or "NPC"
+        return L:Format("GOAL_TALK", npcName)
+    elseif self.action == "learn" then
+        return L:Format("GOAL_LEARN", self.target or "Spell")
+    elseif self.action == "create" then
+        local rem = self.count or 1
+        if rem > 1 then
+            return L:Format("GOAL_CREATE_PLURAL", rem, self.target or "Recipe", suffix)
+        end
+        return L:Format("GOAL_CREATE", self.target or "Recipe", suffix)
     elseif self.action == "ding" then
-        return string.format("Reach Level %d", self.level or 1)
+        return L:Format("GOAL_DING", self.level or 1)
     elseif self.action == "goto" then
         local gx = (self.x and self.x <= 1) and (self.x * 100.0) or (self.x or 0)
         local gy = (self.y and self.y <= 1) and (self.y * 100.0) or (self.y or 0)
-        return string.format("Go to %.1f, %.1f", gx, gy)
+        return L:Format("GOAL_GOTO", gx, gy)
+    elseif self.action == "fpath" then
+        return L:Format("GOAL_FPATH", self.param or "Flight Master")
+    elseif self.action == "home" then
+        return L:Format("GOAL_HOME", self.param or "Innkeeper")
+    elseif self.action == "hearth" then
+        return L:Format("GOAL_HEARTH", self.param or "Home")
+    elseif self.action == "vendor" then
+        return L:Format("GOAL_VENDOR", self.target or self.param or "Vendor")
+    elseif self.action == "trainer" then
+        return L:Format("GOAL_TRAINER", self.target or self.param or "Trainer")
+    elseif self.action == "confirm" then
+        return self.text or L:Get("GOAL_CONFIRM")
     end
     return self.text or self.target or self.param or self.action or ""
 end

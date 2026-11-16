@@ -7,6 +7,7 @@ _G.MockWoW = MockWoW
 function MockWoW:Reset()
     self.clockMs = 1000.0
     self.fps = 60.0
+    self.locale = "enUS"
     self.inCombat = false
     self.isAltKeyDown = false
     self.loadingScreenDisabled = true
@@ -112,7 +113,7 @@ _G.IsAltKeyDown = function()
 end
 
 _G.GetLocale = function()
-    return MockWoW.locale or "esMX"
+    return MockWoW.locale or "enUS"
 end
 
 _G.UnitName = function(unit)
@@ -214,6 +215,42 @@ end
 
 function FrameProto:SetPoint(point, rel, relPoint, x, y)
     self._point = { point, rel, relPoint, x, y }
+end
+
+function FrameProto:ClearAllPoints()
+    self._point = nil
+end
+
+function FrameProto:SetParent(parent)
+    self._parent = parent
+end
+
+function FrameProto:GetParent()
+    return self._parent
+end
+
+function FrameProto:SetFrameStrata(strata)
+    self._strata = strata
+end
+
+function FrameProto:GetFrameStrata()
+    return self._strata or "MEDIUM"
+end
+
+function FrameProto:SetFrameLevel(lvl)
+    self._frameLevel = lvl
+end
+
+function FrameProto:GetFrameLevel()
+    return self._frameLevel or 1
+end
+
+function FrameProto:HookScript(scriptType, handler)
+    local prev = self._scripts[scriptType]
+    self._scripts[scriptType] = function(...)
+        if prev then prev(...) end
+        handler(...)
+    end
 end
 
 function FrameProto:SetAttribute(key, val)
@@ -327,7 +364,21 @@ end
 
 _G.UIParent = _G.CreateFrame("Frame", "UIParent")
 _G.WorldMapFrame = _G.CreateFrame("Frame", "WorldMapFrame")
+_G.WorldMapFrame._canvas = _G.CreateFrame("Frame", "WorldMapCanvasFrame", _G.WorldMapFrame)
+_G.WorldMapFrame._canvas:SetSize(1002, 668)
+_G.WorldMapFrame.GetCanvas = function(wf) return wf._canvas end
+_G.WorldMapFrame.GetMapID = function(wf) return wf._mapID end
+_G.WorldMapFrame.SetMapID = function(wf, id) wf._mapID = id end
 _G.Minimap = _G.CreateFrame("Frame", "Minimap")
+_G.GameTooltip = _G.GameTooltip or {
+    _lines = {},
+    SetOwner = function(gt, owner, anchor) gt._owner = owner gt._anchor = anchor gt._lines = {} end,
+    SetText = function(gt, txt) table.insert(gt._lines, txt) end,
+    AddLine = function(gt, txt) table.insert(gt._lines, txt) end,
+    Show = function(gt) gt._shown = true end,
+    Hide = function(gt) gt._shown = false end,
+    IsShown = function(gt) return gt._shown == true end,
+}
 _G.SlashCmdList = _G.SlashCmdList or {}
 
 function MockWoW:FireEvent(event, ...)

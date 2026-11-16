@@ -48,65 +48,7 @@ end
 
 function Catalog:LoadTalentBuilds()
     if not AR.TalentAdvisor then return end
-    local builds = {
-        WARRIOR = {
-            ident = "WARRIOR_ARMS_LEVELING",
-            name = "Arms Leveling (10-60)",
-            suggested = true,
-            talents = "Deflection\nDeflection\nCruelty\nCruelty\nTactical Mastery\nAnger Management\nMortal Strike",
-        },
-        PALADIN = {
-            ident = "PALADIN_RET_LEVELING",
-            name = "Retribution Leveling (10-60)",
-            suggested = true,
-            talents = "Benediction\nBenediction\nBenediction\nBenediction\nBenediction\nImproved Judgement\nImproved Judgement\nSeal of Command\nPursuit of Justice\nPursuit of Justice",
-        },
-        HUNTER = {
-            ident = "HUNTER_BM_LEVELING",
-            name = "Beast Mastery Leveling (10-60)",
-            suggested = true,
-            talents = "Improved Aspect of the Hawk\nEndurance Training\nThick Hide\nBestial Wrath",
-        },
-        ROGUE = {
-            ident = "ROGUE_COMBAT_LEVELING",
-            name = "Combat Swords Leveling (10-60)",
-            suggested = true,
-            talents = "Improved Sinister Strike\nImproved Sinister Strike\nMalice\nPrecision\nBlade Flurry",
-        },
-        PRIEST = {
-            ident = "PRIEST_WAND_SHADOW_LEVELING",
-            name = "Wand & Shadow Leveling (10-60)",
-            suggested = true,
-            talents = "Wand Specialization\nWand Specialization\nSpirit Tap\nShadow Focus\nShadowform",
-        },
-        SHAMAN = {
-            ident = "SHAMAN_ENH_LEVELING",
-            name = "Enhancement Leveling (10-60)",
-            suggested = true,
-            talents = "Ancestral Knowledge\nThundering Strikes\nFlurry\nStormstrike",
-        },
-        MAGE = {
-            ident = "MAGE_FROST_LEVELING",
-            name = "Frost AoE & Single-Target Leveling (10-60)",
-            suggested = true,
-            talents = "Elemental Precision\nImproved Frostbolt\nFrostbite\nIce Shards\nIce Barrier",
-        },
-        WARLOCK = {
-            ident = "WARLOCK_AFFLICTION_LEVELING",
-            name = "Affliction Drain-Tank Leveling (10-60)",
-            suggested = true,
-            talents = "Suppression\nImproved Corruption\nFel Concentration\nSiphon Life",
-        },
-        DRUID = {
-            ident = "DRUID_FERAL_LEVELING",
-            name = "Feral Cat/Bear Leveling (10-60)",
-            suggested = true,
-            talents = "Ferocity\nFeral Instinct\nFeline Swiftness\nLeader of the Pack",
-        },
-    }
-    for cls, spec in pairs(builds) do
-        AR.TalentAdvisor:RegisterBuild(cls, spec)
-    end
+    AR.TalentAdvisor:LoadDefaultBuilds()
 end
 
 function Catalog:LoadAll()

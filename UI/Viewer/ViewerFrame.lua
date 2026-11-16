@@ -3,6 +3,8 @@
 
 local AR = _G.AzerothRoute
 local ViewerFrame = {
+    WIDTH = 360,
+    HEIGHT = 250,
     LINES_PER_STEP = 20,
     progressMode = "steps", -- "steps" | "quests" | "xp"
     lastGoalSnapshots = {}, -- { [key] = { status = ..., cur = ... } }
@@ -11,6 +13,7 @@ local ViewerFrame = {
     stepNumText = nil,
     prevButton = nil,
     nextButton = nil,
+    talentButton = nil,
     menuButton = nil,
     stickySeparator = nil,
     progressBar = nil,
@@ -18,9 +21,18 @@ local ViewerFrame = {
 }
 AR.ViewerFrame = ViewerFrame
 
-local function getShortGuideTitle(fullTitle)
-    if not fullTitle then return "AzerothRoute" end
-    local short = fullTitle:match("([^\\]+)$") or fullTitle
+local function getShortGuideTitle(guide)
+    if type(guide) == "table" then
+        if AR.L and AR.L:IsSpanish() and guide.displayTitleES then
+            return guide.displayTitleES
+        end
+        if guide.displayTitleEN then
+            return guide.displayTitleEN
+        end
+        guide = guide.title
+    end
+    if not guide then return (AR.L and AR.L:Get("UI_ADDON_TITLE")) or "AzerothRoute" end
+    local short = guide:match("([^\\]+)$") or guide
     return short
 end
 
@@ -52,7 +64,7 @@ function ViewerFrame:Initialize()
     self.lineRows = {}
 
     local f = AR.UI:Create("Frame", _G.UIParent, "AzerothRouteViewerFrame")
-    f:SetSize(330, 250)
+    f:SetSize(self.WIDTH, self.HEIGHT)
     f:SetPoint("RIGHT", _G.UIParent, "RIGHT", -50, 80)
     if f.SetMovable then f:SetMovable(true) end
     if f.EnableMouse then f:EnableMouse(true) end
@@ -72,26 +84,26 @@ function ViewerFrame:Initialize()
 
         f.headerBar = f:CreateTexture(nil, "ARTWORK")
         f.headerBar:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
-        f.headerBar:SetSize(330, 28)
+        f.headerBar:SetSize(self.WIDTH, 28)
         f.headerBar:SetColorTexture(0.12, 0.14, 0.20, 0.98)
     end
 
     if f.CreateFontString then
         self.titleText = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         self.titleText:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -7)
-        if self.titleText.SetWidth then self.titleText:SetWidth(165) end
+        if self.titleText.SetWidth then self.titleText:SetWidth(145) end
         if self.titleText.SetWordWrap then self.titleText:SetWordWrap(false) end
         self.titleText:SetJustifyH("LEFT")
-        self.titleText:SetText("AzerothRoute")
+        self.titleText:SetText((AR.L and AR.L:Get("UI_ADDON_TITLE")) or "AzerothRoute")
 
         self.stepNumText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-        self.stepNumText:SetPoint("TOPRIGHT", f, "TOPRIGHT", -108, -8)
-        self.stepNumText:SetText("Step 1")
+        self.stepNumText:SetPoint("TOPRIGHT", f, "TOPRIGHT", -166, -8)
+        self.stepNumText:SetText("1/1")
     end
 
-    -- Visible, labeled toolbar buttons: [<] [>] [Guides]
-    self.prevButton = createStyledToolbarButton(f, "AzerothRoutePrevButton", "<", 22, 20)
-    self.prevButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -80, -4)
+    -- Visible, labeled toolbar buttons: [<] [>] [Talents] [Guides]
+    self.prevButton = createStyledToolbarButton(f, "AzerothRoutePrevButton", "<", 20, 20)
+    self.prevButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -142, -4)
     self.prevButton:SetScript("OnClick", function()
         if AR.Progression then
             AR.Progression:PreviousStep()
@@ -99,8 +111,8 @@ function ViewerFrame:Initialize()
         end
     end)
 
-    self.nextButton = createStyledToolbarButton(f, "AzerothRouteNextButton", ">", 22, 20)
-    self.nextButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -54, -4)
+    self.nextButton = createStyledToolbarButton(f, "AzerothRouteNextButton", ">", 20, 20)
+    self.nextButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -118, -4)
     self.nextButton:SetScript("OnClick", function()
         if AR.Progression then
             AR.Progression:SkipStep(false)
@@ -108,7 +120,15 @@ function ViewerFrame:Initialize()
         end
     end)
 
-    self.menuButton = createStyledToolbarButton(f, "AzerothRouteMenuButton", "Guides", 46, 20)
+    self.talentButton = createStyledToolbarButton(f, "AzerothRouteTalentButton", (AR.L and AR.L:Get("UI_TALENTS")) or "Talents", 56, 20)
+    self.talentButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -58, -4)
+    self.talentButton:SetScript("OnClick", function()
+        if AR.TalentAdvisor and AR.TalentAdvisor.ToggleUI then
+            AR.TalentAdvisor:ToggleUI()
+        end
+    end)
+
+    self.menuButton = createStyledToolbarButton(f, "AzerothRouteMenuButton", (AR.L and AR.L:Get("UI_GUIDES")) or "Guides", 50, 20)
     self.menuButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -4, -4)
     self.menuButton:SetScript("OnClick", function()
         if AR.GuideMenu and AR.GuideMenu.Toggle then
@@ -127,7 +147,7 @@ function ViewerFrame:Initialize()
     -- Pre-allocate 20 visual StepLine rows
     for i = 1, self.LINES_PER_STEP do
         local row = AR.UI:Create("Button", f, "AzerothRouteStepLine" .. i)
-        row:SetSize(314, 20)
+        row:SetSize(self.WIDTH - 16, 20)
         row:SetPoint("TOPLEFT", f, "TOPLEFT", 8, -32 - (i - 1) * 21)
         if row.CreateTexture then
             row.bg = row:CreateTexture(nil, "BACKGROUND")
@@ -154,7 +174,7 @@ function ViewerFrame:Initialize()
             end
             if r._goal.map and r._goal.x and r._goal.y and AR.Pointer then
                 AR.Pointer:PlaceStepPins({
-                    { map = r._goal.map, x = r._goal.x, y = r._goal.y, title = r.label and r.label:GetText() or "Waypoint", objectiveIndex = i },
+                    { map = r._goal.map, x = r._goal.x, y = r._goal.y, title = r.label and r.label:GetText() or "Waypoint", objectiveIndex = i, action = r._goal.action },
                 })
                 AR.Pointer:UpdateArrow(0)
             end
@@ -165,7 +185,7 @@ function ViewerFrame:Initialize()
 
     -- 7px interactive bottom progress bar
     self.progressBar = AR.UI:Create("Button", f, "AzerothRouteProgressBar")
-    self.progressBar:SetSize(314, AR.Skins:GetProp("progressBarHeight") or 7)
+    self.progressBar:SetSize(self.WIDTH - 16, AR.Skins:GetProp("progressBarHeight") or 7)
     self.progressBar:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 8, 6)
     if self.progressBar.CreateTexture then
         self.progressBar.fill = self.progressBar:CreateTexture(nil, "ARTWORK")
@@ -257,6 +277,7 @@ function ViewerFrame:RenderCurrentStep()
                         y = g.y,
                         title = line.text,
                         objectiveIndex = i,
+                        action = g.action,
                     })
                 end
             end
@@ -276,6 +297,7 @@ function ViewerFrame:RenderCurrentStep()
                         y = g.y,
                         title = "[Sticky] " .. line.text,
                         objectiveIndex = #pinsToPlace + 1,
+                        action = g.action,
                     })
                 end
             end
@@ -306,8 +328,14 @@ function ViewerFrame:RefreshVisuals()
     end
     local vm = self:RenderCurrentStep()
 
+    if self.menuButton and self.menuButton.label and AR.L then
+        self.menuButton.label:SetText(AR.L:Get("UI_GUIDES"))
+    end
+    if self.talentButton and self.talentButton.label and AR.L then
+        self.talentButton.label:SetText(AR.L:Get("UI_TALENTS"))
+    end
     if self.titleText and AR.Progression and AR.Progression.currentGuide then
-        self.titleText:SetText(getShortGuideTitle(AR.Progression.currentGuide.title))
+        self.titleText:SetText(getShortGuideTitle(AR.Progression.currentGuide))
     end
     if self.stepNumText then
         local totalSteps = (AR.Progression and AR.Progression.currentGuide and #AR.Progression.currentGuide.steps) or 1
@@ -339,7 +367,7 @@ function ViewerFrame:RefreshVisuals()
     if self.stickySeparator then
         if vm.hasStickySeparator then
             self.stickySeparator:SetPoint("TOPLEFT", self.frame, "TOPLEFT", 8, -32 - rowIdx * 21)
-            self.stickySeparator:SetWidth(314)
+            self.stickySeparator:SetWidth(self.WIDTH - 16)
             self.stickySeparator:Show()
         else
             self.stickySeparator:Hide()

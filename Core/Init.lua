@@ -12,6 +12,10 @@ function AR:RegisterSlashCommands()
             if AR.GuideMenu then
                 AR.GuideMenu:Toggle()
             end
+        elseif msg == "talents" or msg == "talentos" then
+            if AR.TalentAdvisor and AR.TalentAdvisor.ToggleUI then
+                AR.TalentAdvisor:ToggleUI()
+            end
         elseif msg == "next" then
             if AR.Progression then
                 AR.Progression:SkipStep(false)
@@ -77,6 +81,9 @@ function AR:Initialize()
         end
         if self.Pointer then
             self.Pointer:InitializeFrames()
+        end
+        if self.TalentAdvisor and self.TalentAdvisor.HookBlizzardFrames then
+            self.TalentAdvisor:HookBlizzardFrames()
         end
         if self.PartySync then
             self.PartySync:RegisterLiveEvents()

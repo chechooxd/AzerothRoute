@@ -56,6 +56,35 @@ local function parseTargetAndId(argText)
     return argText, nil, nil
 end
 
+local function parseGotoArg(arg, fallbackMap)
+    arg = trim(arg or "")
+    local distOverride = nil
+    local mainPart, dVal = arg:match("^(.-)%s*<%s*([%d%.]+)%s*$")
+    if mainPart then
+        arg = trim(mainPart)
+        distOverride = tonumber(dVal)
+    end
+
+    -- Try numeric mapID or zone name before "x,y [dist]"
+    local mapToken, xStr, yStr, tailDist = arg:match("^(.-)%s+([%d%.]+)%s*,%s*([%d%.]+)%s*([%d%.]*)$")
+    local mapID = fallbackMap
+    if mapToken and xStr and yStr then
+        local resolved = (AR.Coords and AR.Coords:ResolveMapID(mapToken)) or tonumber(mapToken)
+        if resolved then
+            mapID = resolved
+        end
+    else
+        xStr, yStr, tailDist = arg:match("^([%d%.]+)%s*,%s*([%d%.]+)%s*([%d%.]*)$")
+    end
+
+    local rx = tonumber(xStr)
+    local ry = tonumber(yStr)
+    if rx and rx > 1 then rx = rx / 100.0 end
+    if ry and ry > 1 then ry = ry / 100.0 end
+    local dist = distOverride or tonumber(tailDist) or 8
+    return mapID, rx, ry, dist
+end
+
 function Parser:ParseGoalLine(line, step)
     local chunks = {}
     for chunk in (line .. "|"):gmatch("(.-)|") do
@@ -92,20 +121,11 @@ function Parser:ParseGoalLine(line, step)
                 goal.text = trim(chunk:sub(2))
             elseif cmd == "goto" or cmd == "at" then
                 goal.action = "goto"
-                local mapStr, xStr, yStr, distStr = arg:match("^(%d+)%s+([%d%.]+)%s*,%s*([%d%.]+)%s*([%d%.]*)$")
-                if not mapStr then
-                    xStr, yStr, distStr = arg:match("^([%d%.]+)%s*,%s*([%d%.]+)%s*([%d%.]*)$")
-                    goal.map = step.map
-                else
-                    goal.map = tonumber(mapStr)
-                end
-                local rx = tonumber(xStr)
-                local ry = tonumber(yStr)
-                if rx and rx > 1 then rx = rx / 100.0 end
-                if ry and ry > 1 then ry = ry / 100.0 end
+                local mapID, rx, ry, dist = parseGotoArg(arg, step.map)
+                goal.map = mapID
                 goal.x = rx
                 goal.y = ry
-                goal.dist = tonumber(distStr) or 8
+                goal.dist = dist
             elseif cmd == "accept" or cmd == "turnin" then
                 goal.action = cmd
                 local name, qid = parseTargetAndId(arg)
@@ -202,6 +222,12 @@ function Parser:ParseGoalLine(line, step)
                 goal.tooltip = arg
             elseif cmd == "noautoaccept" then
                 goal.noautoaccept = true
+            elseif cmd == "goto" or cmd == "at" then
+                local mapID, rx, ry, dist = parseGotoArg(arg, goal.map or step.map)
+                goal.map = mapID
+                goal.x = rx
+                goal.y = ry
+                goal.dist = dist
             end
         end
     end

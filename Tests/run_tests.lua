@@ -49,6 +49,7 @@ function T:BootstrapAddon()
     require("Tests.mock_wow_api")
     local tocFiles = {
         "Core/Compat.lua",
+        "Core/Locale.lua",
         "Core/Storage.lua",
         "Core/Events.lua",
         "Core/Scheduler.lua",
@@ -126,6 +127,7 @@ function T:RunAll()
         "Tests/test_spec18_world_coords_comm.lua",
         "Tests/test_spec19_full_catalog_es.lua",
         "Tests/test_spec20_ingame_fixes.lua",
+        "Tests/test_spec21_localization_map_talents.lua",
     }
     for _, suitePath in ipairs(specSuites) do
         dofile(suitePath)

@@ -1,4 +1,4 @@
--- AzerothRoute: Pointer UI, Real Textured Directional Arrow, GamePad-Safe Map Pins, Corpse Arrow & Ant Trails (SPEC-05 / SPEC-17 / SPEC-18 / SPEC-20)
+-- AzerothRoute: Pointer UI, Real Textured Directional Arrow, WorldMap Canvas Pins & Ant Trails (SPEC-05 / SPEC-17 / SPEC-18 / SPEC-20 / SPEC-21)
 -- Invariant: Map and minimap pins are NEVER suppressed when GamePad / InputDeviceInterfaceStyle is active.
 
 local AR = _G.AzerothRoute
@@ -22,11 +22,18 @@ local Pointer = {
     activeTarget = nil,
     arrowBearing = 0,
     arrowFrame = nil,
+    worldMapHooked = false,
     speedSamples = {},
 }
 AR.Pointer = Pointer
 
 function Pointer:Reset()
+    for _, f in ipairs(self.worldMapPinFrames or {}) do
+        if f.Hide then f:Hide() end
+    end
+    for _, f in ipairs(self.minimapPinFrames or {}) do
+        if f.Hide then f:Hide() end
+    end
     self.worldMapPins = {}
     self.minimapPins = {}
     self.worldMapPinFrames = {}
@@ -35,14 +42,44 @@ function Pointer:Reset()
     self.activeTarget = nil
     self.arrowBearing = 0
     self.arrowFrame = nil
+    self.worldMapHooked = false
     self.speedSamples = {}
 end
 
+function Pointer:GetWorldMapCanvas()
+    if _G.WorldMapFrame then
+        if _G.WorldMapFrame.GetCanvas then
+            local c = _G.WorldMapFrame:GetCanvas()
+            if c then return c end
+        end
+        if _G.WorldMapFrame.ScrollContainer and _G.WorldMapFrame.ScrollContainer.Child then
+            return _G.WorldMapFrame.ScrollContainer.Child
+        end
+        if _G.WorldMapFrame.ScrollContainer then
+            return _G.WorldMapFrame.ScrollContainer
+        end
+        return _G.WorldMapFrame
+    end
+    return _G.UIParent
+end
+
+function Pointer:EnsureWorldMapHook()
+    if self.worldMapHooked or not _G.WorldMapFrame then return end
+    if _G.WorldMapFrame.HookScript then
+        _G.WorldMapFrame:HookScript("OnShow", function()
+            self:RefreshWorldMapPins()
+        end)
+    end
+    self.worldMapHooked = true
+end
+
 function Pointer:InitializeFrames()
+    self:EnsureWorldMapHook()
     if not self.arrowFrame then
         local af = _G.CreateFrame("Button", "AzerothRoutePointerArrow", _G.UIParent)
         af:SetSize(52, 52)
         af:SetPoint("TOP", _G.UIParent, "TOP", 0, -90)
+        if af.SetFrameStrata then af:SetFrameStrata("HIGH") end
         if af.SetMovable then af:SetMovable(true) end
         if af.EnableMouse then af:EnableMouse(true) end
         if af.RegisterForDrag then af:RegisterForDrag("LeftButton") end
@@ -54,7 +91,6 @@ function Pointer:InitializeFrames()
         end)
 
         if af.CreateTexture then
-            -- Subtle dark circular backing plate so the arrow pops against any skybox
             af.ring = af:CreateTexture(nil, "BACKGROUND")
             af.ring:SetSize(44, 44)
             af.ring:SetPoint("CENTER", af, "CENTER", 0, 0)
@@ -63,7 +99,6 @@ function Pointer:InitializeFrames()
                 af.ring:SetVertexColor(0.05, 0.07, 0.12, 0.70)
             end
 
-            -- Real WoW directional arrow texture (never SetColorTexture square!)
             af.icon = af:CreateTexture(nil, "ARTWORK")
             af.icon:SetSize(42, 42)
             af.icon:SetPoint("CENTER", af, "CENTER", 0, 0)
@@ -75,7 +110,7 @@ function Pointer:InitializeFrames()
         if af.CreateFontString then
             af.label = af:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
             af.label:SetPoint("TOP", af, "BOTTOM", 0, -4)
-            af.label:SetText("AzerothRoute Waypoint")
+            af.label:SetText("AzerothRoute")
 
             af.sublabel = af:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
             af.sublabel:SetPoint("TOP", af, "BOTTOM", 0, -18)
@@ -95,40 +130,100 @@ function Pointer:GetObjectiveColor(index)
     return self:GetObjectiveColorEntry(index).hex
 end
 
+local function applyActionPinTexture(tex, action)
+    if not tex then return end
+    if action == "accept" then
+        tex:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon")
+    elseif action == "turnin" then
+        tex:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon")
+    elseif action == "kill" then
+        tex:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcon_8")
+    elseif action == "fpath" or action == "fly" then
+        tex:SetTexture("Interface\\Minimap\\Tracking\\FlightMaster")
+    else
+        tex:SetTexture("Interface\\WorldMap\\UI-QuestPoi-NumberIcons")
+        if tex.SetTexCoord then
+            tex:SetTexCoord(0.50, 0.625, 0.375, 0.50)
+        end
+    end
+end
+
 function Pointer:PositionPinFrames(pin, wmPin, mmPin)
     local nx = (pin.x and pin.x > 1) and (pin.x / 100.0) or (pin.x or 0.5)
     local ny = (pin.y and pin.y > 1) and (pin.y / 100.0) or (pin.y or 0.5)
 
-    local wmCanvas = (_G.WorldMapFrame and _G.WorldMapFrame.ScrollContainer) or _G.WorldMapFrame or _G.UIParent
+    local wmCanvas = self:GetWorldMapCanvas()
     local cw, ch = 1002, 668
     if wmCanvas and wmCanvas.GetSize then
         local w, h = wmCanvas:GetSize()
         if w and w > 0 then cw = w end
         if h and h > 0 then ch = h end
     end
-    wmPin:SetPoint("CENTER", wmCanvas, "TOPLEFT", nx * cw, -ny * ch)
+    if wmPin then
+        if wmPin.SetParent then wmPin:SetParent(wmCanvas) end
+        if wmPin.ClearAllPoints then wmPin:ClearAllPoints() end
+        wmPin:SetPoint("CENTER", wmCanvas, "TOPLEFT", nx * cw, -ny * ch)
+    end
 
     -- Minimap radar projection in world yards (clamped to minimap circle radius)
-    local pMap, px, py = AR.Coords:GetPlayerPosition()
-    local c1, wx1, wy1 = AR.Coords:ToWorldYards(pMap, px, py)
-    local c2, wx2, wy2 = AR.Coords:ToWorldYards(pin.map or pMap, nx, ny)
-    local dxPx, dyPx = 0, 0
-    if c1 and c2 and c1 == c2 then
-        local dxYd = wx2 - wx1
-        local dyYd = -(wy2 - wy1)
-        local distYd = math.sqrt(dxYd * dxYd + dyYd * dyYd)
-        local scale = self.MINIMAP_RADIUS_PX / self.MINIMAP_VIEW_YARDS
-        dxPx = dxYd * scale
-        dyPx = dyYd * scale
-        if distYd > self.MINIMAP_VIEW_YARDS and distYd > 0 then
-            dxPx = (dxYd / distYd) * self.MINIMAP_RADIUS_PX
-            dyPx = (dyYd / distYd) * self.MINIMAP_RADIUS_PX
+    if mmPin then
+        local pMap, px, py = AR.Coords:GetPlayerPosition()
+        local c1, wx1, wy1 = AR.Coords:ToWorldYards(pMap, px, py)
+        local c2, wx2, wy2 = AR.Coords:ToWorldYards(pin.map or pMap, nx, ny)
+        local dxPx, dyPx = 0, 0
+        if c1 and c2 and c1 == c2 then
+            local dxYd = wx2 - wx1
+            local dyYd = -(wy2 - wy1)
+            local distYd = math.sqrt(dxYd * dxYd + dyYd * dyYd)
+            local scale = self.MINIMAP_RADIUS_PX / self.MINIMAP_VIEW_YARDS
+            dxPx = dxYd * scale
+            dyPx = dyYd * scale
+            if distYd > self.MINIMAP_VIEW_YARDS and distYd > 0 then
+                dxPx = (dxYd / distYd) * self.MINIMAP_RADIUS_PX
+                dyPx = (dyYd / distYd) * self.MINIMAP_RADIUS_PX
+            end
+        end
+        if mmPin.ClearAllPoints then mmPin:ClearAllPoints() end
+        mmPin:SetPoint("CENTER", _G.Minimap or _G.UIParent, "CENTER", dxPx, dyPx)
+    end
+end
+
+function Pointer:RefreshWorldMapPins()
+    local viewedMapID = (_G.WorldMapFrame and _G.WorldMapFrame.GetMapID and _G.WorldMapFrame:GetMapID()) or nil
+    for i, pin in ipairs(self.worldMapPins) do
+        local wmPin = self.worldMapPinFrames[i]
+        local mmPin = self.minimapPinFrames[i]
+        if wmPin then
+            self:PositionPinFrames(pin, wmPin, mmPin)
+            if not viewedMapID or not pin.map or viewedMapID == pin.map then
+                wmPin:Show()
+            else
+                wmPin:Hide()
+            end
         end
     end
-    mmPin:SetPoint("CENTER", _G.Minimap or _G.UIParent, "CENTER", dxPx, dyPx)
+end
+
+local function attachPinTooltip(pinFrame, pinData)
+    if not pinFrame or not pinFrame.SetScript then return end
+    if pinFrame.EnableMouse then pinFrame:EnableMouse(true) end
+    pinFrame:SetScript("OnEnter", function(f)
+        if _G.GameTooltip and _G.GameTooltip.SetOwner then
+            _G.GameTooltip:SetOwner(f, "ANCHOR_RIGHT")
+            _G.GameTooltip:SetText(pinData.title or "AzerothRoute")
+            _G.GameTooltip:AddLine(string.format("%.1f, %.1f", (pinData.x or 0) * 100, (pinData.y or 0) * 100))
+            _G.GameTooltip:Show()
+        end
+    end)
+    pinFrame:SetScript("OnLeave", function()
+        if _G.GameTooltip and _G.GameTooltip.Hide then
+            _G.GameTooltip:Hide()
+        end
+    end)
 end
 
 function Pointer:PlaceStepPins(pinSpecs)
+    self:EnsureWorldMapHook()
     for _, f in ipairs(self.worldMapPinFrames or {}) do
         if f.Hide then f:Hide() end
     end
@@ -142,6 +237,9 @@ function Pointer:PlaceStepPins(pinSpecs)
     self.minimapPinFrames = {}
     if not pinSpecs then return end
 
+    local wmCanvas = self:GetWorldMapCanvas()
+    local viewedMapID = (_G.WorldMapFrame and _G.WorldMapFrame.GetMapID and _G.WorldMapFrame:GetMapID()) or nil
+
     for i, spec in ipairs(pinSpecs) do
         local nx = (spec.x and spec.x > 1) and (spec.x / 100.0) or spec.x
         local ny = (spec.y and spec.y > 1) and (spec.y / 100.0) or spec.y
@@ -152,36 +250,57 @@ function Pointer:PlaceStepPins(pinSpecs)
             x = nx,
             y = ny,
             title = spec.title or "Waypoint",
+            action = spec.action,
             objectiveIndex = spec.objectiveIndex or i,
             color = color,
         }
         table.insert(self.worldMapPins, pin)
         table.insert(self.minimapPins, pin)
 
-        local wmPin = _G.CreateFrame("Button", "AzerothRouteWorldMapPin" .. i, _G.WorldMapFrame or _G.UIParent)
-        wmPin:SetSize(16, 16)
+        -- High-visibility WorldMap canvas pin frame above all map tiles
+        local wmPin = _G.CreateFrame("Button", "AzerothRouteWorldMapPin" .. i, wmCanvas)
+        wmPin:SetSize(22, 22)
+        if wmPin.SetFrameStrata then wmPin:SetFrameStrata("HIGH") end
+        if wmPin.SetFrameLevel then wmPin:SetFrameLevel(2500) end
         if wmPin.CreateTexture then
-            wmPin.tex = wmPin:CreateTexture(nil, "OVERLAY")
-            wmPin.tex:SetAllPoints(wmPin)
-            wmPin.tex:SetTexture("Interface\\Minimap\\POIIcons")
-            if wmPin.tex.SetVertexColor then
-                wmPin.tex:SetVertexColor(colorEntry.r, colorEntry.g, colorEntry.b, 1.0)
+            wmPin.ring = wmPin:CreateTexture(nil, "BACKGROUND")
+            wmPin.ring:SetAllPoints(wmPin)
+            wmPin.ring:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
+            if wmPin.ring.SetVertexColor then
+                wmPin.ring:SetVertexColor(colorEntry.r, colorEntry.g, colorEntry.b, 0.90)
             end
+
+            wmPin.tex = wmPin:CreateTexture(nil, "ARTWORK")
+            wmPin.tex:SetSize(16, 16)
+            wmPin.tex:SetPoint("CENTER", wmPin, "CENTER", 0, 0)
+            applyActionPinTexture(wmPin.tex, spec.action)
         end
+        if wmPin.CreateFontString then
+            wmPin.numLabel = wmPin:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+            wmPin.numLabel:SetPoint("BOTTOMRIGHT", wmPin, "BOTTOMRIGHT", 2, -2)
+            wmPin.numLabel:SetText(tostring(spec.objectiveIndex or i))
+        end
+        attachPinTooltip(wmPin, pin)
 
         local mmPin = _G.CreateFrame("Button", "AzerothRouteMinimapPin" .. i, _G.Minimap or _G.UIParent)
-        mmPin:SetSize(12, 12)
+        mmPin:SetSize(14, 14)
+        if mmPin.SetFrameLevel then mmPin:SetFrameLevel(2500) end
         if mmPin.CreateTexture then
             mmPin.tex = mmPin:CreateTexture(nil, "OVERLAY")
             mmPin.tex:SetAllPoints(mmPin)
-            mmPin.tex:SetTexture("Interface\\Minimap\\ObjectIcons")
+            applyActionPinTexture(mmPin.tex, spec.action)
             if mmPin.tex.SetVertexColor then
                 mmPin.tex:SetVertexColor(colorEntry.r, colorEntry.g, colorEntry.b, 1.0)
             end
         end
+        attachPinTooltip(mmPin, pin)
 
         self:PositionPinFrames(pin, wmPin, mmPin)
-        wmPin:Show()
+        if not viewedMapID or not pin.map or viewedMapID == pin.map then
+            wmPin:Show()
+        else
+            wmPin:Hide()
+        end
         mmPin:Show()
 
         table.insert(self.worldMapPinFrames, wmPin)
@@ -229,7 +348,7 @@ function Pointer:CheckCorpseArrow()
                     map = pMap,
                     x = cx,
                     y = cy,
-                    title = "Retrieve Your Corpse",
+                    title = (AR.L and AR.L:Get("UI_CORPSE")) or "Retrieve Your Corpse",
                 }
                 return true
             end
@@ -239,9 +358,8 @@ function Pointer:CheckCorpseArrow()
 end
 
 function Pointer:ComputeBearingColor(relAngleRad)
-    -- Normalize angle difference to [0, pi]
     local diff = math.abs(math.atan2(math.sin(relAngleRad or 0), math.cos(relAngleRad or 0)))
-    local t = diff / math.pi -- 0 = dead ahead (green), 0.5 = 90 deg (yellow), 1.0 = behind (red)
+    local t = diff / math.pi
     if t < 0.5 then
         local k = t * 2
         return 0.15 + 0.85 * k, 0.95, 0.25 * (1 - k)
@@ -253,6 +371,16 @@ end
 
 function Pointer:UpdateArrow(elapsed)
     self:CheckCorpseArrow()
+    if _G.WorldMapFrame and _G.WorldMapFrame.IsShown and _G.WorldMapFrame:IsShown() then
+        self:RefreshWorldMapPins()
+    else
+        for i, pin in ipairs(self.minimapPins) do
+            if self.minimapPinFrames[i] then
+                self:PositionPinFrames(pin, nil, self.minimapPinFrames[i])
+            end
+        end
+    end
+
     if not self.activeTarget then
         if self.arrowFrame then self.arrowFrame:Hide() end
         return
