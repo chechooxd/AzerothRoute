@@ -95,7 +95,8 @@ function AR:Initialize()
     self.Events:SubscribeUpdate("progression_tick", 0.1, function()
         if self.Progression and self.Progression.currentStep then
             local advanced = self.Progression:TryToCompleteStep(false)
-            if advanced and self.ViewerFrame then
+            local retarget = self.Progression:ConsumeWaypointVisited()
+            if (advanced or retarget) and self.ViewerFrame then
                 self.ViewerFrame:RefreshVisuals()
             end
         end

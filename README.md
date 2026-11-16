@@ -39,6 +39,14 @@ Without that library the addon falls back to its own pin placement.
 - `>`: next step. Right-click: next unfinished step. Shift-click: 10 steps.
   `<`: previous step. Ctrl-click: first step.
 
+## Waypoint arrow
+
+The arrow shows the target name and, below it, the distance with an ETA (m:ss) based on your
+average speed; the distance turns from red to green as you close in. Within 8 yd (15 yd while
+flying) it switches to a bouncing check, "You are here". When a step waypoint is reached the
+arrow moves to the next one. If the distance cannot be measured (another continent) it shows
+the target map name. "Go to" goals never complete while you are on a flight path.
+
 ## Options & profiles
 
 `/ar config` (also `/ar opciones`, or Shift-click on the minimap button) opens the options
@@ -69,7 +77,7 @@ bearing, and minimap radar offsets never mix coordinate spaces.
 
 ## Verification
 
-Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 99 passed, 0 failed` across 29 test suites). Client verification is pending:
+Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 105 passed, 0 failed` across 30 test suites). Client verification is pending:
 
 - Check the minimap button, its clicks and tooltip; move it, `/reload`, and check that it keeps its position.
 - `/ar config`: change a toggle, `/reload`, check it stuck; create a second profile, switch, check the toggle follows the profile.
@@ -78,6 +86,7 @@ Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 99 passed, 
 - Change a setting, `/reload`, and check that it persists (SavedVariables now rebind on `ADDON_LOADED`).
 - Check step pins on the zone map, continent map, and minimap edge.
 - Walk toward and away from a waypoint; the arrow must point up and green toward it, down and red away.
+- Walk to a waypoint: check icon within 8 yd, ETA while moving, then the arrow jumps to the next waypoint.
 - Talk to a flight master whose path the guide asks for; the flight map opens and the step advances.
 - With the hearthstone already set where the guide asks, the "set hearthstone" goal is complete.
 - Click an enemy target button twice; the skull stays. If a "blocked action" popup appears, the chat names the function.

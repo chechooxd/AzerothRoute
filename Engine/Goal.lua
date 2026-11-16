@@ -141,7 +141,8 @@ function Goal:EvaluateLiveCompletion()
         if self.visited then
             return true, true, false
         end
-        if AR.Coords and self.map and self.x and self.y then
+        local onTaxi = _G.UnitOnTaxi and _G.UnitOnTaxi("player")
+        if not onTaxi and AR.Coords and self.map and self.x and self.y then
             local dist = AR.Coords:GetDistanceTo(self.map, self.x, self.y)
             if dist and dist <= (self.dist or 8) then
                 self.visited = true

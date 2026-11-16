@@ -45,8 +45,10 @@ function Pointer:Reset()
     self.activeTarget = nil
     self.arrowBearing = 0
     self.arrowFrame = nil
+    self.arrowState = nil
     self.worldMapHooked = false
     self.speedSamples = {}
+    self.speedSampleTimer = 0
 end
 
 function Pointer:GetWorldMapCanvas()
@@ -413,12 +415,16 @@ function Pointer:PlaceStepPins(pinSpecs)
 
     if #self.worldMapPins > 0 then
         local first = self.worldMapPins[1]
+        local previous = self.activeTarget
+        local sameTarget = previous and previous.map == first.map and previous.x == first.x and previous.y == first.y
         self.activeTarget = {
             type = "waypoint",
             map = first.map,
             x = first.x,
             y = first.y,
             title = first.title,
+            -- Keep the starting distance across refreshes so the distance color keeps its scale.
+            initialDist = sameTarget and previous.initialDist or nil,
         }
     end
 end
@@ -497,26 +503,126 @@ function Pointer:UpdateArrow(elapsed)
     -- GetBearingTo is clockwise from north; GetPlayerFacing and SetRotation are counter-clockwise.
     self.arrowBearing = -(angle or 0) - facing
 
-    if self.arrowFrame then
-        self.arrowFrame:Show()
-        if self.arrowFrame.icon then
-            if self.arrowFrame.icon.SetRotation then
-                self.arrowFrame.icon:SetRotation(self.arrowBearing)
-            end
-            if self.arrowFrame.icon.SetVertexColor then
-                local r, g, b = self:ComputeBearingColor(self.arrowBearing)
-                self.arrowFrame.icon:SetVertexColor(r, g, b, 1.0)
-            end
-        end
-        if self.arrowFrame.label then
-            local dist = AR.Coords:GetDistanceTo(self.activeTarget.map, self.activeTarget.x, self.activeTarget.y)
-            if dist then
-                self.arrowFrame.label:SetText(string.format("%s (%d yd)", self.activeTarget.title or "Waypoint", math.floor(dist + 0.5)))
-            else
-                self.arrowFrame.label:SetText(self.activeTarget.title or "Waypoint")
-            end
+    local af = self.arrowFrame
+    if not af then return end
+    af:Show()
+    self:SampleSpeed(elapsed or 0)
+
+    local target = self.activeTarget
+    local dist = AR.Coords:GetDistanceTo(target.map, target.x, target.y)
+    if dist and not target.initialDist then target.initialDist = dist end
+    local onTaxi = _G.UnitOnTaxi and _G.UnitOnTaxi("player")
+    local arrived = dist and not onTaxi and dist <= self:GetArrivalRadius()
+
+    if af.label then af.label:SetText(target.title or "Waypoint") end
+    if af.icon then
+        if arrived then
+            self:ShowArrived(elapsed or 0)
+        else
+            self:ShowPointing()
         end
     end
+    if af.sublabel then
+        af.sublabel:SetText(self:FormatSubLabel(dist, arrived))
+        if dist and not arrived and af.sublabel.SetTextColor then
+            af.sublabel:SetTextColor(self:ComputeDistanceColor(dist, target.initialDist))
+        elseif af.sublabel.SetTextColor then
+            af.sublabel:SetTextColor(1, 1, 1)
+        end
+    end
+end
+
+Pointer.ARRIVED_TEXTURE = "Interface\\RAIDFRAME\\ReadyCheck-Ready"
+Pointer.ARRIVAL_RADIUS_GROUND = 8
+Pointer.ARRIVAL_RADIUS_FLYING = 15
+Pointer.SPEED_SAMPLE_INTERVAL = 0.2
+Pointer.SPEED_SAMPLES_MAX = 30
+Pointer.ETA_MAX_SECONDS = 7200
+
+-- Zygor uses 8 yd on the ground and 15 yd while flying for the "you are here" state.
+function Pointer:GetArrivalRadius()
+    if _G.IsFlying and _G.IsFlying() then return self.ARRIVAL_RADIUS_FLYING end
+    return self.ARRIVAL_RADIUS_GROUND
+end
+
+function Pointer:ShowPointing()
+    local icon = self.arrowFrame.icon
+    if self.arrowState ~= "pointing" then
+        icon:SetTexture(self.ARROW_TEXTURE)
+        if icon.ClearAllPoints then icon:ClearAllPoints() end
+        icon:SetPoint("CENTER", self.arrowFrame, "CENTER", 0, 0)
+        self.arrowState = "pointing"
+    end
+    if icon.SetRotation then icon:SetRotation(self.arrowBearing) end
+    if icon.SetVertexColor then
+        local r, g, b = self:ComputeBearingColor(self.arrowBearing)
+        icon:SetVertexColor(r, g, b, 1.0)
+    end
+end
+
+-- Arrived: an unrotated check icon that bounces gently, like Zygor's "here" state.
+function Pointer:ShowArrived(elapsed)
+    local icon = self.arrowFrame.icon
+    if self.arrowState ~= "arrived" then
+        icon:SetTexture(self.ARRIVED_TEXTURE)
+        self.arrowState = "arrived"
+        self.bounceTime = 0
+    end
+    if icon.SetRotation then icon:SetRotation(0) end
+    if icon.SetVertexColor then icon:SetVertexColor(1, 1, 1, 1) end
+    self.bounceTime = (self.bounceTime or 0) + elapsed
+    local offset = math.abs(math.sin(self.bounceTime * math.pi / 0.6)) * 6
+    if icon.ClearAllPoints then icon:ClearAllPoints() end
+    icon:SetPoint("CENTER", self.arrowFrame, "CENTER", 0, offset)
+end
+
+-- Rolling average of the player's movement speed, sampled every 0.2 s (up to 30 samples).
+function Pointer:SampleSpeed(elapsed)
+    self.speedSampleTimer = (self.speedSampleTimer or 0) + (elapsed or 0)
+    if self.speedSampleTimer < self.SPEED_SAMPLE_INTERVAL then return end
+    self.speedSampleTimer = 0
+    local speed = (_G.GetUnitSpeed and _G.GetUnitSpeed("player")) or 0
+    table.insert(self.speedSamples, speed)
+    if #self.speedSamples > self.SPEED_SAMPLES_MAX then table.remove(self.speedSamples, 1) end
+end
+
+function Pointer:GetETA(dist)
+    if not dist or #self.speedSamples == 0 then return nil end
+    local sum = 0
+    for _, s in ipairs(self.speedSamples) do sum = sum + s end
+    local avg = sum / #self.speedSamples
+    if avg <= 0.1 then return nil end
+    local eta = dist / avg
+    if eta >= self.ETA_MAX_SECONDS then return nil end
+    return eta
+end
+
+function Pointer:FormatSubLabel(dist, arrived)
+    local L = AR.L
+    if arrived then
+        return (L and L:Get("UI_ARRIVED")) or "Arrived"
+    end
+    if not dist then
+        local info = self.activeTarget.map and _G.C_Map and _G.C_Map.GetMapInfo and _G.C_Map.GetMapInfo(self.activeTarget.map)
+        return (info and info.name) or ""
+    end
+    local text = string.format("%d yd", math.floor(dist + 0.5))
+    local eta = self:GetETA(dist)
+    if eta then
+        local secs = math.floor(eta + 0.5)
+        text = text .. string.format(" · %d:%02d", math.floor(secs / 60), secs % 60)
+    end
+    return text
+end
+
+-- Distance text color: red far away, yellow midway, green close (relative to the starting distance).
+function Pointer:ComputeDistanceColor(dist, initialDist)
+    local span = math.max(100, math.min(initialDist or dist or 100, 500))
+    local k = math.max(0, math.min(1, 1 - (dist or span) / span))
+    if k < 0.5 then
+        return 1.0, 0.25 + 1.5 * k * 0.95, 0.2
+    end
+    return 1.0 - (k - 0.5) * 2 * 0.7, 0.95, 0.2 + (k - 0.5) * 0.4
 end
 
 return Pointer

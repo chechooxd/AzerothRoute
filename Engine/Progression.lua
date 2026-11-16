@@ -99,6 +99,13 @@ function Progression:SkipStep(isAuto)
     return self:OnGuideEnd()
 end
 
+-- True once after a waypoint of the current step was reached, so the viewer can retarget the arrow.
+function Progression:ConsumeWaypointVisited()
+    local visited = self.waypointVisited == true
+    self.waypointVisited = false
+    return visited
+end
+
 -- Resume the guide and step saved for this character (Zygor restores the active tab on login).
 function Progression:RestoreSaved()
     local char = AR.db and AR.db.char
@@ -208,7 +215,9 @@ end
 function Progression:TryToCompleteStep(force)
     if not self.currentGuide or not self.currentStep then return false end
     if self.guideComplete then return false end
-    self.currentStep:CheckVisitedGotos()
+    if self.currentStep:CheckVisitedGotos() then
+        self.waypointVisited = true
+    end
 
     if self.pause then
         return false

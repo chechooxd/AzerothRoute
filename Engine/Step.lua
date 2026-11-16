@@ -34,6 +34,8 @@ end
 
 function Step:CheckVisitedGotos()
     if not self.goals then return false end
+    -- Flying over a waypoint on a taxi never counts as visiting it (Zygor rule).
+    if _G.UnitOnTaxi and _G.UnitOnTaxi("player") then return false end
     local changed = false
     for _, g in ipairs(self.goals) do
         if g.action == "goto" and not g.visited and g:IsVisible() then
