@@ -154,6 +154,7 @@ function T:RunAll()
         "Tests/test_arrow_ux.lua",
         "Tests/test_viewer_ux.lua",
         "Tests/test_racial_flightpaths.lua",
+        "Tests/test_live_ux_gaps.lua",
     }
     for _, suitePath in ipairs(specSuites) do
         dofile(suitePath)

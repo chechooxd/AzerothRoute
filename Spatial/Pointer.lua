@@ -408,6 +408,9 @@ function Pointer:PlaceStepPins(pinSpecs)
             -- Keep the starting distance across refreshes so the distance color keeps its scale.
             initialDist = sameTarget and previous.initialDist or nil,
         }
+    elseif self.activeTarget and self.activeTarget.type == "waypoint" then
+        self.activeTarget = nil
+        if self.arrowFrame then self.arrowFrame:Hide() end
     end
 end
 

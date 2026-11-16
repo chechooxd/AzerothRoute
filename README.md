@@ -106,3 +106,13 @@ Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 111 passed,
 
 The mock suite cannot establish live-client protected-action compatibility,
 minimap positioning, talent texture availability, or leveling-route completeness.
+
+## Viewer interactions
+
+Right-click a Go to objective to mark arrival manually; right-click again to undo
+while the step is displayed. Quest records are never changed. Left-click selects
+the waypoint and switches the open world map to its zone. Empty steps clear stale
+waypoint pins and arrows. Drag the viewer to save its position in the profile.
+
+Target marking on Forever remains unverified in the live client. No forbidden-action
+warnings are hidden. Rendered route overlays and complete Zygor parity are not claimed.

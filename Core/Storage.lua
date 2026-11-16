@@ -97,6 +97,7 @@ function Storage:OnProfileChanged()
         AR.db.profile = self.aceDB.profile
     end
     if AR.ViewerFrame and AR.ViewerFrame.RefreshVisuals and AR.ViewerFrame.frame then
+        if AR.ViewerFrame.RestorePosition then AR.ViewerFrame:RestorePosition() end
         AR.ViewerFrame:RefreshVisuals()
     end
     if AR.Events and AR.Events.SendMessage then

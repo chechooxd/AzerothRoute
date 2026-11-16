@@ -182,10 +182,20 @@ function Goal:GetProgress()
     return nil, nil
 end
 
+
+-- Manual arrival changes session-local guide state, never the client's quest records.
+function Goal:ToggleManualArrival()
+    if self.action ~= "goto" then return false end
+    self.manualArrival = not self.manualArrival
+    self.visited = self.manualArrival
+    return true
+end
+
 function Goal:GetStatus()
     if not self:IsVisible() then
         return "hidden"
     end
+    if self.action == "goto" and self.manualArrival then return "complete" end
     if not self:IsCompleteable() then
         return "passive"
     end

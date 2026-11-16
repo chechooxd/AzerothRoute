@@ -74,6 +74,24 @@ local function createStyledToolbarButton(parent, name, labelText, width, height)
     return btn
 end
 
+
+-- Only scalar UIParent anchors are persisted; never serialize frame references.
+function ViewerFrame:RestorePosition()
+    if not self.frame then return end
+    local valid = { CENTER=true, TOP=true, BOTTOM=true, LEFT=true, RIGHT=true,
+        TOPLEFT=true, TOPRIGHT=true, BOTTOMLEFT=true, BOTTOMRIGHT=true }
+    local saved = AR.db and AR.db.profile and AR.db.profile.viewer_pos
+    self.frame:ClearAllPoints()
+    if type(saved) == "table" and valid[saved.point] and valid[saved.relPoint]
+        and type(saved.x) == "number" and type(saved.y) == "number"
+        and math.abs(saved.x) < math.huge and math.abs(saved.y) < math.huge then
+        self.frame:SetPoint(saved.point, _G.UIParent, saved.relPoint, saved.x, saved.y)
+    else
+        self.frame:SetPoint("RIGHT", _G.UIParent, "RIGHT", -50, 80)
+    end
+    if self.frame.SetClampedToScreen then self.frame:SetClampedToScreen(true) end
+end
+
 function ViewerFrame:Initialize()
     self.progressMode = "steps"
     self.lastGoalSnapshots = {}
@@ -81,7 +99,8 @@ function ViewerFrame:Initialize()
 
     local f = AR.UI:Create("Frame", _G.UIParent, "AzerothRouteViewerFrame")
     f:SetSize(self.WIDTH, self.HEIGHT)
-    f:SetPoint("RIGHT", _G.UIParent, "RIGHT", -50, 80)
+    self.frame = f
+    self:RestorePosition()
     if f.SetMovable then f:SetMovable(true) end
     if f.EnableMouse then f:EnableMouse(true) end
     if f.RegisterForDrag then f:RegisterForDrag("LeftButton") end
@@ -90,6 +109,7 @@ function ViewerFrame:Initialize()
     end)
     f:SetScript("OnDragStop", function(frame)
         if frame.StopMovingOrSizing then frame:StopMovingOrSizing() end
+        AR.ActionBar:SaveBarPosition("viewer_pos", frame)
     end)
 
     local bgProp = AR.Skins:GetProp("bg") or { r = 0.08, g = 0.09, b = 0.12, a = 0.94 }
@@ -182,9 +202,19 @@ function ViewerFrame:Initialize()
             row.label:SetPoint("LEFT", row, "LEFT", 22, 0)
             row.label:SetJustifyH("LEFT")
         end
-        row:SetScript("OnClick", function(r)
+        if row.RegisterForClicks then row:RegisterForClicks("LeftButtonUp", "RightButtonUp") end
+        row:SetScript("OnClick", function(r, button)
             if not r._goal then return end
+            if r._isPreview and button == "RightButton" then return end
+            if button == "RightButton" and r._goal:ToggleManualArrival() then
+                if AR.Progression then AR.Progression:TryToCompleteStep(true) end
+                self:RefreshVisuals()
+                return
+            end
             if r._goal.map and r._goal.x and r._goal.y and AR.Pointer then
+                if _G.WorldMapFrame and _G.WorldMapFrame:IsShown() and _G.WorldMapFrame.SetMapID then
+                    _G.WorldMapFrame:SetMapID(r._goal.map)
+                end
                 AR.Pointer:PlaceStepPins({
                     { map = r._goal.map, x = r._goal.x, y = r._goal.y, title = r.label and r.label:GetText() or "Waypoint", objectiveIndex = i, action = r._goal.action },
                 })
@@ -399,7 +429,7 @@ function ViewerFrame:RenderCurrentStep()
         end
     end
 
-    if AR.Pointer and #pinsToPlace > 0 then
+    if AR.Pointer then
         AR.Pointer:PlaceStepPins(pinsToPlace)
     end
 
@@ -451,6 +481,7 @@ local ROW_TOP, ROW_STEP, FOOTER = 32, 21, 22
 
 local function paintRow(row, line, bgAlpha, textAlpha)
     row._goal = line.goal
+    row._isPreview = line.isPreview == true
     if row.label then
         row.label:SetText(line.text)
         if row.label.SetTextColor then row.label:SetTextColor(1, 1, 1, textAlpha) end
