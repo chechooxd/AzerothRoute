@@ -41,7 +41,7 @@ T:Describe("Resume: visible localized secure targets", function()
         T:AssertEqual(button._clickButtons[1], "AnyUp")
         T:AssertEqual(button._clickButtons[2], "AnyDown")
         T:AssertEqual(button:GetAttribute("macrotext1"), "/cleartarget\n/targetexact Hermano Malach\n/tm 1")
-        T:AssertEqual(AR.ActionBar.buttons[2]:GetAttribute("macrotext1"), "/cleartarget\n/targetexact Zombi descerebrado\n/cleartarget [dead]\n/tm 8")
+        T:AssertEqual(AR.ActionBar.buttons[2]:GetAttribute("macrotext1"), "/cleartarget\n/targetexact Zombi descerebrado\n/cleartarget [dead]\n/tm !8")
         T:AssertTrue(button.label:GetText():find("Hermano Malach", 1, true))
         T:AssertEqual(AR.ActionBar:Initialize()[1], button, "Reentry must not recreate globally named protected frames")
         local count = #AR.Events.eventHandlers.PLAYER_REGEN_ENABLED

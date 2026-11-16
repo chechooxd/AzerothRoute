@@ -206,11 +206,68 @@ function TaxiTracker:OnTaxiMapOpened()
     end
 end
 
+-- GetBindLocation returns the localized hearth zone, so it is matched through the node alias table.
+function TaxiTracker:IsHearthBoundAt(placeName)
+    if not placeName or not _G.GetBindLocation then return false end
+    local bound = _G.GetBindLocation()
+    if type(bound) ~= "string" or bound == "" then return false end
+    return nodeNameMatches(bound, placeName)
+end
+
+-- Pending fpath goals of the current step (the flight master the guide is asking for).
+function TaxiTracker:GetPendingFlightGoals()
+    local pending = {}
+    local step = AR.Progression and AR.Progression.currentStep
+    for _, g in ipairs((step and step.goals) or {}) do
+        if g.action == "fpath" and g:IsVisible() and not self:KnowsTaxi(g.param) and not g.visited then
+            table.insert(pending, g)
+        end
+    end
+    return pending
+end
+
+-- The client announces a new flight path with ERR_NEWTAXIPATH (as RXPGuides relies on); learn the
+-- node the step asks for even if the taxi map is never opened.
+TaxiTracker.DISCOVERY_RADIUS_YARDS = 150
+
+-- A discovery only counts for the step when the player stands near one of the step's waypoints,
+-- so discovering an unrelated flight master never completes the guide's fpath goal.
+function TaxiTracker:IsNearStepWaypoint()
+    local step = AR.Progression and AR.Progression.currentStep
+    local hasWaypoint = false
+    for _, g in ipairs((step and step.goals) or {}) do
+        if g.action == "goto" and g.map and g.x and g.y and AR.Coords then
+            hasWaypoint = true
+            local dist = AR.Coords:GetDistanceTo(g.map, g.x, g.y)
+            if dist and dist <= self.DISCOVERY_RADIUS_YARDS then return true end
+        end
+    end
+    return not hasWaypoint
+end
+
+function TaxiTracker:OnUIInfoMessage(_, message)
+    if not message or message ~= _G.ERR_NEWTAXIPATH then return false end
+    if not self:IsNearStepWaypoint() then return false end
+    local learned = false
+    for _, g in ipairs(self:GetPendingFlightGoals()) do
+        self:LearnTaxi(g.param)
+        g.visited = true
+        learned = true
+    end
+    if learned and AR.Progression and AR.Progression:TryToCompleteStep(false) and AR.ViewerFrame then
+        AR.ViewerFrame:RefreshVisuals()
+    end
+    return learned
+end
+
 function TaxiTracker:RegisterLiveEvents()
     if self._liveRegistered or not AR.Events then return end
     self._liveRegistered = true
     AR.Events:RegisterEvent("TAXIMAP_OPENED", function()
         self:OnTaxiMapOpened()
+    end)
+    AR.Events:RegisterEvent("UI_INFO_MESSAGE", function(_, messageType, message)
+        self:OnUIInfoMessage(messageType, message)
     end)
 end
 

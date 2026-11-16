@@ -157,7 +157,10 @@ function Goal:EvaluateLiveCompletion()
     elseif self.action == "fly" then
         local onTaxi = (_G.UnitOnTaxi and _G.UnitOnTaxi("player")) == true
         return (self.visited == true or self.confirmed == true or onTaxi), true, false
-    elseif self.action == "vendor" or self.action == "trainer" or self.action == "home" or self.action == "hearth" or self.action == "click" or self.action == "use" then
+    elseif self.action == "home" then
+        local bound = AR.TaxiTracker and AR.TaxiTracker.IsHearthBoundAt and AR.TaxiTracker:IsHearthBoundAt(self.param)
+        return (bound or self.visited == true or self.confirmed == true), true, false
+    elseif self.action == "vendor" or self.action == "trainer" or self.action == "hearth" or self.action == "click" or self.action == "use" then
         return (self.visited == true or self.confirmed == true), true, false
     end
 

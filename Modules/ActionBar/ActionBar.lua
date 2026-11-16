@@ -65,18 +65,26 @@ local function resolveSpellIcon(spellID, spellName)
     return ActionBar.ICON_FALLBACK
 end
 
-function ActionBar:CanUseAutoRaidMark()
-    -- WoW Forever (16001) and Midnight+ (>= 120000) block addon calls to SetRaidTarget().
-    -- On those clients, raid markers must only run from secure button macrotext (/tm).
+local function getToc()
+    if not _G.GetBuildInfo then return 0 end
+    local _, _, _, toc = _G.GetBuildInfo()
+    return tonumber(toc) or 0
+end
+
+-- WoW Forever reports any 16xxx-19xxx interface (RXPGuides treats the whole range as Forever).
+function ActionBar:IsForeverClient()
     if _G.WOW_PROJECT_CAMELOT and _G.WOW_PROJECT_ID == _G.WOW_PROJECT_CAMELOT then
-        return false
+        return true
     end
-    if _G.GetBuildInfo then
-        local _, _, _, toc = _G.GetBuildInfo()
-        toc = tonumber(toc) or 0
-        if toc == 16001 or toc >= 120000 then
-            return false
-        end
+    local toc = getToc()
+    return toc >= 16000 and toc < 20000
+end
+
+function ActionBar:CanUseAutoRaidMark()
+    -- WoW Forever and Midnight+ (>= 120000) block addon calls to SetRaidTarget().
+    -- On those clients, raid markers must only run from secure button macrotext (/tm).
+    if self:IsForeverClient() or getToc() >= 120000 then
+        return false
     end
     return true
 end
@@ -268,8 +276,10 @@ function ActionBar:BuildMacroForGoal(goal)
         if not name then return nil end
         local enemy = goal.action == "kill" or goal.action == "from"
         -- Clear the previous target before searching: a failed lookup must not mark it.
+        -- On Forever "/tm !8" sets the skull without toggling it off on a second click (as RXPGuides does).
+        local enemyMark = self:IsForeverClient() and "/tm !8" or "/tm 8"
         return "/cleartarget\n/targetexact " .. name
-            .. (enemy and "\n/cleartarget [dead]\n/tm 8" or "\n/tm 1")
+            .. (enemy and ("\n/cleartarget [dead]\n" .. enemyMark) or "\n/tm 1")
     end
     return nil
 end
@@ -444,12 +454,35 @@ function ActionBar:UpdateFromCurrentStep()
 
     applyButtonPool(self.barFrame, self.buttons, targets, self)
     applyButtonPool(self.itemBarFrame, self.itemButtons, itemEntries, self)
+    if AR.TargetMacro then
+        AR.TargetMacro:Update()
+    end
     return true
+end
+
+-- Localized, macro-safe NPC/enemy names of the current step and its stickies, without duplicates.
+function ActionBar:GetStepTargets()
+    local out, seen = {}, {}
+    local step = AR.Progression and AR.Progression.currentStep
+    for _, g in ipairs(collectStepGoals(step)) do
+        local status = g:GetStatus()
+        if targetActions[g.action] and status ~= "complete" and status ~= "hidden" and status ~= "obsolete" then
+            local name = self:GetTargetName(g)
+            if name and not seen[name] then
+                seen[name] = true
+                table.insert(out, { name = name, enemy = g.action == "kill" or g.action == "from" })
+            end
+        end
+    end
+    return out
 end
 
 function ActionBar:OnCombatEnd()
     if self.pendingCombatUpdate then
         self:UpdateFromCurrentStep()
+    end
+    if AR.TargetMacro then
+        AR.TargetMacro:OnCombatEnd()
     end
 end
 

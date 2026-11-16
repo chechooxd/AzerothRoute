@@ -63,6 +63,13 @@ L.STRINGS = {
         UI_TALENT_COMPLETED = "Build complete (60)",
         UI_WAIT_LEVEL_FMT = "Waiting for Level %d (Current: %d)",
         UI_INCOMPLETE_TURNIN = "Quest objectives are not yet complete for turn-in.",
+        UI_MINIMAP_STEP_FMT = "Step %d",
+        UI_MINIMAP_LEFT = "Left-click: show/hide guide",
+        UI_MINIMAP_RIGHT = "Right-click: guide menu",
+        UI_MINIMAP_MIDDLE = "Middle-click: talent advisor",
+        UI_ACTION_BLOCKED_FMT = "Blocked protected action (%s): %s. Please report it.",
+        UI_TARGET_MACRO_EMPTY = "No targets in the current step",
+        UI_TARGET_MACRO_CREATED = "Macro %s created: drag it to your action bar and bind a key (/ar macro opens the macro window).",
     },
     es = {
         -- Goal Verbs & Actions
@@ -121,6 +128,13 @@ L.STRINGS = {
         UI_TALENT_COMPLETED = "Build completa (60)",
         UI_WAIT_LEVEL_FMT = "Esperando nivel %d (Actual: %d)",
         UI_INCOMPLETE_TURNIN = "Aún faltan objetivos antes de entregar la misión.",
+        UI_MINIMAP_STEP_FMT = "Paso %d",
+        UI_MINIMAP_LEFT = "Clic izquierdo: mostrar/ocultar guía",
+        UI_MINIMAP_RIGHT = "Clic derecho: menú de guías",
+        UI_MINIMAP_MIDDLE = "Clic central: asesor de talentos",
+        UI_ACTION_BLOCKED_FMT = "Acción protegida bloqueada (%s): %s. Por favor, repórtalo.",
+        UI_TARGET_MACRO_EMPTY = "Sin objetivos en el paso actual",
+        UI_TARGET_MACRO_CREATED = "Macro %s creada: arrástrala a tu barra de acción y asígnale una tecla (/ar macro abre la ventana de macros).",
     },
 }
 

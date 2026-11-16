@@ -29,6 +29,7 @@ Storage.Defaults = {
         autoselectreward = true,
         corpsearrow = true,
         foglight = true,
+        minimap = { hide = false },
         actionbar_pos = nil,
         itembar_pos = nil,
     },

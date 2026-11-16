@@ -19,6 +19,25 @@ Vendor goals require the specified merchant, while junk selling still works at
 other merchants. Flight discovery uses nodes actually reported by the taxi map;
 opening an unrelated flightmaster no longer fabricates the requested discovery.
 
+## Minimap button & map pins
+
+A minimap button opens the addon: left-click shows/hides the guide, right-click opens
+the guide menu, middle-click opens the talent advisor. Drag it around the minimap
+edge; `/ar minimap` hides or shows it. Its position is saved per account.
+
+Step waypoints appear on the world map (zone and continent) and on the minimap
+through `HereBeDragons-Pins-2.0`; minimap pins stay on the edge when out of range.
+Without that library the addon falls back to its own pin placement.
+
+## Target macro
+
+Like RXPGuides, the addon keeps an account macro named `ARTargeting` up to date with the
+current step: `/targetexact` for each NPC and enemy (enemies last, so they win), then
+`/tm [harm,nodead] !8` (skull) or `/tm [help,nodead] 1` (star). Drag it to an action bar and
+bind a key; `/ar macro` refreshes it and opens the macro window. It is rewritten only out of
+combat and never created when the 120 account macro slots are full. Set
+`AzerothRouteSavedDB.global.targetmacro = false` to stop managing it.
+
 ## Map coordinates & upstream libraries
 
 `Spatial/Coords.lua` integrates unmodified upstream `LibStub` (minor 2),
@@ -31,8 +50,16 @@ bearing, and minimap radar offsets never mix coordinate spaces.
 
 ## Verification
 
-Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 66 passed, 0 failed` across 23 test suites, including `Tests/test_map_libraries.lua`). Client verification is pending:
+Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 83 passed, 0 failed` across 26 test suites). Client verification is pending:
 
+- Check the minimap button, its clicks and tooltip; move it, `/reload`, and check that it keeps its position.
+- Change a setting, `/reload`, and check that it persists (SavedVariables now rebind on `ADDON_LOADED`).
+- Check step pins on the zone map, continent map, and minimap edge.
+- Walk toward and away from a waypoint; the arrow must point up and green toward it, down and red away.
+- Talk to a flight master whose path the guide asks for; the flight map opens and the step advances.
+- With the hearthstone already set where the guide asks, the "set hearthstone" goal is complete.
+- Click an enemy target button twice; the skull stays. If a "blocked action" popup appears, the chat names the function.
+- Put the `ARTargeting` macro on a bar, press it near a step NPC/enemy: it targets and marks it; in combat it keeps the previous content.
 - Load a guide with NPC/enemy goals and check localized labels, selection and marks.
 - Complete an objective within a step and check that its action disappears.
 - Change steps during combat; check that buttons update only after combat ends.

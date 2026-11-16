@@ -51,6 +51,7 @@ function T:BootstrapAddon()
         "Libs/LibStub/LibStub.lua",
         "Libs/CallbackHandler-1.0/CallbackHandler-1.0.lua",
         "Libs/HereBeDragons/HereBeDragons-2.0.lua",
+        "Libs/LibDataBroker-1.1/LibDataBroker-1.1.lua",
         "Core/Compat.lua",
         "Core/Locale.lua",
         "Core/Storage.lua",
@@ -89,6 +90,7 @@ function T:BootstrapAddon()
         "Modules/Gold/GoldGuide.lua",
         "Modules/Gold/Appraiser.lua",
         "Modules/ActionBar/ActionBar.lua",
+        "Modules/ActionBar/TargetMacro.lua",
         "Modules/ActionBar/MagicKey.lua",
         "Modules/ActionBar/Faction.lua",
         "Modules/ActionBar/CreatureDetector.lua",
@@ -101,6 +103,7 @@ function T:BootstrapAddon()
         "UI/Menu/DashboardWidgets.lua",
         "UI/Menu/Options.lua",
         "UI/Menu/GuideMenu.lua",
+        "UI/MinimapButton.lua",
         "Data/Catalog.lua",
         "Guides/Autoload.lua",
     }
@@ -135,6 +138,9 @@ function T:RunAll()
         "Tests/test_targeting_resume.lua",
         "Tests/test_interaction_identity.lua",
         "Tests/test_map_libraries.lua",
+        "Tests/test_map_pins_minimap_button.lua",
+        "Tests/test_ingame_arrow_progress_target.lua",
+        "Tests/test_target_macro.lua",
     }
     for _, suitePath in ipairs(specSuites) do
         dofile(suitePath)

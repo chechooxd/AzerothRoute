@@ -28,6 +28,7 @@ local Pointer = {
 AR.Pointer = Pointer
 
 function Pointer:Reset()
+    self:ClearLibraryPins()
     for _, f in ipairs(self.worldMapPinFrames or {}) do
         if f.Hide then f:Hide() end
     end
@@ -38,6 +39,8 @@ function Pointer:Reset()
     self.minimapPins = {}
     self.worldMapPinFrames = {}
     self.minimapPinFrames = {}
+    self.worldMapPinPool = {}
+    self.minimapPinPool = {}
     self.antPoints = {}
     self.activeTarget = nil
     self.arrowBearing = 0
@@ -241,7 +244,7 @@ function Pointer:RefreshWorldMapPins()
     for i, pin in ipairs(self.worldMapPins) do
         local wmPin = self.worldMapPinFrames[i]
         local mmPin = self.minimapPinFrames[i]
-        if wmPin then
+        if wmPin and not pin.managed then
             self:PositionPinFrames(pin, wmPin, mmPin)
             if not viewedMapID or not pin.map or viewedMapID == pin.map then
                 wmPin:Show()
@@ -270,8 +273,82 @@ local function attachPinTooltip(pinFrame, pinData)
     end)
 end
 
+-- HereBeDragons-Pins owns placement, map filtering, minimap zoom/rotation and edge floating when loaded.
+function Pointer:GetPinsLib()
+    return _G.LibStub and _G.LibStub("HereBeDragons-Pins-2.0", true) or nil
+end
+
+function Pointer:ClearLibraryPins()
+    local lib = self:GetPinsLib()
+    if lib then
+        lib:RemoveAllWorldMapIcons(self)
+        lib:RemoveAllMinimapIcons(self)
+    end
+end
+
+-- Pin frames are pooled per index so repeated step changes never leak frames or duplicate global names.
+function Pointer:AcquireWorldMapPin(i)
+    self.worldMapPinPool = self.worldMapPinPool or {}
+    local wmPin = self.worldMapPinPool[i]
+    if wmPin then return wmPin end
+    wmPin = _G.CreateFrame("Button", "AzerothRouteWorldMapPin" .. i, self:GetWorldMapCanvas())
+    wmPin:SetSize(22, 22)
+    if wmPin.CreateTexture then
+        wmPin.ring = wmPin:CreateTexture(nil, "BACKGROUND")
+        wmPin.ring:SetAllPoints(wmPin)
+        wmPin.ring:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
+        wmPin.tex = wmPin:CreateTexture(nil, "ARTWORK")
+        wmPin.tex:SetSize(16, 16)
+        wmPin.tex:SetPoint("CENTER", wmPin, "CENTER", 0, 0)
+    end
+    if wmPin.CreateFontString then
+        wmPin.numLabel = wmPin:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        wmPin.numLabel:SetPoint("BOTTOMRIGHT", wmPin, "BOTTOMRIGHT", 2, -2)
+    end
+    self.worldMapPinPool[i] = wmPin
+    return wmPin
+end
+
+function Pointer:AcquireMinimapPin(i)
+    self.minimapPinPool = self.minimapPinPool or {}
+    local mmPin = self.minimapPinPool[i]
+    if mmPin then return mmPin end
+    mmPin = _G.CreateFrame("Button", "AzerothRouteMinimapPin" .. i, _G.Minimap or _G.UIParent)
+    mmPin:SetSize(14, 14)
+    if mmPin.SetFrameLevel then mmPin:SetFrameLevel(2500) end
+    if mmPin.CreateTexture then
+        mmPin.tex = mmPin:CreateTexture(nil, "OVERLAY")
+        mmPin.tex:SetAllPoints(mmPin)
+    end
+    self.minimapPinPool[i] = mmPin
+    return mmPin
+end
+
+-- Returns true when HereBeDragons-Pins accepted both icons; otherwise nothing stays registered for this pin.
+function Pointer:RegisterLibraryPin(pin, wmPin, mmPin)
+    local lib = self:GetPinsLib()
+    if not lib or type(pin.x) ~= "number" or type(pin.y) ~= "number" then return false end
+    local mapID = pin.map
+    if not mapID and AR.Coords and AR.Coords.GetPlayerPosition then
+        mapID = AR.Coords:GetPlayerPosition()
+    end
+    if type(mapID) ~= "number" then return false end
+
+    local showFlag = _G.HBD_PINS_WORLDMAP_SHOW_CONTINENT or 2
+    local wmOk = lib:AddWorldMapIconMap(self, wmPin, mapID, pin.x, pin.y, showFlag)
+    local mmOk = lib:AddMinimapIconMap(self, mmPin, mapID, pin.x, pin.y, true, true)
+    if wmOk and mmOk then
+        pin.map = mapID
+        return true
+    end
+    if lib.RemoveWorldMapIcon then lib:RemoveWorldMapIcon(self, wmPin) end
+    if lib.RemoveMinimapIcon then lib:RemoveMinimapIcon(self, mmPin) end
+    return false
+end
+
 function Pointer:PlaceStepPins(pinSpecs)
     self:EnsureWorldMapHook()
+    self:ClearLibraryPins()
     for _, f in ipairs(self.worldMapPinFrames or {}) do
         if f.Hide then f:Hide() end
     end
@@ -285,7 +362,6 @@ function Pointer:PlaceStepPins(pinSpecs)
     self.minimapPinFrames = {}
     if not pinSpecs then return end
 
-    local wmCanvas = self:GetWorldMapCanvas()
     local viewedMapID = (_G.WorldMapFrame and _G.WorldMapFrame.GetMapID and _G.WorldMapFrame:GetMapID()) or nil
 
     for i, spec in ipairs(pinSpecs) do
@@ -305,47 +381,30 @@ function Pointer:PlaceStepPins(pinSpecs)
         table.insert(self.worldMapPins, pin)
         table.insert(self.minimapPins, pin)
 
-        -- High-visibility WorldMap canvas pin frame above all map tiles
-        local wmPin = _G.CreateFrame("Button", "AzerothRouteWorldMapPin" .. i, wmCanvas)
-        wmPin:SetSize(22, 22)
-        if wmPin.SetFrameStrata then wmPin:SetFrameStrata("HIGH") end
-        if wmPin.SetFrameLevel then wmPin:SetFrameLevel(2500) end
-        if wmPin.CreateTexture then
-            wmPin.ring = wmPin:CreateTexture(nil, "BACKGROUND")
-            wmPin.ring:SetAllPoints(wmPin)
-            wmPin.ring:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
-            if wmPin.ring.SetVertexColor then
-                wmPin.ring:SetVertexColor(colorEntry.r, colorEntry.g, colorEntry.b, 0.90)
-            end
-
-            wmPin.tex = wmPin:CreateTexture(nil, "ARTWORK")
-            wmPin.tex:SetSize(16, 16)
-            wmPin.tex:SetPoint("CENTER", wmPin, "CENTER", 0, 0)
-            applyActionPinTexture(wmPin.tex, spec.action)
+        local wmPin = self:AcquireWorldMapPin(i)
+        if wmPin.ring and wmPin.ring.SetVertexColor then
+            wmPin.ring:SetVertexColor(colorEntry.r, colorEntry.g, colorEntry.b, 0.90)
         end
-        if wmPin.CreateFontString then
-            wmPin.numLabel = wmPin:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-            wmPin.numLabel:SetPoint("BOTTOMRIGHT", wmPin, "BOTTOMRIGHT", 2, -2)
-            wmPin.numLabel:SetText(tostring(spec.objectiveIndex or i))
-        end
+        applyActionPinTexture(wmPin.tex, spec.action)
+        if wmPin.numLabel then wmPin.numLabel:SetText(tostring(spec.objectiveIndex or i)) end
         attachPinTooltip(wmPin, pin)
 
-        local mmPin = _G.CreateFrame("Button", "AzerothRouteMinimapPin" .. i, _G.Minimap or _G.UIParent)
-        mmPin:SetSize(14, 14)
-        if mmPin.SetFrameLevel then mmPin:SetFrameLevel(2500) end
-        if mmPin.CreateTexture then
-            mmPin.tex = mmPin:CreateTexture(nil, "OVERLAY")
-            mmPin.tex:SetAllPoints(mmPin)
-            applyActionPinTexture(mmPin.tex, spec.action)
-        end
+        local mmPin = self:AcquireMinimapPin(i)
+        applyActionPinTexture(mmPin.tex, spec.action)
         attachPinTooltip(mmPin, pin)
 
-        mmPin:Show()
-        self:PositionPinFrames(pin, wmPin, mmPin)
-        if not viewedMapID or not pin.map or viewedMapID == pin.map then
-            wmPin:Show()
-        else
-            wmPin:Hide()
+        pin.managed = self:RegisterLibraryPin(pin, wmPin, mmPin)
+        if not pin.managed then
+            -- Native fallback: high-visibility canvas pin above all map tiles plus projected minimap radar pin.
+            if wmPin.SetFrameStrata then wmPin:SetFrameStrata("HIGH") end
+            if wmPin.SetFrameLevel then wmPin:SetFrameLevel(2500) end
+            mmPin:Show()
+            self:PositionPinFrames(pin, wmPin, mmPin)
+            if not viewedMapID or not pin.map or viewedMapID == pin.map then
+                wmPin:Show()
+            else
+                wmPin:Hide()
+            end
         end
 
         table.insert(self.worldMapPinFrames, wmPin)
@@ -420,7 +479,7 @@ function Pointer:UpdateArrow(elapsed)
         self:RefreshWorldMapPins()
     else
         for i, pin in ipairs(self.minimapPins) do
-            if self.minimapPinFrames[i] then
+            if self.minimapPinFrames[i] and not pin.managed then
                 self:PositionPinFrames(pin, nil, self.minimapPinFrames[i])
             end
         end
@@ -435,7 +494,8 @@ function Pointer:UpdateArrow(elapsed)
     end
     local angle = AR.Coords:GetBearingTo(self.activeTarget.map, self.activeTarget.x, self.activeTarget.y)
     local facing = (_G.GetPlayerFacing and _G.GetPlayerFacing()) or 0
-    self.arrowBearing = (angle or 0) - facing
+    -- GetBearingTo is clockwise from north; GetPlayerFacing and SetRotation are counter-clockwise.
+    self.arrowBearing = -(angle or 0) - facing
 
     if self.arrowFrame then
         self.arrowFrame:Show()

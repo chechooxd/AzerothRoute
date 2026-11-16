@@ -508,6 +508,7 @@ _G.GameTooltip = _G.GameTooltip or {
     Hide = function(gt) gt._shown = false end,
     IsShown = function(gt) return gt._shown == true end,
 }
+_G.ERR_NEWTAXIPATH = "New flight path discovered!"
 _G.SlashCmdList = _G.SlashCmdList or {}
 
 function MockWoW:FireEvent(event, ...)

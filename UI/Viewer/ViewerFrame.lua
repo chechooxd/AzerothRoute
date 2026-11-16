@@ -218,6 +218,10 @@ function ViewerFrame:FormatGoalLine(goal, index, isSticky)
     if status == "hidden" then
         return nil
     end
+    -- A reached waypoint reads as done even while it is a passive (non-blocking) goal.
+    if status == "passive" and goal.action == "goto" and goal.visited then
+        status = "complete"
+    end
     local cur, max = goal:GetProgress()
     local frac = 0
     if status == "complete" then
@@ -231,6 +235,8 @@ function ViewerFrame:FormatGoalLine(goal, index, isSticky)
         bgColor = AR.Skins:GetProp("goalImpossible")
     elseif status == "warning" then
         bgColor = AR.Skins:GetProp("goalWarning")
+    elseif status == "passive" then
+        bgColor = AR.Skins:GetProp("goalPassive")
     else
         bgColor = AR.UI:Gradient3(
             frac,

@@ -26,17 +26,50 @@ function AR:RegisterSlashCommands()
                 AR.Progression:PreviousStep()
                 if AR.ViewerFrame then AR.ViewerFrame:RefreshVisuals() end
             end
-        else
-            if AR.ViewerFrame and AR.ViewerFrame.frame then
-                if AR.ViewerFrame.frame:IsShown() then
-                    AR.ViewerFrame.frame:Hide()
-                else
-                    AR.ViewerFrame.frame:Show()
-                    AR.ViewerFrame:RefreshVisuals()
-                end
+        elseif msg == "minimap" then
+            if AR.MinimapButton then AR.MinimapButton:Toggle() end
+        elseif msg == "macro" then
+            if AR.TargetMacro then AR.TargetMacro:Update() end
+            if _G.ShowMacroFrame and not (_G.InCombatLockdown and _G.InCombatLockdown()) then
+                _G.ShowMacroFrame()
             end
+        else
+            AR:ToggleViewer()
         end
     end
+end
+
+function AR:ToggleViewer()
+    if self.ViewerFrame and self.ViewerFrame.frame then
+        if self.ViewerFrame.frame:IsShown() then
+            self.ViewerFrame.frame:Hide()
+        else
+            self.ViewerFrame.frame:Show()
+            self.ViewerFrame:RefreshVisuals()
+        end
+    end
+end
+
+function AR:Print(msg)
+    local text = "|cfff4bf2aAzerothRoute|r: " .. tostring(msg)
+    if _G.DEFAULT_CHAT_FRAME and _G.DEFAULT_CHAT_FRAME.AddMessage then
+        _G.DEFAULT_CHAT_FRAME:AddMessage(text)
+    elseif _G.print then
+        _G.print(text)
+    end
+end
+
+-- The Blizzard popup never names the blocked call; report it in chat (once per function) so
+-- in-game taint reports carry the evidence needed to fix them.
+function AR:OnActionBlocked(event, addonName, funcName)
+    if addonName ~= "AzerothRoute" then return end
+    self.blockedReported = self.blockedReported or {}
+    local key = tostring(funcName)
+    if self.blockedReported[key] then return end
+    self.blockedReported[key] = true
+    local L = self.L
+    local fmt = (L and L:Get("UI_ACTION_BLOCKED_FMT")) or "Blocked protected action (%s): %s"
+    self:Print(string.format(fmt, tostring(event), key))
 end
 
 function AR:Initialize()
@@ -64,6 +97,23 @@ function AR:Initialize()
                 self.ViewerFrame:RefreshVisuals()
             end
         end
+    end)
+
+    -- WoW loads SavedVariables after every addon file has run, replacing the globals the first
+    -- Storage:Initialize() bound to. Rebind here so settings and progress actually persist.
+    self.Events:RegisterEvent("ADDON_LOADED", function(_, addonName)
+        if addonName ~= "AzerothRoute" then return end
+        self.Storage:Initialize()
+        if self.MinimapButton then
+            self.MinimapButton:Initialize()
+        end
+    end)
+
+    self.Events:RegisterEvent("ADDON_ACTION_BLOCKED", function(event, addonName, funcName)
+        self:OnActionBlocked(event, addonName, funcName)
+    end)
+    self.Events:RegisterEvent("ADDON_ACTION_FORBIDDEN", function(event, addonName, funcName)
+        self:OnActionBlocked(event, addonName, funcName)
     end)
 
     -- Wire live client events when entering world

@@ -141,6 +141,23 @@ function QuestAutoAccept:OnGossipShow()
             end
         end
     end
+    return self:SelectTaxiGossipForPendingFlightPath()
+end
+
+QuestAutoAccept.TAXI_GOSSIP_ICON = 132057
+
+-- Opening the flight map at the flight master lets TAXIMAP_OPENED record known nodes, which is the
+-- only way the Classic client exposes them. Mirrors RXPGuides' SelectGossipType("taxi").
+function QuestAutoAccept:SelectTaxiGossipForPendingFlightPath()
+    local gossip = _G.C_GossipInfo
+    if not gossip or not gossip.GetOptions or not gossip.SelectOption then return false end
+    if not AR.TaxiTracker or #AR.TaxiTracker:GetPendingFlightGoals() == 0 then return false end
+    for _, option in ipairs(gossip.GetOptions() or {}) do
+        if option.gossipOptionID and (option.type == "taxi" or option.icon == self.TAXI_GOSSIP_ICON) then
+            gossip.SelectOption(option.gossipOptionID)
+            return true
+        end
+    end
     return false
 end
 
