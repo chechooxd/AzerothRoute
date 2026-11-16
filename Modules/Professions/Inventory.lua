@@ -103,6 +103,19 @@ function Inventory:ExecuteAutoBuy()
     return bought
 end
 
+local function matchesMerchant(goal)
+    if not goal.npcid and (not goal.target or goal.target == "") then return true end
+    local guid = _G.UnitGUID and _G.UnitGUID("npc")
+    if _G.issecretvalue and _G.issecretvalue(guid) then return false end
+    local npcID = type(guid) == "string" and tonumber(guid:match("^Creature%-%d+%-%d+%-%d+%-%d+%-(%d+)%-"))
+    if goal.npcid and npcID then return tonumber(goal.npcid) == npcID end
+    local name = _G.UnitName and _G.UnitName("npc")
+    if _G.issecretvalue and _G.issecretvalue(name) then return false end
+    local expected = AR.Localizers:GetTranslatedNPC(goal.npcid, goal.target)
+    if _G.issecretvalue and _G.issecretvalue(expected) then return false end
+    return type(name) == "string" and name ~= "" and name == expected
+end
+
 function Inventory:OnMerchantShow()
     local sold = self:SellGreyItems()
     self:AutoRepair()
@@ -119,7 +132,7 @@ function Inventory:OnMerchantShow()
 
     if AR.Progression and AR.Progression.currentStep then
         for _, g in ipairs(AR.Progression.currentStep.goals or {}) do
-            if g.action == "vendor" then
+            if g.action == "vendor" and g:IsVisible() and matchesMerchant(g) then
                 g.visited = true
             end
         end

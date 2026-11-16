@@ -48,6 +48,28 @@ T:Describe("SPEC-22: Minimap Green Dot Fix, Live Automations, Talent Icons & Zyg
         T:AssertTrue(tex1 ~= nil and tex1 ~= "Interface\\WorldMap\\UI-QuestPoi-NumberIcons", "Minimap default pin must NOT use missing Retail UI-QuestPoi-NumberIcons texture")
         T:AssertEqual(mmPin1.tex:GetVertexColor(), nil, "Minimap pin must not tint icon into a solid green square")
         T:AssertTrue(mmPin2 ~= nil and not mmPin2:IsShown(), "Cross-continent minimap pin must hide instead of sitting at (0,0) center on player")
+        MockWoW.npc = { name = "Wrong Vendor", guid = "Creature-0-0-0-0-9999-0000000000" }
+        AR.Parser:Reset()
+        local gNegVendor = AR.Parser:ParseGuide("Test\\NegVendor", [[
+            step OnlyRand
+                vendor Blacksmith Rand##2116
+        ]])
+        AR.Progression:LoadGuide(gNegVendor, 1)
+        MockWoW:FireEvent("MERCHANT_SHOW")
+        T:AssertFalse(gNegVendor.steps[1]:IsComplete(), "Unrelated merchant must NOT complete named vendor goal")
+
+        -- Negative fpath check: opening Flight Master with only Brill must NOT complete fpath Undercity
+        local gNegTaxi = AR.Parser:ParseGuide("Test\\NegTaxi", [[
+            step NeedUC
+                fpath Undercity
+        ]])
+        AR.Progression:LoadGuide(gNegTaxi, 1)
+        if AR.db and AR.db.char and AR.db.char.taxis then AR.db.char.taxis["Undercity"] = nil end
+        _G.NumTaxiNodes = function() return 1 end
+        _G.TaxiNodeGetType = function() return "CURRENT" end
+        _G.TaxiNodeName = function() return "Rémol, Claros de Tirisfal" end
+        MockWoW:FireEvent("TAXIMAP_OPENED")
+        T:AssertFalse(gNegTaxi.steps[1]:IsComplete(), "Opening an unrelated Flight Master must NOT falsely mark fpath Undercity complete")
     end)
 
     T:It("executes MERCHANT_SHOW (grey auto-sell/repair/buy), GOSSIP_SHOW, QUEST_GREETING, and TAXIMAP_OPENED automations", function()
@@ -77,6 +99,7 @@ T:Describe("SPEC-22: Minimap Green Dot Fix, Live Automations, Talent Icons & Zyg
         -- 1. MERCHANT_SHOW with nil sellPrice (real WoW 16001 C_Container shape) + Repair + Buy
         local repaired, boughtSlot, boughtQty = false, nil, nil
         MockWoW.merchant.isOpen = true
+        MockWoW.npc = { name = "Blacksmith Rand", guid = "Creature-0-0-0-0-2116-0000000000" }
         MockWoW.player.bagSlots[0] = {
             [1] = { itemID = 7771, quality = 0, hasNoValue = false, hyperlink = "item:7771" },
             [2] = { itemID = 7772, quality = 0, hasNoValue = true, hyperlink = "item:7772" },
@@ -135,6 +158,28 @@ T:Describe("SPEC-22: Minimap Green Dot Fix, Live Automations, Talent Icons & Zyg
         T:AssertTrue(AR.TaxiTracker:KnowsTaxi("Brill"), "TAXIMAP_OPENED must canonicalize and learn Spanish node 'Rémol' as 'Brill'")
         T:AssertTrue(guide.steps[3]:IsComplete(), "TAXIMAP_OPENED must complete fpath Brill goal")
         T:AssertTrue(AR.Pointer == nil or AR.TaxiTracker.highlightFrame:IsShown(), "TaxiTracker highlight frame must light up destination TaxiButton")
+        MockWoW.npc = { name = "Wrong Vendor", guid = "Creature-0-0-0-0-9999-0000000000" }
+        AR.Parser:Reset()
+        local gNegVendor = AR.Parser:ParseGuide("Test\\NegVendor", [[
+            step OnlyRand
+                vendor Blacksmith Rand##2116
+        ]])
+        AR.Progression:LoadGuide(gNegVendor, 1)
+        MockWoW:FireEvent("MERCHANT_SHOW")
+        T:AssertFalse(gNegVendor.steps[1]:IsComplete(), "Unrelated merchant must NOT complete named vendor goal")
+
+        -- Negative fpath check: opening Flight Master with only Brill must NOT complete fpath Undercity
+        local gNegTaxi = AR.Parser:ParseGuide("Test\\NegTaxi", [[
+            step NeedUC
+                fpath Undercity
+        ]])
+        AR.Progression:LoadGuide(gNegTaxi, 1)
+        if AR.db and AR.db.char and AR.db.char.taxis then AR.db.char.taxis["Undercity"] = nil end
+        _G.NumTaxiNodes = function() return 1 end
+        _G.TaxiNodeGetType = function() return "CURRENT" end
+        _G.TaxiNodeName = function() return "Rémol, Claros de Tirisfal" end
+        MockWoW:FireEvent("TAXIMAP_OPENED")
+        T:AssertFalse(gNegTaxi.steps[1]:IsComplete(), "Opening an unrelated Flight Master must NOT falsely mark fpath Undercity complete")
     end)
 
     T:It("renders class crest icons, talent spell icons, and translates 100% of all 27 builds' talents to Spanish", function()
@@ -165,6 +210,28 @@ T:Describe("SPEC-22: Minimap Green Dot Fix, Live Automations, Talent Icons & Zyg
         end
         T:AssertTrue(AR.TalentAdvisor.nextTalentIcon ~= nil and AR.TalentAdvisor.nextTalentIcon:GetTexture() ~= nil, "Next talent banner must render spell icon texture")
         T:AssertTrue(AR.TalentAdvisor.roadmapRows[1].icon ~= nil and AR.TalentAdvisor.roadmapRows[1].icon:GetTexture() ~= nil, "Roadmap rows must render talent icon textures")
+        MockWoW.npc = { name = "Wrong Vendor", guid = "Creature-0-0-0-0-9999-0000000000" }
+        AR.Parser:Reset()
+        local gNegVendor = AR.Parser:ParseGuide("Test\\NegVendor", [[
+            step OnlyRand
+                vendor Blacksmith Rand##2116
+        ]])
+        AR.Progression:LoadGuide(gNegVendor, 1)
+        MockWoW:FireEvent("MERCHANT_SHOW")
+        T:AssertFalse(gNegVendor.steps[1]:IsComplete(), "Unrelated merchant must NOT complete named vendor goal")
+
+        -- Negative fpath check: opening Flight Master with only Brill must NOT complete fpath Undercity
+        local gNegTaxi = AR.Parser:ParseGuide("Test\\NegTaxi", [[
+            step NeedUC
+                fpath Undercity
+        ]])
+        AR.Progression:LoadGuide(gNegTaxi, 1)
+        if AR.db and AR.db.char and AR.db.char.taxis then AR.db.char.taxis["Undercity"] = nil end
+        _G.NumTaxiNodes = function() return 1 end
+        _G.TaxiNodeGetType = function() return "CURRENT" end
+        _G.TaxiNodeName = function() return "Rémol, Claros de Tirisfal" end
+        MockWoW:FireEvent("TAXIMAP_OPENED")
+        T:AssertFalse(gNegTaxi.steps[1]:IsComplete(), "Opening an unrelated Flight Master must NOT falsely mark fpath Undercity complete")
     end)
 
     T:It("loads full Zygor-depth (18+ steps) starter/core leveling guides with non-blocking passive talk goals", function()
@@ -197,5 +264,27 @@ T:Describe("SPEC-22: Minimap Green Dot Fix, Live Automations, Talent Icons & Zyg
         T:AssertEqual(step1.goals[2]:GetStatus(), "passive", "Talk goal without |q must evaluate as passive so it never blocks step completion")
         MockWoW.quests.inLog[363] = { title = "Rude Awakening", isComplete = false, objectives = {} }
         T:AssertTrue(step1:IsComplete(), "Accepting quest 363 must complete step 1 without stalling on goto/talk")
+        MockWoW.npc = { name = "Wrong Vendor", guid = "Creature-0-0-0-0-9999-0000000000" }
+        AR.Parser:Reset()
+        local gNegVendor = AR.Parser:ParseGuide("Test\\NegVendor", [[
+            step OnlyRand
+                vendor Blacksmith Rand##2116
+        ]])
+        AR.Progression:LoadGuide(gNegVendor, 1)
+        MockWoW:FireEvent("MERCHANT_SHOW")
+        T:AssertFalse(gNegVendor.steps[1]:IsComplete(), "Unrelated merchant must NOT complete named vendor goal")
+
+        -- Negative fpath check: opening Flight Master with only Brill must NOT complete fpath Undercity
+        local gNegTaxi = AR.Parser:ParseGuide("Test\\NegTaxi", [[
+            step NeedUC
+                fpath Undercity
+        ]])
+        AR.Progression:LoadGuide(gNegTaxi, 1)
+        if AR.db and AR.db.char and AR.db.char.taxis then AR.db.char.taxis["Undercity"] = nil end
+        _G.NumTaxiNodes = function() return 1 end
+        _G.TaxiNodeGetType = function() return "CURRENT" end
+        _G.TaxiNodeName = function() return "Rémol, Claros de Tirisfal" end
+        MockWoW:FireEvent("TAXIMAP_OPENED")
+        T:AssertFalse(gNegTaxi.steps[1]:IsComplete(), "Opening an unrelated Flight Master must NOT falsely mark fpath Undercity complete")
     end)
 end)

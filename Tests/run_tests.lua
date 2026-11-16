@@ -129,6 +129,8 @@ function T:RunAll()
         "Tests/test_spec20_ingame_fixes.lua",
         "Tests/test_spec21_localization_map_talents.lua",
         "Tests/test_spec22_minimap_automation_talents_guides.lua",
+        "Tests/test_targeting_resume.lua",
+        "Tests/test_interaction_identity.lua",
     }
     for _, suitePath in ipairs(specSuites) do
         dofile(suitePath)

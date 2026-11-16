@@ -8,6 +8,9 @@ T:Describe("SPEC-10: Pre-Allocated Secure ActionBar, Combat Queue, MagicKey, Fac
         local AR = _G.AzerothRoute
         AR.Storage:Initialize()
         AR.Parser:Reset()
+        AR.Localizers:Reset()
+        AR.ActionBar.buttons = {}
+        AR.ActionBar.pendingCombatUpdate = false
         AR.ActionBar:Initialize()
 
         T:AssertEqual(#AR.ActionBar.buttons, 5, "Must pre-allocate 5 secure action buttons (AzerothRouteAB1..5)")
@@ -29,7 +32,7 @@ T:Describe("SPEC-10: Pre-Allocated Secure ActionBar, Combat Queue, MagicKey, Fac
         MockWoW.inCombat = false
         AR.ActionBar:OnCombatEnd()
         T:AssertFalse(AR.ActionBar.pendingCombatUpdate, "Pending flag must clear after combat ends")
-        T:AssertEqual(AR.ActionBar.buttons[1]:GetAttribute("macrotext1"), "/target Brother Malach\n/tm 8", "Button 1 must receive /target macrotext")
+        T:AssertEqual(AR.ActionBar.buttons[1]:GetAttribute("macrotext1"), "/cleartarget\n/targetexact Brother Malach\n/tm 1", "Button 1 must receive a friendly exact-target macro")
     end)
 
     T:It("calculates remaining reputation to target standing in Faction and detects mount/pet guides in CreatureDetector", function()

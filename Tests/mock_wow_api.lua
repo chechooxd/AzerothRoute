@@ -8,6 +8,11 @@ function MockWoW:Reset()
     self.clockMs = 1000.0
     self.fps = 60.0
     self.locale = "enUS"
+    self.npc = nil
+    self.units = {}
+    self.raidTargets = {}
+    self.inGroup = false
+    self.isLeader = false
     self.inCombat = false
     self.isAltKeyDown = false
     self.loadingScreenDisabled = true
@@ -120,7 +125,50 @@ _G.UnitName = function(unit)
     if unit == "player" then
         return MockWoW.player.name, MockWoW.player.realm
     end
+    if unit == "npc" and MockWoW.npc then return MockWoW.npc.name end
+    if unit and MockWoW.units and MockWoW.units[unit] then
+        return MockWoW.units[unit].name
+    end
     return "Unknown", MockWoW.player.realm
+end
+
+_G.UnitGUID = function(unit)
+    if unit == "npc" and MockWoW.npc then return MockWoW.npc.guid end
+    if unit and MockWoW.units and MockWoW.units[unit] then
+        return MockWoW.units[unit].guid
+    end
+    return nil
+end
+
+_G.UnitIsDead = function(unit)
+    if unit == "player" then return MockWoW.player.isDead end
+    if unit and MockWoW.units and MockWoW.units[unit] then
+        return MockWoW.units[unit].dead == true
+    end
+    return false
+end
+
+_G.GetRaidTargetIndex = function(unit)
+    return unit and MockWoW.raidTargets and MockWoW.raidTargets[unit] or nil
+end
+
+_G.SetRaidTarget = function(unit, iconIdx)
+    if not unit then return end
+    MockWoW.raidTargets = MockWoW.raidTargets or {}
+    if iconIdx == 0 then iconIdx = nil end
+    MockWoW.raidTargets[unit] = iconIdx
+end
+
+_G.IsInGroup = function()
+    return MockWoW.inGroup == true
+end
+
+_G.UnitIsGroupLeader = function()
+    return MockWoW.isLeader == true
+end
+
+_G.UnitIsGroupAssistant = function()
+    return MockWoW.isAssistant == true
 end
 
 _G.GetRealmName = function()
@@ -274,6 +322,10 @@ end
 
 function FrameProto:RegisterForDrag(...)
     self._dragButtons = { ... }
+end
+
+function FrameProto:RegisterForClicks(...)
+    self._clickButtons = { ... }
 end
 
 function FrameProto:StartMoving()

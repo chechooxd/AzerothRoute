@@ -393,9 +393,10 @@ function Localizers:GetTranslatedNPC(npcID, fallbackName)
     end
     if _G.C_TooltipInfo and _G.C_TooltipInfo.GetHyperlink then
         local data = _G.C_TooltipInfo.GetHyperlink(("unit:Creature-0-0-0-0-%d-0"):format(npcID))
-        if data and data.lines and data.lines[1] and data.lines[1].leftText and data.lines[1].leftText ~= "" then
-            self.npcCache[npcID] = data.lines[1].leftText
-            return data.lines[1].leftText
+        local name = data and data.lines and data.lines[1] and data.lines[1].leftText
+        if not (_G.issecretvalue and _G.issecretvalue(name)) and type(name) == "string" and name ~= "" then
+            self.npcCache[npcID] = name
+            return name
         end
     end
     if AR.L and AR.L:IsSpanish() and self.npcsES[npcID] then

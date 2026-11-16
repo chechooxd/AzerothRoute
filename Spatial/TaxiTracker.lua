@@ -56,6 +56,9 @@ for en, es in pairs(TaxiTracker.NODE_NAMES_ES) do
     TaxiTracker.NODE_ALIASES_TO_CANON[en:lower()] = en
     TaxiTracker.NODE_ALIASES_TO_CANON[es:lower()] = en
 end
+-- Both English spellings share one Spanish name; do not let pairs() choose the key.
+TaxiTracker.NODE_ALIASES_TO_CANON["the crossroads"] = "Crossroads"
+TaxiTracker.NODE_ALIASES_TO_CANON["el cruce"] = "Crossroads"
 
 function TaxiTracker:CanonicalizeNodeName(rawName)
     if not rawName then return nil end
@@ -124,11 +127,7 @@ local function nodeNameMatches(rawBlizzName, targetName)
     if not rawBlizzName or not targetName then return false end
     local canonBlizz = TaxiTracker:CanonicalizeNodeName(rawBlizzName):lower()
     local canonTarget = TaxiTracker:CanonicalizeNodeName(targetName):lower()
-    if canonBlizz == canonTarget or canonBlizz:find(canonTarget, 1, true) or canonTarget:find(canonBlizz, 1, true) then
-        return true
-    end
-    local locTarget = TaxiTracker:GetLocalizedNodeName(targetName):lower()
-    return rawBlizzName:lower():find(locTarget, 1, true) ~= nil
+    return canonBlizz ~= "" and canonBlizz == canonTarget
 end
 
 function TaxiTracker:HighlightTaxiDestination(targetNodeName)
@@ -183,19 +182,19 @@ function TaxiTracker:OnTaxiMapOpened()
     local shouldAutoFly = false
     if AR.Progression and AR.Progression.currentStep then
         for _, g in ipairs(AR.Progression.currentStep.goals or {}) do
-            if g.action == "fpath" then
-                g.visited = true
-                if g.param then self:LearnTaxi(g.param) end
+            if g.action == "fpath" and g:IsVisible() then
+                if self:KnowsTaxi(g.param) then g.visited = true end
                 destTarget = destTarget or g.param
-            elseif g.action == "fly" and g.param then
+            elseif g.action == "fly" and g.param and g:IsVisible() then
                 destTarget = g.param
                 shouldAutoFly = true
             end
         end
     end
 
-    local matchedSlot = destTarget and self:HighlightTaxiDestination(destTarget) or nil
-    if shouldAutoFly and matchedSlot and _G.TakeTaxiNode and not (_G.IsAltKeyDown and _G.IsAltKeyDown()) then
+    local matchedSlot = self:HighlightTaxiDestination(destTarget)
+    local reachable = matchedSlot and _G.TaxiNodeGetType and _G.TaxiNodeGetType(matchedSlot) == "REACHABLE"
+    if shouldAutoFly and reachable and _G.TakeTaxiNode and not (_G.IsAltKeyDown and _G.IsAltKeyDown()) then
         if not (AR.db and AR.db.global and AR.db.global.autotaxi == false) then
             if _G.GetNumRoutes then _G.GetNumRoutes(matchedSlot) end
             _G.TakeTaxiNode(matchedSlot)
