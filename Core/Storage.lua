@@ -29,6 +29,8 @@ Storage.Defaults = {
         autoselectreward = true,
         corpsearrow = true,
         foglight = true,
+        actionbar_pos = nil,
+        itembar_pos = nil,
     },
     factionrealm = {
         gold_scan_data = {},

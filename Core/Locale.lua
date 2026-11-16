@@ -35,7 +35,9 @@ L.STRINGS = {
         -- UI Labels
         UI_ADDON_TITLE = "AzerothRoute",
         UI_TARGET_NAME = "Target: %s",
-        UI_TARGET_CLICK_HINT = "Click to perform this action. Target markers depend on your group permissions.",
+        UI_TARGET_CLICK_HINT = "Click to target. Drag to move.",
+        UI_ITEM_CLICK_HINT = "Click to use/equip item. Drag to move.",
+        UI_QUEST_ITEM_LABEL = "Use %s",
         UI_GUIDES = "Guides",
         UI_TALENTS = "Talents",
         UI_STEP_FMT = "%d/%d",
@@ -65,7 +67,9 @@ L.STRINGS = {
     es = {
         -- Goal Verbs & Actions
         UI_TARGET_NAME = "Objetivo: %s",
-        UI_TARGET_CLICK_HINT = "Haz clic para realizar esta acción. Las marcas dependen de tus permisos en el grupo.",
+        UI_TARGET_CLICK_HINT = "Haz clic para marcar al objetivo. Arrastra para mover.",
+        UI_ITEM_CLICK_HINT = "Haz clic para usar/equipar el objeto. Arrastra para mover.",
+        UI_QUEST_ITEM_LABEL = "Usar %s",
         GOAL_ACCEPT = "Acepta %s",
         GOAL_TURNIN = "Entrega %s",
         GOAL_KILL = "Mata a %s%s",

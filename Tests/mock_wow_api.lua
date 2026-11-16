@@ -8,6 +8,7 @@ function MockWoW:Reset()
     self.clockMs = 1000.0
     self.fps = 60.0
     self.locale = "enUS"
+    self.tocVersion = nil
     self.npc = nil
     self.units = {}
     self.raidTargets = {}
@@ -119,6 +120,20 @@ end
 
 _G.GetLocale = function()
     return MockWoW.locale or "enUS"
+end
+
+_G.GetItemIcon = function(itemIDOrName)
+    local item = MockWoW.tooltips.items[itemIDOrName]
+    if item and item.icon then
+        return item.icon
+    end
+    return nil
+end
+
+_G.GetBuildInfo = function()
+    local toc = (MockWoW.tocVersion ~= nil) and MockWoW.tocVersion
+        or ((_G.WOW_PROJECT_ID == _G.WOW_PROJECT_CAMELOT) and 16001 or 11508)
+    return "1.15.8", "16001", "Nov 16 2026", toc
 end
 
 _G.UnitName = function(unit)
@@ -257,6 +272,14 @@ function FrameProto:SetSize(w, h)
     self._width, self._height = w, h
 end
 
+function FrameProto:GetWidth()
+    return self._width or 0
+end
+
+function FrameProto:GetHeight()
+    return self._height or 0
+end
+
 function FrameProto:GetSize()
     return self._width or 0, self._height or 0
 end
@@ -265,8 +288,25 @@ function FrameProto:SetPoint(point, rel, relPoint, x, y)
     self._point = { point, rel, relPoint, x, y }
 end
 
+function FrameProto:GetPoint()
+    if not self._point then return nil end
+    return self._point[1], self._point[2], self._point[3], self._point[4], self._point[5]
+end
+
 function FrameProto:ClearAllPoints()
     self._point = nil
+end
+
+function FrameProto:SetClampedToScreen(flag)
+    self._clamped = flag
+end
+
+function FrameProto:SetAlpha(a)
+    self._alpha = a
+end
+
+function FrameProto:GetAlpha()
+    return self._alpha or 1
 end
 
 function FrameProto:SetParent(parent)
@@ -512,6 +552,17 @@ _G.C_Item = {
             bagCount = bagCount + (MockWoW.player.itemsInBank[itemID] or 0)
         end
         return bagCount
+    end,
+    GetItemIconByID = function(itemID)
+        local item = MockWoW.tooltips.items[itemID]
+        return item and item.icon or nil
+    end,
+    GetItemInfoInstant = function(itemIDOrName)
+        local item = MockWoW.tooltips.items[itemIDOrName]
+        if item then
+            return tonumber(itemIDOrName) or item.id or 0, "Quest", "Quest", "INVTYPE_NON_EQUIP", item.icon
+        end
+        return nil
     end,
     GetItemStats = function(itemLink)
         local itemData = MockWoW.tooltips.items[itemLink]

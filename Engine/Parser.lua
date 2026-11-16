@@ -235,6 +235,19 @@ function Parser:ParseGoalLine(line, step)
                 goal.tooltip = arg
             elseif cmd == "noautoaccept" then
                 goal.noautoaccept = true
+            elseif cmd == "use" or cmd == "equip" then
+                local name, tid = parseTargetAndId(arg)
+                if cmd == "equip" then
+                    goal.equipitem = name
+                    goal.equipitemid = tid
+                else
+                    goal.useitem = name
+                    goal.useitemid = tid
+                end
+            elseif cmd == "cast" then
+                local name, spellid = parseTargetAndId(arg)
+                goal.castspell = name
+                goal.castspellid = spellid
             elseif cmd == "goto" or cmd == "at" then
                 local mapID, rx, ry, dist = parseGotoArg(arg, goal.map or step.map)
                 goal.map = mapID
