@@ -4,7 +4,7 @@
 
 local AR = _G.AzerothRoute
 local TalentAdvisor = {
-    WIDTH = 460,
+    WIDTH = 500,
     HEIGHT = 480,
     ROWS_VISIBLE = 16,
     CLASS_ORDER = { "WARRIOR", "PALADIN", "HUNTER", "ROGUE", "PRIEST", "SHAMAN", "MAGE", "WARLOCK", "DRUID" },
@@ -27,6 +27,7 @@ local TalentAdvisor = {
     closeButton = nil,
     classButtons = {},
     specTabs = {},
+    nextTalentIcon = nil,
     nextTalentText = nil,
     roadmapRows = {},
     scrollUpBtn = nil,
@@ -60,6 +61,7 @@ function TalentAdvisor:Reset()
     self.closeButton = nil
     self.classButtons = {}
     self.specTabs = {}
+    self.nextTalentIcon = nil
     self.nextTalentText = nil
     self.roadmapRows = {}
     self.scrollUpBtn = nil
@@ -130,6 +132,25 @@ function TalentAdvisor:GetLocalizedTalentName(talentName)
         return AR.TalentData.talentNamesES[talentName] or talentName
     end
     return talentName
+end
+
+function TalentAdvisor:GetTalentIcon(talentName, className)
+    local icons = AR.TalentData and AR.TalentData.talentIcons
+    if icons and talentName and icons[talentName] then
+        return icons[talentName]
+    end
+    local clsMap = AR.TalentData and AR.TalentData.CLASS_DEFAULT_ICON
+    return (clsMap and clsMap[className or self.selectedClass or "PALADIN"]) or "Interface\\Icons\\INV_Misc_QuestionMark"
+end
+
+function TalentAdvisor:GetClassFullName(classToken)
+    if AR.L and AR.L:IsSpanish() and AR.TalentData and AR.TalentData.CLASS_NAMES_ES then
+        return AR.TalentData.CLASS_NAMES_ES[classToken] or classToken
+    end
+    if AR.TalentData and AR.TalentData.CLASS_NAMES_EN then
+        return AR.TalentData.CLASS_NAMES_EN[classToken] or classToken
+    end
+    return classToken
 end
 
 function TalentAdvisor:GetLocalizedBuildName(buildSpec)
@@ -367,6 +388,11 @@ function TalentAdvisor:InitializeUI()
         f.nextBannerBg:SetPoint("TOPLEFT", f, "TOPLEFT", 12, -104)
         f.nextBannerBg:SetSize(self.WIDTH - 24, 26)
         f.nextBannerBg:SetColorTexture(0.16, 0.24, 0.18, 0.95)
+
+        self.nextTalentIcon = f:CreateTexture(nil, "OVERLAY")
+        self.nextTalentIcon:SetSize(20, 20)
+        self.nextTalentIcon:SetPoint("LEFT", f, "TOPLEFT", 18, -117)
+        self.nextTalentIcon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
     end
 
     if f.CreateFontString then
@@ -375,7 +401,7 @@ function TalentAdvisor:InitializeUI()
         self.titleText:SetText(LGet("UI_TALENT_TITLE"))
 
         self.nextTalentText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-        self.nextTalentText:SetPoint("LEFT", f, "TOPLEFT", 20, -117)
+        self.nextTalentText:SetPoint("LEFT", f, "TOPLEFT", 44, -117)
         self.nextTalentText:SetJustifyH("LEFT")
 
         self.pageLabel = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -387,23 +413,52 @@ function TalentAdvisor:InitializeUI()
     self.closeButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -6, -5)
     self.closeButton:SetScript("OnClick", function() f:Hide() end)
 
-    -- 9 Class Selector Buttons
+    -- 9 Class Selector Buttons (with Blizzard class crest icons + localized tooltip)
     self.classButtons = {}
+    local classCoords = AR.TalentData and AR.TalentData.CLASS_ICON_TCOORDS or {}
     for idx, clsToken in ipairs(self.CLASS_ORDER) do
-        local cBtn = createFlatButton(f, "AzerothRouteTalentClass" .. clsToken, clsToken:sub(1, 3), 46, 24)
-        cBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 10 + (idx - 1) * 49, -40)
+        local cBtn = createFlatButton(f, "AzerothRouteTalentClass" .. clsToken, clsToken:sub(1, 3), 51, 24)
+        cBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 10 + (idx - 1) * 54, -40)
         cBtn._classToken = clsToken
-        cBtn:SetScript("OnClick", function()
-            self:SelectClass(clsToken)
-        end)
+        if cBtn.CreateTexture then
+            cBtn.icon = cBtn:CreateTexture(nil, "OVERLAY")
+            cBtn.icon:SetSize(16, 16)
+            cBtn.icon:SetPoint("LEFT", cBtn, "LEFT", 4, 0)
+            cBtn.icon:SetTexture("Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES")
+            local tc = classCoords[clsToken]
+            if tc and cBtn.icon.SetTexCoord then
+                cBtn.icon:SetTexCoord(tc[1], tc[2], tc[3], tc[4])
+            end
+        end
+        if cBtn.label then
+            if cBtn.label.ClearAllPoints then cBtn.label:ClearAllPoints() end
+            cBtn.label:SetPoint("LEFT", cBtn, "LEFT", 22, 0)
+        end
+        if cBtn.SetScript then
+            cBtn:SetScript("OnClick", function()
+                self:SelectClass(clsToken)
+            end)
+            cBtn:SetScript("OnEnter", function(btn)
+                if _G.GameTooltip and _G.GameTooltip.SetOwner then
+                    _G.GameTooltip:SetOwner(btn, "ANCHOR_TOP")
+                    _G.GameTooltip:SetText(self:GetClassFullName(clsToken))
+                    _G.GameTooltip:Show()
+                end
+            end)
+            cBtn:SetScript("OnLeave", function()
+                if _G.GameTooltip and _G.GameTooltip.Hide then
+                    _G.GameTooltip:Hide()
+                end
+            end)
+        end
         table.insert(self.classButtons, cBtn)
     end
 
     -- 3 Specialization Tab Buttons
     self.specTabs = {}
     for idx = 1, 3 do
-        local sBtn = createFlatButton(f, "AzerothRouteTalentSpec" .. idx, "Spec " .. idx, 142, 26)
-        sBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 10 + (idx - 1) * 149, -70)
+        local sBtn = createFlatButton(f, "AzerothRouteTalentSpec" .. idx, "Spec " .. idx, 156, 26)
+        sBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 10 + (idx - 1) * 162, -70)
         sBtn:SetScript("OnClick", function(btn)
             if btn._ident then
                 self:SelectBuild(btn._ident)
@@ -412,7 +467,7 @@ function TalentAdvisor:InitializeUI()
         table.insert(self.specTabs, sBtn)
     end
 
-    -- 16 Scrollable Level 10-60 Roadmap Rows
+    -- 16 Scrollable Level 10-60 Roadmap Rows (with talent icons)
     self.roadmapRows = {}
     for r = 1, self.ROWS_VISIBLE do
         local row = AR.UI:Create("Frame", f, "AzerothRouteTalentRow" .. r)
@@ -422,10 +477,15 @@ function TalentAdvisor:InitializeUI()
             row.bg = row:CreateTexture(nil, "BACKGROUND")
             row.bg:SetAllPoints(row)
             row.bg:SetColorTexture(0.11, 0.13, 0.18, 0.90)
+
+            row.icon = row:CreateTexture(nil, "OVERLAY")
+            row.icon:SetSize(15, 15)
+            row.icon:SetPoint("LEFT", row, "LEFT", 4, 0)
+            row.icon:SetTexture("Interface\\Icons\\INV_Misc_QuestionMark")
         end
         if row.CreateFontString then
             row.label = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-            row.label:SetPoint("LEFT", row, "LEFT", 8, 0)
+            row.label:SetPoint("LEFT", row, "LEFT", 24, 0)
             row.label:SetJustifyH("LEFT")
         end
         row:Hide()
@@ -532,11 +592,20 @@ function TalentAdvisor:RefreshUI()
     if self.nextTalentText then
         if #sequence == 0 then
             self.nextTalentText:SetText("")
+            if self.nextTalentIcon then self.nextTalentIcon:Hide() end
         elseif spent >= #sequence then
             self.nextTalentText:SetText(LGet("UI_TALENT_COMPLETED"))
+            if self.nextTalentIcon then
+                self.nextTalentIcon:SetTexture(self:GetTalentIcon(sequence[#sequence], self.selectedClass))
+                self.nextTalentIcon:Show()
+            end
         else
             local nextName = self:GetLocalizedTalentName(sequence[nextStep])
             self.nextTalentText:SetText(LFormat("UI_TALENT_NEXT_POINT", 9 + nextStep, nextName))
+            if self.nextTalentIcon then
+                self.nextTalentIcon:SetTexture(self:GetTalentIcon(sequence[nextStep], self.selectedClass))
+                self.nextTalentIcon:Show()
+            end
         end
     end
 
@@ -549,6 +618,10 @@ function TalentAdvisor:RefreshUI()
             if tName then
                 local locName = self:GetLocalizedTalentName(tName)
                 local lineText = LFormat("UI_TALENT_LEVEL_FMT", 9 + seqIdx, locName)
+                if row.icon then
+                    row.icon:SetTexture(self:GetTalentIcon(tName, self.selectedClass))
+                    row.icon:Show()
+                end
                 if row.label then
                     row.label:SetText(lineText)
                     if row.label.SetTextColor then

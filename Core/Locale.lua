@@ -28,6 +28,9 @@ L.STRINGS = {
         GOAL_HEARTH = "Use Hearthstone to %s",
         GOAL_VENDOR = "Sell junk / Repair at %s",
         GOAL_TRAINER = "Train abilities with %s",
+        GOAL_FLY = "Fly to %s",
+        GOAL_CLICK = "Interact with %s",
+        GOAL_USE = "Use %s",
 
         -- UI Labels
         UI_ADDON_TITLE = "AzerothRoute",
@@ -79,6 +82,9 @@ L.STRINGS = {
         GOAL_HEARTH = "Usa Piedra de Hogar hacia %s",
         GOAL_VENDOR = "Vende basura / Repara con %s",
         GOAL_TRAINER = "Entrena habilidades con %s",
+        GOAL_FLY = "Vuela a %s",
+        GOAL_CLICK = "Interactúa con %s",
+        GOAL_USE = "Usa %s",
 
         -- UI Labels
         UI_ADDON_TITLE = "AzerothRoute",

@@ -130,8 +130,20 @@ function Pointer:GetObjectiveColor(index)
     return self:GetObjectiveColorEntry(index).hex
 end
 
+local MINIMAP_ZOOM_YARDS = {
+    [0] = 150,
+    [1] = 120,
+    [2] = 90,
+    [3] = 60,
+    [4] = 40,
+    [5] = 25,
+}
+
 local function applyActionPinTexture(tex, action)
     if not tex then return end
+    if tex.SetTexCoord then
+        tex:SetTexCoord(0, 1, 0, 1)
+    end
     if action == "accept" then
         tex:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon")
     elseif action == "turnin" then
@@ -140,11 +152,16 @@ local function applyActionPinTexture(tex, action)
         tex:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcon_8")
     elseif action == "fpath" or action == "fly" then
         tex:SetTexture("Interface\\Minimap\\Tracking\\FlightMaster")
+    elseif action == "vendor" or action == "buy" then
+        tex:SetTexture("Interface\\GossipFrame\\VendorGossipIcon")
+    elseif action == "trainer" or action == "learn" then
+        tex:SetTexture("Interface\\GossipFrame\\TrainerGossipIcon")
+    elseif action == "home" or action == "hearth" then
+        tex:SetTexture("Interface\\Minimap\\Tracking\\Innkeeper")
+    elseif action == "get" or action == "collect" or action == "create" then
+        tex:SetTexture("Interface\\GossipFrame\\BankerGossipIcon")
     else
-        tex:SetTexture("Interface\\WorldMap\\UI-QuestPoi-NumberIcons")
-        if tex.SetTexCoord then
-            tex:SetTexCoord(0.50, 0.625, 0.375, 0.50)
-        end
+        tex:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcon_1")
     end
 end
 
@@ -165,26 +182,52 @@ function Pointer:PositionPinFrames(pin, wmPin, mmPin)
         wmPin:SetPoint("CENTER", wmCanvas, "TOPLEFT", nx * cw, -ny * ch)
     end
 
-    -- Minimap radar projection in world yards (clamped to minimap circle radius)
+    -- Minimap radar projection in world yards (clamped to minimap circle radius, hidden if cross-continent/invalid)
     if mmPin then
         local pMap, px, py = AR.Coords:GetPlayerPosition()
         local c1, wx1, wy1 = AR.Coords:ToWorldYards(pMap, px, py)
         local c2, wx2, wy2 = AR.Coords:ToWorldYards(pin.map or pMap, nx, ny)
-        local dxPx, dyPx = 0, 0
-        if c1 and c2 and c1 == c2 then
-            local dxYd = wx2 - wx1
-            local dyYd = -(wy2 - wy1)
-            local distYd = math.sqrt(dxYd * dxYd + dyYd * dyYd)
-            local scale = self.MINIMAP_RADIUS_PX / self.MINIMAP_VIEW_YARDS
-            dxPx = dxYd * scale
-            dyPx = dyYd * scale
-            if distYd > self.MINIMAP_VIEW_YARDS and distYd > 0 then
-                dxPx = (dxYd / distYd) * self.MINIMAP_RADIUS_PX
-                dyPx = (dyYd / distYd) * self.MINIMAP_RADIUS_PX
+        if not c1 or not c2 or c1 ~= c2 then
+            if mmPin.Hide then mmPin:Hide() end
+            return
+        end
+
+        local dxYd = wx2 - wx1
+        local dyYd = -(wy2 - wy1)
+
+        local rotateMinimap = (_G.C_CVar and _G.C_CVar.GetCVar and _G.C_CVar.GetCVar("rotateMinimap") == "1")
+            or (_G.GetCVar and _G.GetCVar("rotateMinimap") == "1")
+        if rotateMinimap and _G.GetPlayerFacing then
+            local facing = _G.GetPlayerFacing() or 0
+            local sinF, cosF = math.sin(facing), math.cos(facing)
+            local rx = dxYd * cosF - dyYd * sinF
+            local ry = dxYd * sinF + dyYd * cosF
+            dxYd, dyYd = rx, ry
+        end
+
+        local viewYards = (_G.C_Minimap and _G.C_Minimap.GetViewRadius and _G.C_Minimap.GetViewRadius())
+            or (_G.Minimap and _G.Minimap.GetZoom and MINIMAP_ZOOM_YARDS[_G.Minimap:GetZoom()])
+            or self.MINIMAP_VIEW_YARDS
+        local radiusPx = self.MINIMAP_RADIUS_PX
+        if _G.Minimap and _G.Minimap.GetWidth then
+            local mw = _G.Minimap:GetWidth()
+            if mw and mw > 0 then
+                radiusPx = (mw / 2) * 0.90
             end
         end
+
+        local distYd = math.sqrt(dxYd * dxYd + dyYd * dyYd)
+        local scale = radiusPx / viewYards
+        local dxPx = dxYd * scale
+        local dyPx = dyYd * scale
+        if distYd > viewYards and distYd > 0 then
+            dxPx = (dxYd / distYd) * radiusPx
+            dyPx = (dyYd / distYd) * radiusPx
+        end
+
         if mmPin.ClearAllPoints then mmPin:ClearAllPoints() end
         mmPin:SetPoint("CENTER", _G.Minimap or _G.UIParent, "CENTER", dxPx, dyPx)
+        if mmPin.Show then mmPin:Show() end
     end
 end
 
@@ -289,19 +332,16 @@ function Pointer:PlaceStepPins(pinSpecs)
             mmPin.tex = mmPin:CreateTexture(nil, "OVERLAY")
             mmPin.tex:SetAllPoints(mmPin)
             applyActionPinTexture(mmPin.tex, spec.action)
-            if mmPin.tex.SetVertexColor then
-                mmPin.tex:SetVertexColor(colorEntry.r, colorEntry.g, colorEntry.b, 1.0)
-            end
         end
         attachPinTooltip(mmPin, pin)
 
+        mmPin:Show()
         self:PositionPinFrames(pin, wmPin, mmPin)
         if not viewedMapID or not pin.map or viewedMapID == pin.map then
             wmPin:Show()
         else
             wmPin:Hide()
         end
-        mmPin:Show()
 
         table.insert(self.worldMapPinFrames, wmPin)
         table.insert(self.minimapPinFrames, mmPin)

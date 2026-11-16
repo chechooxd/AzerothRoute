@@ -5,6 +5,7 @@
 local AR = _G.AzerothRoute
 local Coords = {
     ZONE_SCALE_YARDS = 1000.0,
+    mapAxisCache = {},
     ZONE_BOUNDS = {
         -- Eastern Kingdoms (Continent 0)
         [1416] = { continent = 0, width = 2800, height = 1866, offsetX = 14800, offsetY = 6500 },  -- Alterac Mountains
@@ -131,8 +132,24 @@ function Coords:ToWorldYards(mapID, x, y)
     if _G.C_Map and _G.C_Map.GetWorldPosFromMapPos and _G.CreateVector2D then
         local contID, worldPos = _G.C_Map.GetWorldPosFromMapPos(mapID, _G.CreateVector2D(x, y))
         if contID and worldPos and worldPos.GetXY then
-            local wx, wy = worldPos:GetXY()
-            return contID, wx, wy
+            local a, b = worldPos:GetXY()
+            local isNorthWest = self.mapAxisCache[mapID]
+            if isNorthWest == nil then
+                local c0, wp0 = _G.C_Map.GetWorldPosFromMapPos(mapID, _G.CreateVector2D(0, 0))
+                local c5, wp5 = _G.C_Map.GetWorldPosFromMapPos(mapID, _G.CreateVector2D(0.5, 0.5))
+                if c0 and c5 and wp0 and wp5 then
+                    local a0, b0 = wp0:GetXY()
+                    local a5, b5 = wp5:GetXY()
+                    isNorthWest = (a0 > a5 and b0 > b5)
+                else
+                    isNorthWest = true
+                end
+                self.mapAxisCache[mapID] = isNorthWest
+            end
+            if isNorthWest then
+                return contID, -b, -a
+            end
+            return contID, a, b
         end
     end
 

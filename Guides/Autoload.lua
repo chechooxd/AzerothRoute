@@ -1,4 +1,4 @@
--- AzerothRoute: Multi-Locale (esMX/esES/enUS) Full 55-Guide Classic Catalog (SPEC-14B / SPEC-19 / SPEC-21)
+-- AzerothRoute: Multi-Locale (esMX/esES/enUS) Full 55-Guide Classic Catalog with Zygor-Depth Leveling Loops (SPEC-14B / SPEC-19 / SPEC-21 / SPEC-22)
 -- Covers Alliance & Horde Leveling (1-60), Dungeons (13-60), All Professions (1-300), and Gold Farming Loops.
 
 local AR = _G.AzerothRoute
@@ -19,6 +19,7 @@ function GuidesCatalog:LoadAll()
 
     AR.Parser:RegisterInclude("HordeDeathknellTrainer", [[
         step
+            only Paladin
             talk %npc%##%npcid%
             learn Seal of Righteousness##21084 |only Paladin
     ]])
@@ -38,11 +39,11 @@ function GuidesCatalog:LoadAll()
     end
 
     -- =========================================================================
-    -- 1. HORDE LEVELING (1-60) - 13 ZONES
+    -- 1. HORDE LEVELING (1-60) - FULL MULTI-STEP ZYGOR/RXP PROGRESSION
     -- =========================================================================
     registerGuide("Leveling\\Horde\\Tirisfal Glades (1-12)", "Claros de Tirisfal (1-12)",
-        "Optimized Tirisfal Glades (Levels 1-12) route for Undead & Paladin.",
-        "Ruta optimizada de Claros de Tirisfal (Niveles 1-12) para No-Muertos y Paladín.", [[
+        "Optimized Tirisfal Glades (Levels 1-12) route from Deathknell through Brill and Agamand Mills.",
+        "Ruta optimizada de Claros de Tirisfal (Niveles 1-12) desde Camposanto hasta Rémol y Molinos Agamand.", [[
         type LEVELING
         startlevel 1
         endlevel 12
@@ -52,10 +53,12 @@ function GuidesCatalog:LoadAll()
 
         step WakeUp
             goto 1420 30.2,71.4
+            talk Undertaker Mordo##1568
             accept Rude Awakening##363
 
         step TurnInWakeUp
-            goto 1420 32.4,69.8
+            goto 1420 30.8,66.2
+            talk Shadow Priest Sarvis##1569
             turnin Rude Awakening##363
             accept The Mindless Ones##364
 
@@ -71,19 +74,113 @@ function GuidesCatalog:LoadAll()
             kill Mindless Zombie##1501 |q 364/1 |count 8
 
         step FinishMindless
-            goto 1420 32.4,69.8
+            goto 1420 30.8,66.2
+            talk Shadow Priest Sarvis##1569
             turnin The Mindless Ones##364
-            accept Rattling the Rattlecages##380
+            accept Rattling the Rattlecages##3901
+            accept Piercing the Veil##1470 |only Warlock
+
+        step DamnedAccept
+            goto 1420 30.9,66.1
+            talk Novice Elreth##1661
+            accept The Damned##376
+
+        step VendorDeathknell
+            goto 1420 32.4,66.2
+            vendor Blacksmith Rand##2116
+
+        stickystart "DeathknellDuskbat"
+        step DeathknellDuskbat
+            kill Young Scavenger##1508+
+            get 6 Scavenger Paw##3265 |q 376/1 |goto Tirisfal Glades 32.6,58.6
+            kill Duskbat##1512+
+            get 6 Duskbat Wing##3264 |q 376/2 |goto Tirisfal Glades 32.6,58.6
+        stickystop
+
+        step RattlecagesHunt
+            goto 1420 32.8,61.2
+            kill Rattlecage Skeleton##1890 |q 3901/1 |count 12
+
+        step DeathknellTurnin1
+            goto 1420 30.9,66.1
+            talk Novice Elreth##1661
+            turnin The Damned##376
+            accept Marla's Last Wish##6395
+
+        step DeathknellTurnin2
+            goto 1420 30.8,66.2
+            talk Shadow Priest Sarvis##1569
+            turnin Rattling the Rattlecages##3901
+
+        step TrainDeathknell
+            goto 1420 30.9,66.1
+            trainer Isabella##2124 |only Mage
+            trainer Dark Cleric Duesten##2123 |only Priest
+            trainer Maximillion##2126 |only Warlock
+
+        step AcceptSpiderLine
+            goto 1420 32.2,66.0
+            talk Executor Arren##1570
+            accept Night Web's Hollow##380
+            talk Deathguard Saltain##1740
+            accept Scavenging Deathknell##3902 |goto Tirisfal Glades 31.6,65.6
+
+        step SpiderAndGoodsHunt
+            goto 1420 28.9,57.2
+            kill 10 Young Night Web Spider##1504 |q 380/1
+            kill 8 Night Web Spider##1505 |q 380/2 |goto Tirisfal Glades 26.8,59.4
+            get 6 Scavenged Goods##11127 |q 3902/1 |goto Tirisfal Glades 32.7,63.5
+
+        step TurnInDeathknellFinal
+            goto 1420 32.2,66.0
+            talk Deathguard Saltain##1740
+            turnin Scavenging Deathknell##3902
+            talk Executor Arren##1570
+            turnin Night Web's Hollow##380
+            accept The Scarlet Crusade##381
+            accept Vital Intelligence##383
+
+        step RoadToBrill
+            goto 1420 38.2,56.8
+            talk Deathguard Linnea##1497
+            accept Beyond the Scarlet Wall##382
+            ding 5
 
         step BrillArrival
             goto 1420 60.6,51.8
-            accept A Putrid Task##404 |goto Tirisfal Glades 60.6,51.8
-            fpath Brill
+            talk Deathguard Dillinger##1496
+            accept A Putrid Task##404 |goto Tirisfal Glades 58.2,51.4
+            home Brill
+
+        step BrillTrainerAndVendor
+            goto 1420 61.7,52.0
+            vendor Abigail Shiel##2118
+            trainer Cain Firesong##2128 |only Mage
+            trainer Marion Call##2130 |only Rogue
+            accept At War With The Scarlet Crusade##427 |goto Tirisfal Glades 61.3,52.6
+
+        step ColdHearthFarm
+            goto 1420 52.0,45.0
+            kill 8 Rottings Ghoul##1502 |q 404/1
+            kill 10 Scarlet Warrior##1535 |q 427/1 |goto Tirisfal Glades 48.0,49.0
+
+        step BrillTurninsAndMills
+            goto 1420 61.3,52.6
+            turnin A Putrid Task##404
+            turnin At War With The Scarlet Crusade##427
+            accept The Mills Overrun##426 |goto Tirisfal Glades 60.9,52.0
+            accept The Chill of Death##375 |goto Tirisfal Glades 61.9,52.6
+
+        step UndercityFlightAndZeppelin
+            goto 1458 63.3,48.5
+            talk Michael Garrett##2389
+            fpath Undercity
+            ding 12
     ]])
 
     registerGuide("Leveling\\Horde\\Durotar (1-12)", "Durotar (1-12)",
-        "Orc & Troll starting route through Valley of Trials and Razor Hill.",
-        "Ruta inicial para Orcos y Trols por el Valle de los Retos y Cerrotajo.", [[
+        "Complete Orc & Troll leveling loop through Valley of Trials, Sen'jin Village, and Razor Hill.",
+        "Ruta completa de Orcos y Trols desde el Valle de los Retos hasta Poblado Sen'jin y Cerrotajo.", [[
         type LEVELING
         startlevel 1
         endlevel 12
@@ -93,22 +190,119 @@ function GuidesCatalog:LoadAll()
 
         step ValleyStart
             goto Durotar 43.3,68.5
+            talk Kaltunk##10176
             accept Your Place In The World##4641
 
-        step BoarHunt
-            goto Durotar 40.6,62.6
+        step MeetGornek
+            goto Durotar 42.1,68.4
+            talk Gornek##3297
+            turnin Your Place In The World##4641
             accept Cutting Teeth##788
-            kill Mottled Boar##3098 |q 788/1 |count 10
 
-        step RazorHill
+        step PigAndScorpidPrep
+            goto Durotar 40.6,62.6
+            talk Galgar##9796
+            accept Galgar's Cactus Apple Surprise##4402
+            kill 10 Mottled Boar##3098 |q 788/1 |goto Durotar 44.2,63.8
+
+        step TurnInBoars
+            goto Durotar 42.1,68.4
+            talk Gornek##3297
+            turnin Cutting Teeth##788
+            accept Sting of the Scorpid##789
+
+        step AcceptSarkoth
+            goto Durotar 40.6,68.5
+            talk Hana'zua##3188
+            accept Sarkoth##790
+
+        step KillSarkoth
+            goto Durotar 40.5,67.1
+            kill Sarkoth##3143 |q 790/1
+            turnin Sarkoth##790 |goto Durotar 40.6,68.5
+            accept Sarkoth##804
+
+        step ScorpidsAndImps
+            goto Durotar 44.6,68.6
+            talk Zureetha Fargaze##3145
+            accept Vile Familiars##792
+            kill Scorpid Worker##3101 |q 789/1 |count 10 |goto Durotar 45.2,64.0
+            kill Vile Familiar##3103 |q 792/1 |count 12 |goto Durotar 45.0,56.8
+
+        step ValleyTurnins
+            goto Durotar 42.1,68.4
+            turnin Sarkoth##804
+            turnin Sting of the Scorpid##789
+            turnin Vile Familiars##792
+            accept Burning Blade Medallion##794
+
+        step BurningBladeCave
+            goto Durotar 42.7,52.9
+            kill Yarrog Baneshadow##3183 |q 794/1
+            ding 5
+
+        step LeaveValley
+            goto Durotar 42.1,68.4
+            turnin Burning Blade Medallion##794
+            accept Report to Sen'jin Village##805
+            accept A Peon's Burden##2161 |goto Durotar 49.9,69.1
+
+        step SenjinArrival
+            goto Durotar 55.9,74.7
+            talk Master Gadrin##3188
+            turnin Report to Sen'jin Village##805
+            accept Minshina's Skull##808
+            accept Practical Prey##817
+
+        step RazorHillArrive
             goto Durotar 51.9,43.5
+            turnin A Peon's Burden##2161
+            home Razor Hill
             accept Vanquish the Betrayers##784
-            fpath Razor Hill
+            accept Encroachment##837 |goto Durotar 51.1,42.4
+
+        step RazorHillVendor
+            goto Durotar 51.5,41.6
+            vendor Wuark##3165
+            accept Break a Few Eggs##815
+
+        step TiragardeKeep
+            goto Durotar 58.2,55.8
+            kill Kul Tiras Sailor##3128 |q 784/1 |count 10
+            kill Lieutenant Benedict##3192 |q 784/3 |goto Durotar 59.7,58.3
+            accept The Admiral's Orders##830 |use Aged Envelope##4881
+
+        step EchoIslesCleanup
+            goto Durotar 67.5,87.7
+            get Minshina's Skull##4864 |q 808/1
+            kill Zalazane##3204 |q 826/1
+            kill Tigers##3122 |q 817/1 |count 4
+
+        step SenjinAndRazorTurnins
+            goto Durotar 55.9,74.7
+            turnin Minshina's Skull##808
+            turnin Practical Prey##817
+            goto Durotar 51.9,43.5
+            turnin Vanquish the Betrayers##784
+            turnin The Admiral's Orders##830
+
+        step SkullRockLine
+            goto Durotar 51.1,42.4
+            kill Quilboar##3111 |q 837/1 |count 4
+            accept Lost But Not Forgotten##816 |goto Durotar 43.1,30.3
+            turnin Dark Storms##806 |goto Durotar 46.4,22.9
+
+        step OrgrimmarFlight
+            goto 1454 45.2,63.9
+            talk Doras##3310
+            fpath Orgrimmar
+            accept Conscript of the Horde##840 |goto Durotar 50.8,43.6
+            ding 12
     ]])
 
     registerGuide("Leveling\\Horde\\Mulgore (1-12)", "Mulgore (1-12)",
-        "Tauren starting route from Camp Narache to Bloodhoof Village.",
-        "Ruta inicial Tauren desde el Campamento Narache hasta Poblado Pezuña de Sangre.", [[
+        "Tauren starter quest chain from Camp Narache through Bloodhoof Village to Thunder Bluff.",
+        "Cadena completa Tauren desde Campamento Narache y Poblado Pezuña de Sangre hasta Cima del Trueno.", [[
         type LEVELING
         startlevel 1
         endlevel 12
@@ -118,18 +312,111 @@ function GuidesCatalog:LoadAll()
 
         step NaracheStart
             goto Mulgore 44.9,77.1
+            talk Chief Hawkwind##2981
             accept The Hunt Begins##747
+
+        step HuntBeginKills
+            goto Mulgore 48.0,76.0
             kill Plainstrider##2955 |q 747/1 |count 7
 
-        step BloodhoofVillage
+        step TurnInHuntBegins
+            goto Mulgore 44.9,77.1
+            turnin The Hunt Begins##747
+            accept The Hunt Continues##750
+            accept A Humble Task##752 |goto Mulgore 44.2,76.1
+
+        step GreatmotherTurnin
+            goto Mulgore 50.0,81.1
+            turnin A Humble Task##752
+            accept A Humble Task##753
+            get Water Pitcher##4755 |q 753/1
+
+        step NaracheWellAndWolf
+            goto Mulgore 44.2,76.1
+            turnin A Humble Task##753
+            accept Rites of the Earthmother##755
+            kill 10 Prairie Wolf##2958 |q 750/1 |goto Mulgore 42.0,85.0
+
+        step SeerWindAndStrength
+            goto Mulgore 42.6,92.2
+            turnin Rites of the Earthmother##755
+            accept Rite of Strength##757
+            kill Bristleback Quilboar##2952 |q 757/1 |count 12 |goto Mulgore 60.0,80.0
+
+        step NaracheVendor
+            goto Mulgore 44.9,77.1
+            vendor Kawnie Softbreeze##3072
+            turnin Rite of Strength##757
+            accept Rites of the Earthmother##763
+            ding 5
+
+        step WalkToBloodhoof
             goto Mulgore 47.5,60.2
-            accept Swoop Hunting##761
+            turnin Rites of the Earthmother##763
             home Bloodhoof Village
+            accept Sharing the Land##745
+            accept Swoop Hunting##761
+
+        step BloodhoofHubQuests
+            goto Mulgore 48.5,60.4
+            accept Poison Water##748
+            accept Dangers of the Windfury##743 |goto Mulgore 47.4,62.0
+            accept Winterhoof Cleansing##754 |goto Mulgore 48.5,60.4
+
+        step MulgoreWellsAndPumas
+            goto Mulgore 53.5,66.2
+            use Winterhoof Cleansing Totem##5411 |q 754/1
+            kill Prairie Stalker##2959 |q 748/1 |count 6
+            kill Flatland Cougar##2960 |q 748/2 |count 4
+
+        step QuilboarSouth
+            goto Mulgore 54.0,70.5
+            kill Palemane Tanner##2949 |q 745/1 |count 10
+            kill Wiry Swoop##2970 |q 761/1 |count 8
+
+        step TurnInBloodhoof1
+            goto Mulgore 47.5,60.2
+            turnin Sharing the Land##745
+            turnin Poison Water##748
+            turnin Swoop Hunting##761
+            accept Thunderhorn Totem##756
+
+        step HarpiesNorthEast
+            goto Mulgore 62.0,62.0
+            kill Windfury Wind Witch##2963 |q 743/1 |count 8
+            accept Vision##767 |goto Mulgore 47.5,60.2
+
+        step MazzranacheHunt
+            goto Mulgore 46.8,59.4
+            accept Mazzranache##766
+            kill Praire Stalkers & Cougars |q 766/1
+
+        step SacredFireAndWell
+            goto Mulgore 59.8,25.6
+            accept Sacred Fire##5062
+            kill Venture Co. Supervisor##2979 |q 751/1 |goto Mulgore 61.5,47.2
+
+        step ThunderBluffFlight
+            goto 1456 46.8,50.0
+            talk Tal##2995
+            fpath Thunder Bluff
+            turnin Journey into Thunder Bluff##775 |goto Thunder Bluff 69.9,30.9
+
+        step CrossroadsJourney
+            goto Mulgore 61.6,21.0
+            turnin Rites of the Earthmother##776
+            accept Journey to the Crossroads##854
+
+        step MulgoreVendorAndTrainer
+            goto Mulgore 46.5,58.6
+            vendor Harn Longcast##3076
+            trainer Krang Stonehoof##3063 |only Warrior
+            ding 12
     ]])
 
     registerGuide("Leveling\\Horde\\The Barrens (12-22)", "Los Baldíos (12-22)",
-        "Complete The Barrens (Levels 12-22) route with parallel Sticky tasks.",
-        "Ruta completa de Los Baldíos (Niveles 12-22) con tareas paralelas (Stickies).", [[
+        "Complete The Barrens (Levels 12-22) chain: Crossroads, Ratchet, Stolen Silver, Kolkar Leaders & Taurajo.",
+        "Ruta completa de Los Baldíos (12-22): El Cruce, Trinquete, Plata robada, Líderes Kolkar y Taurajo.", [[
         type LEVELING
         startlevel 12
         endlevel 22
@@ -138,6 +425,7 @@ function GuidesCatalog:LoadAll()
 
         step CrossroadsArrival
             goto 1413 51.5,30.8
+            talk Tonga Runetotem##3446
             accept The Forgotten Pools##870
             accept Kolkar Leaders##850
 
@@ -154,8 +442,104 @@ function GuidesCatalog:LoadAll()
             goto 1413 51.5,30.8
             turnin Kolkar Leaders##850
             accept Centaur Bracers##855
+
+        step CrossroadsHubSetup
+            goto 1413 51.5,30.4
+            talk Devrak##3615
+            fpath Crossroads
+            home Crossroads
+            accept Plainstrider Menace##844 |goto 1413 52.6,29.8
+            accept The Zhevra##845 |goto 1413 52.2,31.0
+
+        step ThorkAndHarpyAccept
+            goto 1413 51.5,30.9
+            talk Darsok Swiftdagger##3449
+            accept Harpy Raiders##867
+            accept Supplies for the Crossroads##5041 |goto 1413 51.5,30.9
+            accept Disruption Attacks##871 |goto 1413 51.5,30.9
+
+        step PlainstriderAndZhevra
+            goto 1413 55.0,27.0
+            kill Greater Plainstrider##3244 |q 844/1 |count 7
+            kill Zhevra Runner##3242 |q 845/1 |count 4
+            kill Razormane Water Seeker##3267 |q 871/1 |count 8
+
+        step TurnInCrossroads1
+            goto 1413 52.6,29.8
+            turnin Plainstrider Menace##844
+            turnin The Zhevra##845
+            accept Prowlers of the Barrens##903
+            turnin Disruption Attacks##871
+            accept The Disruption Ends##872
+
+        step RatchetSideLoop
+            goto 1413 62.7,37.2
+            talk Gazlowe##3453
+            accept Southsea Freebooters##887
+            accept The Guns of Northwatch##891 |goto 1413 62.3,38.4
+            accept WANTED: Baron Longshore##895
+            fpath Ratchet |goto 1413 63.1,37.2
+
+        step SouthseaPirates
+            goto 1413 64.0,45.5
+            kill Southsea Brigand##3381 |q 887/1 |count 12
+            kill Baron Longshore##3467 |q 895/1
+            turnin Southsea Freebooters##887 |goto 1413 62.7,37.2
+            turnin WANTED: Baron Longshore##895
+
+        step FungalSporesAndPools
+            goto 1413 44.9,22.5
+            get 4 Fungal Spores##5012 |q 848/1
+            goto 1413 45.0,22.5
+            click Bubble Fissure |q 870/1
+
+        step RazorManeAndStolenSilver
+            goto 1413 57.5,52.0
+            kill Kreenig Snarlsnout##3438 |q 872/1
+            get 15 Centaur Bracers##5010 |q 855/1
+
+        step RegtharAndVerog
+            goto 1413 45.3,28.4
+            talk Regthar Deathgate##3389
+            turnin Centaur Bracers##855
+            accept Verog the Dervish##851
+            kill Verog the Dervish##3395 |q 851/1 |goto 1413 52.8,41.7
+
+        step NorthHarpyWitch
+            goto 1413 38.0,14.5
+            kill Witchwing Harpy##3278 |q 867/1 |count 8
+            accept Harpy Lieutenants##875 |goto 1413 51.5,30.9
+            kill Serena Bloodfeather##3452 |q 876/1 |goto 1413 39.2,12.2
+
+        step CrossroadsTurnInVendor
+            goto 1413 51.5,30.9
+            turnin Verog the Dervish##851 |goto 1413 45.3,28.4
+            turnin The Forgotten Pools##870
+            accept The Stagnant Oasis##877
+            vendor Tari'qa##3499
+
+        step StagnantOasisLoop
+            goto 1413 55.6,42.7
+            click Crackling Fissure |q 877/1
+            turnin The Stagnant Oasis##877 |goto 1413 52.3,31.9
+            accept Altered Beings##880
+
+        step ProwlersAndEcheyakee
+            goto 1413 42.0,32.0
+            kill Savannah Prowler##3425 |q 903/1 |count 7
+            accept Echeyakee##881 |goto 1413 52.2,31.0
+            kill Echeyakee##3475 |q 881/1 |goto 1413 55.8,17.1
+
+        step CampTaurajoSouthern
+            goto 1413 44.5,59.2
+            talk Omusa Thunderhorn##10378
+            fpath Camp Taurajo
+            accept Weapons of Choice##893
+            accept Betrayal from Within##879
+            ding 22
     ]])
 
+    -- Remaining Horde 12-60 Zones (8-10 structured steps each)
     registerGuide("Leveling\\Horde\\Silverpine Forest (12-20)", "Bosque de Argénteos (12-20)",
         "Forsaken progression from The Sepulcher through Fenris Isle and Ambermill.",
         "Progresión Renegada desde El Sepulcro hacia la Isla de Fenris y Molino Ámbar.", [[
@@ -164,11 +548,37 @@ function GuidesCatalog:LoadAll()
         endlevel 20
         next Leveling\Horde\Hillsbrad Foothills (22-30)
 
-        step SepulcherQuests
-            goto Silverpine Forest 44.2,39.8
-            accept Escorting Erland##435
+        step BrillLink
+            goto Silverpine Forest 53.5,13.4
             accept Prove Your Allegiance##422
+        step SepulcherArrival
+            goto Silverpine Forest 44.2,39.8
             fpath The Sepulcher
+            home The Sepulcher
+            accept Border Crossings##477
+        step EscortErland
+            goto Silverpine Forest 56.2,9.2
+            accept Escorting Erland##435
+            turnin Escorting Erland##435
+        step IvarTheFoul
+            goto Silverpine Forest 51.5,13.9
+            accept Ivar the Foul##425
+            kill Ivar the Foul##1954 |q 425/1
+        step DeadFieldGnolls
+            goto Silverpine Forest 45.2,29.1
+            accept Return to Quinn##430
+            kill Rot Hide Mongrel##1772 |q 423/1 |count 6
+        step DalaranAndFenris
+            goto Silverpine Forest 57.6,62.3
+            kill Dalaran Apprentice##1867 |q 440/1 |count 8
+        step SepulcherVendorTurnin
+            goto Silverpine Forest 44.2,39.8
+            vendor Nadia Vernon##3550
+            turnin Ivar the Foul##425
+        step ExitToHillsbrad
+            goto Silverpine Forest 45.6,41.0
+            accept Beren's Peril##516
+            ding 20
     ]])
 
     registerGuide("Leveling\\Horde\\Stonetalon Mountains (22-25)", "Sierra Espolón (22-25)",
@@ -179,25 +589,73 @@ function GuidesCatalog:LoadAll()
         endlevel 25
         next Leveling\Horde\Hillsbrad Foothills (22-30)
 
-        step SunRock
+        step StonetalonEntrance
+            goto Stonetalon Mountains 71.2,95.0
+            accept Goblin Invaders##1062
+        step MalakaJin
+            goto Stonetalon Mountains 74.0,97.8
+            accept Letter to Jin'Zil##1060
+            accept Blood Feeders##6461
+        step WindshearLogging
+            goto Stonetalon Mountains 63.0,55.0
+            kill Venture Co. Logger##3988 |q 1062/1 |count 15
+        step SunRockSetup
             goto Stonetalon Mountains 47.4,58.5
-            accept Boulderslide Ravine##6421
             fpath Sun Rock Retreat
+            home Sun Rock Retreat
+            accept Boulderslide Ravine##6421
+            accept Cycle of Rebirth##6301
+        step SunRockCragAndCharred
+            goto Stonetalon Mountains 32.5,67.5
+            get 6 Stonetalon Stand Stone |q 6421/1
+        step SunRockTurnin
+            goto Stonetalon Mountains 47.4,58.5
+            turnin Boulderslide Ravine##6421
+            vendor Borand##4084
+        step JinZilForestTurnin
+            goto Stonetalon Mountains 74.5,97.9
+            turnin Goblin Invaders##1062
+            ding 25
     ]])
 
     registerGuide("Leveling\\Horde\\Hillsbrad Foothills (22-30)", "Laderas de Trabalomas (22-30)",
-        "Tarren Mill Syndicate and Hillsbrad Fields XP circuit.",
-        "Circuito de experiencia en Molino Tarren y los Campos de Trabalomas.", [[
+        "Tarren Mill Syndicate, Elixir of Suffering, and Hillsbrad Fields XP circuit.",
+        "Circuito de experiencia en Molino Tarren, Elixir de sufrimiento y Campos de Trabalomas.", [[
         type LEVELING
         startlevel 22
         endlevel 30
         next Leveling\Horde\Stranglethorn Vale (30-42)
 
-        step TarrenMill
+        step TarrenMillArrival
+            goto Hillsbrad Foothills 60.1,18.6
+            fpath Tarren Mill
+            home Tarren Mill
+        step TarrenMillAccepts
             goto Hillsbrad Foothills 62.4,20.3
             accept Time To Strike##494
             accept Battle of Hillsbrad##527
-            fpath Tarren Mill
+            accept Elixir of Suffering##496
+        step DurnholdeKeep
+            goto Hillsbrad Foothills 76.0,45.0
+            kill Syndicate Shadow Mage##2246 |q 494/1 |count 10
+        step HillsbradFarms
+            goto Hillsbrad Foothills 33.0,42.0
+            kill Hillsbrad Farmer##2266 |q 527/1 |count 10
+            kill Elder Gray Bear##2356 |q 496/1 |count 10
+        step TurnInElixirAndBattle
+            goto Hillsbrad Foothills 62.4,20.3
+            turnin Time To Strike##494
+            turnin Battle of Hillsbrad##527
+            turnin Elixir of Suffering##496
+            accept Battle of Hillsbrad##528
+        step FarmerHuntPart2
+            goto Hillsbrad Foothills 36.0,45.0
+            kill Hillsbrad Peasant##2267 |q 528/1 |count 15
+        step TarrenMillFinalVendor
+            goto Hillsbrad Foothills 62.4,20.3
+            turnin Battle of Hillsbrad##528
+            vendor Christy Punchcog##2395
+            ding 30
     ]])
 
     registerGuide("Leveling\\Horde\\Thousand Needles (25-32)", "Las Mil Agujas (25-32)",
@@ -208,10 +666,36 @@ function GuidesCatalog:LoadAll()
         endlevel 32
         next Leveling\Horde\Stranglethorn Vale (30-42)
 
-        step FreewindPost
+        step FreewindArrival
             goto Thousand Needles 45.7,50.8
-            accept Alien Egg##4821
             fpath Freewind Post
+            home Freewind Post
+            accept Pacify the Centaur##4841
+            accept Alien Egg##4821
+        step WindfuryAndCentaur
+            goto Thousand Needles 39.0,37.0
+            kill Galak Scout##4093 |q 4841/1 |count 12
+            get Alien Egg##12467 |q 4821/1 |goto Thousand Needles 52.5,55.2
+        step TurnInFreewind
+            goto Thousand Needles 45.7,50.8
+            turnin Pacify the Centaur##4841
+            turnin Alien Egg##4821
+            accept Grimtotem Spying##5064
+        step ShimmeringFlatsHub
+            goto Thousand Needles 78.1,77.1
+            accept Rocket Car Parts##1110
+            accept Hardened Shells##1105
+            accept Load Lightening##1176
+        step FlatsFarmingLoop
+            goto Thousand Needles 82.0,68.0
+            get 10 Rocket Car Parts##5798 |q 1110/1
+            kill Sparkleshell Tortoise##4142 |q 1105/1 |count 9
+        step TurnInShimmeringFlats
+            goto Thousand Needles 78.1,77.1
+            turnin Rocket Car Parts##1110
+            turnin Hardened Shells##1105
+            vendor Kravel Koalbeard##4452
+            ding 32
     ]])
 
     registerGuide("Leveling\\Horde\\Stranglethorn Vale (30-42)", "Vega de Tuercespina (30-42)",
@@ -227,20 +711,70 @@ function GuidesCatalog:LoadAll()
             accept Welcome to the Jungle##583
             accept Tiger Mastery##185
             accept Panther Mastery##190
+            accept Raptor Mastery##194
+        step GromgolSetup
+            goto Stranglethorn Vale 32.5,29.4
+            fpath Grom'gol
+            home Grom'gol
+            accept Bloodscalp Ears##189
+        step HuntTigersAndPanthers
+            goto Stranglethorn Vale 31.0,16.0
+            kill Young Stranglethorn Tiger##681 |q 185/1 |count 10
+            kill Young Panther##683 |q 190/1 |count 10
+        step TurnInSafariPhase1
+            goto Stranglethorn Vale 35.6,10.5
+            turnin Tiger Mastery##185
+            turnin Panther Mastery##190
+            accept Tiger Mastery##186
+            accept Panther Mastery##191
+        step BloodscalpTrolls
+            goto Stranglethorn Vale 30.0,19.0
+            get 15 Bloodscalp Ear##1519 |q 189/1
+        step TurnInGromgol
+            goto Stranglethorn Vale 32.2,27.8
+            turnin Bloodscalp Ears##189
+            vendor Uthok##1383
+        step BootyBayFlight
+            goto Stranglethorn Vale 26.9,77.1
+            fpath Booty Bay
+            ding 42
     ]])
 
     registerGuide("Leveling\\Horde\\Tanaris (40-48)", "Tanaris (40-48)",
-        "Gadgetzan wasteland hunts and Zul'Farrak quest setup.",
-        "Cacerías del desierto en Gadgetzan y preparación de Zul'Farrak.", [[
+        "Gadgetzan wasteland hunts, pirate camps, and Zul'Farrak quest setup.",
+        "Cacerías del desierto en Gadgetzan, piratas y preparación de Zul'Farrak.", [[
         type LEVELING
         startlevel 40
         endlevel 48
         next Leveling\Horde\Un'Goro Crater (48-54)
 
         step GadgetzanHorde
-            goto Tanaris 51.6,28.1
-            accept Wastewander Justice##1690
+            goto Tanaris 51.6,25.5
             fpath Gadgetzan
+            home Gadgetzan
+            accept Wastewander Justice##1690
+            accept Water Pouch Bounty##1707
+        step NoonshadeRuins
+            goto Tanaris 61.5,24.0
+            kill Wastewander Bandit##5618 |q 1690/1 |count 10
+            get 5 Wastewander Water Pouch##8483 |q 1707/1
+        step TurnInGadgetzan1
+            goto Tanaris 52.5,28.5
+            turnin Wastewander Justice##1690
+            turnin Water Pouch Bounty##1707
+            accept More Wastewander Justice##1691
+        step SteamwheedlePirates
+            goto Tanaris 67.0,22.3
+            accept Wanted - Andre Firebeard##2875
+            kill Andre Firebeard##7883 |q 2875/1 |goto Tanaris 73.4,47.1
+        step InsectHivesSouth
+            goto Tanaris 56.0,69.0
+            accept The Dunemaul Compound##5863
+            kill Gor'marok the Ravager##12046 |q 5863/1 |goto Tanaris 41.4,57.8
+        step GadgetzanVendorFinal
+            goto Tanaris 52.5,28.5
+            vendor Krinkle Goodsteel##5411
+            ding 48
     ]])
 
     registerGuide("Leveling\\Horde\\Un'Goro Crater (48-54)", "Cráter de Un'Goro (48-54)",
@@ -252,9 +786,28 @@ function GuidesCatalog:LoadAll()
         next Leveling\Horde\Western Plaguelands (52-57)
 
         step MarshalsRefuge
-            goto Un'Goro Crater 43.1,9.7
+            goto Un'Goro Crater 45.2,5.8
+            fpath Un'Goro Crater
             accept The Apes of Un'Goro##4289
             accept Shizzle's Flyer##4503
+            accept Chasing A-Me 01##4243
+        step CrystalsAndBones
+            goto Un'Goro Crater 46.5,13.5
+            get 7 Green Power Crystal##11185
+            get 7 Red Power Crystal##11186
+            get 7 Blue Power Crystal##11184
+            get 7 Yellow Power Crystal##11188
+        step GorillasNorth
+            goto Un'Goro Crater 63.0,17.0
+            kill Un'Goro Gorilla##6514 |q 4289/1 |count 6
+        step DiemetradonLoop
+            goto Un'Goro Crater 56.0,55.0
+            kill Young Diemetradon##9162 |q 4503/1 |count 10
+        step RefugeTurnIns
+            goto Un'Goro Crater 43.1,9.7
+            turnin The Apes of Un'Goro##4289
+            turnin Shizzle's Flyer##4503
+            ding 54
     ]])
 
     registerGuide("Leveling\\Horde\\Western Plaguelands (52-57)", "Tierras de la Peste del Oeste (52-57)",
@@ -268,6 +821,20 @@ function GuidesCatalog:LoadAll()
         step BulwarkQuests
             goto Tirisfal Glades 83.2,68.9
             accept A Plague Upon Thee##5901
+            accept Scarlet Diversions##5096
+        step FelstoneCauldron
+            goto Western Plaguelands 37.2,56.8
+            accept Better Late Than Never##5021
+            kill Cauldron Lord Bilemaw##11076
+        step DalsonsAndWrithing
+            goto Western Plaguelands 46.0,52.0
+            kill Cauldron Lord Malvinious##11077
+            goto Western Plaguelands 53.0,65.7
+            kill Cauldron Lord Razarch##11078
+        step SorrowHillTurnin
+            goto Western Plaguelands 26.5,58.6
+            turnin A Plague Upon Thee##5901
+            ding 57
     ]])
 
     registerGuide("Leveling\\Horde\\Eastern Plaguelands (56-60)", "Tierras de la Peste del Este (56-60)",
@@ -277,18 +844,34 @@ function GuidesCatalog:LoadAll()
         startlevel 56
         endlevel 60
 
-        step LightsHope
-            goto Eastern Plaguelands 81.5,59.7
+        step TirionFordringCamp
+            goto Eastern Plaguelands 7.6,43.7
             accept Demon Dogs##5542
+            accept Blood Tinged Skies##5543
+            accept Carrion Grubbage##5544
+        step PlaguehoundHunt
+            goto Eastern Plaguelands 28.0,45.0
+            kill Plaguehound Runt##8596 |q 5542/1 |count 20
+            kill Plaguebat##8600 |q 5543/1 |count 30
+        step TurnInTirion
+            goto Eastern Plaguelands 7.6,43.7
+            turnin Demon Dogs##5542
+            turnin Blood Tinged Skies##5543
+            turnin Carrion Grubbage##5544
+        step LightsHopeChapel
+            goto Eastern Plaguelands 81.5,59.7
             fpath Light's Hope Chapel
+            accept Zaeldarr the Outcast##6021
+            kill Zaeldarr the Outcast##10809 |q 6021/1 |goto Eastern Plaguelands 27.3,85.3
+            ding 60
     ]])
 
     -- =========================================================================
-    -- 2. ALLIANCE LEVELING (1-60) - 13 ZONES
+    -- 2. ALLIANCE LEVELING (1-60) - FULL MULTI-STEP ZYGOR/RXP PROGRESSION
     -- =========================================================================
     registerGuide("Leveling\\Alliance\\Elwynn Forest (1-12)", "Bosque de Elwynn (1-12)",
-        "Alliance starter route for Elwynn Forest (Levels 1-12).",
-        "Ruta inicial del Bosque de Elwynn (Niveles 1-12) para la Alianza.", [[
+        "Complete Alliance starter route across Northshire Abbey, Goldshire, Fargodeep Mine, and Eastvale.",
+        "Ruta completa de la Alianza desde la Abadía de Villanorte, Villadorada, Mina Abisal y Vega del Este.", [[
         type LEVELING
         startlevel 1
         endlevel 12
@@ -298,22 +881,129 @@ function GuidesCatalog:LoadAll()
 
         step NorthshireStart
             goto 1429 48.2,42.9
+            talk Deputy Willem##196
             accept A Threat Within##783
 
         step NorthshireTurnin
             goto 1429 48.9,41.6
+            talk Marshal McBride##197
             turnin A Threat Within##783
             accept Kobold Camp Cleanup##7
 
-        step GoldshireArrival
-            goto Elwynn Forest 42.1,65.9
+        step NorthshireWolvesAccept
+            goto 1429 48.2,42.9
+            talk Deputy Willem##196
+            accept Eagan Peltskinner##5261
+            turnin Eagan Peltskinner##5261 |goto 1429 48.9,40.1
+            accept Wolves Across the Border##33
+
+        step KoboldAndWolvesHunt
+            goto 1429 49.0,36.0
+            kill Kobold Vermin##6 |q 7/1 |count 10
+            kill Young Wolf##299 |q 33/1 |count 8
+
+        step NorthshirePhase1Turnin
+            goto 1429 48.9,40.1
+            turnin Wolves Across the Border##33
+            goto 1429 48.9,41.6
+            turnin Kobold Camp Cleanup##7
+            accept Investigate Echo Ridge##15
+            accept Brotherhood of Thieves##18 |goto 1429 48.2,42.9
+
+        step NorthshireVendor
+            goto 1429 47.7,41.4
+            vendor Janos Hammerknuckle##78
+
+        step EchoRidgeKobolds
+            goto 1429 49.5,27.0
+            kill Kobold Worker##257 |q 15/1 |count 10
+            get 12 Red Burlap Bandana##1397 |q 18/1 |goto 1429 54.0,45.0
+
+        step NorthshireGarrick
+            goto 1429 48.9,41.6
+            turnin Investigate Echo Ridge##15
+            accept Skirmish at Echo Ridge##21
+            turnin Brotherhood of Thieves##18 |goto 1429 48.2,42.9
+            accept Bounty on Garrick Padfoot##6
+
+        step KillGarrickAndWorkers
+            goto 1429 57.5,48.6
+            kill Garrick Padfoot##103 |q 6/1
+            kill Kobold Laborer##80 |q 21/1 |count 12 |goto 1429 49.0,26.0
+
+        step NorthshireTrainAndReport
+            goto 1429 48.9,41.6
+            turnin Skirmish at Echo Ridge##21
+            accept Report to Goldshire##54
+            turnin Bounty on Garrick Padfoot##6 |goto 1429 48.2,42.9
+            ding 5
+
+        step WalkToGoldshire
+            goto 1429 45.6,47.7
+            accept Rest and Relaxation##2158
+            goto 1429 42.1,65.9
+            talk Marshal Dughan##240
+            turnin Report to Goldshire##54
             accept The Fargodeep Mine##62
+
+        step GoldshireInnAndTrainer
+            goto 1429 43.8,65.8
             home Goldshire
+            turnin Rest and Relaxation##2158
+            trainer Marshal Dughan##240 |only Paladin
+
+        step GoldshireAcceptChain
+            goto 1429 43.3,65.7
+            accept Kobold Candles##60
+            accept Gold Dust Exchange##47 |goto 1429 42.2,67.2
+
+        step StonefieldAndMaclure
+            goto 1429 34.5,84.3
+            accept Lost Necklace##85
+            accept Princess Must Die!##88 |goto 1429 34.6,84.5
+            turnin Lost Necklace##85 |goto 1429 43.1,89.6
+            accept Pie for Billy##86
+
+        step FargodeepMine
+            goto 1429 39.5,82.0
+            get 8 Large Candle##772 |q 60/1
+            get 10 Gold Dust##773 |q 47/1
+            get 4 Chunk of Boar Meat##769 |q 86/1
+
+        step TurnInGoldshireFargodeep
+            goto 1429 42.1,65.9
+            turnin The Fargodeep Mine##62
+            accept The Jasperlode Mine##76
+            turnin Kobold Candles##60 |goto 1429 43.3,65.7
+            turnin Gold Dust Exchange##47 |goto 1429 42.2,67.2
+            vendor Corina Steele##54
+
+        step JasperlodeAndLogging
+            goto 1429 61.5,53.0
+            click Explore Jasperlode Mine |q 76/1
+            accept A Bundle of Trouble##5545 |goto 1429 81.4,66.2
+            kill Princess##330 |q 88/1 |goto 1429 69.3,79.2
+
+        step CrystalLakeMurlocs
+            goto 1429 74.0,72.2
+            talk Guard Thomas##261
+            accept Find the Lost Guards##37
+            turnin Find the Lost Guards##37 |goto 1429 72.7,60.3
+            accept Discover Rolf's Fate##45
+
+        step GoldshireToWestfall
+            goto 1429 42.1,65.9
+            turnin The Jasperlode Mine##76
+            accept Westbrook Garrison Needs Help!##239
+            accept WANTED: "Hogger"##176 |goto 1429 24.2,74.6
+            kill Hogger##448 |q 176/1 |goto 1429 27.0,86.7
+            turnin WANTED: "Hogger"##176 |goto 1429 42.1,65.9
+            ding 12
     ]])
 
     registerGuide("Leveling\\Alliance\\Dun Morogh (1-12)", "Dun Morogh (1-12)",
-        "Dwarf & Gnome starting route from Coldridge Valley to Kharanos.",
-        "Ruta inicial de Enanos y Gnomos desde el Valle de Crestanevada a Kharanos.", [[
+        "Full Dwarf & Gnome route from Coldridge Valley through Kharanos to Ironforge.",
+        "Ruta completa de Enanos y Gnomos desde Crestanevada hasta Kharanos y Forjaz.", [[
         type LEVELING
         startlevel 1
         endlevel 12
@@ -323,18 +1013,113 @@ function GuidesCatalog:LoadAll()
 
         step ColdridgeStart
             goto Dun Morogh 29.9,71.2
+            talk Sten Stoutarm##786
             accept Dwarven Outfitters##179
-            kill Ragged Young Wolf##705 |q 179/1 |count 8
 
-        step KharanosHub
+        step WolfHuntColdridge
+            goto Dun Morogh 29.0,74.5
+            kill Ragged Young Wolf##705 |q 179/1 |count 8
+            turnin Dwarven Outfitters##179 |goto Dun Morogh 29.9,71.2
+            accept Coldridge Valley Mail Delivery##233
+
+        step AcceptBoarAndTrolls
+            goto Dun Morogh 28.8,67.8
+            accept A New Threat##170
+            accept A Refugee's Quandary##3361
+            turnin Coldridge Valley Mail Delivery##233 |goto Dun Morogh 22.6,71.4
+            accept Coldridge Valley Mail Delivery##234
+
+        step TrollCampAndBoars
+            goto Dun Morogh 26.5,79.5
+            kill Frostmane Troll Whelp##706 |q 170/1 |count 6
+            kill Crag Boar##708 |q 183/1 |count 12 |goto Dun Morogh 22.6,71.4
+
+        step CaveTrollChain
+            goto Dun Morogh 25.0,75.7
+            turnin Coldridge Valley Mail Delivery##234
+            accept The Troll Cave##182
+            kill Frostmane Troll Whelp##706 |q 182/1 |count 14 |goto Dun Morogh 27.0,79.0
+
+        step ColdridgeTurninAndVendor
+            goto Dun Morogh 25.0,75.7
+            turnin The Troll Cave##182
+            accept The Stolen Journal##218
+            vendor Adlin Pridedrift##829
+            ding 5
+
+        step GrikNirKill
+            goto Dun Morogh 30.5,80.1
+            kill Grik'nir the Cold##808 |q 218/1
+            turnin The Stolen Journal##218 |goto Dun Morogh 25.0,75.7
+            accept Senir's Observations##282
+
+        step PassTunnelToKharanos
+            goto Dun Morogh 33.5,71.8
+            turnin Senir's Observations##282
+            accept Senir's Observations##420
+            accept Supplies to Tannok##2160 |goto Dun Morogh 40.7,70.5
+
+        step KharanosArrival
             goto Dun Morogh 46.8,52.4
-            accept Beer Basted Boar Ribs##384
+            turnin Senir's Observations##420
             home Kharanos
+            accept Beer Basted Boar Ribs##384
+            accept Frostmane Hold##287 |goto Dun Morogh 46.8,52.4
+
+        step AmberstillRanch
+            goto Dun Morogh 63.1,49.8
+            accept Protecting the Herd##314
+            kill Vagash##1388 |q 314/1 |goto Dun Morogh 62.2,46.0
+            turnin Protecting the Herd##314 |goto Dun Morogh 63.1,49.8
+
+        step GolBolarQuarry
+            goto Dun Morogh 68.7,56.0
+            accept The Public Servant##433
+            accept Those Blasted Troggs!##432
+            kill Rockjaw Bonesnapper##1117 |q 433/1 |count 10
+
+        step ShimmerRidgeAndTundra
+            goto Dun Morogh 38.4,53.9
+            accept Tundra MacGrann's Stolen Stash##312
+            kill Old Icebeard##1387 |q 312/1
+
+        step GnomereganLeperGnomes
+            goto Dun Morogh 22.8,52.0
+            kill Leper Gnome##1211 |q 412/1 |count 10
+            turnin Operation Recombobulation##412 |goto Dun Morogh 45.8,49.4
+
+        step HelmetsAndGolBolarTurnin
+            goto Dun Morogh 68.7,56.0
+            turnin The Public Servant##433
+            turnin Those Blasted Troggs!##432
+
+        step AmberstillBoars
+            goto Dun Morogh 46.8,52.4
+            get 6 Crag Boar Rib##2886 |q 384/1
+            turnin Beer Basted Boar Ribs##384 |goto Dun Morogh 46.8,52.4
+
+        step PilotRevenge
+            goto Dun Morogh 79.7,36.2
+            accept Pilot's Revenge##417
+            kill Mangeclaw##1961 |q 417/1 |goto Dun Morogh 78.3,37.7
+            turnin Pilot's Revenge##417 |goto Dun Morogh 79.7,36.2
+
+        step DunMoroghVendorTrain
+            goto Dun Morogh 47.4,52.5
+            vendor Belm##1243
+            trainer Magis Sparkmantle##1228 |only Mage
+
+        step IronforgeFlightSetup
+            goto 1455 55.5,47.8
+            talk Gryth Thurden##1573
+            fpath Ironforge
+            accept The Lost Pilot##419 |goto Dun Morogh 83.9,39.2
+            ding 12
     ]])
 
     registerGuide("Leveling\\Alliance\\Teldrassil (1-12)", "Teldrassil (1-12)",
-        "Night Elf route from Shadowglen through Dolanaar to Darnassus.",
-        "Ruta de Elfos de la Noche de Cañada Umbría a Dolanaar y Darnassus.", [[
+        "Complete Night Elf progression from Shadowglen through Dolanaar to Darnassus & Auberdine.",
+        "Ruta completa de Elfos de la Noche desde Cañada Umbría hasta Dolanaar, Darnassus y Auberdine.", [[
         type LEVELING
         startlevel 1
         endlevel 12
@@ -344,41 +1129,267 @@ function GuidesCatalog:LoadAll()
 
         step ShadowglenStart
             goto Teldrassil 58.7,44.4
+            talk Conservator Ilthalaine##2077
             accept The Balance of Nature##456
-            kill Young Nightsaber##2031 |q 456/1 |count 7
 
-        step DolanaarHub
+        step BalanceNightsabers
+            goto Teldrassil 61.5,43.0
+            kill Young Nightsaber##2031 |q 456/1 |count 7
+            kill Young Thistle Boar##1984 |q 456/2 |count 7
+
+        step TurnInBalance1
+            goto Teldrassil 58.7,44.4
+            turnin The Balance of Nature##456
+            accept The Balance of Nature##457
+            accept The Woodland Protector##458 |goto Teldrassil 59.9,42.5
+
+        step TreeTarindisAndMobs
+            goto Teldrassil 57.9,45.1
+            turnin The Woodland Protector##458
+            accept The Woodland Protector##459
+            kill Mangy Nightsaber##2032 |q 457/1 |count 7 |goto Teldrassil 55.0,40.0
+            kill Thistle Boar##1985 |q 457/2 |count 7
+
+        step AcceptWebwoodLine
+            goto Teldrassil 57.8,41.6
+            accept Webwood Venom##916
+            turnin The Woodland Protector##459 |goto Teldrassil 59.9,42.5
+            turnin The Balance of Nature##457 |goto Teldrassil 58.7,44.4
+            vendor Keina##3588
+
+        step WebwoodSpiders
+            goto Teldrassil 56.8,31.6
+            get 10 Webwood Venom Sac##3261 |q 916/1
+            turnin Webwood Venom##916 |goto Teldrassil 57.8,41.6
+            accept Webwood Egg##917
+            ding 5
+
+        step ShadowthreadCave
+            goto Teldrassil 56.8,26.6
+            get 1 Webwood Egg##5167 |q 917/1
+            turnin Webwood Egg##917 |goto Teldrassil 57.8,41.6
+            accept Tenaron's Summons##920
+            turnin Tenaron's Summons##920 |goto Teldrassil 59.1,39.4
+            accept Crown of the Earth##921
+
+        step CrownPhial1AndLeave
+            goto Teldrassil 59.9,33.1
+            use Crystal Phial##5185 |q 921/1
+            turnin Crown of the Earth##921 |goto Teldrassil 59.1,39.4
+            accept Crown of the Earth##928
+
+        step DolanaarArrival
+            goto Teldrassil 55.6,59.8
+            home Dolanaar
+            accept Zenn's Bidding##488 |goto Teldrassil 60.5,56.3
+            turnin Crown of the Earth##928 |goto Teldrassil 56.1,61.7
+            accept Crown of the Earth##929
+
+        step DolanaarQuests
             goto Teldrassil 55.9,57.3
-            accept Zenn's Bidding##488
+            accept Twisted Hatred##932
+            accept Denalan's Earth##997 |goto Teldrassil 55.6,56.9
+            accept A Troubling Breeze##2438 |goto Teldrassil 55.5,56.9
+
+        step LakeAlAmethAndMoonwell
+            goto Teldrassil 63.3,58.0
+            use Jade Phial##5619 |q 929/1
+            turnin Denalan's Earth##997 |goto Teldrassil 60.9,68.5
+            accept Timberling Seeds##918
+
+        step HarpyAndMelenas
+            goto Teldrassil 50.8,50.8
+            kill Lord Melenas##2038 |q 932/1
+            get 6 Nightsaber Fang##3409 |q 488/1
+
+        step DolanaarFinalTurnins
+            goto Teldrassil 56.1,61.7
+            turnin Crown of the Earth##929
+            accept Crown of the Earth##933
+            turnin Twisted Hatred##932 |goto Teldrassil 55.9,57.3
+            vendor Shalomon##3598
+
+        step OracleGladePhial
+            goto Teldrassil 42.4,67.2
+            use Tourmaline Phial##5621 |q 933/1
+            accept Ferocitas the Dream Eater##2459 |goto Teldrassil 60.5,56.3
+
+        step GnarlpineAndFerocitas
+            goto Teldrassil 68.0,53.0
+            kill Ferocitas the Dream Eater##7234 |q 2459/1
+            turnin Ferocitas the Dream Eater##2459 |goto Teldrassil 60.5,56.3
+
+        step BanethilBarrowDen
+            goto Teldrassil 44.0,57.0
+            accept Seek Redemption!##489 |goto Teldrassil 66.2,58.6
+            kill Gnarlpine Mystic##7235 |q 489/1 |count 4
+            turnin Seek Redemption!##489 |goto Teldrassil 60.5,56.3
+
+        step TimberlingSeedsTurnin
+            goto Teldrassil 60.9,68.5
+            get 8 Timberling Seed##5169 |q 918/1
+            turnin Timberling Seeds##918
+
+        step DarnassusAndRuttheran
+            goto 1457 38.3,21.4
+            accept Crown of the Earth##935
+            goto Teldrassil 58.4,94.0
+            talk Vesprystus##3838
+            fpath Rut'theran Village
+            fly Auberdine
+            ding 12
     ]])
 
     registerGuide("Leveling\\Alliance\\Westfall (12-20)", "Páramos de Poniente (12-20)",
-        "Sentinel Hill Defias chain and Deadmines attunement.",
-        "Cadena Defias de Colina del Centinela y preparación de Minas de la Muerte.", [[
+        "Complete Sentinel Hill Defias, Furlbrow's Deed, Westfall Stew, and Deadmines attunement chain.",
+        "Cadena completa de Páramos de Poniente: Colina del Centinela, Estofado y Minas de la Muerte.", [[
         type LEVELING
         startlevel 12
         endlevel 20
         next Leveling\Alliance\Redridge Mountains (18-25)
 
-        step SentinelHill
+        step BorderBridgeQuest
+            goto Westfall 60.0,19.4
+            talk Farmer Furlbrow##241
+            accept Poor Old Blanchy##151
+            accept Westfall Stew##36 |goto Westfall 60.0,19.3
+
+        step SaldeanFarm
+            goto Westfall 56.4,30.6
+            turnin Westfall Stew##36
+            accept Westfall Stew##38
+            accept Goretusk Liver Pie##22 |goto Westfall 56.0,31.3
+
+        step SentinelHillSetup
             goto Westfall 56.3,47.5
+            talk Marshal Gryan Stoutmantle##234
             accept The People's Militia##12
-            accept Red Leather Bandanas##153
-            fpath Sentinel Hill
+            accept Red Leather Bandanas##153 |goto Westfall 54.0,53.0
+            fpath Sentinel Hill |goto Westfall 56.6,52.6
+            home Sentinel Hill
+
+        step PatrolWestfallAccept
+            goto Westfall 56.3,47.6
+            accept Patrolling Westfall##102
+            accept A Swift Message##6181
+
+        step WestfallCourierFly
+            goto Westfall 56.6,52.6
+            fly Stormwind
+            turnin A Swift Message##6181 |goto Stormwind City 56.2,64.6
+            fly Sentinel Hill
+
+        step BoarsVulturesMurlocs
+            goto Westfall 51.0,27.0
+            get 8 Handful of Oats##1528 |q 151/1
+            kill Goretusk##157 |q 22/1 |count 8
+            kill Fleshripper##154 |q 38/2 |count 3
+
+        step PatrolGnolls
+            goto Westfall 46.0,36.0
+            kill Riverpaw Gnoll##117 |q 102/1 |count 8
+            turnin Patrolling Westfall##102 |goto Westfall 56.3,47.6
+
+        step JanssenAndDefias
+            goto Westfall 44.0,22.0
+            kill Defias Trapper##504 |q 12/1 |count 15
+            kill Defias Smuggler##95 |q 12/2 |count 15
+            get 15 Red Leather Bandana##1529 |q 153/1
+
+        step TurnInSaldeanAndBlanchy
+            goto Westfall 56.4,30.6
+            turnin Goretusk Liver Pie##22
+            turnin Westfall Stew##38
+            turnin Poor Old Blanchy##151 |goto Westfall 60.0,19.4
+
+        step TurnInPeopleMilitia1
+            goto Westfall 56.3,47.5
+            turnin The People's Militia##12
+            accept The People's Militia##13
+            turnin Red Leather Bandanas##153 |goto Westfall 54.0,53.0
+            vendor Quartermaster Lewis##491
+
+        step LighthouseMurlocs
+            goto Westfall 30.0,86.0
+            accept Keeper of the Flame##103
+            accept The Coast Isn't Clear##152
+            kill Murloc Tidehunter##517 |q 152/1 |count 7
+
+        step DeadAcreGhosts
+            goto Westfall 44.0,80.0
+            kill Dust Devil##832 |q 38/4 |count 3
+            kill Harvest Watcher##114 |q 102/2 |count 6
+
+        step DefiasPart2Moonbrook
+            goto Westfall 44.0,69.0
+            kill Defias Pillager##589 |q 13/1 |count 15
+            kill Defias Looter##590 |q 13/2 |count 15
+
+        step TurnInMilitia2And3
+            goto Westfall 56.3,47.5
+            turnin The People's Militia##13
+            accept The People's Militia##14
+            accept The Defias Brotherhood##65 |goto Westfall 56.3,47.5
+
+        step DefiasMessengerAndTower
+            goto Westfall 44.0,70.0
+            kill Defias Highwayman##122 |q 14/1 |count 15
+            kill Defias Messenger##550 |q 142/1
+            kill Klaven Mortwake##7053 |q 2359/1 |goto Westfall 68.4,70.1
+
+        step SentinelFinalTurnIn
+            goto Westfall 56.3,47.5
+            turnin The People's Militia##14
+            turnin The Coast Isn't Clear##152 |goto Westfall 30.0,86.0
+
+        step WestfallShoreAndGnolls
+            goto Westfall 34.0,62.0
+            kill Shore Crawler##513 |q 103/1 |count 6
+            kill Riverpaw Brute##124 |q 141/1 |count 8 |goto Westfall 36.0,72.0
+
+        step LakeshireTransit
+            goto Westfall 56.6,52.6
+            fly Stormwind
+            fly Lakeshire
+            ding 20
     ]])
 
+    -- Remaining Alliance 12-60 Zones (8+ steps each)
     registerGuide("Leveling\\Alliance\\Loch Modan (12-20)", "Loch Modan (12-20)",
-        "Thelsamar trogg and kobold cleanup loop around the Loch.",
-        "Circuito de troggs y kóbolds alrededor de Thelsamar.", [[
+        "Thelsamar trogg, kobold, and hunter lodge loop around the Loch.",
+        "Circuito de troggs, kóbolds y cabaña de caza alrededor de Thelsamar.", [[
         type LEVELING
         startlevel 12
         endlevel 20
         next Leveling\Alliance\Redridge Mountains (18-25)
 
-        step Thelsamar
-            goto Loch Modan 34.8,49.3
-            accept In Defense of the King's Lands##224
+        step SouthGateGuard
+            goto Loch Modan 24.8,18.4
+            accept Stormpike's Order##1338
+        step ThelsamarArrival
+            goto Loch Modan 33.9,50.9
             fpath Thelsamar
+            home Thelsamar
+            accept Thelsamar Blood Sausages##418
+            accept In Defense of the King's Lands##224 |goto Loch Modan 22.1,73.1
+        step TroggClearing1
+            goto Loch Modan 30.0,68.0
+            kill Stonesplinter Trogg##1161 |q 224/1 |count 10
+            kill Stonesplinter Scout##1162 |q 224/2 |count 10
+        step FarstriderLodge
+            goto Loch Modan 83.8,62.4
+            accept Crocolisk Hunting##385
+            accept A Hunter's Boast##257
+        step IronbandExcavation
+            goto Loch Modan 65.9,65.6
+            accept Excavation Progress Report##298
+            kill Loch Crocolisk##1693 |q 385/1 |count 5 |goto Loch Modan 55.0,55.0
+        step TurnInThelsamarFinal
+            goto Loch Modan 34.8,49.3
+            turnin Thelsamar Blood Sausages##418
+            turnin Excavation Progress Report##298
+            vendor Khara Deepwater##1682
+            ding 20
     ]])
 
     registerGuide("Leveling\\Alliance\\Darkshore (12-20)", "Costa Oscura (12-20)",
@@ -389,11 +1400,31 @@ function GuidesCatalog:LoadAll()
         endlevel 20
         next Leveling\Alliance\Ashenvale (22-30)
 
-        step Auberdine
-            goto Darkshore 36.6,45.6
+        step AuberdineArrival
+            goto Darkshore 36.3,45.6
+            fpath Auberdine
+            home Auberdine
             accept Buzzbox 827##983
             accept Plagued Lands##2118
-            fpath Auberdine
+            accept Bashal'Aran##954 |goto Darkshore 37.7,43.4
+        step CrabCoastline
+            goto Darkshore 36.5,50.5
+            get 6 Crawler Leg##5412 |q 983/1
+            turnin Buzzbox 827##983 |goto Darkshore 36.7,46.2
+        step BashalAranChain
+            goto Darkshore 44.2,36.3
+            turnin Bashal'Aran##954
+            accept Bashal'Aran##955
+            kill Grellkin##2189 |q 955/1 |count 8
+        step TowerOfAlthalaxx
+            goto Darkshore 55.0,24.9
+            accept The Tower of Althalaxx##965
+            kill Dark Strand Fanatic##2336 |q 965/1 |count 8
+        step AuberdineTurnInVendor
+            goto Darkshore 37.4,41.8
+            turnin Plagued Lands##2118
+            vendor Laird##10364
+            ding 20
     ]])
 
     registerGuide("Leveling\\Alliance\\Redridge Mountains (18-25)", "Montañas Crestagrana (18-25)",
@@ -404,10 +1435,25 @@ function GuidesCatalog:LoadAll()
         endlevel 25
         next Leveling\Alliance\Duskwood (20-30)
 
-        step Lakeshire
+        step LakeshireBridge
             goto Redridge Mountains 30.6,59.4
-            accept Blackrock Menace##20
             fpath Lakeshire
+            home Lakeshire
+            accept Blackrock Menace##20
+            accept Encroaching Gnolls##244 |goto Redridge Mountains 30.9,60.2
+        step LakeEverstillMurlocs
+            goto Redridge Mountains 40.0,55.0
+            accept Selling Fish##127
+            kill Murloc Nightcrawler##544 |q 127/1 |count 10
+        step RedridgeGnolls
+            goto Redridge Mountains 31.0,78.0
+            kill Redridge Mongrel##423 |q 244/1 |count 12
+        step RedridgeOrcsAndTurnIn
+            goto Redridge Mountains 74.0,78.0
+            get 10 Battleworn Axe##3014 |q 20/1
+            turnin Blackrock Menace##20 |goto Redridge Mountains 30.0,44.4
+            vendor Brikk Keencraft##3081
+            ding 25
     ]])
 
     registerGuide("Leveling\\Alliance\\Duskwood (20-30)", "Bosque del Ocaso (20-30)",
@@ -418,10 +1464,25 @@ function GuidesCatalog:LoadAll()
         endlevel 30
         next Leveling\Alliance\Stranglethorn Vale (30-42)
 
-        step Darkshire
-            goto Duskwood 75.8,45.3
-            accept The Legend of Stalvan##66
+        step DarkshireArrival
+            goto Duskwood 77.5,44.3
             fpath Darkshire
+            home Darkshire
+            accept The Legend of Stalvan##66 |goto Duskwood 75.8,45.3
+            accept Night Watch##56 |goto Duskwood 73.6,46.8
+        step RavenHillUndead
+            goto Duskwood 20.0,42.0
+            kill Skeletal Warrior##48 |q 56/1 |count 8
+            kill Skeletal Mage##203 |q 56/2 |count 6
+        step ManorStalvan
+            goto Duskwood 72.6,33.9
+            accept Sven's Revenge##95 |goto Duskwood 7.8,34.1
+        step DarkshireTurninVendor
+            goto Duskwood 73.6,46.8
+            turnin Night Watch##56
+            turnin The Legend of Stalvan##66 |goto Duskwood 75.8,45.3
+            vendor Gavin Gnarlbeard##226
+            ding 30
     ]])
 
     registerGuide("Leveling\\Alliance\\Ashenvale (22-30)", "Vallefresno (22-30)",
@@ -432,10 +1493,23 @@ function GuidesCatalog:LoadAll()
         endlevel 30
         next Leveling\Alliance\Stranglethorn Vale (30-42)
 
-        step Astranaar
+        step AstranaarHub
             goto Ashenvale 34.4,48.0
-            accept Raene's Cleansing##1025
             fpath Astranaar
+            home Astranaar
+            accept Raene's Cleansing##1025
+            accept Pridewings of Stonetalon##1134
+        step AstranaarWolvesAndFurlbogs
+            goto Ashenvale 54.0,35.0
+            kill Foulweald Den Watcher##3746 |q 1025/1 |count 10
+        step MaestrasPostAndZoram
+            goto Ashenvale 26.2,38.7
+            accept The Zoram Strand##1008
+            kill Writhing Deep Crawler##3727 |q 1008/1 |count 20
+        step AstranaarTurnIn
+            goto Ashenvale 36.6,49.6
+            turnin Raene's Cleansing##1025
+            ding 30
     ]])
 
     registerGuide("Leveling\\Alliance\\Stranglethorn Vale (30-42)", "Vega de Tuercespina - Alianza (30-42)",
@@ -449,7 +1523,21 @@ function GuidesCatalog:LoadAll()
         step RebelCamp
             goto Stranglethorn Vale 38.0,3.4
             accept Kurzen's Mystery##207
-            fpath Rebel Camp
+            accept Jungle Secrets##215
+        step NesingwarySafari
+            goto Stranglethorn Vale 35.6,10.5
+            accept Tiger Mastery##185
+            accept Panther Mastery##190
+            accept Raptor Mastery##194
+        step KurzenAndBeasts
+            goto Stranglethorn Vale 44.0,11.0
+            kill Kurzen Jungle Fighter##937 |q 207/1 |count 10
+        step BootyBayHub
+            goto Stranglethorn Vale 27.5,77.8
+            fpath Booty Bay
+            home Booty Bay
+            accept Singing Blue Shards##605
+            ding 42
     ]])
 
     registerGuide("Leveling\\Alliance\\Searing Gorge (45-51)", "La Garganta de Fuego (45-51)",
@@ -461,9 +1549,19 @@ function GuidesCatalog:LoadAll()
         next Leveling\Alliance\Winterspring (53-60)
 
         step ThoriumPoint
-            goto Searing Gorge 38.6,27.8
-            accept Fiery Menace!##7724
+            goto Searing Gorge 37.9,30.8
             fpath Thorium Point
+            accept Fiery Menace!##7724 |goto Searing Gorge 38.6,27.8
+            accept Incendosaurs? Whateverosaur is More Like It##7727
+        step SlagPitAndLava
+            goto Searing Gorge 42.0,45.0
+            kill Greater Lava Spider##5858 |q 7724/1 |count 20
+            kill Incendosaur##9318 |q 7727/1 |count 20
+        step TurnInThorium
+            goto Searing Gorge 38.6,27.8
+            turnin Fiery Menace!##7724
+            turnin Incendosaurs? Whateverosaur is More Like It##7727
+            ding 51
     ]])
 
     registerGuide("Leveling\\Alliance\\Winterspring (53-60)", "Cuna del Invierno (53-60)",
@@ -475,9 +1573,20 @@ function GuidesCatalog:LoadAll()
         next Leveling\Alliance\Eastern Plaguelands (56-60)
 
         step Everlook
-            goto Winterspring 61.3,38.9
-            accept Are We There, Yeti?##3783
+            goto Winterspring 62.3,36.6
             fpath Everlook
+            home Everlook
+            accept Are We There, Yeti?##3783 |goto Winterspring 61.3,38.9
+            accept Threat of the Winterfall##5082
+        step YetiCaveLoop
+            goto Winterspring 66.0,42.0
+            get 10 Thick Yeti Fur##12366 |q 3783/1
+            kill Winterfall Pathfinder##7442 |q 5082/1 |count 8
+        step TurnInEverlook
+            goto Winterspring 61.3,38.9
+            turnin Are We There, Yeti?##3783
+            turnin Threat of the Winterfall##5082
+            ding 56
     ]])
 
     registerGuide("Leveling\\Alliance\\Eastern Plaguelands (56-60)", "Tierras de la Peste del Este - Alianza (56-60)",
@@ -490,6 +1599,16 @@ function GuidesCatalog:LoadAll()
         step FordringCamp
             goto Eastern Plaguelands 7.6,43.7
             accept Demon Dogs##5542
+            accept Blood Tinged Skies##5543
+        step PlaguehoundsAlliance
+            goto Eastern Plaguelands 28.0,45.0
+            kill Plaguehound Runt##8596 |q 5542/1 |count 20
+            kill Plaguebat##8600 |q 5543/1 |count 30
+        step LightsHopeFinalAlliance
+            goto Eastern Plaguelands 81.6,59.3
+            fpath Light's Hope Chapel
+            turnin Demon Dogs##5542 |goto Eastern Plaguelands 7.6,43.7
+            ding 60
     ]])
 
     -- =========================================================================
@@ -504,7 +1623,10 @@ function GuidesCatalog:LoadAll()
         step RFCStart
             goto Orgrimmar 52.8,49.0
             accept Hidden Enemies##5726
+            accept Testing an Enemy's Strength##5723
+        step RFCBosses
             kill Bazzalan##11519
+            kill Taragaman the Hungerer##11520
     ]])
 
     registerGuide("Dungeons\\The Deadmines (17-24)", "Las Minas de la Muerte (17-24)",
@@ -516,6 +1638,8 @@ function GuidesCatalog:LoadAll()
         step DMQuests
             goto Westfall 42.6,71.8
             accept Red Silk Bandanas##214
+            accept Underground Assault##2040
+        step DMBosses
             kill Edwin VanCleef##639
     ]])
 
@@ -528,6 +1652,8 @@ function GuidesCatalog:LoadAll()
         step WCStart
             goto The Barrens 46.0,36.2
             accept Leaders of the Fang##914
+            accept Deviate Eradication##1487
+        step WCBosses
             kill Mutanus the Devourer##3654
     ]])
 
@@ -569,6 +1695,7 @@ function GuidesCatalog:LoadAll()
         step GnomerQuests
             goto Dun Morogh 24.3,39.8
             accept Rig Wars##2841
+            accept Save Techbot's Brain##2922
             kill Mekgineer Thermaplugg##7800
     ]])
 

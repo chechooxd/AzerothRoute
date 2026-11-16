@@ -75,6 +75,12 @@ function AR:Initialize()
         if self.QuestAutoAccept then
             self.QuestAutoAccept:RegisterLiveEvents()
         end
+        if self.Inventory and self.Inventory.RegisterLiveEvents then
+            self.Inventory:RegisterLiveEvents()
+        end
+        if self.TaxiTracker and self.TaxiTracker.RegisterLiveEvents then
+            self.TaxiTracker:RegisterLiveEvents()
+        end
         if self.ActionBar then
             self.ActionBar:Initialize()
             self.ActionBar:RegisterLiveEvents()

@@ -141,11 +141,16 @@ function Parser:ParseGoalLine(line, step)
                 local name, tid = parseTargetAndId(arg)
                 goal.target = name
                 goal.targetid = tid
-            elseif cmd == "talk" then
-                goal.action = "talk"
+            elseif cmd == "talk" or cmd == "vendor" or cmd == "trainer" then
+                goal.action = cmd
                 local name, npcid = parseTargetAndId(arg)
                 goal.target = name
                 goal.npcid = npcid
+            elseif cmd == "click" or cmd == "use" then
+                goal.action = cmd
+                local name, tid = parseTargetAndId(arg)
+                goal.target = name
+                goal.targetid = tid
             elseif cmd == "learn" or cmd == "learnspell" then
                 goal.action = "learn"
                 local name, spellid = parseTargetAndId(arg)
@@ -164,9 +169,17 @@ function Parser:ParseGoalLine(line, step)
             elseif cmd == "ding" then
                 goal.action = "ding"
                 goal.level = tonumber(arg)
-            elseif cmd == "fpath" or cmd == "home" or cmd == "hearth" then
+            elseif cmd == "fpath" or cmd == "home" or cmd == "hearth" or cmd == "fly" then
                 goal.action = cmd
                 goal.param = arg
+            elseif cmd == "tip" then
+                if step and step.goals and #step.goals > 0 then
+                    local prev = step.goals[#step.goals]
+                    prev.tooltip = prev.tooltip and (prev.tooltip .. " " .. arg) or arg
+                    return nil
+                end
+                goal.action = "tip"
+                goal.text = arg
             else
                 goal.action = cmd
                 goal.param = arg

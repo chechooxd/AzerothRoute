@@ -164,19 +164,19 @@ function ViewerFrame:Initialize()
         end
         row:SetScript("OnClick", function(r)
             if not r._goal then return end
-            if r._goal.confirm then
-                r._goal.confirmed = true
-                if AR.Progression then
-                    AR.Progression:TryToCompleteStep(true)
-                end
-                self:RefreshVisuals()
-                return
-            end
             if r._goal.map and r._goal.x and r._goal.y and AR.Pointer then
                 AR.Pointer:PlaceStepPins({
                     { map = r._goal.map, x = r._goal.x, y = r._goal.y, title = r.label and r.label:GetText() or "Waypoint", objectiveIndex = i, action = r._goal.action },
                 })
                 AR.Pointer:UpdateArrow(0)
+            end
+            local act = r._goal.action
+            if r._goal.confirm or act == "confirm" or act == "vendor" or act == "trainer" or act == "home" or act == "hearth" or act == "fpath" or act == "fly" or act == "click" or act == "use" then
+                r._goal.confirmed = true
+                if AR.Progression then
+                    AR.Progression:TryToCompleteStep(true)
+                end
+                self:RefreshVisuals()
             end
         end)
         row:Hide()

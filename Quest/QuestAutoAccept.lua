@@ -1,15 +1,17 @@
--- AzerothRoute: Modifier-Safe Dialog Automation & Native Event Hooks (SPEC-04 / SPEC-16)
+-- AzerothRoute: Modifier-Safe Dialog Automation & Native Gossip/Greeting/Quest Hooks (SPEC-04 / SPEC-16 / SPEC-22)
 
 local AR = _G.AzerothRoute
 local QuestAutoAccept = {
     lastDeclineTime = -999,
     blacklist = {},
+    _liveRegistered = false,
 }
 AR.QuestAutoAccept = QuestAutoAccept
 
 function QuestAutoAccept:Reset()
     self.lastDeclineTime = -999
     self.blacklist = {}
+    self._liveRegistered = false
 end
 
 function QuestAutoAccept:OnManualDecline()
@@ -46,27 +48,126 @@ function QuestAutoAccept:GetActiveStepAndStickyGoals()
     return goals
 end
 
-function QuestAutoAccept:ShouldAutoAccept(questID)
-    if self:IsLockedOut(questID) then return false end
-    if AR.db and AR.db.global and AR.db.global.autoaccept == false then
-        return false
+local function goalMatchesQuest(g, action, questID, questTitle)
+    if g.action ~= action then return false end
+    if questID and g.questid == questID then
+        return true
     end
-    for _, g in ipairs(self:GetActiveStepAndStickyGoals()) do
-        if g.action == "accept" and g.questid == questID and not g.noautoaccept then
+    if questTitle and questTitle ~= "" then
+        local lowerTitle = tostring(questTitle):lower()
+        if g.quest and tostring(g.quest):lower() == lowerTitle then
             return true
+        end
+        if g.questid and AR.Localizers and AR.Localizers.GetTranslatedQuest then
+            local loc = AR.Localizers:GetTranslatedQuest(g.questid, g.quest)
+            if loc and tostring(loc):lower() == lowerTitle then
+                return true
+            end
         end
     end
     return false
 end
 
-function QuestAutoAccept:ShouldAutoTurnIn(questID)
+function QuestAutoAccept:IsQuestInCurrentGuide(action, questID, questTitle)
+    local guide = AR.Progression and AR.Progression.currentGuide
+    if not guide or not guide.steps then return false, false end
+    for _, step in ipairs(guide.steps) do
+        for _, g in ipairs(step.goals or {}) do
+            if goalMatchesQuest(g, action, questID, questTitle) then
+                return true, g.noautoaccept == true
+            end
+        end
+    end
+    return false, false
+end
+
+function QuestAutoAccept:ShouldAutoAccept(questID, questTitle)
+    if self:IsLockedOut(questID) then return false end
+    if AR.db and AR.db.global and AR.db.global.autoaccept == false then
+        return false
+    end
+    for _, g in ipairs(self:GetActiveStepAndStickyGoals()) do
+        if goalMatchesQuest(g, "accept", questID, questTitle) then
+            return not g.noautoaccept
+        end
+    end
+    local inGuide, blocked = self:IsQuestInCurrentGuide("accept", questID, questTitle)
+    if inGuide then
+        return not blocked
+    end
+    if AR.db and AR.db.global and AR.db.global.autoacceptall == true then
+        return true
+    end
+    return false
+end
+
+function QuestAutoAccept:ShouldAutoTurnIn(questID, questTitle)
     if self:IsLockedOut(questID) then return false end
     if AR.db and AR.db.global and AR.db.global.autoturnin == false then
         return false
     end
     for _, g in ipairs(self:GetActiveStepAndStickyGoals()) do
-        if g.action == "turnin" and g.questid == questID and not g.noautoaccept then
-            return true
+        if goalMatchesQuest(g, "turnin", questID, questTitle) then
+            return not g.noautoaccept
+        end
+    end
+    local inGuide, blocked = self:IsQuestInCurrentGuide("turnin", questID, questTitle)
+    if inGuide then
+        return not blocked
+    end
+    if AR.db and AR.db.global and AR.db.global.autoacceptall == true then
+        return true
+    end
+    return false
+end
+
+function QuestAutoAccept:OnGossipShow()
+    if self:IsLockedOut(nil) or not _G.C_GossipInfo then return false end
+    if _G.C_GossipInfo.GetActiveQuests and _G.C_GossipInfo.SelectActiveQuest then
+        for _, q in ipairs(_G.C_GossipInfo.GetActiveQuests() or {}) do
+            if q and q.questID and (q.isComplete or (AR.Compat and AR.Compat.IsQuestComplete and AR.Compat:IsQuestComplete(q.questID))) then
+                if self:ShouldAutoTurnIn(q.questID, q.title) then
+                    _G.C_GossipInfo.SelectActiveQuest(q.questID)
+                    return true
+                end
+            end
+        end
+    end
+    if _G.C_GossipInfo.GetAvailableQuests and _G.C_GossipInfo.SelectAvailableQuest then
+        for _, q in ipairs(_G.C_GossipInfo.GetAvailableQuests() or {}) do
+            if q and q.questID and self:ShouldAutoAccept(q.questID, q.title) then
+                _G.C_GossipInfo.SelectAvailableQuest(q.questID)
+                return true
+            end
+        end
+    end
+    return false
+end
+
+function QuestAutoAccept:OnQuestGreeting()
+    if self:IsLockedOut(nil) then return false end
+    if _G.GetNumActiveQuests and _G.SelectActiveQuest then
+        for i = 1, (_G.GetNumActiveQuests() or 0) do
+            local title, isComplete = _G.GetActiveTitle and _G.GetActiveTitle(i)
+            local qid = _G.GetActiveQuestID and _G.GetActiveQuestID(i)
+            if isComplete ~= false and self:ShouldAutoTurnIn(qid, title) then
+                _G.SelectActiveQuest(i)
+                return true
+            end
+        end
+    end
+    if _G.GetNumAvailableQuests and _G.SelectAvailableQuest then
+        for i = 1, (_G.GetNumAvailableQuests() or 0) do
+            local title = _G.GetAvailableTitle and _G.GetAvailableTitle(i)
+            local qid
+            if _G.GetAvailableQuestInfo then
+                local _, _, _, _, id = _G.GetAvailableQuestInfo(i)
+                qid = id
+            end
+            if self:ShouldAutoAccept(qid, title) then
+                _G.SelectAvailableQuest(i)
+                return true
+            end
         end
     end
     return false
@@ -74,14 +175,16 @@ end
 
 function QuestAutoAccept:OnQuestDetail()
     local qid = (_G.GetQuestID and _G.GetQuestID()) or nil
-    if qid and self:ShouldAutoAccept(qid) and _G.AcceptQuest then
+    local qTitle = (_G.GetTitleText and _G.GetTitleText()) or nil
+    if (qid or qTitle) and self:ShouldAutoAccept(qid, qTitle) and _G.AcceptQuest then
         _G.AcceptQuest()
     end
 end
 
 function QuestAutoAccept:OnQuestProgress()
     local qid = (_G.GetQuestID and _G.GetQuestID()) or nil
-    if qid and self:ShouldAutoTurnIn(qid) then
+    local qTitle = (_G.GetTitleText and _G.GetTitleText()) or nil
+    if (qid or qTitle) and self:ShouldAutoTurnIn(qid, qTitle) then
         if not _G.IsQuestCompletable or _G.IsQuestCompletable() then
             if _G.CompleteQuest then
                 _G.CompleteQuest()
@@ -92,7 +195,8 @@ end
 
 function QuestAutoAccept:OnQuestComplete()
     local qid = (_G.GetQuestID and _G.GetQuestID()) or nil
-    if not qid or not self:ShouldAutoTurnIn(qid) then return end
+    local qTitle = (_G.GetTitleText and _G.GetTitleText()) or nil
+    if (not qid and not qTitle) or not self:ShouldAutoTurnIn(qid, qTitle) then return end
 
     local numChoices = (_G.GetNumQuestChoices and _G.GetNumQuestChoices()) or 0
     if numChoices <= 1 then
@@ -115,7 +219,14 @@ function QuestAutoAccept:OnQuestComplete()
 end
 
 function QuestAutoAccept:RegisterLiveEvents()
-    if not AR.Events then return end
+    if self._liveRegistered or not AR.Events then return end
+    self._liveRegistered = true
+    AR.Events:RegisterEvent("GOSSIP_SHOW", function()
+        self:OnGossipShow()
+    end)
+    AR.Events:RegisterEvent("QUEST_GREETING", function()
+        self:OnQuestGreeting()
+    end)
     AR.Events:RegisterEvent("QUEST_DETAIL", function()
         self:OnQuestDetail()
     end)

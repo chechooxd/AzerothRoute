@@ -35,6 +35,9 @@ function Goal:IsCompleteable()
     if self.action == "text" or self.action == "info" or self.action == "tip" then
         return false
     end
+    if self.action == "talk" and not self.questid then
+        return false
+    end
     if self.action == "goto" then
         -- Goto is passive unless |c is set OR every visible goal in the step is goto (and this is the last one)
         local step = self.parentStep
@@ -148,6 +151,14 @@ function Goal:EvaluateLiveCompletion()
         return false, true, false
     elseif self.action == "confirm" then
         return self.confirmed == true, true, false
+    elseif self.action == "fpath" then
+        local known = (AR.TaxiTracker and AR.TaxiTracker.KnowsTaxi and AR.TaxiTracker:KnowsTaxi(self.param)) or false
+        return (known or self.visited == true or self.confirmed == true), true, false
+    elseif self.action == "fly" then
+        local onTaxi = (_G.UnitOnTaxi and _G.UnitOnTaxi("player")) == true
+        return (self.visited == true or self.confirmed == true or onTaxi), true, false
+    elseif self.action == "vendor" or self.action == "trainer" or self.action == "home" or self.action == "hearth" or self.action == "click" or self.action == "use" then
+        return (self.visited == true or self.confirmed == true), true, false
     end
 
     return false, true, false
@@ -242,16 +253,26 @@ function Goal:GetText()
         local gx = (self.x and self.x <= 1) and (self.x * 100.0) or (self.x or 0)
         local gy = (self.y and self.y <= 1) and (self.y * 100.0) or (self.y or 0)
         return L:Format("GOAL_GOTO", gx, gy)
-    elseif self.action == "fpath" then
-        return L:Format("GOAL_FPATH", self.param or "Flight Master")
+    elseif self.action == "fpath" or self.action == "fly" then
+        local nodeName = (AR.TaxiTracker and AR.TaxiTracker.GetLocalizedNodeName and AR.TaxiTracker:GetLocalizedNodeName(self.param)) or self.param or "Flight Master"
+        return L:Format(self.action == "fly" and "GOAL_FLY" or "GOAL_FPATH", nodeName)
     elseif self.action == "home" then
-        return L:Format("GOAL_HOME", self.param or "Innkeeper")
+        local nodeName = (AR.TaxiTracker and AR.TaxiTracker.GetLocalizedNodeName and AR.TaxiTracker:GetLocalizedNodeName(self.param)) or self.param or "Innkeeper"
+        return L:Format("GOAL_HOME", nodeName)
     elseif self.action == "hearth" then
-        return L:Format("GOAL_HEARTH", self.param or "Home")
+        local nodeName = (AR.TaxiTracker and AR.TaxiTracker.GetLocalizedNodeName and AR.TaxiTracker:GetLocalizedNodeName(self.param)) or self.param or "Home"
+        return L:Format("GOAL_HEARTH", nodeName)
     elseif self.action == "vendor" then
-        return L:Format("GOAL_VENDOR", self.target or self.param or "Vendor")
+        local npcName = (loc and self.npcid and loc:GetTranslatedNPC(self.npcid, self.target)) or self.target or self.param or "Vendor"
+        return L:Format("GOAL_VENDOR", npcName)
     elseif self.action == "trainer" then
-        return L:Format("GOAL_TRAINER", self.target or self.param or "Trainer")
+        local npcName = (loc and self.npcid and loc:GetTranslatedNPC(self.npcid, self.target)) or self.target or self.param or "Trainer"
+        return L:Format("GOAL_TRAINER", npcName)
+    elseif self.action == "click" then
+        return L:Format("GOAL_CLICK", self.target or self.param or "Object")
+    elseif self.action == "use" then
+        local iName = (loc and self.targetid and loc:GetTranslatedItem(self.targetid, self.target)) or self.target or self.param or "Item"
+        return L:Format("GOAL_USE", iName)
     elseif self.action == "confirm" then
         return self.text or L:Get("GOAL_CONFIRM")
     end
