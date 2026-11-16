@@ -15,6 +15,7 @@ local ActionBar = {
     barFrame = nil,
     itemBarFrame = nil,
     pendingCombatUpdate = false,
+    raidMarkBlocked = false,
 }
 AR.ActionBar = ActionBar
 
@@ -81,9 +82,14 @@ function ActionBar:IsForeverClient()
 end
 
 function ActionBar:CanUseAutoRaidMark()
-    -- WoW Forever and Midnight+ (>= 120000) block addon calls to SetRaidTarget().
-    -- On those clients, raid markers must only run from secure button macrotext (/tm).
-    if self:IsForeverClient() or getToc() >= 120000 then
+    -- Modern WoW builds (Forever 16xxx, Classic Era >= 11508, TBC Anniversary >= 20505,
+    -- MoP/Retail >= 120000) raise ADDON_ACTION_FORBIDDEN / ADDON_ACTION_BLOCKED on addon
+    -- SetRaidTarget() calls; raid markers must only run from secure /tm macros.
+    if self.raidMarkBlocked or self:IsForeverClient() then
+        return false
+    end
+    local toc = getToc()
+    if toc == 0 or toc >= 11508 then
         return false
     end
     return true
@@ -277,9 +283,15 @@ function ActionBar:BuildMacroForGoal(goal)
         local enemy = goal.action == "kill" or goal.action == "from"
         -- Clear the previous target before searching: a failed lookup must not mark it.
         -- On Forever "/tm !8" sets the skull without toggling it off on a second click (as RXPGuides does).
-        local enemyMark = self:IsForeverClient() and "/tm !8" or "/tm 8"
-        return "/cleartarget\n/targetexact " .. name
-            .. (enemy and ("\n/cleartarget [dead]\n" .. enemyMark) or "\n/tm 1")
+        local macro = "/cleartarget\n/targetexact " .. name
+        if enemy then
+            macro = macro .. "\n/cleartarget [dead]"
+        end
+        if not self.raidMarkBlocked and not (AR.db and AR.db.profile and AR.db.profile.automark == false) then
+            local enemyMark = self:IsForeverClient() and "/tm !8" or "/tm 8"
+            macro = macro .. (enemy and ("\n" .. enemyMark) or "\n/tm 1")
+        end
+        return macro
     end
     return nil
 end

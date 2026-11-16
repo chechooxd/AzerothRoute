@@ -115,10 +115,18 @@ T:Describe("Resume: visible localized secure targets", function()
         MockWoW:FireEvent("PLAYER_TARGET_CHANGED")
         T:AssertEqual(_G.GetRaidTargetIndex("target"), nil, "Forever 16001 must skip addon SetRaidTarget to prevent ADDON_ACTION_BLOCKED")
 
-        -- Non-Forever unrestricted Classic Era: still marks matching enemy (Skull 8) and friendly NPC (Star 1)
+        -- Non-Forever unrestricted legacy Classic Era (< 11508): still marks matching enemy (Skull 8) and friendly NPC (Star 1)
         local origProj = _G.WOW_PROJECT_ID
         _G.WOW_PROJECT_ID = 2
         MockWoW.tocVersion = 11508
+        MockWoW:FireEvent("PLAYER_TARGET_CHANGED")
+        T:AssertEqual(_G.GetRaidTargetIndex("target"), nil, "Classic Era 11508+ must also skip addon SetRaidTarget")
+
+        MockWoW.tocVersion = 20506
+        MockWoW:FireEvent("PLAYER_TARGET_CHANGED")
+        T:AssertEqual(_G.GetRaidTargetIndex("target"), nil, "TBC Classic Anniversary 20506 must skip addon SetRaidTarget")
+
+        MockWoW.tocVersion = 11507
 
         MockWoW:FireEvent("PLAYER_TARGET_CHANGED")
         T:AssertEqual(_G.GetRaidTargetIndex("target"), 8, "Matching live enemy target must be marked with Skull (8)")

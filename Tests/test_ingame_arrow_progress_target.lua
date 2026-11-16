@@ -166,14 +166,14 @@ T:Describe("In-game fixes: arrow, flight path/hearth detection, target button", 
         local AR = _G.AzerothRoute
         local origToc = MockWoW.tocVersion
         local ok, err = pcall(function()
-            for _, toc in ipairs({ 16000, 16001, 16002, 19999, 120000 }) do
+            for _, toc in ipairs({ 11508, 11509, 16000, 16001, 16002, 19999, 20505, 20506, 120000 }) do
                 MockWoW.tocVersion = toc
                 T:AssertEqual(AR.ActionBar:CanUseAutoRaidMark(), false, "Auto-mark disabled on toc " .. toc)
             end
             local origProject = _G.WOW_PROJECT_ID
-            _G.WOW_PROJECT_ID = 2 -- Classic Era
-            MockWoW.tocVersion = 11508
-            T:AssertEqual(AR.ActionBar:CanUseAutoRaidMark(), true, "Classic Era keeps auto-mark")
+            _G.WOW_PROJECT_ID = 2 -- Legacy pre-restriction Classic Era
+            MockWoW.tocVersion = 11507
+            T:AssertEqual(AR.ActionBar:CanUseAutoRaidMark(), true, "Legacy Classic Era keeps auto-mark")
 
             _G.WOW_PROJECT_ID = origProject
             MockWoW.tocVersion = 16002
@@ -183,9 +183,9 @@ T:Describe("In-game fixes: arrow, flight path/hearth detection, target button", 
             T:AssertTrue(friendly:find("/tm 1", 1, true) ~= nil, "Friendly marker unchanged: " .. friendly)
 
             _G.WOW_PROJECT_ID = 2
-            MockWoW.tocVersion = 11508
+            MockWoW.tocVersion = 11507
             macro = AR.ActionBar:BuildMacroForGoal({ action = "kill", target = "Zhevra" })
-            T:AssertTrue(macro:find("/tm 8", 1, true) ~= nil and not macro:find("!", 1, true), "Classic Era keeps /tm 8")
+            T:AssertTrue(macro:find("/tm 8", 1, true) ~= nil and not macro:find("!", 1, true), "Legacy Classic Era keeps /tm 8")
         end)
         _G.WOW_PROJECT_ID = _G.WOW_PROJECT_CAMELOT
         MockWoW.tocVersion = origToc
@@ -199,12 +199,18 @@ T:Describe("In-game fixes: arrow, flight path/hearth detection, target button", 
         local origPrint = AR.Print
         AR.Print = function(_, msg) table.insert(printed, msg) end
         local ok, err = pcall(function()
+            AR.ActionBar.raidMarkBlocked = false
             AR.blockedReported = {}
-            AR:OnActionBlocked("ADDON_ACTION_BLOCKED", "AzerothRoute", "SetRaidTarget()")
-            AR:OnActionBlocked("ADDON_ACTION_BLOCKED", "AzerothRoute", "SetRaidTarget()")
+            AR:OnActionBlocked("ADDON_ACTION_FORBIDDEN", "AzerothRoute", "SetRaidTarget()")
+            AR:OnActionBlocked("ADDON_ACTION_FORBIDDEN", "AzerothRoute", "SetRaidTarget()")
             AR:OnActionBlocked("ADDON_ACTION_BLOCKED", "OtherAddon", "CastSpellByName()")
             T:AssertEqual(#printed, 1, "Reported once, only for this addon")
             T:AssertTrue(printed[1]:find("SetRaidTarget()", 1, true) ~= nil, "Names the blocked function")
+            T:AssertTrue(AR.ActionBar.raidMarkBlocked, "SetRaidTarget block sets raidMarkBlocked circuit breaker")
+            local disarmed = AR.ActionBar:BuildMacroForGoal({ action = "kill", target = "Zhevra" })
+            T:AssertTrue(disarmed:find("/tm", 1, true) == nil, "Circuit breaker strips /tm from action bar macros: " .. tostring(disarmed))
+            T:AssertEqual(AR.TargetMacro:GetMarkerLines(), "", "Circuit breaker strips /tm from ARTargeting macro")
+            AR.ActionBar.raidMarkBlocked = false
         end)
         AR.Print = origPrint
         if not ok then error(err, 0) end

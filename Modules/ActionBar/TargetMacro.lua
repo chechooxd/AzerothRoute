@@ -27,6 +27,12 @@ function TargetMacro:IsEnabled()
 end
 
 function TargetMacro:GetMarkerLines()
+    if AR.ActionBar and AR.ActionBar.raidMarkBlocked then
+        return ""
+    end
+    if AR.db and AR.db.profile and AR.db.profile.automark == false then
+        return ""
+    end
     local forever = AR.ActionBar and AR.ActionBar:IsForeverClient()
     -- "!" sets the skull without toggling it off on repeated presses (Forever, as RXPGuides does).
     return string.format("/tm [harm,nodead] %s\n/tm [help,nodead] 1", forever and "!8" or "8")
@@ -47,7 +53,8 @@ function TargetMacro:BuildBody(targets)
         return ("//AzerothRoute - " .. text):sub(1, self.MAX_BODY)
     end
 
-    local suffix = "\n" .. self:GetMarkerLines()
+    local markerLines = self:GetMarkerLines()
+    local suffix = (markerLines ~= "") and ("\n" .. markerLines) or ""
     -- Drop the lowest-priority (first) lines until the body fits the client limit.
     while #lines > 1 and #table.concat(lines, "\n") + #suffix > self.MAX_BODY do
         table.remove(lines, 1)

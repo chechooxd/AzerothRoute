@@ -67,6 +67,16 @@ function AR:OnActionBlocked(event, addonName, funcName)
     if addonName ~= "AzerothRoute" then return end
     self.blockedReported = self.blockedReported or {}
     local key = tostring(funcName)
+    if key:find("SetRaidTarget", 1, true) and self.ActionBar and not self.ActionBar.raidMarkBlocked then
+        self.ActionBar.raidMarkBlocked = true
+        if not (_G.InCombatLockdown and _G.InCombatLockdown()) then
+            self.ActionBar:UpdateFromCurrentStep()
+            if self.TargetMacro then self.TargetMacro:Update() end
+        else
+            self.ActionBar.pendingCombatUpdate = true
+            if self.TargetMacro then self.TargetMacro.pending = true end
+        end
+    end
     if self.blockedReported[key] then return end
     self.blockedReported[key] = true
     local L = self.L
