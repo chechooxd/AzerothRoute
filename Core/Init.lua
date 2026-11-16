@@ -78,6 +78,9 @@ function AR:Initialize()
         if self.Pointer then
             self.Pointer:InitializeFrames()
         end
+        if self.PartySync then
+            self.PartySync:RegisterLiveEvents()
+        end
         if self.ViewerFrame then
             self.ViewerFrame:Initialize()
             if not self.Progression.currentGuide and self.GuideMenu then

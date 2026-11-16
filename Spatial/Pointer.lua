@@ -1,4 +1,4 @@
--- AzerothRoute: Pointer UI, On-Screen Directional Arrow, GamePad-Safe Map Pins, Corpse Arrow & Ant Trails (SPEC-05 / SPEC-17)
+-- AzerothRoute: Pointer UI, On-Screen Directional Arrow, GamePad-Safe Map Pins, Corpse Arrow & Ant Trails (SPEC-05 / SPEC-17 / SPEC-18)
 -- Invariant: Map and minimap pins are NEVER suppressed when GamePad / InputDeviceInterfaceStyle is active.
 
 local AR = _G.AzerothRoute
@@ -11,6 +11,8 @@ local Pointer = {
         "#a78bfa", -- Violet
         "#fb923c", -- Orange
     },
+    MINIMAP_RADIUS_PX = 70,
+    MINIMAP_VIEW_YARDS = 200,
     worldMapPins = {},
     minimapPins = {},
     worldMapPinFrames = {},
@@ -59,6 +61,36 @@ function Pointer:GetObjectiveColor(index)
     return self.OBJECTIVE_PALETTE[idx]
 end
 
+function Pointer:PositionPinFrames(pin, wmPin, mmPin)
+    local wmCanvas = (_G.WorldMapFrame and _G.WorldMapFrame.ScrollContainer) or _G.WorldMapFrame or _G.UIParent
+    local cw, ch = 1002, 668
+    if wmCanvas and wmCanvas.GetSize then
+        local w, h = wmCanvas:GetSize()
+        if w and w > 0 then cw = w end
+        if h and h > 0 then ch = h end
+    end
+    wmPin:SetPoint("CENTER", wmCanvas, "TOPLEFT", (pin.x or 0.5) * cw, -(pin.y or 0.5) * ch)
+
+    -- Minimap radar projection in world yards (clamped to minimap circle radius)
+    local pMap, px, py = AR.Coords:GetPlayerPosition()
+    local c1, wx1, wy1 = AR.Coords:ToWorldYards(pMap, px, py)
+    local c2, wx2, wy2 = AR.Coords:ToWorldYards(pin.map or pMap, pin.x or 0.5, pin.y or 0.5)
+    local dxPx, dyPx = 0, 0
+    if c1 and c2 and c1 == c2 then
+        local dxYd = wx2 - wx1
+        local dyYd = -(wy2 - wy1)
+        local distYd = math.sqrt(dxYd * dxYd + dyYd * dyYd)
+        local scale = self.MINIMAP_RADIUS_PX / self.MINIMAP_VIEW_YARDS
+        dxPx = dxYd * scale
+        dyPx = dyYd * scale
+        if distYd > self.MINIMAP_VIEW_YARDS and distYd > 0 then
+            dxPx = (dxYd / distYd) * self.MINIMAP_RADIUS_PX
+            dyPx = (dyYd / distYd) * self.MINIMAP_RADIUS_PX
+        end
+    end
+    mmPin:SetPoint("CENTER", _G.Minimap or _G.UIParent, "CENTER", dxPx, dyPx)
+end
+
 function Pointer:PlaceStepPins(pinSpecs)
     self.worldMapPins = {}
     self.minimapPins = {}
@@ -79,15 +111,16 @@ function Pointer:PlaceStepPins(pinSpecs)
         table.insert(self.worldMapPins, pin)
         table.insert(self.minimapPins, pin)
 
-        -- Create real WorldMap and Minimap visual pin frames
         local wmPin = _G.CreateFrame("Button", "AzerothRouteWorldMapPin" .. i, _G.WorldMapFrame or _G.UIParent)
         wmPin:SetSize(14, 14)
-        wmPin:Show()
-        table.insert(self.worldMapPinFrames, wmPin)
-
         local mmPin = _G.CreateFrame("Button", "AzerothRouteMinimapPin" .. i, _G.Minimap or _G.UIParent)
         mmPin:SetSize(12, 12)
+
+        self:PositionPinFrames(pin, wmPin, mmPin)
+        wmPin:Show()
         mmPin:Show()
+
+        table.insert(self.worldMapPinFrames, wmPin)
         table.insert(self.minimapPinFrames, mmPin)
     end
 
