@@ -123,6 +123,17 @@ function Config:BuildOptions()
                 },
                 loadguidesfully = toggle("loadguidesfully", 2),
                 stepsound = toggle("stepsound", 3),
+                previewsteps = {
+                    type = "range",
+                    order = 4,
+                    min = 0,
+                    max = 4,
+                    step = 1,
+                    name = L("OPT_PREVIEWSTEPS"),
+                    desc = L("OPT_PREVIEWSTEPS_DESC"),
+                    get = profileGet,
+                    set = profileSet,
+                },
             }),
         },
     }

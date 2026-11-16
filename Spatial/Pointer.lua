@@ -149,25 +149,7 @@ local function applyActionPinTexture(tex, action)
     if tex.SetTexCoord then
         tex:SetTexCoord(0, 1, 0, 1)
     end
-    if action == "accept" then
-        tex:SetTexture("Interface\\GossipFrame\\AvailableQuestIcon")
-    elseif action == "turnin" then
-        tex:SetTexture("Interface\\GossipFrame\\ActiveQuestIcon")
-    elseif action == "kill" then
-        tex:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcon_8")
-    elseif action == "fpath" or action == "fly" then
-        tex:SetTexture("Interface\\Minimap\\Tracking\\FlightMaster")
-    elseif action == "vendor" or action == "buy" then
-        tex:SetTexture("Interface\\GossipFrame\\VendorGossipIcon")
-    elseif action == "trainer" or action == "learn" then
-        tex:SetTexture("Interface\\GossipFrame\\TrainerGossipIcon")
-    elseif action == "home" or action == "hearth" then
-        tex:SetTexture("Interface\\Minimap\\Tracking\\Innkeeper")
-    elseif action == "get" or action == "collect" or action == "create" then
-        tex:SetTexture("Interface\\GossipFrame\\BankerGossipIcon")
-    else
-        tex:SetTexture("Interface\\TargetingFrame\\UI-RaidTargetingIcon_1")
-    end
+    tex:SetTexture(AR.Skins:GetActionIcon(action))
 end
 
 function Pointer:PositionPinFrames(pin, wmPin, mmPin)

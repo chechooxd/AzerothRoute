@@ -39,6 +39,13 @@ Without that library the addon falls back to its own pin placement.
 - `>`: next step. Right-click: next unfinished step. Shift-click: 10 steps.
   `<`: previous step. Ctrl-click: first step.
 
+## Guide window
+
+Each line starts with an icon for its action (accept, turn in, kill, collect, talk, fly,
+hearth...) that turns into a check when done, and the text switches to past tense
+("Accepted X", "Aceptada X"). Options > Interface > "Upcoming steps shown" (0-4) previews
+the next steps dimmed under the current one; the window grows to fit its lines.
+
 ## Waypoint arrow
 
 The arrow shows the target name and, below it, the distance with an ETA (m:ss) based on your
@@ -77,7 +84,7 @@ bearing, and minimap radar offsets never mix coordinate spaces.
 
 ## Verification
 
-Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 105 passed, 0 failed` across 30 test suites). Client verification is pending:
+Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 110 passed, 0 failed` across 31 test suites). Client verification is pending:
 
 - Check the minimap button, its clicks and tooltip; move it, `/reload`, and check that it keeps its position.
 - `/ar config`: change a toggle, `/reload`, check it stuck; create a second profile, switch, check the toggle follows the profile.
@@ -87,6 +94,7 @@ Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 105 passed,
 - Check step pins on the zone map, continent map, and minimap edge.
 - Walk toward and away from a waypoint; the arrow must point up and green toward it, down and red away.
 - Walk to a waypoint: check icon within 8 yd, ETA while moving, then the arrow jumps to the next waypoint.
+- Guide window: icons per line, check + past tense when done; set "Upcoming steps shown" to 2 and check the dimmed preview and window height.
 - Talk to a flight master whose path the guide asks for; the flight map opens and the step advances.
 - With the hearthstone already set where the guide asks, the "set hearthstone" goal is complete.
 - Click an enemy target button twice; the skull stays. If a "blocked action" popup appears, the chat names the function.

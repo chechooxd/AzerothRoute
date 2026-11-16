@@ -11,7 +11,7 @@ Branch: feat/ar-13-ace3-libraries-fixes → master · Delivery: commit per packa
 
 ## Tasks
 - [x] T1 [S2] Arrow: arrival, ETA, next waypoint, no goto on taxi, distance color — inline · RED 6/6 → GREEN 105/105
-- [ ] T2 [S3] Viewer: icons, check, past tense, step preview — inline
+- [x] T2 [S3] Viewer: icons, check, past tense, step preview — inline · RED 5/5 → GREEN 110/110
 - [ ] T3 [S4] Seed racial starting flight paths once per character — inline
 - [ ] T4 [S1] Merge branch into master
 

@@ -205,7 +205,8 @@ function Goal:GetStatus()
     return "incomplete"
 end
 
-function Goal:GetText()
+-- isDone: render the past-tense form ("Accepted X") when the locale defines one (Zygor style).
+function Goal:GetText(isDone)
     local cur, max = self:GetProgress()
     local suffix = ""
     if cur and max and max > 1 then
@@ -213,70 +214,79 @@ function Goal:GetText()
     end
     local L = AR.L
     local loc = AR.Localizers
+    local function fmt(key, ...)
+        if isDone then
+            local doneKey = key .. "_DONE"
+            if L:Get(doneKey) ~= doneKey then
+                return L:Format(doneKey, ...)
+            end
+        end
+        return L:Format(key, ...)
+    end
 
     if self.action == "accept" then
         local qName = (loc and self.questid and loc:GetTranslatedQuest(self.questid, self.quest)) or self.quest or "Quest"
-        return L:Format("GOAL_ACCEPT", qName)
+        return fmt("GOAL_ACCEPT", qName)
     elseif self.action == "turnin" then
         local qName = (loc and self.questid and loc:GetTranslatedQuest(self.questid, self.quest)) or self.quest or "Quest"
-        return L:Format("GOAL_TURNIN", qName)
+        return fmt("GOAL_TURNIN", qName)
     elseif self.action == "kill" then
         local tName = (loc and self.targetid and loc:GetTranslatedNPC(self.targetid, self.target)) or self.target or "Mob"
         local rem = (cur and max) and math.max(0, max - cur) or (self.count or 1)
         if rem > 1 then
-            return L:Format("GOAL_KILL_PLURAL", rem, tName, suffix)
+            return fmt("GOAL_KILL_PLURAL", rem, tName, suffix)
         end
-        return L:Format("GOAL_KILL", tName, suffix)
+        return fmt("GOAL_KILL", tName, suffix)
     elseif self.action == "get" or self.action == "buy" then
         local iName = (loc and self.targetid and loc:GetTranslatedItem(self.targetid, self.target)) or self.target or "Item"
         local rem = (cur and max) and math.max(0, max - cur) or (self.count or 1)
         if self.action == "buy" then
             if rem > 1 then
-                return L:Format("GOAL_BUY_PLURAL", rem, iName, suffix)
+                return fmt("GOAL_BUY_PLURAL", rem, iName, suffix)
             end
-            return L:Format("GOAL_BUY", iName, suffix)
+            return fmt("GOAL_BUY", iName, suffix)
         end
         if rem > 1 then
-            return L:Format("GOAL_COLLECT_PLURAL", rem, iName, suffix)
+            return fmt("GOAL_COLLECT_PLURAL", rem, iName, suffix)
         end
-        return L:Format("GOAL_COLLECT", iName, suffix)
+        return fmt("GOAL_COLLECT", iName, suffix)
     elseif self.action == "talk" then
         local npcName = (loc and self.npcid and loc:GetTranslatedNPC(self.npcid, self.target)) or self.target or "NPC"
-        return L:Format("GOAL_TALK", npcName)
+        return fmt("GOAL_TALK", npcName)
     elseif self.action == "learn" then
-        return L:Format("GOAL_LEARN", self.target or "Spell")
+        return fmt("GOAL_LEARN", self.target or "Spell")
     elseif self.action == "create" then
         local rem = self.count or 1
         if rem > 1 then
-            return L:Format("GOAL_CREATE_PLURAL", rem, self.target or "Recipe", suffix)
+            return fmt("GOAL_CREATE_PLURAL", rem, self.target or "Recipe", suffix)
         end
-        return L:Format("GOAL_CREATE", self.target or "Recipe", suffix)
+        return fmt("GOAL_CREATE", self.target or "Recipe", suffix)
     elseif self.action == "ding" then
-        return L:Format("GOAL_DING", self.level or 1)
+        return fmt("GOAL_DING", self.level or 1)
     elseif self.action == "goto" then
         local gx = (self.x and self.x <= 1) and (self.x * 100.0) or (self.x or 0)
         local gy = (self.y and self.y <= 1) and (self.y * 100.0) or (self.y or 0)
-        return L:Format("GOAL_GOTO", gx, gy)
+        return fmt("GOAL_GOTO", gx, gy)
     elseif self.action == "fpath" or self.action == "fly" then
         local nodeName = (AR.TaxiTracker and AR.TaxiTracker.GetLocalizedNodeName and AR.TaxiTracker:GetLocalizedNodeName(self.param)) or self.param or "Flight Master"
         return L:Format(self.action == "fly" and "GOAL_FLY" or "GOAL_FPATH", nodeName)
     elseif self.action == "home" then
         local nodeName = (AR.TaxiTracker and AR.TaxiTracker.GetLocalizedNodeName and AR.TaxiTracker:GetLocalizedNodeName(self.param)) or self.param or "Innkeeper"
-        return L:Format("GOAL_HOME", nodeName)
+        return fmt("GOAL_HOME", nodeName)
     elseif self.action == "hearth" then
         local nodeName = (AR.TaxiTracker and AR.TaxiTracker.GetLocalizedNodeName and AR.TaxiTracker:GetLocalizedNodeName(self.param)) or self.param or "Home"
-        return L:Format("GOAL_HEARTH", nodeName)
+        return fmt("GOAL_HEARTH", nodeName)
     elseif self.action == "vendor" then
         local npcName = (loc and self.npcid and loc:GetTranslatedNPC(self.npcid, self.target)) or self.target or self.param or "Vendor"
-        return L:Format("GOAL_VENDOR", npcName)
+        return fmt("GOAL_VENDOR", npcName)
     elseif self.action == "trainer" then
         local npcName = (loc and self.npcid and loc:GetTranslatedNPC(self.npcid, self.target)) or self.target or self.param or "Trainer"
-        return L:Format("GOAL_TRAINER", npcName)
+        return fmt("GOAL_TRAINER", npcName)
     elseif self.action == "click" then
-        return L:Format("GOAL_CLICK", self.target or self.param or "Object")
+        return fmt("GOAL_CLICK", self.target or self.param or "Object")
     elseif self.action == "use" then
         local iName = (loc and self.targetid and loc:GetTranslatedItem(self.targetid, self.target)) or self.target or self.param or "Item"
-        return L:Format("GOAL_USE", iName)
+        return fmt("GOAL_USE", iName)
     elseif self.action == "confirm" then
         return self.text or L:Get("GOAL_CONFIRM")
     end

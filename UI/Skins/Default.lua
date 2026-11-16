@@ -29,6 +29,32 @@ local Skins = {
 }
 AR.Skins = Skins
 
+-- One icon per goal action, shared by the guide window lines and the map/minimap pins.
+Skins.ACTION_ICONS = {
+    accept = "Interface\\GossipFrame\\AvailableQuestIcon",
+    turnin = "Interface\\GossipFrame\\ActiveQuestIcon",
+    kill = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8",
+    from = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8",
+    fpath = "Interface\\Minimap\\Tracking\\FlightMaster",
+    fly = "Interface\\Minimap\\Tracking\\FlightMaster",
+    vendor = "Interface\\GossipFrame\\VendorGossipIcon",
+    buy = "Interface\\GossipFrame\\VendorGossipIcon",
+    trainer = "Interface\\GossipFrame\\TrainerGossipIcon",
+    learn = "Interface\\GossipFrame\\TrainerGossipIcon",
+    home = "Interface\\Minimap\\Tracking\\Innkeeper",
+    hearth = "Interface\\Minimap\\Tracking\\Innkeeper",
+    get = "Interface\\GossipFrame\\BankerGossipIcon",
+    collect = "Interface\\GossipFrame\\BankerGossipIcon",
+    create = "Interface\\GossipFrame\\BankerGossipIcon",
+    talk = "Interface\\GossipFrame\\GossipGossipIcon",
+}
+Skins.DEFAULT_ACTION_ICON = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_1"
+Skins.CHECK_ICON = "Interface\\RAIDFRAME\\ReadyCheck-Ready"
+
+function Skins:GetActionIcon(action)
+    return self.ACTION_ICONS[action or ""] or self.DEFAULT_ACTION_ICON
+end
+
 function Skins:GetProp(key)
     local styleName = (AR.db and AR.db.profile and AR.db.profile.style) or "default"
     local style = self.styles[styleName] or self.styles.default

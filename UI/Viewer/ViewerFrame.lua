@@ -172,9 +172,14 @@ function ViewerFrame:Initialize()
             row.flash:SetColorTexture(1, 1, 1, 0)
             row.flash:Hide()
         end
+        if row.CreateTexture then
+            row.icon = row:CreateTexture(nil, "ARTWORK")
+            row.icon:SetSize(14, 14)
+            row.icon:SetPoint("LEFT", row, "LEFT", 4, 0)
+        end
         if row.CreateFontString then
             row.label = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-            row.label:SetPoint("LEFT", row, "LEFT", 6, 0)
+            row.label:SetPoint("LEFT", row, "LEFT", 22, 0)
             row.label:SetJustifyH("LEFT")
         end
         row:SetScript("OnClick", function(r)
@@ -339,9 +344,10 @@ function ViewerFrame:FormatGoalLine(goal, index, isSticky)
 
     return {
         goal = goal,
-        text = goal:GetText(),
+        text = goal:GetText(status == "complete"),
         status = status,
         bgColor = bgColor,
+        icon = (status == "complete") and AR.Skins.CHECK_ICON or AR.Skins:GetActionIcon(goal.action),
         checkIcon = (status == "complete"),
         flashDuration = flashDuration,
         isSticky = isSticky == true,
@@ -398,8 +404,10 @@ function ViewerFrame:RenderCurrentStep()
     end
 
     local notice = AR.Progression and AR.Progression:GetStepNotice(step)
+    local previewLines = self:BuildPreviewLines(step)
 
     return {
+        previewLines = previewLines,
         stepNum = step and step.num or 1,
         mainLines = mainLines,
         hasStickySeparator = (#stickyLines > 0),
@@ -410,6 +418,60 @@ function ViewerFrame:RenderCurrentStep()
         progressMode = self.progressMode,
         guideComplete = (AR.Progression and AR.Progression.guideComplete) == true,
     }
+end
+
+-- Zygor's "show N steps": the next regular steps, dimmed, each under a "Step N" header. No pins.
+function ViewerFrame:BuildPreviewLines(step)
+    local lines = {}
+    local count = (AR.db and AR.db.profile and tonumber(AR.db.profile.previewsteps)) or 0
+    local guide = AR.Progression and AR.Progression.currentGuide
+    if count <= 0 or not guide or not step then return lines end
+    local shown = 0
+    for n = step.num + 1, #guide.steps do
+        if shown >= count then break end
+        local nextStep = guide:GetStep(n)
+        if nextStep and not nextStep.is_sticky and nextStep:IsVisible() then
+            shown = shown + 1
+            local header = string.format((AR.L and AR.L:Get("UI_STEP_HEADER_FMT")) or "Step %d", nextStep.num)
+            table.insert(lines, { isHeader = true, text = header })
+            for i, g in ipairs(nextStep.goals or {}) do
+                local line = self:FormatGoalLine(g, i, false)
+                if line then
+                    line.isPreview = true
+                    line.flashDuration = 0
+                    table.insert(lines, line)
+                end
+            end
+        end
+    end
+    return lines
+end
+
+local ROW_TOP, ROW_STEP, FOOTER = 32, 21, 22
+
+local function paintRow(row, line, bgAlpha, textAlpha)
+    row._goal = line.goal
+    if row.label then
+        row.label:SetText(line.text)
+        if row.label.SetTextColor then row.label:SetTextColor(1, 1, 1, textAlpha) end
+    end
+    if row.icon then
+        if line.icon then
+            row.icon:SetTexture(line.icon)
+            if row.icon.SetAlpha then row.icon:SetAlpha(textAlpha) end
+            row.icon:Show()
+        else
+            row.icon:Hide()
+        end
+    end
+    if row.bg then
+        if line.bgColor then
+            row.bg:SetColorTexture(line.bgColor.r, line.bgColor.g, line.bgColor.b, bgAlpha)
+        else
+            row.bg:SetColorTexture(0, 0, 0, 0)
+        end
+    end
+    row:Show()
 end
 
 function ViewerFrame:RefreshVisuals()
@@ -437,11 +499,7 @@ function ViewerFrame:RefreshVisuals()
         rowIdx = rowIdx + 1
         local row = self.lineRows[rowIdx]
         if row then
-            row._goal = line.goal
-            if row.label then row.label:SetText(line.text) end
-            if row.bg and line.bgColor then
-                row.bg:SetColorTexture(line.bgColor.r, line.bgColor.g, line.bgColor.b, 0.88)
-            end
+            paintRow(row, line, 0.88, 1)
             if row.flash then
                 if line.flashDuration > 0 then
                     row.flash:SetAlpha(0.75)
@@ -468,12 +526,17 @@ function ViewerFrame:RefreshVisuals()
         rowIdx = rowIdx + 1
         local row = self.lineRows[rowIdx]
         if row then
-            row._goal = line.goal
-            if row.label then row.label:SetText(line.text) end
-            if row.bg and line.bgColor then
-                row.bg:SetColorTexture(line.bgColor.r, line.bgColor.g, line.bgColor.b, 0.65)
-            end
-            row:Show()
+            paintRow(row, line, 0.65, 1)
+            if row.flash then row.flash:Hide() end
+        end
+    end
+
+    for _, line in ipairs(vm.previewLines) do
+        rowIdx = rowIdx + 1
+        local row = self.lineRows[rowIdx]
+        if row then
+            paintRow(row, line, 0.30, line.isHeader and 0.85 or 0.55)
+            if row.flash then row.flash:Hide() end
         end
     end
 
@@ -481,6 +544,15 @@ function ViewerFrame:RefreshVisuals()
         if self.lineRows[i] then
             self.lineRows[i]:Hide()
         end
+    end
+
+    -- Grow the window to fit the visible rows (never below the default height).
+    local visibleRows = math.min(rowIdx, self.LINES_PER_STEP)
+    local wanted = math.max(self.HEIGHT, ROW_TOP + visibleRows * ROW_STEP + FOOTER)
+    if self.frame.SetHeight then
+        self.frame:SetHeight(wanted)
+    else
+        self.frame:SetSize(self.WIDTH, wanted)
     end
 
     if self.completeText then
