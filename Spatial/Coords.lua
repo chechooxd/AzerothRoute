@@ -125,50 +125,113 @@ function Coords:GetPlayerPosition()
     return mapID, x or 0.5, y or 0.5
 end
 
-function Coords:ToWorldYards(mapID, x, y)
-    if not mapID or not x or not y then return nil, nil, nil end
+local function normalizeCoord(x, y)
+    if not x or not y then return nil, nil end
     if x > 1 then x = x / 100.0 end
     if y > 1 then y = y / 100.0 end
-    if _G.C_Map and _G.C_Map.GetWorldPosFromMapPos and _G.CreateVector2D then
-        local contID, worldPos = _G.C_Map.GetWorldPosFromMapPos(mapID, _G.CreateVector2D(x, y))
-        if contID and worldPos and worldPos.GetXY then
-            local a, b = worldPos:GetXY()
-            local isNorthWest = self.mapAxisCache[mapID]
-            if isNorthWest == nil then
-                local c0, wp0 = _G.C_Map.GetWorldPosFromMapPos(mapID, _G.CreateVector2D(0, 0))
-                local c5, wp5 = _G.C_Map.GetWorldPosFromMapPos(mapID, _G.CreateVector2D(0.5, 0.5))
-                if c0 and c5 and wp0 and wp5 then
-                    local a0, b0 = wp0:GetXY()
-                    local a5, b5 = wp5:GetXY()
-                    isNorthWest = (a0 > a5 and b0 > b5)
-                else
-                    isNorthWest = true
-                end
-                self.mapAxisCache[mapID] = isNorthWest
-            end
-            if isNorthWest then
-                return contID, -b, -a
-            end
-            return contID, a, b
+    return x, y
+end
+
+local function toHBDWorldYards(mapID, nx, ny)
+    if not _G.LibStub then return nil, nil, nil end
+    local hbd = _G.LibStub("HereBeDragons-2.0", true)
+    if not hbd or not hbd.GetWorldCoordinatesFromZone then return nil, nil, nil end
+    local hx, hy, inst = hbd:GetWorldCoordinatesFromZone(nx, ny, mapID)
+    if not hx or not hy or not inst then return nil, nil, nil end
+    -- HBD world space is (+West, +North); invert to (+East, +South) to preserve Coords & Pointer bearings.
+    return inst, -hx, -hy
+end
+
+local function toNativeWorldYards(self, mapID, nx, ny)
+    if not (_G.C_Map and _G.C_Map.GetWorldPosFromMapPos and _G.CreateVector2D) then
+        return nil, nil, nil
+    end
+    local contID, worldPos = _G.C_Map.GetWorldPosFromMapPos(mapID, _G.CreateVector2D(nx, ny))
+    if not (contID and worldPos and worldPos.GetXY) then
+        return nil, nil, nil
+    end
+    local a, b = worldPos:GetXY()
+    local isNorthWest = self.mapAxisCache[mapID]
+    if isNorthWest == nil then
+        local c0, wp0 = _G.C_Map.GetWorldPosFromMapPos(mapID, _G.CreateVector2D(0, 0))
+        local c5, wp5 = _G.C_Map.GetWorldPosFromMapPos(mapID, _G.CreateVector2D(0.5, 0.5))
+        if c0 and c5 and wp0 and wp5 then
+            local a0, b0 = wp0:GetXY()
+            local a5, b5 = wp5:GetXY()
+            isNorthWest = (a0 > a5 and b0 > b5)
+        else
+            isNorthWest = true
         end
+        self.mapAxisCache[mapID] = isNorthWest
+    end
+    if isNorthWest then
+        return contID, -b, -a
+    end
+    return contID, a, b
+end
+
+local function toTableWorldYards(self, mapID, nx, ny)
+    local b = self.ZONE_BOUNDS[mapID]
+    if not b then return nil, nil, nil end
+    local wx = b.offsetX + (nx * b.width)
+    local wy = b.offsetY + (ny * b.height)
+    return b.continent, wx, wy
+end
+
+local function toEstimatedWorldYards(self, mapID, nx, ny)
+    return mapID, nx * self.ZONE_SCALE_YARDS, ny * self.ZONE_SCALE_YARDS
+end
+
+function Coords:ToWorldYards(mapID, x, y)
+    local nx, ny = normalizeCoord(x, y)
+    if not mapID or not nx or not ny then return nil, nil, nil end
+
+    local c, wx, wy = toHBDWorldYards(mapID, nx, ny)
+    if c ~= nil then return c, wx, wy end
+
+    c, wx, wy = toNativeWorldYards(self, mapID, nx, ny)
+    if c ~= nil then return c, wx, wy end
+
+    c, wx, wy = toTableWorldYards(self, mapID, nx, ny)
+    if c ~= nil then return c, wx, wy end
+
+    return toEstimatedWorldYards(self, mapID, nx, ny)
+end
+
+-- Resolve both endpoints through the same coordinate provider so cross-zone math never mixes world spaces.
+function Coords:GetWorldPair(map1, x1, y1, map2, x2, y2)
+    local nx1, ny1 = normalizeCoord(x1, y1)
+    local nx2, ny2 = normalizeCoord(x2, y2)
+    if not map1 or not map2 or not nx1 or not ny1 or not nx2 or not ny2 then
+        return nil, nil, nil, nil, nil, nil
     end
 
-    local b = self.ZONE_BOUNDS[mapID]
-    if b then
-        local wx = b.offsetX + (x * b.width)
-        local wy = b.offsetY + (y * b.height)
-        return b.continent, wx, wy
+    local c1, wx1, wy1 = toHBDWorldYards(map1, nx1, ny1)
+    local c2, wx2, wy2 = toHBDWorldYards(map2, nx2, ny2)
+    if c1 ~= nil and c2 ~= nil then
+        return c1, wx1, wy1, c2, wx2, wy2
     end
-    return mapID, x * self.ZONE_SCALE_YARDS, y * self.ZONE_SCALE_YARDS
+
+    c1, wx1, wy1 = toNativeWorldYards(self, map1, nx1, ny1)
+    c2, wx2, wy2 = toNativeWorldYards(self, map2, nx2, ny2)
+    if c1 ~= nil and c2 ~= nil then
+        return c1, wx1, wy1, c2, wx2, wy2
+    end
+
+    c1, wx1, wy1 = toTableWorldYards(self, map1, nx1, ny1)
+    c2, wx2, wy2 = toTableWorldYards(self, map2, nx2, ny2)
+    if c1 ~= nil and c2 ~= nil then
+        return c1, wx1, wy1, c2, wx2, wy2
+    end
+
+    c1, wx1, wy1 = toEstimatedWorldYards(self, map1, nx1, ny1)
+    c2, wx2, wy2 = toEstimatedWorldYards(self, map2, nx2, ny2)
+    return c1, wx1, wy1, c2, wx2, wy2
 end
 
 function Coords:GetDistanceBetween(map1, x1, y1, map2, x2, y2)
-    if not map1 or not map2 or not x1 or not y1 or not x2 or not y2 then
-        return nil
-    end
-    local c1, wx1, wy1 = self:ToWorldYards(map1, x1, y1)
-    local c2, wx2, wy2 = self:ToWorldYards(map2, x2, y2)
-    if not c1 or not c2 or c1 ~= c2 then
+    local c1, wx1, wy1, c2, wx2, wy2 = self:GetWorldPair(map1, x1, y1, map2, x2, y2)
+    if c1 == nil or c2 == nil or c1 ~= c2 then
         return nil
     end
     local dx = wx2 - wx1
@@ -184,9 +247,8 @@ end
 function Coords:GetBearingTo(targetMap, targetX, targetY)
     local pMap, px, py = self:GetPlayerPosition()
     if not targetX or not targetY then return 0 end
-    local c1, wx1, wy1 = self:ToWorldYards(pMap, px, py)
-    local c2, wx2, wy2 = self:ToWorldYards(targetMap or pMap, targetX, targetY)
-    if c1 and c2 and c1 == c2 then
+    local c1, wx1, wy1, c2, wx2, wy2 = self:GetWorldPair(pMap, px, py, targetMap or pMap, targetX, targetY)
+    if c1 ~= nil and c2 ~= nil and c1 == c2 then
         return math.atan2(wx2 - wx1, -(wy2 - wy1))
     end
     return math.atan2(targetX - px, -(targetY - py))

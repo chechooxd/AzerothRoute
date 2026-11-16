@@ -185,9 +185,14 @@ function Pointer:PositionPinFrames(pin, wmPin, mmPin)
     -- Minimap radar projection in world yards (clamped to minimap circle radius, hidden if cross-continent/invalid)
     if mmPin then
         local pMap, px, py = AR.Coords:GetPlayerPosition()
-        local c1, wx1, wy1 = AR.Coords:ToWorldYards(pMap, px, py)
-        local c2, wx2, wy2 = AR.Coords:ToWorldYards(pin.map or pMap, nx, ny)
-        if not c1 or not c2 or c1 ~= c2 then
+        local c1, wx1, wy1, c2, wx2, wy2
+        if AR.Coords.GetWorldPair then
+            c1, wx1, wy1, c2, wx2, wy2 = AR.Coords:GetWorldPair(pMap, px, py, pin.map or pMap, nx, ny)
+        else
+            c1, wx1, wy1 = AR.Coords:ToWorldYards(pMap, px, py)
+            c2, wx2, wy2 = AR.Coords:ToWorldYards(pin.map or pMap, nx, ny)
+        end
+        if c1 == nil or c2 == nil or c1 ~= c2 then
             if mmPin.Hide then mmPin:Hide() end
             return
         end

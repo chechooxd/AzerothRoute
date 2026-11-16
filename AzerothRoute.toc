@@ -8,6 +8,11 @@
 ## SavedVariables: AzerothRouteSavedDB
 ## SavedVariablesPerCharacter: AzerothRouteCharDB
 
+# Upstream Map & Library Foundation
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.lua
+Libs\HereBeDragons\HereBeDragons-2.0.lua
+
 # SPEC-01: Kernel & Runtime
 Core\Compat.lua
 Core\Locale.lua

@@ -19,9 +19,19 @@ Vendor goals require the specified merchant, while junk selling still works at
 other merchants. Flight discovery uses nodes actually reported by the taxi map;
 opening an unrelated flightmaster no longer fabricates the requested discovery.
 
+## Map coordinates & upstream libraries
+
+`Spatial/Coords.lua` integrates unmodified upstream `LibStub` (minor 2),
+`CallbackHandler-1.0` (minor 8), and `HereBeDragons-2.0` (`2.18-release`, minor 35)
+loaded before `Spatial/Coords.lua` in `AzerothRoute.toc` and `Tests/run_tests.lua`
+(provenance and notices in `Libs/NOTICES.md`). `Coords:GetWorldPair` resolves
+both endpoints through the same tier (`HereBeDragons-2.0` -> native
+`C_Map.GetWorldPosFromMapPos` -> `ZONE_BOUNDS` -> estimated yards) so distance,
+bearing, and minimap radar offsets never mix coordinate spaces.
+
 ## Verification
 
-Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 62 passed, 0 failed` across 22 test suites). Client verification is pending:
+Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 66 passed, 0 failed` across 23 test suites, including `Tests/test_map_libraries.lua`). Client verification is pending:
 
 - Load a guide with NPC/enemy goals and check localized labels, selection and marks.
 - Complete an objective within a step and check that its action disappears.

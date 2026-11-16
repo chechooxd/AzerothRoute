@@ -48,6 +48,9 @@ end
 function T:BootstrapAddon()
     require("Tests.mock_wow_api")
     local tocFiles = {
+        "Libs/LibStub/LibStub.lua",
+        "Libs/CallbackHandler-1.0/CallbackHandler-1.0.lua",
+        "Libs/HereBeDragons/HereBeDragons-2.0.lua",
         "Core/Compat.lua",
         "Core/Locale.lua",
         "Core/Storage.lua",
@@ -131,6 +134,7 @@ function T:RunAll()
         "Tests/test_spec22_minimap_automation_talents_guides.lua",
         "Tests/test_targeting_resume.lua",
         "Tests/test_interaction_identity.lua",
+        "Tests/test_map_libraries.lua",
     }
     for _, suitePath in ipairs(specSuites) do
         dofile(suitePath)

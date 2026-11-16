@@ -93,6 +93,39 @@ MockWoW:Reset()
 -- Global constants & functions
 _G.WOW_PROJECT_ID = 19
 _G.WOW_PROJECT_CAMELOT = 19
+_G.strmatch = _G.strmatch or string.match
+_G.securecallfunction = _G.securecallfunction or function(fn, ...)
+    return fn(...)
+end
+_G.IsLoggedIn = _G.IsLoggedIn or function()
+    return false
+end
+_G.UnitPosition = _G.UnitPosition or function()
+    return nil
+end
+_G.CreateVector2D = _G.CreateVector2D or function(x, y)
+    return {
+        x = x,
+        y = y,
+        GetXY = function(v)
+            return v.x, v.y
+        end,
+    }
+end
+_G.Enum = _G.Enum or {
+    UIMapType = {
+        Cosmic = 0,
+        World = 1,
+        Continent = 2,
+        Zone = 3,
+        Dungeon = 4,
+        Micro = 5,
+        Orphan = 6,
+    },
+}
+_G.C_Timer = _G.C_Timer or {
+    After = function() end,
+}
 
 _G.debugprofilestop = function()
     return MockWoW.clockMs
@@ -248,6 +281,10 @@ end
 
 function FrameProto:UnregisterEvent(event)
     self._events[event] = nil
+end
+
+function FrameProto:UnregisterAllEvents()
+    self._events = {}
 end
 
 function FrameProto:Show()
@@ -512,6 +549,12 @@ _G.C_Map = {
                 return MockWoW.player.x, MockWoW.player.y
             end,
         }
+    end,
+    GetMapInfo = function(mapID)
+        return nil
+    end,
+    GetMapChildrenInfo = function(mapID)
+        return {}
     end,
 }
 
