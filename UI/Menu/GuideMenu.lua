@@ -1,4 +1,4 @@
--- AzerothRoute: 825x630 GuideMenu Command Center, Suggested Guides & Global Search (SPEC-13)
+-- AzerothRoute: 825x630 GuideMenu Command Center, Suggested Guides & Global Search (SPEC-13 / SPEC-17)
 
 local AR = _G.AzerothRoute
 local GuideMenu = {
@@ -6,8 +6,38 @@ local GuideMenu = {
     HEIGHT = 630,
     SECTIONS = { "Home", "Featured", "Current", "Recent", "Suggested", "Search", "Options" },
     activeSection = "Home",
+    frame = nil,
 }
 AR.GuideMenu = GuideMenu
+
+function GuideMenu:InitializeFrame()
+    if self.frame then return self.frame end
+    local f = AR.UI:Create("Frame", _G.UIParent, "AzerothRouteGuideMenu")
+    f:SetSize(self.WIDTH, self.HEIGHT)
+    f:SetPoint("CENTER", _G.UIParent, "CENTER", 0, 0)
+    if f.CreateTexture then
+        f.bg = f:CreateTexture(nil, "BACKGROUND")
+        f.bg:SetAllPoints(f)
+        f.bg:SetColorTexture(0.06, 0.07, 0.10, 0.96)
+    end
+    if f.CreateFontString then
+        f.header = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+        f.header:SetPoint("TOPLEFT", f, "TOPLEFT", 16, -14)
+        f.header:SetText("AzerothRoute — Guide Center")
+    end
+    f:Hide()
+    self.frame = f
+    return f
+end
+
+function GuideMenu:Toggle()
+    local f = self:InitializeFrame()
+    if f:IsShown() then
+        f:Hide()
+    else
+        f:Show()
+    end
+end
 
 function GuideMenu:FindSuggestedGuides()
     local suggested = {}

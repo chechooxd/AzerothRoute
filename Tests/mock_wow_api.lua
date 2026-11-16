@@ -227,6 +227,77 @@ function FrameProto:GetAttribute(key)
     return self._attributes[key]
 end
 
+function FrameProto:EnableMouse(flag)
+    self._mouseEnabled = flag
+end
+
+function FrameProto:SetMovable(flag)
+    self._movable = flag
+end
+
+function FrameProto:RegisterForDrag(...)
+    self._dragButtons = { ... }
+end
+
+function FrameProto:StartMoving()
+    self._moving = true
+end
+
+function FrameProto:StopMovingOrSizing()
+    self._moving = false
+end
+
+function FrameProto:CreateTexture(name, layer)
+    local tex = {
+        _name = name,
+        _layer = layer,
+        _shown = true,
+        SetAllPoints = function(t, rel) t._allPoints = rel or true end,
+        SetPoint = function(t, ...) t._point = { ... } end,
+        SetSize = function(t, w, h) t._width, t._height = w, h end,
+        SetHeight = function(t, h) t._height = h end,
+        SetWidth = function(t, w) t._width = w end,
+        SetColorTexture = function(t, r, g, b, a) t._color = { r = r, g = g, b = b, a = a or 1 } end,
+        GetColorTexture = function(t) return t._color end,
+        SetTexture = function(t, path) t._texture = path end,
+        SetRotation = function(t, rad) t._rotation = rad end,
+        GetRotation = function(t) return t._rotation or 0 end,
+        SetAlpha = function(t, a) t._alpha = a end,
+        GetAlpha = function(t) return t._alpha or 1 end,
+        Show = function(t) t._shown = true end,
+        Hide = function(t) t._shown = false end,
+        IsShown = function(t) return t._shown end,
+    }
+    table.insert(self._textures, tex)
+    return tex
+end
+
+function FrameProto:CreateFontString(name, layer, inherits)
+    local fs = {
+        _name = name,
+        _layer = layer,
+        _inherits = inherits,
+        _text = "",
+        _shown = true,
+        SetPoint = function(s, ...) s._point = { ... } end,
+        SetJustifyH = function(s, j) s._justifyH = j end,
+        SetTextColor = function(s, r, g, b, a) s._color = { r = r, g = g, b = b, a = a or 1 } end,
+        SetText = function(s, txt) s._text = tostring(txt or "") end,
+        GetText = function(s) return s._text end,
+        Show = function(s) s._shown = true end,
+        Hide = function(s) s._shown = false end,
+        IsShown = function(s) return s._shown end,
+    }
+    table.insert(self._fontStrings, fs)
+    return fs
+end
+
+function FrameProto:Click(button)
+    if self._scripts.OnClick then
+        self._scripts.OnClick(self, button or "LeftButton")
+    end
+end
+
 _G.CreateFrame = function(frameType, name, parent, template)
     local f = setmetatable({
         _type = frameType,
@@ -236,6 +307,8 @@ _G.CreateFrame = function(frameType, name, parent, template)
         _scripts = {},
         _events = {},
         _attributes = {},
+        _textures = {},
+        _fontStrings = {},
         _shown = true,
     }, FrameProto)
     if name then
@@ -244,6 +317,11 @@ _G.CreateFrame = function(frameType, name, parent, template)
     table.insert(MockWoW.frames, f)
     return f
 end
+
+_G.UIParent = _G.CreateFrame("Frame", "UIParent")
+_G.WorldMapFrame = _G.CreateFrame("Frame", "WorldMapFrame")
+_G.Minimap = _G.CreateFrame("Frame", "Minimap")
+_G.SlashCmdList = _G.SlashCmdList or {}
 
 function MockWoW:FireEvent(event, ...)
     for _, f in ipairs(self.frames) do

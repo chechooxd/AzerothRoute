@@ -1,4 +1,4 @@
--- AzerothRoute: Pre-Allocated Secure ActionBar with Combat Lockdown Queue (SPEC-10)
+-- AzerothRoute: Pre-Allocated Secure ActionBar with Combat Lockdown Queue (SPEC-10 / SPEC-16)
 
 local AR = _G.AzerothRoute
 local ActionBar = {
@@ -12,7 +12,8 @@ function ActionBar:Initialize()
     self.buttons = {}
     self.pendingCombatUpdate = false
     for i = 1, self.NUM_BUTTONS do
-        local btn = _G.CreateFrame("Button", "AzerothRouteAB" .. i, nil, "SecureActionButtonTemplate")
+        local btn = _G.CreateFrame("Button", "AzerothRouteAB" .. i, _G.UIParent, "SecureActionButtonTemplate")
+        btn:SetSize(36, 36)
         table.insert(self.buttons, btn)
     end
     return self.buttons
@@ -72,6 +73,16 @@ function ActionBar:OnCombatEnd()
     if self.pendingCombatUpdate then
         self:UpdateFromCurrentStep()
     end
+end
+
+function ActionBar:RegisterLiveEvents()
+    if not AR.Events then return end
+    AR.Events:RegisterEvent("PLAYER_REGEN_ENABLED", function()
+        self:OnCombatEnd()
+    end)
+    AR.Events:RegisterMessage("AR_STEP_CHANGED", function()
+        self:UpdateFromCurrentStep()
+    end)
 end
 
 return ActionBar

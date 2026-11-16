@@ -121,6 +121,8 @@ function T:RunAll()
         "Tests/test_spec09_gold.lua",
         "Tests/test_spec13_menu.lua",
         "Tests/test_spec11_14_sync_catalog.lua",
+        "Tests/test_spec16_live_events.lua",
+        "Tests/test_spec17_live_ui.lua",
     }
     for _, suitePath in ipairs(specSuites) do
         dofile(suitePath)

@@ -1,6 +1,6 @@
 Objective: Reverse-engineer ZygorGuidesViewerForever into a greenfield World of Warcraft addon (AzerothRoute) covering leveling, talents, professions, gear, gold, action bar, and sync, executed spec by spec.
-Branch: feat/ar-06-menu-sync-catalog | Delivery strategy: ask-on-risk | Chain strategy: stacked-to-main | Forecast: >400 lines (6 stacked slices across F1-F6)
-Test runner: `luajit Tests/run_tests.lua` (33 passed, 0 failed)
+Branch: feat/ar-07-live-wow-bridge-ui | Delivery strategy: ask-on-risk | Chain strategy: stacked-to-main | Forecast: >400 lines (7 stacked slices across F1-F7)
+Test runner: `luajit Tests/run_tests.lua` (38 passed, 0 failed)
 
 ## Specs
 
@@ -19,6 +19,8 @@ Test runner: `luajit Tests/run_tests.lua` (33 passed, 0 failed)
 - **S13 (SPEC-09: Gold Engine, AH Scanner, ServerTrends, GoldGuide & Appraiser)**: Implement `Modules/Gold/Scanner.lua`, `Modules/Gold/ServerTrends.lua` (10th/50th/90th percentiles and 10 market health tiers), `Modules/Gold/GoldGuide.lua`, and `Modules/Gold/Appraiser.lua` (AH shopping list from active guide `buy`/`get` goals and smart-undercut selling).
 - **S14 (SPEC-13: `GuideMenu`, Global Search, 6-Column Home Dashboard Widgets & Options)**: Implement `UI/Menu/GuideMenu.lua`, `UI/Menu/DashboardWidgets.lua`, and `UI/Menu/Options.lua` for the 825x630 command center, `quest:<id>` search, dynamic guide suggestions, and tile-grid dashboard widgets.
 - **S15 (SPEC-11 & SPEC-14B: Party Sync, NotificationCenter & Full Guides/Data Catalog)**: Implement `Modules/Sync/PartySync.lua` (`AceComm` + `LibDeflate` `GS`/`SD` packets and Magnetic Step Hold), `Modules/Sync/NotificationCenter.lua`, and the structured `Data/` + `Guides/` catalog (`esMX`/`esES`/`enUS`) validated end-to-end by the headless runner.
+- **S16 (Live WoW Event & Native Client API Bridge)**: "Si dale con el punto 1 y 2" — Connect live WoW client APIs and event listeners across `Quest/QuestTracking.lua` (`C_QuestLog` + `GetNumQuestLogEntries`/`GetQuestLogTitle`/`GetNumQuestLeaderBoards`/`GetQuestLogLeaderBoard`, `QUEST_LOG_UPDATE`, `CHAT_MSG_SYSTEM`), `Quest/QuestAutoAccept.lua` (`QUEST_DETAIL`, `QUEST_PROGRESS`, `QUEST_COMPLETE`, `GOSSIP_SHOW`, `AcceptQuest`, `CompleteQuest`, `GetQuestReward`), `Quest/Localizers.lua` (hidden `GameTooltip` scanning), `Modules/Gear/ItemScore.lua` (`C_Item.GetItemStats` + `GetItemInfo` + `GetInventoryItemLink`), `Modules/Professions/*` (`CHAT_MSG_SKILL`, `TRADE_SKILL_SHOW`, `MERCHANT_SHOW`), `Modules/ActionBar/ActionBar.lua` (`PLAYER_REGEN_ENABLED`), and `Core/Init.lua` (`PLAYER_ENTERING_WORLD` + `0.1s` live progression tick).
+- **S17 (Live WoW Frame & Visual UI Rendering)**: "Si dale con el punto 1 y 2" — Build real in-game Blizzard frames, textures, fontstrings, and interactive scripts in `UI/Widgets/Core.lua`, `UI/Viewer/ViewerFrame.lua` (draggable main frame, header toolbar with Prev/Next/Menu buttons, 20 pooled `StepLine` rows with status background textures, 0.5s alpha fade flash, 1px sticky separator, and clickable 7px bottom progress bar), `Spatial/Pointer.lua` (on-screen directional arrow frame with distance/ETA label + real `WorldMapFrame` and `Minimap` pin frames), and `UI/Menu/GuideMenu.lua` (interactive guide selector window and `/ar` slash command).
 
 ## Tasks
 
@@ -36,6 +38,8 @@ Test runner: `luajit Tests/run_tests.lua` (33 passed, 0 failed)
 - [x] **T12** (`S13`) [inline] — Implement `SPEC-09` (`Modules/Gold/Scanner.lua`, `Modules/Gold/ServerTrends.lua`, `Modules/Gold/GoldGuide.lua`, `Modules/Gold/Appraiser.lua`) and `Tests/test_spec09_gold.lua`. (Commit `3bbd64f` on `feat/ar-05-actionbar-gold`; `luajit Tests/run_tests.lua` GREEN).
 - [x] **T13** (`S14`) [inline] — Implement `SPEC-13` (`UI/Menu/GuideMenu.lua`, `UI/Menu/DashboardWidgets.lua`, `UI/Menu/Options.lua`) and `Tests/test_spec13_menu.lua`. (Slice 6 `feat/ar-06-menu-sync-catalog`; `luajit Tests/run_tests.lua` GREEN).
 - [x] **T14** (`S15`) [inline] — Implement `SPEC-11` (`Modules/Sync/NotificationCenter.lua`, `Modules/Sync/PartySync.lua`) and `SPEC-14B` (`Data/*`, `Guides/*`, `Tests/test_spec11_14_sync_catalog.lua`). (Slice 6 `feat/ar-06-menu-sync-catalog`; `luajit Tests/run_tests.lua` GREEN).
+- [x] **T15** (`S16`) [inline] — Implement Live WoW Event & Native Client API Bridge across `Core/Init.lua`, `Quest/*`, and `Modules/*`, plus `Tests/test_spec16_live_events.lua`. (Slice 7 `feat/ar-07-live-wow-bridge-ui`; `luajit Tests/run_tests.lua` GREEN).
+- [x] **T16** (`S17`) [inline] — Implement Live WoW Visual Frames (`UI/Viewer/ViewerFrame.lua`, `Spatial/Pointer.lua`, `UI/Menu/GuideMenu.lua`, `/ar` slash command) and `Tests/test_spec17_live_ui.lua`. (Slice 7 `feat/ar-07-live-wow-bridge-ui`; `luajit Tests/run_tests.lua` GREEN).
 
 ## Stacked Slice Boundaries (`stacked-to-main`)
 
@@ -44,10 +48,12 @@ Test runner: `luajit Tests/run_tests.lua` (33 passed, 0 failed)
 - **Slice 3 (`feat/ar-03-talents-professions` -> `feat/ar-02-quest-spatial-viewer`, commit `b876943`)**: `T8`, `T9` (`Modules/TalentAdvisor/*`, `Modules/Professions/*`, `Tests/test_spec06_talents.lua`, `Tests/test_spec07_professions.lua`).
 - **Slice 4 (`feat/ar-04-gear-engine` -> `feat/ar-03-talents-professions`, commit `d0e93fd`)**: `T10` (`Modules/Gear/*`, `Tests/test_spec08_gear.lua`).
 - **Slice 5 (`feat/ar-05-actionbar-gold` -> `feat/ar-04-gear-engine`, commit `3bbd64f`)**: `T11`, `T12` (`Modules/ActionBar/*`, `Modules/Gold/*`, `Tests/test_spec10_actionbar.lua`, `Tests/test_spec09_gold.lua`).
-- **Slice 6 (`feat/ar-06-menu-sync-catalog` -> `feat/ar-05-actionbar-gold`)**: `T13`, `T14` (`UI/Menu/*`, `Modules/Sync/*`, `Data/*`, `Guides/*`, `Tests/test_spec13_menu.lua`, `Tests/test_spec11_14_sync_catalog.lua`, `odd/tasks/azerothroute-full-build.md`).
+- **Slice 6 (`feat/ar-06-menu-sync-catalog` -> `feat/ar-05-actionbar-gold`, commit `909169c`)**: `T13`, `T14` (`UI/Menu/*`, `Modules/Sync/*`, `Data/*`, `Guides/*`, `Tests/test_spec13_menu.lua`, `Tests/test_spec11_14_sync_catalog.lua`, `odd/tasks/azerothroute-full-build.md`).
+- **Slice 7 (`feat/ar-07-live-wow-bridge-ui` -> `feat/ar-06-menu-sync-catalog`)**: `T15`, `T16` (Live WoW Event/API Bridge + Real In-Game Frame Rendering for `ViewerFrame`, `Pointer` Arrow/Map Pins, `GuideMenu`, and `/ar` slash command).
 
 ## Log
 
 - **L1 (2026-11-15)**: "necesito que analices el proyecto de esta ruta F:\addons\ZygorGuidesViewerForever, haz ingeneria inversa para crear mi propio addons de leveo, talentos, profeciones, etc. analizalo completamente, genera las specs de cada funcionalidad a trabajar, motores, todo lo necesario, enfocate al 100% en solo la investigacion y planeacion del proyecto, no metas nada de codigo solo escribe los planos para llegar a ese proyecto, una vez tengas toodo visto , genera un tipo carta gant o planner para comenzar a trabajar en el codigo e ir tomando spec por spec hasta llegar al producto final."
 - **L2 (2026-11-15)**: "si dale comienza con ello" — User approved saving the blueprint/planner and starting implementation spec by spec (`T1` -> `T14`).
 - **L3 (2026-11-15)**: "Para el punto 2 aplica el stacked-to-main" — User selected `stacked-to-main` chain strategy; verified all 13 suites (33 tests) green with `luajit Tests/run_tests.lua` and committed 6 stacked branches.
+- **L4 (2026-11-15)**: "Si dale con el punto 1 y 2" — User authorized implementing Point 1 (Real WoW Frame UI rendering) and Point 2 (Live WoW client API & event wiring) as `T15` and `T16` on stacked branch `feat/ar-07-live-wow-bridge-ui`.

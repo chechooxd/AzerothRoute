@@ -1,14 +1,47 @@
--- AzerothRoute: Item Scoring Engine with Soft Caps, Armor Transition Grace & Pawn Support (SPEC-08)
+-- AzerothRoute: Item Scoring Engine with Soft Caps, Armor Transition Grace & Native WoW API Fallback (SPEC-08 / SPEC-16)
 
 local AR = _G.AzerothRoute
 local ItemScore = {
     equippedStatTotals = {},
+    STAT_KEY_MAP = {
+        ITEM_MOD_STRENGTH_SHORT = "STR",
+        ITEM_MOD_AGILITY_SHORT = "AGI",
+        ITEM_MOD_STAMINA_SHORT = "STA",
+        ITEM_MOD_INTELLECT_SHORT = "INT",
+        ITEM_MOD_SPIRIT_SHORT = "SPI",
+        ITEM_MOD_CRIT_RATING_SHORT = "CRIT",
+        ITEM_MOD_HIT_RATING_SHORT = "HIT",
+        ITEM_MOD_ATTACK_POWER_SHORT = "AP",
+        ITEM_MOD_SPELL_POWER_SHORT = "SP",
+    },
 }
 AR.ItemScore = ItemScore
 
 function ItemScore:GetItemMeta(itemLink)
-    if _G.MockWoW and _G.MockWoW.tooltips and _G.MockWoW.tooltips.items then
+    if not itemLink or itemLink == "" then return nil end
+    if _G.MockWoW and _G.MockWoW.tooltips and _G.MockWoW.tooltips.items and _G.MockWoW.tooltips.items[itemLink] then
         return _G.MockWoW.tooltips.items[itemLink]
+    end
+    -- Native WoW client GetItemInfo + C_Item.GetItemStats fallback
+    if _G.GetItemInfo then
+        local name, _, _, _, minLevel, _, itemSubType, stackCount, equipLoc, _, sellPrice = _G.GetItemInfo(itemLink)
+        if name then
+            local rawStats = (_G.C_Item and _G.C_Item.GetItemStats and _G.C_Item.GetItemStats(itemLink)) or (_G.GetItemStats and _G.GetItemStats(itemLink)) or {}
+            local normalized = {}
+            for k, v in pairs(rawStats) do
+                local mapped = self.STAT_KEY_MAP[k] or k
+                normalized[mapped] = (normalized[mapped] or 0) + (tonumber(v) or 0)
+            end
+            return {
+                name = name,
+                minLevel = minLevel or 1,
+                armorType = itemSubType and itemSubType:upper() or nil,
+                slot = equipLoc,
+                stats = normalized,
+                sellPrice = sellPrice or 0,
+                count = stackCount or 1,
+            }
+        end
     end
     return nil
 end

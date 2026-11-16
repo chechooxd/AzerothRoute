@@ -1,4 +1,4 @@
--- AzerothRoute: Modifier-Safe Dialog Automation (SPEC-04)
+-- AzerothRoute: Modifier-Safe Dialog Automation & Native Event Hooks (SPEC-04 / SPEC-16)
 
 local AR = _G.AzerothRoute
 local QuestAutoAccept = {
@@ -70,6 +70,61 @@ function QuestAutoAccept:ShouldAutoTurnIn(questID)
         end
     end
     return false
+end
+
+function QuestAutoAccept:OnQuestDetail()
+    local qid = (_G.GetQuestID and _G.GetQuestID()) or nil
+    if qid and self:ShouldAutoAccept(qid) and _G.AcceptQuest then
+        _G.AcceptQuest()
+    end
+end
+
+function QuestAutoAccept:OnQuestProgress()
+    local qid = (_G.GetQuestID and _G.GetQuestID()) or nil
+    if qid and self:ShouldAutoTurnIn(qid) then
+        if not _G.IsQuestCompletable or _G.IsQuestCompletable() then
+            if _G.CompleteQuest then
+                _G.CompleteQuest()
+            end
+        end
+    end
+end
+
+function QuestAutoAccept:OnQuestComplete()
+    local qid = (_G.GetQuestID and _G.GetQuestID()) or nil
+    if not qid or not self:ShouldAutoTurnIn(qid) then return end
+
+    local numChoices = (_G.GetNumQuestChoices and _G.GetNumQuestChoices()) or 0
+    if numChoices <= 1 then
+        if _G.GetQuestReward then
+            _G.GetQuestReward(numChoices == 1 and 1 or nil)
+        end
+        return
+    end
+
+    if AR.db and AR.db.global and AR.db.global.autoselectreward ~= false and AR.QuestReward and _G.GetQuestItemLink then
+        local links = {}
+        for i = 1, numChoices do
+            table.insert(links, _G.GetQuestItemLink("choice", i) or "")
+        end
+        local pick = AR.QuestReward:SelectBestReward(links)
+        if pick and pick.index and _G.GetQuestReward then
+            _G.GetQuestReward(pick.index)
+        end
+    end
+end
+
+function QuestAutoAccept:RegisterLiveEvents()
+    if not AR.Events then return end
+    AR.Events:RegisterEvent("QUEST_DETAIL", function()
+        self:OnQuestDetail()
+    end)
+    AR.Events:RegisterEvent("QUEST_PROGRESS", function()
+        self:OnQuestProgress()
+    end)
+    AR.Events:RegisterEvent("QUEST_COMPLETE", function()
+        self:OnQuestComplete()
+    end)
 end
 
 return QuestAutoAccept

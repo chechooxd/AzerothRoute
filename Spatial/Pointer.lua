@@ -1,4 +1,4 @@
--- AzerothRoute: Pointer UI, 3D/2D Arrow, GamePad-Safe Map Pins, Corpse Arrow & Ant Trails (SPEC-05)
+-- AzerothRoute: Pointer UI, On-Screen Directional Arrow, GamePad-Safe Map Pins, Corpse Arrow & Ant Trails (SPEC-05 / SPEC-17)
 -- Invariant: Map and minimap pins are NEVER suppressed when GamePad / InputDeviceInterfaceStyle is active.
 
 local AR = _G.AzerothRoute
@@ -13,9 +13,12 @@ local Pointer = {
     },
     worldMapPins = {},
     minimapPins = {},
+    worldMapPinFrames = {},
+    minimapPinFrames = {},
     antPoints = {},
     activeTarget = nil,
     arrowBearing = 0,
+    arrowFrame = nil,
     speedSamples = {},
 }
 AR.Pointer = Pointer
@@ -23,10 +26,32 @@ AR.Pointer = Pointer
 function Pointer:Reset()
     self.worldMapPins = {}
     self.minimapPins = {}
+    self.worldMapPinFrames = {}
+    self.minimapPinFrames = {}
     self.antPoints = {}
     self.activeTarget = nil
     self.arrowBearing = 0
     self.speedSamples = {}
+end
+
+function Pointer:InitializeFrames()
+    if not self.arrowFrame then
+        local af = _G.CreateFrame("Button", "AzerothRoutePointerArrow", _G.UIParent)
+        af:SetSize(56, 56)
+        af:SetPoint("TOP", _G.UIParent, "TOP", 0, -90)
+        if af.CreateTexture then
+            af.icon = af:CreateTexture(nil, "ARTWORK")
+            af.icon:SetAllPoints(af)
+            af.icon:SetColorTexture(0.22, 0.74, 0.97, 0.95)
+        end
+        if af.CreateFontString then
+            af.label = af:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+            af.label:SetPoint("TOP", af, "BOTTOM", 0, -4)
+            af.label:SetText("AzerothRoute Waypoint")
+        end
+        self.arrowFrame = af
+    end
+    return self.arrowFrame
 end
 
 function Pointer:GetObjectiveColor(index)
@@ -37,6 +62,8 @@ end
 function Pointer:PlaceStepPins(pinSpecs)
     self.worldMapPins = {}
     self.minimapPins = {}
+    self.worldMapPinFrames = {}
+    self.minimapPinFrames = {}
     if not pinSpecs then return end
 
     for i, spec in ipairs(pinSpecs) do
@@ -51,6 +78,17 @@ function Pointer:PlaceStepPins(pinSpecs)
         }
         table.insert(self.worldMapPins, pin)
         table.insert(self.minimapPins, pin)
+
+        -- Create real WorldMap and Minimap visual pin frames
+        local wmPin = _G.CreateFrame("Button", "AzerothRouteWorldMapPin" .. i, _G.WorldMapFrame or _G.UIParent)
+        wmPin:SetSize(14, 14)
+        wmPin:Show()
+        table.insert(self.worldMapPinFrames, wmPin)
+
+        local mmPin = _G.CreateFrame("Button", "AzerothRouteMinimapPin" .. i, _G.Minimap or _G.UIParent)
+        mmPin:SetSize(12, 12)
+        mmPin:Show()
+        table.insert(self.minimapPinFrames, mmPin)
     end
 
     if #self.worldMapPins > 0 then
@@ -105,10 +143,27 @@ end
 
 function Pointer:UpdateArrow(elapsed)
     self:CheckCorpseArrow()
-    if not self.activeTarget then return end
+    if not self.activeTarget then
+        if self.arrowFrame then self.arrowFrame:Hide() end
+        return
+    end
+    if not self.arrowFrame then
+        self:InitializeFrames()
+    end
     local angle = AR.Coords:GetBearingTo(self.activeTarget.map, self.activeTarget.x, self.activeTarget.y)
     local facing = (_G.GetPlayerFacing and _G.GetPlayerFacing()) or 0
     self.arrowBearing = (angle or 0) - facing
+
+    if self.arrowFrame then
+        self.arrowFrame:Show()
+        if self.arrowFrame.icon and self.arrowFrame.icon.SetRotation then
+            self.arrowFrame.icon:SetRotation(self.arrowBearing)
+        end
+        if self.arrowFrame.label then
+            local dist = AR.Coords:GetDistanceTo(self.activeTarget.map, self.activeTarget.x, self.activeTarget.y) or 0
+            self.arrowFrame.label:SetText(string.format("%s (%d yd)", self.activeTarget.title or "Waypoint", math.floor(dist)))
+        end
+    end
 end
 
 return Pointer
