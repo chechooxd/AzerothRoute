@@ -20,6 +20,18 @@ The libraries in this directory are vendored verbatim from the official `HereBeD
    - **Upstream**: https://github.com/Nevcairiel/HereBeDragons / https://www.wowace.com/addons/herebedragons/
    - **License**: BSD (per `HereBeDragons.toc` `X-License: BSD`; CurseForge's published BSD text retains placeholder copyright fields, preserved verbatim in provenance notes rather than inventing a notice).
 
+4. **HereBeDragons-Pins-2.0** (`Libs/HereBeDragons/HereBeDragons-Pins-2.0.lua`)
+   - **Release**: `2.18-release`, minor `17`; byte-identical (ignoring line endings) to `raw.githubusercontent.com/Nevcairiel/HereBeDragons/2.18-release/HereBeDragons-Pins-2.0.lua`. Zygor's bundled copy is a modified fork and was not used.
+   - **License**: BSD (same package as HereBeDragons-2.0).
+
+5. **LibDataBroker-1.1** (`Libs/LibDataBroker-1.1/LibDataBroker-1.1.lua`)
+   - **Minor**: `4`; byte-identical (ignoring line endings) to `github.com/tekkub/libdatabroker-1-1` `master`.
+   - **Author**: tekkub. **License**: Public Domain (as published upstream).
+
+6. **LibDBIcon-1.0** (`Libs/LibDBIcon-1.0/LibDBIcon-1.0.lua`)
+   - **Minor**: `52`; copied from the CurseForge-packaged copy bundled with RXPGuides (`@curseforge-project-slug: libdbicon-1-0@` header). Not re-verified against the upstream repository, which could not be fetched.
+   - **Author**: funkydude. **License**: not verified here (the file carries no license header); confirm on the upstream project page before redistribution.
+
 ## Integration Scope
 
-Only `LibStub`, `CallbackHandler-1.0`, and `HereBeDragons-2.0` coordinate data APIs are loaded and integrated into `Spatial/Coords.lua`. Full Ace3, `HereBeDragons-Pins-2.0`, targeting, SavedVariables, and party communications remain native to AzerothRoute.
+`HereBeDragons-2.0` coordinate data APIs are integrated into `Spatial/Coords.lua`. `HereBeDragons-Pins-2.0` places world map and minimap pins in `Spatial/Pointer.lua` (native placement remains as a fallback). `LibDataBroker-1.1` + `LibDBIcon-1.0` provide the minimap launcher in `UI/MinimapButton.lua`. Ace3, targeting, SavedVariables, and party communications remain native to AzerothRoute.
