@@ -1,0 +1,147 @@
+-- AzerothRoute: Headless Test Runner (SPEC-14A)
+-- Loads the Mock WoW API, all addon modules in .toc order, and executes all SPEC test suites.
+
+local T = {
+    suites = {},
+    passed = 0,
+    failed = 0,
+    errors = {},
+}
+_G.TestFramework = T
+package.loaded["Tests.run_tests"] = T
+
+function T:Describe(suiteName, fn)
+    table.insert(self.suites, { name = suiteName, fn = fn })
+end
+
+function T:AssertEqual(actual, expected, msg)
+    if actual ~= expected then
+        error(string.format("%s | expected %s, got %s", msg or "Assertion failed", tostring(expected), tostring(actual)), 2)
+    end
+end
+
+function T:AssertTrue(val, msg)
+    if not val then
+        error(string.format("%s | expected truthy value, got %s", msg or "Assertion failed", tostring(val)), 2)
+    end
+end
+
+function T:AssertFalse(val, msg)
+    if val then
+        error(string.format("%s | expected falsy value, got %s", msg or "Assertion failed", tostring(val)), 2)
+    end
+end
+
+function T:It(testName, fn)
+    local ok, err = pcall(fn)
+    if ok then
+        self.passed = self.passed + 1
+        print(string.format("  [PASS] %s", testName))
+    else
+        self.failed = self.failed + 1
+        local report = string.format("  [FAIL] %s -> %s", testName, tostring(err))
+        print(report)
+        table.insert(self.errors, report)
+    end
+end
+
+function T:BootstrapAddon()
+    require("Tests.mock_wow_api")
+    local tocFiles = {
+        "Core/Compat.lua",
+        "Core/Storage.lua",
+        "Core/Events.lua",
+        "Core/Scheduler.lua",
+        "Core/Init.lua",
+        "Engine/ConditionEnv.lua",
+        "Engine/Parser.lua",
+        "Engine/Guide.lua",
+        "Engine/Step.lua",
+        "Engine/Goal.lua",
+        "Engine/Chains.lua",
+        "Engine/Progression.lua",
+        "Quest/QuestTracking.lua",
+        "Quest/QuestAutoAccept.lua",
+        "Quest/Localizers.lua",
+        "Quest/WhoWhere.lua",
+        "Spatial/Coords.lua",
+        "Spatial/TaxiTracker.lua",
+        "Spatial/Pathfinder.lua",
+        "Spatial/Pointer.lua",
+        "Spatial/Foglight.lua",
+        "Spatial/Poi.lua",
+        "Modules/TalentAdvisor/TalentData.lua",
+        "Modules/TalentAdvisor/TalentAdvisor.lua",
+        "Modules/Professions/Profession.lua",
+        "Modules/Professions/Skills.lua",
+        "Modules/Professions/Inventory.lua",
+        "Modules/Gear/Statweights.lua",
+        "Modules/Gear/ItemScore.lua",
+        "Modules/Gear/Upgrades.lua",
+        "Modules/Gear/QuestReward.lua",
+        "Modules/Gear/GearFinder.lua",
+        "Modules/Gold/Scanner.lua",
+        "Modules/Gold/ServerTrends.lua",
+        "Modules/Gold/GoldGuide.lua",
+        "Modules/Gold/Appraiser.lua",
+        "Modules/ActionBar/ActionBar.lua",
+        "Modules/ActionBar/MagicKey.lua",
+        "Modules/ActionBar/Faction.lua",
+        "Modules/ActionBar/CreatureDetector.lua",
+        "Modules/Sync/NotificationCenter.lua",
+        "Modules/Sync/PartySync.lua",
+        "UI/Widgets/Core.lua",
+        "UI/Skins/Default.lua",
+        "UI/Viewer/Tabs.lua",
+        "UI/Viewer/ViewerFrame.lua",
+        "UI/Menu/DashboardWidgets.lua",
+        "UI/Menu/Options.lua",
+        "UI/Menu/GuideMenu.lua",
+        "Data/Catalog.lua",
+        "Guides/Autoload.lua",
+    }
+    for _, path in ipairs(tocFiles) do
+        dofile(path)
+    end
+end
+
+function T:RunAll()
+    self:BootstrapAddon()
+    local specSuites = {
+        "Tests/test_spec01_kernel.lua",
+        "Tests/test_spec02_parser.lua",
+        "Tests/test_spec03_progression.lua",
+        "Tests/test_spec04_quest.lua",
+        "Tests/test_spec05_spatial.lua",
+        "Tests/test_spec12_viewer.lua",
+        "Tests/test_spec06_talents.lua",
+        "Tests/test_spec07_professions.lua",
+        "Tests/test_spec08_gear.lua",
+        "Tests/test_spec10_actionbar.lua",
+        "Tests/test_spec09_gold.lua",
+        "Tests/test_spec13_menu.lua",
+        "Tests/test_spec11_14_sync_catalog.lua",
+    }
+    for _, suitePath in ipairs(specSuites) do
+        dofile(suitePath)
+    end
+
+    self.passed = 0
+    self.failed = 0
+    self.errors = {}
+    for _, suite in ipairs(self.suites) do
+        print(string.format("=== Suite: %s ===", suite.name))
+        suite.fn(self)
+    end
+    print(string.format("\nSummary: %d passed, %d failed", self.passed, self.failed))
+    if self.failed > 0 then
+        os.exit(1)
+    end
+    return true
+end
+
+if arg and arg[0] and arg[0]:find("run_tests%.lua") then
+    T:RunAll()
+end
+
+return T

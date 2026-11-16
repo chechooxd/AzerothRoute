@@ -1,0 +1,84 @@
+## Interface: 16001
+## Title: |cffffffffAzeroth|r|cfff4bf2aRoute|r
+## Notes: Next-generation reactive leveling, talent, profession, gear, and gold guide engine.
+## Author: AzerothRoute Team
+## Version: 1.0.0
+## DefaultState: enabled
+## LoadOnDemand: 0
+## SavedVariables: AzerothRouteSavedDB
+## SavedVariablesPerCharacter: AzerothRouteCharDB
+
+# SPEC-01: Kernel & Runtime
+Core\Compat.lua
+Core\Storage.lua
+Core\Events.lua
+Core\Scheduler.lua
+Core\Init.lua
+
+# SPEC-02 & SPEC-03: DSL Compiler & Reactive Progression Engine
+Engine\ConditionEnv.lua
+Engine\Parser.lua
+Engine\Guide.lua
+Engine\Step.lua
+Engine\Goal.lua
+Engine\Chains.lua
+Engine\Progression.lua
+
+# SPEC-04: Quest Engine, AutoAccept, Localizers & WhoWhere
+Quest\QuestTracking.lua
+Quest\QuestAutoAccept.lua
+Quest\Localizers.lua
+Quest\WhoWhere.lua
+
+# SPEC-05: Spatial Engine, Multi-Hop Pathfinder & Pointer UI
+Spatial\Coords.lua
+Spatial\TaxiTracker.lua
+Spatial\Pathfinder.lua
+Spatial\Pointer.lua
+Spatial\Foglight.lua
+Spatial\Poi.lua
+
+# SPEC-06: Talent Advisor Engine
+Modules\TalentAdvisor\TalentData.lua
+Modules\TalentAdvisor\TalentAdvisor.lua
+
+# SPEC-07: Professions, Class Skills & Inventory Engine
+Modules\Professions\Profession.lua
+Modules\Professions\Skills.lua
+Modules\Professions\Inventory.lua
+
+# SPEC-08: Gear Scoring, Upgrades, QuestReward & GearFinder
+Modules\Gear\Statweights.lua
+Modules\Gear\ItemScore.lua
+Modules\Gear\Upgrades.lua
+Modules\Gear\QuestReward.lua
+Modules\Gear\GearFinder.lua
+
+# SPEC-09: Gold Scanner, ServerTrends, GoldGuide & Appraiser
+Modules\Gold\Scanner.lua
+Modules\Gold\ServerTrends.lua
+Modules\Gold\GoldGuide.lua
+Modules\Gold\Appraiser.lua
+
+# SPEC-10: Secure ActionBar, MagicKey, Faction & CreatureDetector
+Modules\ActionBar\ActionBar.lua
+Modules\ActionBar\MagicKey.lua
+Modules\ActionBar\Faction.lua
+Modules\ActionBar\CreatureDetector.lua
+
+# SPEC-11: NotificationCenter & PartySync
+Modules\Sync\NotificationCenter.lua
+Modules\Sync\PartySync.lua
+
+# SPEC-12 & SPEC-13: UI Framework, Skins, ViewerFrame, Tabs & GuideMenu
+UI\Widgets\Core.lua
+UI\Skins\Default.lua
+UI\Viewer\Tabs.lua
+UI\Viewer\ViewerFrame.lua
+UI\Menu\DashboardWidgets.lua
+UI\Menu\Options.lua
+UI\Menu\GuideMenu.lua
+
+# SPEC-14B: Static Data & Guide Catalog
+Data\Catalog.lua
+Guides\Autoload.lua
