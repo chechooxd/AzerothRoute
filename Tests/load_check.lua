@@ -107,6 +107,27 @@ fire("PLAYER_LOGIN")
 fire("PLAYER_ENTERING_WORLD", true, false)
 print(string.format("start-up: %d errors", #M.errors))
 
+-- 3b. load-on-demand packs, each with its own addon table, as the game loads them later
+local PACKS = { "AzerothRoute_Guides", "AzerothRoute_Guides_Horde", "AzerothRoute_Guides_Alliance",
+    "AzerothRoute_QuestDB", "AzerothRoute_Codex", "AzerothRoute_Experimental", "AzerothRoute_ItemDB",
+    "AzerothRoute_Options", "AzerothRoute_Nav", "AzerothRoute_esMX" }
+local packErrors, packFiles = 0, 0
+for _, name in ipairs(PACKS) do
+    local files = loadOrder(ROOT .. "/" .. name .. "/" .. name .. ".toc")
+    if #files == 0 then fail("pack " .. name .. " has no files") end
+    local packNs = {}
+    for _, file in ipairs(files) do
+        packFiles = packFiles + 1
+        local chunk = loadfile(file)
+        if chunk then
+            local ok, e = pcall(chunk, name, packNs)
+            if not ok then packErrors = packErrors + 1 fail("load " .. file .. ": " .. tostring(e)) end
+        end
+    end
+end
+M:RunTimers(3)
+print(string.format("packs: %d packs, %d files, %d errors", #PACKS, packFiles, packErrors))
+
 -- 5. AzerothRoute 1 settings carried over once
 local function expect(path, want)
     local got = ns.Get(path)

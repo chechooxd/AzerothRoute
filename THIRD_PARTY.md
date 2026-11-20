@@ -27,7 +27,8 @@ The components below keep their own licences and notices; each `addon/` folder c
 The guides, names and item data carry facts from the sources each `LICENSE-DATA.txt` lists: EG Link
 output for World of Warcraft: Forever (data from Efficient Games, https://efficient.games, CC BY 4.0),
 the Forever TrinityCore world database (GPL-2.0), CMaNGOS classic-db (GPL-3.0), pfQuest (MIT),
-QuestieDB facts in the guide pack (as Polestar ships them), and Blizzard client tables.
+QuestieDB facts (in the guide, QuestDB, Codex and Experimental packs, as Polestar ships them; its
+maintainers ask that QuestieDB be treated as all rights reserved), and Blizzard client tables.
 AzerothRoute would remove any of them on a rights holder's request.
 
 ## Left out
@@ -35,6 +36,4 @@ AzerothRoute would remove any of them on a rights holder's request.
 - Polestar_Arcade (Freedoom Arcade by petllama).
 - Polestar_Guides_<Race> folders: only `Legs.lua`, baked with Leffe's navigation maps under a
   permission given to Polestar's author.
-- Polestar_QuestDB, Polestar_Codex and Polestar_Experimental, pending decision D2 (QuestieDB-derived
-  facts).
 - Polestar Recorder (a separate addon).

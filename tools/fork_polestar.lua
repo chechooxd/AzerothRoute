@@ -29,13 +29,14 @@ local EXCLUDE = {
     Polestar_Guides_Skyborne = "Legs.lua only",
     Polestar_Guides_Tauren = "Legs.lua only",
     Polestar_Guides_Troll = "Legs.lua only",
-    Polestar_QuestDB = "QuestieDB-derived facts (decision D2)",
-    Polestar_Codex = "QuestieDB-derived facts (decision D2)",
-    Polestar_Experimental = "QuestieDB-derived facts (decision D2)",
 }
+-- Decision D2 (2026-11-20): the QuestDB, Codex and Experimental packs ship as Polestar ships them,
+-- QuestieDB-derived facts included. --without-questie leaves them out (on a rights holder's request).
 for _, a in ipairs(arg) do
-    if a == "--with-questdb" then
-        EXCLUDE.Polestar_QuestDB, EXCLUDE.Polestar_Codex, EXCLUDE.Polestar_Experimental = nil, nil, nil
+    if a == "--without-questie" then
+        EXCLUDE.Polestar_QuestDB = "QuestieDB-derived facts (--without-questie)"
+        EXCLUDE.Polestar_Codex = "QuestieDB-derived facts (--without-questie)"
+        EXCLUDE.Polestar_Experimental = "QuestieDB-derived facts (--without-questie)"
     end
 end
 

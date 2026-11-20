@@ -33,10 +33,10 @@ minimap button settings carry over on the first login.
   files of its own (`tools/fork/files/`). A patch that no longer applies fails the run, which is how a
   new Polestar release shows what needs a look.
 
-Left out of `addon/` (see THIRD_PARTY.md): Polestar's Doom arcade, the race guide parts (only
-`Legs.lua`, made with Leffe's navigation maps under a permission given to Polestar's author), and the
-QuestDB, Codex and Experimental packs, which carry QuestieDB-derived facts (decision D2 in
-`odd/tasks/azerothroute-2-polestar-base.md`).
+Left out of `addon/` (see THIRD_PARTY.md): Polestar's Doom arcade and the race guide parts (only
+`Legs.lua`, made with Leffe's navigation maps under a permission given to Polestar's author). The
+QuestDB, Codex and Experimental packs ship as Polestar ships them, QuestieDB-derived facts included
+(decision D2); `--without-questie` leaves them out.
 
 To update to a new Polestar release:
 
@@ -53,7 +53,8 @@ luajit Tests/load_check.lua
 
 Compiles every Lua file, checks every file a `.toc` or `.xml` names, loads the main addon in `.toc`
 order with a permissive WoW API (`Tests/mock_wow.lua`), runs its start-up events, checks the slash
-commands and bindings carry AzerothRoute's names, and checks AzerothRoute 1's settings carry over once.
+commands and bindings carry AzerothRoute's names, loads the load-on-demand packs (guides, QuestDB,
+Codex, Experimental, ItemDB, Options, Nav, esMX), and checks AzerothRoute 1's settings carry over once.
 Drawing, game data and protected actions are only checked in game.
 
 ## Plan
