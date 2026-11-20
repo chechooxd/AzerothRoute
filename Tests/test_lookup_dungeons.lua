@@ -212,3 +212,41 @@ T:Describe("Rares", function()
         if not ok then error(err, 0) end
     end)
 end)
+
+T:Describe("Quest-starting loot", function()
+    T:It("puts a quest-starting item on the item bar with a glow until the quest is taken", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.QuestLoot:Reset()
+        MockWoW.player.level = 10
+        MockWoW.player.faction = "Alliance"
+        MockWoW.player.bagSlots[0] = { { itemID = 1307, count = 1 } } -- starts "The Collector" (123)
+        local g = AR.Parser:ParseGuide("LootGuide", "step One\n    talk Devrak##3615\n")
+        AR.Progression:LoadGuide(g, 1)
+        AR.QuestTracking:ScanQuestLog()
+        local items = AR.QuestLoot:GetStartItems()
+        T:AssertEqual(#items, 1)
+        T:AssertEqual(items[1].questID, 123)
+        AR.ActionBar:UpdateFromCurrentStep()
+        local btn = AR.ActionBar.itemButtons[1]
+        T:AssertTrue(btn:IsShown(), "On the item bar")
+        T:AssertEqual(btn.itemID, 1307)
+        T:AssertTrue(btn.glow ~= nil and btn.glow:IsShown(), "Glowing")
+        T:AssertEqual(btn.questStart, items[1].quest, "Tooltip knows the quest")
+        -- Taking the quest removes it from the bar.
+        MockWoW.quests.inLog[123] = { title = "The Collector", isComplete = false, objectives = {} }
+        AR.QuestTracking:ScanQuestLog()
+        T:AssertEqual(#AR.QuestLoot:GetStartItems(), 0, "Quest in the log")
+        AR.ActionBar:UpdateFromCurrentStep()
+        T:AssertFalse(AR.ActionBar.itemButtons[1]:IsShown(), "Gone from the bar")
+        -- Too low or the other faction: not offered.
+        MockWoW.quests.inLog[123] = nil
+        AR.QuestTracking:ScanQuestLog()
+        MockWoW.player.level = 5
+        T:AssertEqual(#AR.QuestLoot:GetStartItems(), 0, "Below the quest's minimum level")
+        MockWoW.player.level, MockWoW.player.faction = 10, "Horde"
+        T:AssertEqual(#AR.QuestLoot:GetStartItems(), 0, "Alliance-only quest")
+        MockWoW.player.bagSlots[0] = nil
+    end)
+end)

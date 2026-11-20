@@ -219,6 +219,9 @@ local function createIconButton(actionBar, parentBar, pool, index, namePrefix, d
             if shownItemTooltip and _G.GameTooltip.AddLine then
                 _G.GameTooltip:AddLine(" ")
             end
+            if button.questStart then
+                _G.GameTooltip:AddLine(AR.L:Format("UI_QUEST_LOOT_HINT", button.questStart), 0.96, 0.77, 0.29, true)
+            end
             _G.GameTooltip:AddLine(AR.L:Get(hintKey), 1, 1, 1, true)
         end
         _G.GameTooltip:Show()
@@ -389,6 +392,18 @@ local function applyButtonPool(barFrame, pool, entries, actionBar)
                     btn.countText:Hide()
                     if btn.SetAlpha then btn:SetAlpha(1.0) end
                 end
+                -- Quest-starting loot glows until the quest is taken.
+                btn.questStart = entry.questStart
+                if entry.glow and not btn.glow and btn.CreateTexture then
+                    btn.glow = btn:CreateTexture(nil, "OVERLAY")
+                    btn.glow:SetAllPoints(btn)
+                    btn.glow:SetTexture("Interface\\Buttons\\CheckButtonHilight")
+                    if btn.glow.SetBlendMode then btn.glow:SetBlendMode("ADD") end
+                    if btn.glow.SetVertexColor then btn.glow:SetVertexColor(1, 0.82, 0.25, 1) end
+                end
+                if btn.glow then
+                    if entry.glow then btn.glow:Show() else btn.glow:Hide() end
+                end
                 if not btn:IsShown() then btn:Show() end
             else
                 btn.itemID = nil
@@ -431,6 +446,18 @@ function ActionBar:UpdateFromCurrentStep()
     local step = AR.Progression and AR.Progression.currentStep
     local targets, seenTargets = {}, {}
     local itemEntries, seenItems = {}, {}
+
+    -- Loot that starts a quest comes first, glowing, until the quest is taken.
+    for _, loot in ipairs((AR.QuestLoot and AR.QuestLoot:GetStartItems()) or {}) do
+        if #itemEntries < self.NUM_BUTTONS then
+            local before = #itemEntries
+            addItemEntry(itemEntries, seenItems, "use", nil, loot.itemID)
+            if #itemEntries > before then
+                itemEntries[#itemEntries].glow = true
+                itemEntries[#itemEntries].questStart = loot.quest
+            end
+        end
+    end
 
     for _, g in ipairs(collectStepGoals(step)) do
         local status = g:GetStatus()

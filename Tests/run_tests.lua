@@ -75,6 +75,7 @@ function T:BootstrapAddon()
         "Quest/QuestAutoAccept.lua",
         "Quest/Localizers.lua",
         "Quest/WhoWhere.lua",
+        "Quest/QuestLoot.lua",
         "Spatial/Coords.lua",
         "Spatial/TaxiTracker.lua",
         "Spatial/Pathfinder.lua",
