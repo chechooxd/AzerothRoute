@@ -19,6 +19,7 @@ Branch: claude/addon-polestar-interface-71be44 â†’ master Â· Delivery: commit pe
 - S13 (Dungeons, screenshot_232430): every Classic dungeon/raid with level range, zone, "Your level", and the quests that lead into it for your faction.
 - S14: "sigue con servicios cercanos y el viaje por tramos" (screenshots 05 journey, 06 nearby).
 - S15: "sigue con la piedra de hogar en el viaje".
+- S16: "sigue con los entrenadores en servicios cercanos" — source chosen by the user: learn in game (tooltip title on mouse-over + TRAINER_SHOW).
 
 ## Tasks
 - [x] T1 [S3] Viewer heading, folded done goals, Then preview, note line â€” inline Â· 122/122
@@ -35,6 +36,7 @@ Branch: claude/addon-polestar-interface-71be44 â†’ master Â· Delivery: commit pe
 - [x] T12 [S14] Nearby services from DB flags in the map-pin menu (Spatial/Nearby.lua) — inline
 - [x] T13 [S14] Journey planner (Spatial/TravelData.lua, Spatial/Journey.lua), arrow steering and Journey section in the guide window — inline · 146/146
 - [x] T14 [S15] Hearthstone leg in the journey (TaxiTracker:RecordHearth on HEARTHSTONE_BOUND, GetHearthLocation, Journey hearth node with cooldown) — inline · 149/149
+- [x] T15 [S16] Trainers learned in game (Spatial/Trainers.lua) in the map pin menu: own class trainer, weapon master, each profession — inline · 151/151
 
 ## Log
 - L1 (2026-11-19): "corrige el addon que estamos desarrollando, quiero que te inspires en polestar, sobretodo en la interfaz, es totalmente lo que busco para mi addon" â€” done as ced39ce (viewer + guide center) and 94f6faa (arrow).
@@ -45,3 +47,4 @@ Branch: claude/addon-polestar-interface-71be44 â†’ master Â· Delivery: commit pe
 - L6 (2026-11-19): "sigue con lookup y mazmorras, crea las bases de datos". User chose pfQuest MIT as the data source (rev 104f356). pfQuest keeps no coordinates for instance creatures, so dungeon quests are attached heuristically (objective text names the dungeon; or description names it with an instance-only objective; or an instance-only objective given in the dungeon zone at its level) â€” lists are useful but not exact. Forever-only dungeons (Hall of Thanes, Ruins of Lordaeron) are not in pfQuest and are missing. Dungeon entrances have no coordinates; "Show on map" opens the zone map.
 - L7 (2026-11-20): "sigue con servicios cercanos y el viaje por tramos". Flight nodes and docks are hand-written with approximate positions; nodes snap to the nearest database flight master. Only known flight paths are used (KnowsTaxi, English canonical names — Spanish clients may miss untranslated nodes). Hearthstone not planned. Map pin button now opens a menu (waypoint + services); its old test now clicks the menu item. Direct-arrow tests stub Journey:GetSteering.
 - L8 (2026-11-20): "sigue con la piedra de hogar en el viaje". Bind position recorded on HEARTHSTONE_BOUND (player stands at the innkeeper); falls back to a flight-path node of the same name; an older bind is ignored when GetBindLocation changes. Characters that set their stone before this version get a position only after binding again or when the inn shares a flight-path name.
+- L9 (2026-11-20): "sigue con los entrenadores en servicios cercanos". pfQuest has no trainer flags; user chose in-game learning over a hand seed or GPL server data. Records in AR.db.global.trainers. Test found a real bug: `local _, c = _G.UnitClass and _G.UnitClass("player")` keeps only one return value; fixed with select(2, ...).

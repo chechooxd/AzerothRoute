@@ -82,6 +82,7 @@ function T:BootstrapAddon()
         "Spatial/Foglight.lua",
         "Spatial/Poi.lua",
         "Spatial/Nearby.lua",
+        "Spatial/Trainers.lua",
         "Spatial/TravelData.lua",
         "Spatial/Journey.lua",
         "Modules/TalentAdvisor/TalentData.lua",

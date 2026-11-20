@@ -542,6 +542,21 @@ function ViewerFrame:BuildMapMenuItems()
             items[#items + 1] = { text = s.label .. " · " .. L("UI_NEARBY_NONE"), disabled = true }
         end
     end
+    -- Trainers learned in game (class, weapon master, each profession).
+    items[#items + 1] = { separator = true }
+    local trainers = (AR.Trainers and AR.Trainers:ServiceEntries()) or {}
+    for _, t in ipairs(trainers) do
+        local rec = t.record
+        items[#items + 1] = {
+            text = string.format("%s · %d yd", t.label, math.floor(t.distance + 0.5)),
+            onClick = function()
+                if AR.Pointer then AR.Pointer:SetManualTarget(rec.map, rec.x / 100, rec.y / 100, rec.name) end
+            end,
+        }
+    end
+    if #trainers == 0 then
+        items[#items + 1] = { text = L("UI_SV_NOTRAINERS", "Trainers appear here once you meet them"), disabled = true }
+    end
     return items
 end
 

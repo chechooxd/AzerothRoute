@@ -84,7 +84,7 @@ bearing, and minimap radar offsets never mix coordinate spaces.
 
 ## Verification
 
-Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 149 passed, 0 failed` across 36 test suites). Client verification is pending:
+Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 151 passed, 0 failed` across 36 test suites). Client verification is pending:
 
 - Check the minimap button, its clicks and tooltip; move it, `/reload`, and check that it keeps its position.
 - `/ar config`: change a toggle, `/reload`, check it stuck; create a second profile, switch, check the toggle follows the profile.
@@ -122,6 +122,7 @@ Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 149 passed,
 - Journey: set a far destination (e.g. Lookup a quest giver in another zone). With known flight paths the arrow says "Walk to <flight path>", shows "m:ss total", and the guide window lists numbered legs with times; check a boat/zeppelin crossing too. Options: `journey` can be turned off in the profile.
 - On a Spanish client, check whether flight paths you know are used (names outside the built-in translation list may not be recognised).
 - Hearthstone: set it at an inn (the position is recorded then), travel far away and pick a destination near that inn: the first leg must be "Hearthstone to <inn>"; with the stone on a long cooldown it must prefer flights or boats.
+- Trainers: hover over a class trainer, a weapon master and a profession trainer, and open one trainer window; the map pin menu must then list "Class trainer" (only your class), "Weapon master" and the profession title with yards. Check the tooltip title is read on Forever (line 2 of the NPC tooltip) on an English and a Spanish client.
 
 The mock suite cannot establish live-client protected-action compatibility,
 minimap positioning, talent texture availability, or leveling-route completeness.
@@ -154,7 +155,9 @@ pfQuest and are not listed. Dungeon entrances have no coordinates; "Show on map"
 ## Nearby services and journeys
 
 Services come from the database flags (pfQuest meta: vendor, repair, innkeeper, flight master,
-banker, auctioneer, stable master, mailbox). Journeys are planned by `Spatial/Journey.lua` over
+banker, auctioneer, stable master, mailbox). Trainers are not in that data: `Spatial/Trainers.lua` learns them in game
+(the NPC tooltip title on mouse-over, and the trainer window) into the shared SavedVariables, so the
+list starts empty and fills as you meet them. Journeys are planned by `Spatial/Journey.lua` over
 `Spatial/TravelData.lua`: Classic flight-path nodes (snapped to the nearest flight master in the
 database) and hand-written boat, zeppelin and tram docks with approximate positions and crossing
 times. Only flight paths the character knows are used. Times are estimates (run speed or your

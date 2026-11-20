@@ -217,3 +217,82 @@ T:Describe("Journey: hearthstone on cooldown", function()
         end)
     end)
 end)
+
+T:Describe("Trainers learned in game", function()
+    T:It("classifies tooltip titles in English and Spanish", function()
+        local Tr = _G.AzerothRoute.Trainers
+        local kind, class = Tr:Classify("Warrior Trainer")
+        T:AssertEqual(kind, "class"); T:AssertEqual(class, "WARRIOR")
+        T:AssertEqual(Tr:Classify("Cooking Trainer"), "profession")
+        T:AssertEqual(Tr:Classify("<Weapon Master>"), "weapon")
+        T:AssertEqual(Tr:Classify("Instructora de cocina"), "profession")
+        T:AssertEqual(Tr:Classify("Maestro de armas"), "weapon")
+        T:AssertEqual(Tr:Classify("General Goods"), nil, "Vendors are not trainers")
+        T:AssertEqual(Tr:Classify(nil), nil)
+        T:AssertEqual(Tr:NpcIdFromGUID("Creature-0-4372-0-1-913-0000ABCDEF"), 913)
+        T:AssertEqual(Tr:NpcIdFromGUID("Player-4372-0ABCDEF0"), nil)
+    end)
+
+    T:It("records trainers on mouse-over and from the trainer window, then offers the nearest in the map menu", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.db.global.trainers = {}
+        MockWoW.player.faction = "Alliance"
+        local saved = { _G.UnitGUID, _G.UnitExists, _G.UnitIsPlayer, _G.UnitName, _G.UnitClass, _G.GameTooltipTextLeft2,
+            _G.IsTradeskillTrainer, AR.Coords.GetPlayerPosition, AR.Coords.GetDistanceTo, AR.Journey.GetSteering, _G.UnitLevel }
+        local pos = { 1453, 0.40, 0.60 }
+        local unit = { guid = "Creature-0-1-0-1-913-00AA", name = "Lyria Du Lac" }
+        local tipText = "Warrior Trainer"
+        _G.UnitGUID = function() return unit.guid end
+        _G.UnitExists = function() return true end
+        _G.UnitIsPlayer = function() return false end
+        _G.UnitName = function(u) if u == "player" then return "Me" end return unit.name end
+        _G.UnitClass = function() return "Warrior", "WARRIOR" end
+        _G.UnitLevel = function() return 60 end
+        _G.GameTooltipTextLeft2 = { GetText = function() return tipText end }
+        _G.IsTradeskillTrainer = function() return true end
+        AR.Coords.GetPlayerPosition = function() return pos[1], pos[2], pos[3] end
+        AR.Coords.GetDistanceTo = function(_, map, x, y)
+            if map ~= 1453 then return nil end
+            return math.sqrt(((x - 0.5) * 1000) ^ 2 + ((y - 0.5) * 1000) ^ 2)
+        end
+        AR.Journey.GetSteering = function() return nil end
+        local ok, err = pcall(function()
+            local rec = AR.Trainers:OnMouseover()
+            T:AssertEqual(rec.kind, "class"); T:AssertEqual(rec.class, "WARRIOR")
+            T:AssertEqual(rec.map, 1453)
+            -- A level line is not a title.
+            tipText = "Level 60 Humanoid"
+            unit.guid, unit.name = "Creature-0-1-0-1-5000-00AB", "Somebody"
+            T:AssertEqual(AR.Trainers:OnMouseover(), nil)
+            -- A cooking trainer met only through its window.
+            unit.guid, unit.name, pos[2] = "Creature-0-1-0-1-1430-00AC", "Tomas", 0.45
+            local cook = AR.Trainers:OnTrainerShow()
+            T:AssertEqual(cook.kind, "profession")
+            -- A mage trainer is not offered to a warrior.
+            tipText = "Mage Trainer"
+            unit.guid, unit.name, pos[2] = "Creature-0-1-0-1-331-00AD", "Maginor", 0.5
+            AR.Trainers:OnMouseover()
+            local entries = AR.Trainers:ServiceEntries()
+            T:AssertEqual(#entries, 2, "Class trainer + profession trainer")
+            T:AssertEqual(entries[1].record.name, "Lyria Du Lac", "Own class trainer")
+            T:AssertEqual(entries[2].label, AR.L:Get("UI_SV_PROFESSION"))
+            AR.ViewerFrame:RefreshVisuals()
+            AR.ViewerFrame:ShowMapMenu()
+            local label = string.format("%s · %d yd", AR.L:Get("UI_SV_CLASS"), math.floor(entries[1].distance + 0.5))
+            local item = AR.UI:FindMenuItem(label)
+            T:AssertTrue(item ~= nil, "Menu lists the class trainer: " .. label)
+            item:Click("LeftButton")
+            T:AssertEqual(AR.Pointer.activeTarget.title, "Lyria Du Lac", "Arrow to the trainer")
+            AR.db.global.trainers = {}
+            AR.ViewerFrame:ShowMapMenu()
+            T:AssertTrue(AR.UI:FindMenuItem(AR.L:Get("UI_SV_NOTRAINERS")) ~= nil, "Hint while none are known")
+            AR.UI:HideMenu()
+        end)
+        _G.UnitGUID, _G.UnitExists, _G.UnitIsPlayer, _G.UnitName, _G.UnitClass, _G.GameTooltipTextLeft2 = saved[1], saved[2], saved[3], saved[4], saved[5], saved[6]
+        _G.IsTradeskillTrainer, AR.Coords.GetPlayerPosition, AR.Coords.GetDistanceTo, AR.Journey.GetSteering, _G.UnitLevel = saved[7], saved[8], saved[9], saved[10], saved[11]
+        AR.Pointer:Reset()
+        if not ok then error(err, 0) end
+    end)
+end)
