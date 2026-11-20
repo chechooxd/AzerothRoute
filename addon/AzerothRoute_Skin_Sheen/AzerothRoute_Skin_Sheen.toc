@@ -1,0 +1,32 @@
+## Interface: 16001
+## Title: AzerothRoute Skin: Sheen
+## Notes: Glass and gloss for AzerothRoute: bevelled translucent panes, a gloss on every button and tab, light across the glass, your class colour running into the accent.
+## Title-deDE: AzerothRoute-Design: Sheen
+## Notes-deDE: Glas und Glanz für AzerothRoute: abgeschrägte, durchscheinende Scheiben, Glanz auf jeder Schaltfläche und jedem Reiter, Licht über dem Glas, deine Klassenfarbe, die in den Akzent übergeht.
+## Title-esES: AzerothRoute, tema: Sheen
+## Notes-esES: Cristal y brillo para AzerothRoute: paneles translúcidos biselados, brillo en cada botón y pestaña, luz sobre el cristal, el color de tu clase fundiéndose con el acento.
+## Title-esMX: AzerothRoute, tema: Sheen
+## Notes-esMX: Cristal y brillo para AzerothRoute: paneles translúcidos biselados, brillo en cada botón y pestaña, luz sobre el cristal, el color de tu clase fundiéndose con el acento.
+## Title-frFR: AzerothRoute, habillage : Sheen
+## Notes-frFR: Verre et brillance pour AzerothRoute : des panneaux translucides biseautés, un reflet sur chaque bouton et onglet, de la lumière sur le verre, la couleur de votre classe qui se fond dans l'accent.
+## Title-koKR: AzerothRoute 스킨: Sheen
+## Notes-koKR: AzerothRoute를 위한 유리와 광택: 경사진 반투명 판, 모든 버튼과 탭의 광택, 유리를 가로지르는 빛, 강조색으로 이어지는 직업 색상.
+## Title-ptBR: AzerothRoute, tema: Sheen
+## Notes-ptBR: Vidro e brilho para o AzerothRoute: painéis translúcidos chanfrados, brilho em cada botão e aba, luz sobre o vidro, a cor da sua classe fundindo-se ao destaque.
+## Title-ruRU: AzerothRoute, оформление: Sheen
+## Notes-ruRU: Стекло и блеск для AzerothRoute: полупрозрачные панели со скосом, блик на каждой кнопке и вкладке, свет поперёк стекла, цвет вашего класса, переходящий в акцент.
+## Title-zhCN: AzerothRoute 皮肤：Sheen
+## Notes-zhCN: AzerothRoute 的玻璃与光泽：带斜面的半透明面板，每个按钮和标签上的光泽，横过玻璃的光，职业颜色渐入强调色。
+## Title-zhTW: AzerothRoute 皮膚：Sheen
+## Notes-zhTW: AzerothRoute 的玻璃與光澤：帶斜面的半透明面板，每個按鈕和標籤上的光澤，橫過玻璃的光，職業顏色漸入強調色。
+## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## X-License: GPL-3.0-only
+## X-Website: https://github.com/chechooxd/AzerothRoute
+## Version: 0.4.1.1
+## Category: AzerothRoute
+## Group: AzerothRoute
+## Dependencies: AzerothRoute
+## LoadOnDemand: 1
+## X-AzerothRoute-Skin: sheen
+
+Sheen.lua

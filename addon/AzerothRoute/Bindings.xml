@@ -1,0 +1,51 @@
+<Bindings>
+	<Binding name="AZEROTHROUTE_TOGGLE" category="AzerothRoute">
+		AzerothRoute.Bindings.Toggle()
+	</Binding>
+	<Binding name="AZEROTHROUTE_HIDE" category="AzerothRoute">
+		AzerothRoute.Bindings.Hide()
+	</Binding>
+	<Binding name="AZEROTHROUTE_NEXT" category="AzerothRoute">
+		AzerothRoute.Bindings.Next()
+	</Binding>
+	<Binding name="AZEROTHROUTE_PREV" category="AzerothRoute">
+		AzerothRoute.Bindings.Prev()
+	</Binding>
+	<Binding name="AZEROTHROUTE_FOCUS" category="AzerothRoute">
+		AzerothRoute.Bindings.Focus()
+	</Binding>
+	<Binding name="AZEROTHROUTE_MENU" category="AzerothRoute">
+		AzerothRoute.Bindings.Menu()
+	</Binding>
+	<Binding name="AZEROTHROUTE_OPTIONS" category="AzerothRoute">
+		AzerothRoute.Bindings.Options()
+	</Binding>
+	<Binding name="AZEROTHROUTE_REPORT" category="AzerothRoute">
+		AzerothRoute.Bindings.Report()
+	</Binding>
+	<Binding name="AZEROTHROUTE_NEXT_WAYPOINT" category="AzerothRoute">
+		AzerothRoute.Bindings.NextWaypoint()
+	</Binding>
+	<Binding name="AZEROTHROUTE_PREV_WAYPOINT" category="AzerothRoute">
+		AzerothRoute.Bindings.PrevWaypoint()
+	</Binding>
+	<Binding name="AZEROTHROUTE_REOPEN_TAB" category="AzerothRoute">
+		AzerothRoute.Bindings.ReopenTab()
+	</Binding>
+	<Binding name="AZEROTHROUTE_PAUSE" category="AzerothRoute">
+		AzerothRoute.Bindings.Pause()
+	</Binding>
+	<Binding name="AZEROTHROUTE_MARK_JUNK" category="AzerothRoute">
+		AzerothRoute.Bindings.MarkJunk()
+	</Binding>
+	<Binding name="AZEROTHROUTE_MARK_KEEP" category="AzerothRoute">
+		AzerothRoute.Bindings.MarkKeep()
+	</Binding>
+	<Binding name="CLICK AzerothRouteQuestItemButton:LeftButton" category="AzerothRoute"/>
+	<Binding name="CLICK AzerothRouteTargetButton:LeftButton" category="AzerothRoute"/>
+	<Binding name="CLICK AzerothRouteRareButton:LeftButton" category="AzerothRoute"/>
+	<Binding name="CLICK AzerothRouteHearthButton:LeftButton" category="AzerothRoute"/>
+	<Binding name="CLICK AzerothRouteStepButton:LeftButton" category="AzerothRoute"/>
+	<Binding name="CLICK AzerothRouteTravelButton:LeftButton" category="AzerothRoute"/>
+	<Binding name="CLICK AzerothRouteBagButton:LeftButton" category="AzerothRoute"/>
+</Bindings>

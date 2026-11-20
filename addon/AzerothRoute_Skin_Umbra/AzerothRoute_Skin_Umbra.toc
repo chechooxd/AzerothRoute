@@ -1,0 +1,32 @@
+## Interface: 16001
+## Title: AzerothRoute Skin: Umbra
+## Notes: A dark mode for AzerothRoute: charcoal windows sunk in a soft vignette, a steel glow on their edges, a deep shadow; on AzerothRoute's frames or on the game's own art, dimmed.
+## Title-deDE: AzerothRoute-Design: Umbra
+## Notes-deDE: Ein dunkler Modus für AzerothRoute: anthrazitfarbene Fenster in einer weichen Vignette, ein stählernes Leuchten an den Kanten, ein tiefer Schatten; auf AzerothRoutes Rahmen oder auf der abgedunkelten Grafik des Spiels.
+## Title-esES: AzerothRoute, tema: Umbra
+## Notes-esES: Un modo oscuro para AzerothRoute: ventanas color carbón hundidas en una viñeta suave, un brillo acero en sus bordes, una sombra profunda; sobre los marcos de AzerothRoute o sobre el arte del juego, atenuado.
+## Title-esMX: AzerothRoute, tema: Umbra
+## Notes-esMX: Un modo oscuro para AzerothRoute: ventanas color carbón hundidas en una viñeta suave, un brillo acero en sus bordes, una sombra profunda; sobre los marcos de AzerothRoute o sobre el arte del juego, atenuado.
+## Title-frFR: AzerothRoute, habillage : Umbra
+## Notes-frFR: Un mode sombre pour AzerothRoute : des fenêtres anthracite dans un vignettage doux, une lueur acier sur leurs bords, une ombre profonde ; sur les cadres de AzerothRoute ou sur les graphismes du jeu, assombris.
+## Title-koKR: AzerothRoute 스킨: Umbra
+## Notes-koKR: AzerothRoute의 다크 모드: 부드러운 비네트에 잠긴 차콜 창, 가장자리의 강철빛, 깊은 그림자. AzerothRoute의 프레임 또는 어둡게 한 게임 자체 그래픽 위에.
+## Title-ptBR: AzerothRoute, tema: Umbra
+## Notes-ptBR: Um modo escuro para o AzerothRoute: janelas cor de carvão numa vinheta suave, um brilho de aço nas bordas, uma sombra profunda; nas molduras do AzerothRoute ou na arte do próprio jogo, escurecida.
+## Title-ruRU: AzerothRoute, оформление: Umbra
+## Notes-ruRU: Тёмный режим для AzerothRoute: графитовые окна в мягкой виньетке, стальное свечение по краям, глубокая тень; на рамках AzerothRoute или на затемнённой графике игры.
+## Title-zhCN: AzerothRoute 皮肤：Umbra
+## Notes-zhCN: AzerothRoute 的深色模式：沉在柔和暗角中的炭灰窗口，边缘钢色微光，深邃阴影；用于 AzerothRoute 的窗框或调暗的游戏自带美术。
+## Title-zhTW: AzerothRoute 皮膚：Umbra
+## Notes-zhTW: AzerothRoute 的深色模式：沉在柔和暗角中的炭灰視窗，邊緣鋼色微光，深邃陰影；用於 AzerothRoute 的窗框或調暗的遊戲自帶美術。
+## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## X-License: GPL-3.0-only
+## X-Website: https://github.com/chechooxd/AzerothRoute
+## Version: 0.4.1.1
+## Category: AzerothRoute
+## Group: AzerothRoute
+## Dependencies: AzerothRoute
+## LoadOnDemand: 1
+## X-AzerothRoute-Skin: umbra
+
+Umbra.lua

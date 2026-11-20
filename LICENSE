@@ -1,5 +1,5 @@
 AzerothRoute
-Copyright (c) 2026 The AzerothRoute authors
+Copyright (c) 2026 The AzerothRoute authors; based on Polestar, Copyright (c) 2026 The Polestar authors
 
 AzerothRoute is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
@@ -12,11 +12,10 @@ details.
 
 Third-party components and data keep their own licences; see THIRD_PARTY.md.
 
-Portions Copyright (c) 2026 The Polestar authors
-(https://github.com/fitzforge/polestar), licensed under the GNU General Public
-License, version 3 only: the guides in Guides/Polestar/ are converted from
-Polestar 0.4.1.1's guide packs (Polestar_Guides, Polestar_Guides_Horde,
-Polestar_Guides_Alliance) by tools/import_polestar.lua.
+AzerothRoute 2 is a modified version of Polestar (https://github.com/fitzforge/polestar),
+Copyright (c) 2026 The Polestar authors, licensed under the GNU General Public License, version 3
+only. Polestar's own notices (Shortest Path Forever and CMaNGOS portions) are in
+addon/AzerothRoute/LICENSE; addon/AzerothRoute_Nav/LICENSE covers the walking router.
 
 World of Warcraft and Blizzard Entertainment are trademarks or registered
 trademarks of Blizzard Entertainment, Inc. AzerothRoute is not affiliated with

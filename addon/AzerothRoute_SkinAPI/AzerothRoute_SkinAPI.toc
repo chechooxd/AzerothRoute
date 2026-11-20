@@ -1,0 +1,31 @@
+## Interface: 16001
+## Title: AzerothRoute Skin API
+## Notes: Part of AzerothRoute: the checks a skin from another addon goes through. Loaded when you use one.
+## Title-deDE: AzerothRoute: Design-Schnittstelle
+## Notes-deDE: Teil von AzerothRoute: die Prüfungen, die ein Design aus einem anderen Addon durchläuft. Wird geladen, wenn du eines verwendest.
+## Title-esES: AzerothRoute: API de temas
+## Notes-esES: Parte de AzerothRoute: las comprobaciones por las que pasa un tema de otro addon. Se carga cuando usas uno.
+## Title-esMX: AzerothRoute: API de temas
+## Notes-esMX: Parte de AzerothRoute: las comprobaciones por las que pasa un tema de otro addon. Se carga cuando usas uno.
+## Title-frFR: AzerothRoute : API des habillages
+## Notes-frFR: Fait partie de AzerothRoute : les vérifications que passe un habillage venu d'un autre addon. Chargé quand vous en utilisez un.
+## Title-koKR: AzerothRoute 스킨 API
+## Notes-koKR: AzerothRoute의 일부: 다른 애드온의 스킨이 거치는 검사. 스킨을 사용할 때 불러옵니다.
+## Title-ptBR: AzerothRoute: API de temas
+## Notes-ptBR: Parte do AzerothRoute: as verificações pelas quais passa um tema de outro addon. Carregado quando você usa um.
+## Title-ruRU: AzerothRoute: API оформлений
+## Notes-ruRU: Часть AzerothRoute: проверки, которые проходит оформление из другого аддона. Загружается, когда вы его используете.
+## Title-zhCN: AzerothRoute 皮肤接口
+## Notes-zhCN: AzerothRoute 的组成部分：其他插件提供的皮肤需通过的检查。使用皮肤时加载。
+## Title-zhTW: AzerothRoute 皮膚介面
+## Notes-zhTW: AzerothRoute 的一部分：其他插件提供的皮膚需通過的檢查。使用皮膚時載入。
+## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## Version: 0.4.1.1
+## Category: AzerothRoute
+## Group: AzerothRoute
+## LoadOnDemand: 1
+## Dependencies: AzerothRoute
+## X-License: GPL-3.0-only
+## X-Website: https://github.com/chechooxd/AzerothRoute
+
+SkinCheck.lua

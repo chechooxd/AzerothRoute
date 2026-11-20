@@ -1,0 +1,48 @@
+## Interface: 16001
+## Title: AzerothRoute
+## Notes: Leveling guides for World of Warcraft: Forever.
+## Title-deDE: AzerothRoute
+## Notes-deDE: Leveling-Guides für World of Warcraft: Forever.
+## Title-esES: AzerothRoute
+## Notes-esES: Guías para subir de nivel en World of Warcraft: Forever.
+## Title-esMX: AzerothRoute
+## Notes-esMX: Guías para subir de nivel en World of Warcraft: Forever.
+## Title-frFR: AzerothRoute
+## Notes-frFR: Guides de montée en niveau pour World of Warcraft: Forever.
+## Title-koKR: AzerothRoute
+## Notes-koKR: World of Warcraft: Forever 레벨업 가이드.
+## Title-ptBR: AzerothRoute
+## Notes-ptBR: Guias de evolução para World of Warcraft: Forever.
+## Title-ruRU: AzerothRoute
+## Notes-ruRU: Гайды по прокачке для World of Warcraft: Forever.
+## Title-zhCN: AzerothRoute
+## Notes-zhCN: 魔兽世界：Forever 练级指南。
+## Title-zhTW: AzerothRoute
+## Notes-zhTW: World of Warcraft: Forever 的升級指南。
+## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## X-License: GPL-3.0-only
+## X-Website: https://github.com/chechooxd/AzerothRoute
+## Version: 0.4.1.1
+## Category: AzerothRoute
+## IconTexture: Interface\AddOns\AzerothRoute\Media\UI\logo
+## AddonCompartmentFunc: AzerothRoute_OnAddonCompartmentClick
+## AddonCompartmentFuncOnEnter: AzerothRoute_OnAddonCompartmentEnter
+## AddonCompartmentFuncOnLeave: AzerothRoute_OnAddonCompartmentLeave
+## OptionalDeps: EllesmereUI, TomTom, OpenMap, ErgoBars, ForeverLevelingBiS
+## SavedVariables: AzerothRouteDB, AzerothRouteSavedDB
+## SavedVariablesPerCharacter: AzerothRouteCharData
+
+ClientInfo.lua
+Core\Core.xml
+Theme\Theme.xml
+Nav\Nav.xml
+Quests\Quests.xml
+Gear\Gear.xml
+Maps\Maps.xml
+QoL\QoL.xml
+Lookup\Lookup.xml
+Dungeons\Dungeons.xml
+UI\UI.xml
+Rares\Rares.xml
+Talents\Talents.xml
+Alts\Alts.xml

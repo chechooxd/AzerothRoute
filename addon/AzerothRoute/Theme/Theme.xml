@@ -1,0 +1,7 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/">
+	<Script file="House.lua"/>
+	<Script file="Theme.lua"/>
+	<Script file="SkinApi.lua"/>
+	<Script file="Anim.lua"/>
+	<Script file="Widgets.lua"/>
+</Ui>
