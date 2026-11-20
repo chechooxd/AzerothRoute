@@ -24,10 +24,11 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T6 [S7] Guide center search, row tags, details (chips, status, stats) — inline · 132/132
 - [x] T7 [S8] Quest log cleanup dialog — inline · 134/134
 - [x] T8 [S10] Key bindings (Bindings.xml + UI/Bindings.lua) — inline · 135/135
-- [ ] T9 Merge to master, README checklist
+- [x] T9 Merge to master, README checklist
 
 ## Log
 - L1 (2026-11-19): "corrige el addon que estamos desarrollando, quiero que te inspires en polestar, sobretodo en la interfaz, es totalmente lo que busco para mi addon" — done as ced39ce (viewer + guide center) and 94f6faa (arrow).
 - L2 (2026-11-19): "sigue con todo lo demas, no pares hasta dejarlo al mismo nivel de polestar"
 - L3: Route: all tasks inline (no writer trigger: sequential units sharing ViewerFrame/Locale). Data-dependent Polestar features listed as out of scope.
 - L4: T6 replaced level-band section headers with a right-hand row tag ("x/y" on the loaded guide, "Your level" on matching guides): headers inside the paged list would change the 14-rows-per-page contract that existing tests pin (Page 1/4 for 55 guides).
+- L5: All tasks done inline (no writer trigger). Suite 135/135 (34 suites). README checklist added. Risk: item 6 (layout, fonts, glyphs and the abandon popup are only verifiable in the live client) and a requested behaviour change: minimap left-click now hides/shows everything and right-click opens the menu.

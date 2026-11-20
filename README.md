@@ -84,7 +84,7 @@ bearing, and minimap radar offsets never mix coordinate spaces.
 
 ## Verification
 
-Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 119 passed, 0 failed` across 35 test suites). Client verification is pending:
+Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 135 passed, 0 failed` across 34 test suites). Client verification is pending:
 
 - Check the minimap button, its clicks and tooltip; move it, `/reload`, and check that it keeps its position.
 - `/ar config`: change a toggle, `/reload`, check it stuck; create a second profile, switch, check the toggle follows the profile.
@@ -103,6 +103,16 @@ Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 119 passed,
 - Complete an objective within a step and check that its action disappears.
 - Change steps during combat; check that buttons update only after combat ends.
 - Visit the wrong merchant/flightmaster; check that unrelated goals stay incomplete.
+- Polestar-style guide window: step heading (NPC in blue, zone under it), two or more finished goals fold into "N done" (click to unfold), "Then:" line, step tip as a muted "›" line; nothing overlaps at the default width.
+- Toolbar: Skip advances, the map pin opens the world map on the waypoint, "..." opens the menu (All steps, Clean up quest log, Guides, Talents, Options, Hide). Labels follow the client language.
+- After a few minutes of questing the footer shows "XP/h · time to level".
+- "While you're here": distance in yards updates while moving; × removes the goal until `/reload`.
+- Click the step counter: step cards with ticks and "+N more"; the wheel scrolls; clicking a card jumps there.
+- Minimap button: left-click hides/shows everything; right-click opens the menu (Guide window ✓, Hide arrow, Hide/Show AzerothRoute, Keep the arrow when hidden).
+- Guide center: type in the search box, check the row tags ("x/y" on the loaded guide, "Your level"), chips, status bar and Steps/Quests/Next.
+- "Clean up quest log": only quests the route never hands in; Abandon must open the game's own confirmation and cancel must keep the quest.
+- Key Bindings > AddOns > AzerothRoute: six bindings with readable names; Next/Previous step work from the keyboard.
+- Arrow: no backdrop, a shadow that turns with it, gold when sideways; distance, destination and ETA on three lines.
 
 The mock suite cannot establish live-client protected-action compatibility,
 minimap positioning, talent texture availability, or leveling-route completeness.
