@@ -163,11 +163,11 @@ T:Describe("Package 3: viewer", function()
         AR.GuideMenu:Show()
         local active, other
         for _, b in ipairs(AR.GuideMenu.categoryButtons) do
-            if b._categoryID == "ALL" then active = b elseif b._categoryID == "GOLD" then other = b end
+            if b._categoryID == "HOME" then active = b elseif b._categoryID == "GOLD" then other = b end
         end
         T:AssertTrue(active.accent:IsShown(), "Active category carries the accent bar")
         T:AssertFalse(other.accent:IsShown(), "Idle category has none")
-        T:AssertEqual(active.count:GetText(), tostring(#AR.GuideMenu:GetGuidesForCategory("ALL")), "Count matches the list")
+        T:AssertEqual(active.count:GetText(), tostring(#AR.GuideMenu:GetGuidesForCategory("HOME")), "Count matches the list")
         local first = AR.GuideMenu.guideRowButtons[1]
         T:AssertTrue(first.accent:IsShown(), "Selected guide row is highlighted")
         AR.GuideMenu:Reset()

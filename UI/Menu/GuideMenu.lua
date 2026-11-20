@@ -15,6 +15,7 @@ local GuideMenu = {
     },
     mode = "guides",
     CATEGORIES = {
+        { id = "HOME",      labelKey = "UI_HOME" },
         { id = "SUGGESTED", labelKey = "UI_SUGGESTED" },
         { id = "LEVELING",  labelKey = "UI_LEVELING" },
         { id = "DUNGEONS",  labelKey = "UI_DUNGEONS" },
@@ -22,7 +23,7 @@ local GuideMenu = {
         { id = "GOLD",      labelKey = "UI_GOLD" },
         { id = "ALL",       labelKey = "UI_ALL_GUIDES" },
     },
-    activeCategory = "ALL",
+    activeCategory = "HOME",
     pageOffset = 0,
     selectedGuide = nil,
     frame = nil,
@@ -64,7 +65,7 @@ local function getDisplayTitle(guide)
 end
 
 function GuideMenu:Reset()
-    self.activeCategory = "ALL"
+    self.activeCategory = "HOME"
     self.pageOffset = 0
     self.selectedGuide = nil
     self.searchQuery = ""
@@ -444,6 +445,15 @@ function GuideMenu:InitializeFrame()
     self.loadButton = createMenuButton(f, "AzerothRouteLoadGuideButton", LGet("UI_LOAD_GUIDE"), 210, 32, true, "primary")
     self.loadButton:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 488, 22)
     self.loadButton:SetScript("OnClick", function()
+        if self.selectedGuide and AR.Progression and AR.Progression.currentGuide == self.selectedGuide then
+            -- Continue: the guide is already running; just bring its window back.
+            if AR.ViewerFrame then
+                if AR.ViewerFrame.frame then AR.ViewerFrame.frame:Show() end
+                AR.ViewerFrame:RefreshVisuals()
+            end
+            f:Hide()
+            return
+        end
         if self.selectedGuide and AR.Progression then
             -- Reopening a guide that is already a tab resumes at its step.
             if AR.ViewerFrame and AR.ViewerFrame.RememberCurrentTab then AR.ViewerFrame:RememberCurrentTab() end
@@ -493,7 +503,36 @@ local CATEGORY_ORDER = {
     GOLD = 4,
 }
 
+-- Home: the guide in progress, the other open tabs, then the suggestions for this character.
+function GuideMenu:GetHomeGuides()
+    local out, seen = {}, {}
+    local function add(g) if g and not seen[g] then seen[g] = true; out[#out + 1] = g end end
+    local P = AR.Progression
+    add(P and P.currentGuide)
+    for _, title in ipairs((AR.Tabs and AR.Tabs:GetTabs()) or {}) do
+        add(AR.Parser and AR.Parser.guidesByTitle and AR.Parser.guidesByTitle[title])
+    end
+    for _, g in ipairs(self:FindSuggestedGuides()) do add(g) end
+    return out
+end
+
+-- True when `guide` is open (current guide or a tab): loading it means continuing it.
+function GuideMenu:IsOpen(guide)
+    if not guide then return false end
+    local P = AR.Progression
+    if P and P.currentGuide == guide then return true end
+    for _, title in ipairs((AR.Tabs and AR.Tabs:GetTabs()) or {}) do
+        if title == guide.title then return true end
+    end
+    return false
+end
+
 function GuideMenu:GetGuidesForCategory(categoryID)
+    if categoryID == "HOME" then
+        local home = self:GetHomeGuides()
+        if #home > 0 then return home end
+        categoryID = "ALL"
+    end
     if categoryID == "SUGGESTED" then
         local sug = self:FindSuggestedGuides()
         if #sug > 0 then return sug end
@@ -551,6 +590,9 @@ function GuideMenu:SelectGuide(guide)
     self:RenderDetails(guide)
     if self.deleteButton then
         if AR.GuideImport and AR.GuideImport:IsImported(guide) then self.deleteButton:Show() else self.deleteButton:Hide() end
+    end
+    if self.loadButton and self.loadButton.label then
+        self.loadButton.label:SetText(self:IsOpen(guide) and LGet("UI_CONTINUE") or LGet("UI_LOAD_GUIDE"))
     end
 
     for _, rowBtn in ipairs(self.guideRowButtons) do

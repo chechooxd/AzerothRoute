@@ -25,6 +25,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - S19: "sigue con la vista previa de recompensas" (screenshot 01: "Reward: Dryweed Belt new · at turn-in").
 - S20: "Continua con las mejoras e implementar iones de polestar, y arregla la ventana de talentos con el mismo enfoque de diseño" (screenshots 232536 rares, 232552 options, 110447 home).
 - S21: "Sigue con eso" (import guides, the last Polestar piece).
+- S22: "sigue con lo que falta de polestar" (second pass, from Polestar's feature list: Home tab, dungeon quest details and pick-up route, gear tooltip, colour schemes, bag space, what's new).
 
 ## Tasks
 - [x] T1 [S3] Viewer heading, folded done goals, Then preview, note line — inline · 122/122
@@ -53,6 +54,11 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T24 [S20] Characters mode (alts: level, guide, step, gold, place, rested) — inline · 164/164
 - [x] T25 [S20] Options/appearance mode (accent colour, background opacity, scale, toggles) — inline · 165/165
 - [x] T26 [S21] Import guides: paste AzerothRoute guide text (optional first line `guide <Name>`), saved in db.global.importedGuides, parsed again at login before resume, delete from the Guide Center (Guides/Import.lua, UI/Menu/ImportWindow.lua) — inline · 167/167
+- [x] T27 [S22] Guide Center Home: Continue + Suggested for you — inline · 168/168
+- [ ] T28 [S22] Dungeon quest objectives and a pick-up route guide — inline
+- [ ] T29 [S22] Upgrade line in item tooltips — inline
+- [ ] T30 [S22] Colour schemes in Options — inline
+- [ ] T31 [S22] Bag space notice and What's new card — inline
 
 ## Log
 - L1 (2026-11-19): "corrige el addon que estamos desarrollando, quiero que te inspires en polestar, sobretodo en la interfaz, es totalmente lo que busco para mi addon" — done as ced39ce (viewer + guide center) and 94f6faa (arrow).
@@ -70,3 +76,4 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - L13 (2026-11-20): "sigue con la vista previa de recompensas". pfQuest has no rewards: they are recorded in game (QUEST_DETAIL; quest log on accept and login, restoring the log selection) into db.global.questRewards shared by all characters. A quest shows a preview once its offer has been seen or it is in the log.
 - L14 (2026-11-20): T22-T25 done. Guide Center now has two rows of mode tabs (Guides, Lookup, Dungeons / Rares, Characters, Options). Rare sightings come from nameplates, target and mouse-over; rare drops are limited to items whose top-3 droppers include the rare. Accent colour repaints the guide window at once; other windows pick it up after Reload UI. Import of guides left out: it needs a multi-line editor and a guide-format contract worth agreeing with the user first.
 - L15 (2026-11-20): "Sigue con eso". Format chosen: the addon's own guide language (no foreign formats). Imported titles live under an 'Imported' title prefix so they never replace a built-in guide. Errors are shown in the window (no name, no steps, too long, unreadable).
+- L16 (2026-11-20): "sigue con lo que falta de polestar" (second pass). Left out on purpose: quest XP numbers (no XP data), gamepad mode, route recorder, problem reports (needs a web endpoint), zone art (Blizzard map art per zone is not available as single textures in Classic).

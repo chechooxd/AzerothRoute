@@ -47,6 +47,11 @@ T:Describe("SPEC-21: Localization, WorldMap Canvas Pins, Talent Advisor UI & 50+
         AR.GuideMenu:InitializeFrame()
         AR.GuideMenu:Show()
         T:AssertEqual(AR.GuideMenu.headerText:GetText(), "AzerothRoute — Centro de Guías", "GuideMenu title must be Spanish")
+        T:AssertEqual(AR.GuideMenu.loadButton.label:GetText(), "Continuar", "Home opens on the guide in progress: Continuar")
+        AR.GuideMenu:SelectCategory("ALL")
+        for _, b in ipairs(AR.GuideMenu.guideRowButtons) do
+            if b._guide and not AR.GuideMenu:IsOpen(b._guide) then AR.GuideMenu:SelectGuide(b._guide) break end
+        end
         T:AssertEqual(AR.GuideMenu.loadButton.label:GetText(), "Cargar Guía Seleccionada", "GuideMenu Load button must be Spanish")
     end)
 
