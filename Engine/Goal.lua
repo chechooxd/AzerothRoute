@@ -302,6 +302,7 @@ function Goal:GetText(isDone)
     elseif self.action == "ding" then
         return fmt("GOAL_DING", self.level or 1)
     elseif self.action == "goto" then
+        if self.text then return self.text end
         local gx = (self.x and self.x <= 1) and (self.x * 100.0) or (self.x or 0)
         local gy = (self.y and self.y <= 1) and (self.y * 100.0) or (self.y or 0)
         return fmt("GOAL_GOTO", gx, gy)

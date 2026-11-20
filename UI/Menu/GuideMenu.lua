@@ -24,6 +24,10 @@ local GuideMenu = {
         { id = "DUNGEONS",  labelKey = "UI_DUNGEONS" },
         { id = "PROFESSIONS", labelKey = "UI_PROFESSIONS" },
         { id = "GOLD",      labelKey = "UI_GOLD" },
+        { id = "CLASS",     labelKey = "UI_CLASS_GUIDES" },
+        { id = "REPUTATION", labelKey = "UI_REPUTATION_GUIDES" },
+        { id = "COLLECTIBLES", labelKey = "UI_COLLECTIBLES" },
+        { id = "OTHER",     labelKey = "UI_MISC_GUIDES" },
         { id = "ALL",       labelKey = "UI_ALL_GUIDES" },
     },
     activeCategory = "HOME",
@@ -534,6 +538,17 @@ local CATEGORY_ORDER = {
     DUNGEONS = 2,
     PROFESSIONS = 3,
     GOLD = 4,
+    CLASS = 5,
+    REPUTATION = 6,
+    COLLECTIBLES = 7,
+    OTHER = 8,
+}
+
+-- Locale key of each guide type's name.
+local TYPE_KEYS = {
+    LEVELING = "UI_LEVELING", DUNGEONS = "UI_DUNGEONS", PROFESSIONS = "UI_PROFESSIONS", GOLD = "UI_GOLD",
+    CLASS = "UI_CLASS_GUIDES", REPUTATION = "UI_REPUTATION_GUIDES", COLLECTIBLES = "UI_COLLECTIBLES",
+    OTHER = "UI_MISC_GUIDES",
 }
 
 -- Home: the guide in progress, the other open tabs, then the suggestions for this character.
@@ -604,12 +619,7 @@ function GuideMenu:SelectGuide(guide)
         local stepCount = guide.steps and #guide.steps or 0
         local typeLabel = guide.type or "LEVELING"
         if AR.L then
-            local keyMap = {
-                LEVELING = "UI_LEVELING",
-                DUNGEONS = "UI_DUNGEONS",
-                PROFESSIONS = "UI_PROFESSIONS",
-                GOLD = "UI_GOLD",
-            }
+            local keyMap = TYPE_KEYS
             if keyMap[typeLabel:upper()] then
                 typeLabel = AR.L:Get(keyMap[typeLabel:upper()])
             end
@@ -652,7 +662,7 @@ function GuideMenu:BuildDetails(guide)
     if inLevelRange(guide) then
         table.insert(chips, { text = LGet("UI_YOUR_LEVEL"), accent = true })
     end
-    local typeKey = guide.type and ({ LEVELING = "UI_LEVELING", DUNGEONS = "UI_DUNGEONS", PROFESSIONS = "UI_PROFESSIONS", GOLD = "UI_GOLD" })[guide.type:upper()]
+    local typeKey = guide.type and TYPE_KEYS[guide.type:upper()]
     if typeKey then table.insert(chips, { text = LGet(typeKey) }) end
 
     local steps = guide.steps and #guide.steps or 0

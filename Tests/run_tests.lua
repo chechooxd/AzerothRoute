@@ -142,6 +142,10 @@ function T:BootstrapAddon()
         "Guides/Import.lua",
         "Guides/DungeonRoute.lua",
         "Guides/Recorder.lua",
+        "Guides/PolestarAdapter.lua",
+        "Guides/Polestar/Shared.lua",
+        "Guides/Polestar/Horde.lua",
+        "Guides/Polestar/Alliance.lua",
         "DB/Access.lua",
         "DB/DungeonDefs.lua",
         "DB/Quests.lua",
@@ -197,6 +201,7 @@ function T:RunAll()
         "Tests/test_nearby_journey.lua",
         "Tests/test_racial_flightpaths.lua",
         "Tests/test_live_ux_gaps.lua",
+        "Tests/test_polestar_guides.lua",
     }
     for _, suitePath in ipairs(specSuites) do
         dofile(suitePath)

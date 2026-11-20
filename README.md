@@ -207,6 +207,26 @@ shared SavedVariables and appear in the list like any other guide.
 against the NPC positions in the database (for every race and class) and lists the ones more than 1%
 of the map away; `--fix` rewrites them to the NPC's position.
 
+## Polestar guides
+
+AzerothRoute ships the guides of Polestar 0.4.1.1 (GPL-3.0-only, https://github.com/fitzforge/polestar):
+leveling 1-60 for every race, class quests, professions, reputations, mounts and pets. They show in
+the Guide Center under Leveling, Professions, Class, Reputation, Collectibles and Other, keyed
+`Polestar\<id>`, and only for your faction. `Guides/PolestarAdapter.lua` runs them on AzerothRoute's
+engine: each Polestar goal becomes an AzerothRoute goal with its quest objective, coordinates and
+note (in the tooltip), and Polestar's race/class/faction filters and quest conditions decide which
+steps and goals you see.
+
+To refresh them from a newer Polestar install:
+
+```bash
+luajit tools/import_polestar.lua "<path to the Polestar addons folder>"
+```
+
+The tool rewrites `Guides/Polestar/*.lua` and Polestar's data notice `Guides/Polestar/LICENSE-DATA.txt`.
+It leaves out spawn-spot lists, walking crumbs, smart-target candidates, Polestar's walking legs and
+its quest/item databases (see THIRD_PARTY.md).
+
 ## License
 
 AzerothRoute is free software under the GNU General Public License, version 3 only (LICENSE).

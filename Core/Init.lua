@@ -193,6 +193,8 @@ function AR:Initialize()
         if self.PartySync then
             self.PartySync:RegisterLiveEvents()
         end
+        -- Polestar's guides for this character's faction (the faction is known by now).
+        if self.PolestarGuides then self.PolestarGuides:LoadAll() end
         if self.ViewerFrame then
             self.ViewerFrame:Initialize()
             -- Imported guides come back before the last guide is resumed (it may be one of them).
