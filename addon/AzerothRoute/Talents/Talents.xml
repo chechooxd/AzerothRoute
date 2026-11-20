@@ -5,4 +5,5 @@
 	<Script file="Overlay.lua"/>
 	<Script file="Options.lua"/>
 	<Script file="View.lua"/>
+	<Script file="Tree.lua"/>
 </Ui>

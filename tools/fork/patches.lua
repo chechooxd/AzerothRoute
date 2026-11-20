@@ -549,4 +549,45 @@ local function row(i)
 		r.Icon:SetAlpha(done and 0.6 or 1)]=],
         why = "talent rows: each pick's icon, dimmed once learned",
     },
+    -- Talents: the plan as talent trees, like a talent calculator (2026-11-20).
+    {
+        file = "AzerothRoute/Talents/Tree.lua", create = true, replace = read("Talents/Tree.lua"),
+        why = "the plan drawn as the three talent trees",
+    },
+    {
+        file = "AzerothRoute/Talents/Talents.xml",
+        find = [=[	<Script file="View.lua"/>
+]=],
+        replace = [=[	<Script file="View.lua"/>
+	<Script file="Tree.lua"/>
+]=],
+        why = "loads Tree.lua after View.lua",
+    },
+    {
+        file = "AzerothRoute/Talents/View.lua",
+        find = [=[local function hideAll()
+	for _, t in ipairs({ rows, bands, heads, notes }) do
+		for _, r in ipairs(t) do r:Hide() end
+	end]=],
+        replace = [=[local function hideAll()
+	for _, t in ipairs({ rows, bands, heads, notes }) do
+		for _, r in ipairs(t) do r:Hide() end
+	end
+	if TV.HideTree then TV.HideTree() end]=],
+        why = "hides the tree with the rest",
+    },
+    {
+        file = "AzerothRoute/Talents/View.lua",
+        find = [=[	w.head(L["Notes"])
+]=],
+        replace = [=[	-- AzerothRoute: the plan as the class's talent trees, above the notes.
+	if TV.DrawTree then
+		w.head(L["Talent trees"])
+		local th = TV.DrawTree(detail.Body, DPAD, w.y - 8, w.width, build, mine and c or nil)
+		w.y = w.y - 8 - th - 16
+	end
+	w.head(L["Notes"])
+]=],
+        why = "the talent trees in the plan page",
+    },
 }

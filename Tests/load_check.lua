@@ -275,6 +275,34 @@ do
     print("community: checked")
 end
 
+-- 10. Talent trees: every talent of the class drawn at its row and column, with its plan rank
+do
+    local TV = ns.UI and ns.UI.TalentsSection
+    local data = ns.Talents and ns.Talents.Data("PALADIN")
+    if not (TV and TV.DrawTree and data) then fail("no talent tree view") else
+        local before = #M.frames
+        local parent = CreateFrame("Frame")
+        local h = TV.DrawTree(parent, 0, 0, 600, data.builds[1], nil)
+        local nodes = 0
+        for _ in pairs(data.nodes) do nodes = nodes + 1 end
+        local made, withTip, ranked = 0, 0, 0
+        for i = before + 1, #M.frames do
+            local fr = M.frames[i]
+            if fr._kind == "Frame" and fr._scripts.OnEnter and fr.Icon then
+                made = made + 1
+                if fr.psPlan and fr.psPlan > 0 then ranked = ranked + 1 end
+                local ok = pcall(fr._scripts.OnEnter, fr)
+                if ok then withTip = withTip + 1 end
+            end
+        end
+        if not (h and h > 0) then fail("tree has no height") end
+        if made ~= nodes then fail(string.format("tree drew %d talents of %d", made, nodes)) end
+        if withTip ~= made then fail("a talent tooltip failed") end
+        if ranked == 0 then fail("no talent carries the plan's ranks") end
+        print(string.format("tree: %d talents, %d in the plan", made, ranked))
+    end
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end

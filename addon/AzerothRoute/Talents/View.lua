@@ -252,6 +252,7 @@ local function hideAll()
 	for _, t in ipairs({ rows, bands, heads, notes }) do
 		for _, r in ipairs(t) do r:Hide() end
 	end
+	if TV.HideTree then TV.HideTree() end
 end
 
 -- Where the player stands on the plan they follow.
@@ -396,6 +397,12 @@ function TV.Render()
 		shown.status = reason
 	end
 	if data.summary and mine then w.note(data.summary) end
+	-- AzerothRoute: the plan as the class's talent trees, above the notes.
+	if TV.DrawTree then
+		w.head(L["Talent trees"])
+		local th = TV.DrawTree(detail.Body, DPAD, w.y - 8, w.width, build, mine and c or nil)
+		w.y = w.y - 8 - th - 16
+	end
 	w.head(L["Notes"])
 	-- Keyed by the level the source plan reaches them at; shown as a rough
 	-- guide only, since points can come sooner.
