@@ -20,7 +20,7 @@
 ## Title-zhTW: AzerothRoute 指南
 ## Notes-zhTW: AzerothRoute 的升級、專業、聲望與收藏指南。
 ## Author: AzerothRoute
-## Version: 0.4.1.1
+## Version: 2.0.0
 ## Category: AzerothRoute
 ## Group: AzerothRoute
 ## Dependencies: AzerothRoute

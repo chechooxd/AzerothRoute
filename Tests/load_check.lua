@@ -257,6 +257,24 @@ do
     print(string.format("brand: %d stray Polestar strings", #stray))
 end
 
+-- 9. No Polestar community or history: version, thanks, recorder, Discord, release notes
+do
+    local h3 = io.popen('find ' .. ROOT .. ' -name "*.toc"')
+    for toc in h3:lines() do
+        local v = (read(toc) or ""):match("## Version:%s*([^\r\n]+)")
+        if v ~= "2.0.0" then fail(toc .. " version " .. tostring(v)) end
+    end
+    h3:close()
+    local opts = read(ROOT .. "/AzerothRoute_Options/UI/Options.lua") or ""
+    if opts:find('key = "thanks"', 1, true) then fail("Options still has the thanks page") end
+    if opts:find('key = "recorder"', 1, true) then fail("Options still has the Recorder page") end
+    if opts:find("Cinzel", 1, true) then fail("Options credits Polestar's wordmark font") end
+    if (read(ROOT .. "/AzerothRoute/Core/Commands.lua") or ""):find('RegisterCommand("discord"', 1, true) then fail("/ar discord still registered") end
+    local wn = read(ROOT .. "/AzerothRoute/UI/WhatsNew.lua") or ""
+    if wn:find('version = "0.', 1, true) then fail("What's new still lists Polestar's releases") end
+    print("community: checked")
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end

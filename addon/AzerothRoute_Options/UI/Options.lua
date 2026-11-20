@@ -783,19 +783,15 @@ local function buildAbout(view)
 		return h, fs
 	end
 	local hex = "|c" .. Theme.Hex("text")
-	-- Why Polestar: the manifesto, right under the hero. Body type so it reads
-	-- as the page's lead; what Polestar does not claim stands out in text
-	-- colour; the closing line apart in Title and text. The beta paragraph
-	-- goes with the release stage.
+	-- AzerothRoute: why it exists, in its own words.
 	local whyH = W.SectionHeader(view)
 	W.SetSection(whyH, L["Why AzerothRoute"])
 	local paras = {
-		L["Leveling guides have become a business: the best routes sit behind subscriptions and paywalls. AzerothRoute goes the other way. It is free, open source under the GPL-3.0, and built by the community that plays it."],
-		hex .. L["AzerothRoute doesn't claim to be the fastest guide, or the smoothest. It is a free alternative, and it gets better with time."] .. "|r",
-		L["Anyone can read the code, fix a step, sharpen a route or write a new guide, and contributions are welcome. The GPL keeps it that way: every copy and every fork stays open."],
+		L["AzerothRoute plans your road through Azeroth: every quest, every flight and every step, in order, so you play instead of planning."],
+		hex .. L["It is free and open source under the GPL-3.0."] .. "|r",
 	}
 	if ns.stage then
-		paras[#paras + 1] = L["It is young and still in beta, so expect the odd wrong step, waypoint or quest. Every report and every fix tunes it, and together we'll get it where it should be."]
+		paras[#paras + 1] = L["It is young, so expect the odd wrong step or waypoint. Send a report with /ar report and it gets fixed."]
 	end
 	local whyText = W.Text(view, "body", "textDim")
 	whyText:SetWordWrap(true)
@@ -823,7 +819,6 @@ local function buildAbout(view)
 		function() ns.Fire("SHOW_WHATSNEW") end)
 	view.WhatsNew = whatsNew
 	local credH, credText = block(L["Credits"], L["Inter typeface by The Inter Project Authors, SIL Open Font License 1.1."] .. "\n"
-		.. L["Wordmark set in Cinzel by The Cinzel Project Authors, SIL Open Font License 1.1."] .. "\n"
 		.. L["Quest and map data includes pfQuest by shagu (MIT License)."] .. "\n"
 		.. L["Based on Polestar by The Polestar authors"] .. " (GPL-3.0-only)." .. "\n"
 		.. L["With EllesmereUI installed, AzerothRoute can follow its accent, font and panel colour through its public skinning API."] .. "\n"
@@ -909,8 +904,6 @@ end
 
 add({ page = L["Community guides"], key = "guidepacks", icon = "layers", order = 70, subtitle = L["Guides made by other players: switch them on or off, and choose where suggestions come from."],
 	custom = UI.Packs.Build, dot = UI.Packs.HasProblems }, true)
-add({ page = L["Guiding Stars"], key = "thanks", icon = "star", order = 80, subtitle = L["Celebrating the supporters, contributors and bug reporters behind AzerothRoute."],
-	custom = UI.Thanks.Build }, true)
 add({ page = ABOUT, key = "about", icon = "info", order = 100, subtitle = L["Why AzerothRoute exists, its commands and its credits."], custom = buildAbout }, true)
 add({ page = ABOUT, section = L["Install"], controls = { INSTALL } }, true)
 

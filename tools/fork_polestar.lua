@@ -18,6 +18,9 @@ local ROOT = (arg[0]:gsub("[/\\]?tools[/\\]fork_polestar%.lua$", ""))
 if ROOT == "" then ROOT = "." end
 
 local SITE = "https://github.com/chechooxd/AzerothRoute"
+-- AzerothRoute's own version, in every folder in place of Polestar's release number.
+local VERSION = "2.0.0"
+local POLESTAR_VERSION = "0.4.1.1"
 
 -- Folders AzerothRoute leaves out (see THIRD_PARTY.md and odd/tasks/azerothroute-2-polestar-base.md).
 local EXCLUDE = {
@@ -72,6 +75,7 @@ local function renameText(s)
         urls[#urls + 1] = u
         return "\1" .. #urls .. "\2"
     end)
+    s = s:gsub((POLESTAR_VERSION:gsub("%.", "%%.")), VERSION)
     s = s:gsub("PolestarCharDB", "AzerothRouteCharData")
     s = s:gsub("Polestar", "AzerothRoute")
     s = s:gsub("POLESTAR", "AZEROTHROUTE")

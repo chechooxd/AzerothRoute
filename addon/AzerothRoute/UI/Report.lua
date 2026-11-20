@@ -1051,7 +1051,7 @@ function R.Text(description, details, spot)
 	local names = #details.names > 0 and table.concat(details.names, ", ") or nil
 	local tail = {}
 	for i, line in ipairs(details.tail or {}) do tail[i] = line end
-	return fitted(description, details, spot, names, tail, L["(trimmed to fit Discord)"],
+	return fitted(description, details, spot, names, tail, L["(trimmed)"],
 		function(report) return length(report) <= R.TEXT_MAX end)
 end
 

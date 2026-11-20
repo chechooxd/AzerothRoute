@@ -47,109 +47,22 @@ end
 -- heading and its line (a function, so the commands it names take the
 -- theme's colours when shown), and the setting it is about when it has one
 -- (`setting`, a settings key: the note opens the settings on it).
+-- AzerothRoute: its own release notes (Polestar's history is not AzerothRoute's).
 local NOTES = {
 	{
-		version = "0.4.0",
+		version = "2.0.0",
 		notes = {
-			{ glyph = "icon-forever", color = "accent", head = L["Two new zones in your route"], text = function()
-				return L["%s and %s are now part of the 1 to 60 route, for both factions."]:format(zone(2548, "Riverglades"), zone(2652, "Shen'dralas"))
+			{ glyph = "guides", color = "accent", head = L["AzerothRoute 2.0"], text = function()
+				return L["A new engine: leveling 1 to 60 for every race, class quests, professions, reputations, dungeons and rares."]
 			end },
-			{ glyph = "guides", color = "accent", head = L["Safer, smoother routes"], text = function()
-				return L["Every zone reviewed: less walking back, less grinding, fewer mobs well above your level."]
+			{ glyph = "icon-goto", color = "accent", head = L["Your route, walked for you"], text = function()
+				return L["The arrow takes real roads, the journey lists every flight and boat, and the map draws the way."]
 			end },
-			{ glyph = "icon-dungeon", color = "accent", head = L["A dungeon instead of a grind"], text = function()
-				return L["Grind steps suggest a dungeon that fits you now, with the game's own level ranges."]
+			{ glyph = "icon-learn", color = "accent", head = L["Talent plans"], text = function()
+				return L["A plan for every spec, pick by pick, and Apply talents to spend your points in order."]
 			end },
-			{ glyph = "icon-turnin", color = "accent", head = L["Finished quests stay found"], text = function()
-				return L["Handed in where the route passes their NPC; when a guide ends, it says what carries on."]
-			end },
-			{ glyph = "sliders", color = "accent", head = L["A new settings window"], text = function()
-				return L["Live previews, search that answers questions, Undo, and a short %s for new characters."]:format(L["Install"])
-			end },
-			{ glyph = "palette", color = "accent", head = L["New and rebuilt skins"], setting = "ui.skin", text = function()
-				return L["Nine new skins; %s, %s, %s and %s rebuilt, arrow and all."]:format(L["WoW Forever"], L["Blizzard"], L["Classic"], L["Hearth"])
-			end },
-			{ glyph = "qol-target", color = "accent", head = L["A target list"], setting = "qol.targetRows", text = function()
-				return L["The target button lists the step's mobs and what they drop; click one to target it."]
-			end },
-			{ glyph = "icon-repair", color = "accent", head = L["Small helpers"], setting = "behavior.whileHereVendors", text = function()
-				return L["Sell and repair reminders before you leave town; compact mode now has tabs."]
-			end },
-			{ glyph = "icon-talk", color = "accent", head = L["Fully translated"], text = function()
-				return L["In 9 languages, now with German and Latin American Spanish guides. Thanks, translators!"]
-			end },
-			{ glyph = "check", color = "success", head = L["Fixes from your reports"], text = function()
-				return L["Caves, cities, flights and more. Found something off? Type %s."]:format(cmd("/ar report"))
-			end },
-		},
-	},
-	{
-		version = "0.3.7",
-		notes = {
-			{ glyph = "dart", color = "accent", head = L["A steadier arrow"], text = function()
-				return L["Keeps up on slopes and ledges, takes the faster flight, and no turning back after you land."]
-			end },
-			{ glyph = "bolt", color = "accent", head = L["Smoother indoors"], text = function()
-				return L["No more stutter in the Undercity, buildings and caves; less work in the background."]
-			end },
-			{ glyph = "reload", color = "accent", head = L["Update notice"], setting = "update.card", text = function()
-				return L["At login, a card says when a newer AzerothRoute is out and how to update."]
-			end },
-			{ glyph = "icon-train", color = "accent", head = L["New spells"], setting = "qol.levelUpSpells", text = function()
-				return L["A level-up card lists what to train; %s updates your bars."]:format(cmd(L["Upgrade"]))
-			end },
-			{ glyph = "icon-accept", color = "accent", head = L["Quest helpers"], setting = "qol.questLoot", text = function()
-				return L["Loot that starts a quest glows on the quest item button; timed quests count down."]
-			end },
-			{ glyph = "emblem", color = "accent", head = L["Hide it all"], setting = "maps.minimapButton", text = function()
-				return L["A click on the minimap button hides all of AzerothRoute; another brings it back."]
-			end },
-			{ glyph = "menu", color = "accent", head = L["Browse all steps"], text = function()
-				return L["Click the step number to see every step of the guide (thanks TTik3r and aalejandrofer)."]
-			end },
-			{ glyph = "icon-craft", color = "accent", head = L["Profession guides"], text = function()
-				return L["Rebuilt on Forever's trainers, and they start where your skill is."]
-			end },
-			{ glyph = "icon-talk", color = "accent", head = L["Fully translated"], text = function()
-				return L["All of 0.3.7 in 9 languages, with thanks to our translators."]
-			end },
-			{ glyph = "check", color = "success", head = L["Fixes from your reports"], text = function()
-				return L["Routes, trainers, dungeons and more. Found something off? Type %s."]:format(cmd("/ar report"))
-			end },
-		},
-	},
-	{
-		version = "0.3.6",
-		notes = {
-			{ glyph = "guides", color = "accent", head = L["Every route reviewed"], text = function()
-				return L["More quests and shorter grinds at 40-60, fewer walk-backs, no pointless travel steps."]
-			end },
-			{ glyph = "icon-turnin", color = "accent", head = L["Dynamic Questing saves trips"], text = function()
-				return L["Hand in and pick up at NPCs on your way; auto-accept takes the next steps' quests."]
-			end },
-			{ glyph = "qol-target", color = "accent", head = L["The arrow finds your targets"], text = function()
-				return L["Grinds go to the nearest spawns, past emptied camps; Target shows who, pings, marks."]
-			end },
-			{ glyph = "dart", color = "accent", head = L["Route lines your way"], text = function()
-				return L["%s, %s or %s on map and minimap: set in Install or in Settings."]:format(L["Line"], L["Dots"], L["Sparkles"])
-			end },
-			{ glyph = "icon-forever", color = "accent", head = L["New in Forever"], text = function()
-				return L["Quests only Forever has carry a small ∞ mark."]
-			end },
-			{ glyph = "window", color = "accent", head = L["Tabs and windows"], text = function()
-				return L["Closed tabs reopen where you were; %s backing; floating button; Esc menu."]:format(L["Transparent"])
-			end },
-			{ glyph = "icon-dungeon", color = "accent", head = L["Groups and dungeons"], text = function()
-				return L["%s in a party; Dungeons shows what fits your level, when more unlock."]:format(cmd(L["Sync to my guide"]))
-			end },
-			{ glyph = "icon-elite", color = "accent", head = L["Rares"], text = function()
-				return L["Target and ping a rare right from its card."]
-			end },
-			{ glyph = "icon-talk", color = "accent", head = L["Fully translated"], text = function()
-				return L["In 9 languages, with thanks to our translators."]
-			end },
-			{ glyph = "check", color = "success", head = L["Fixes from your reports"], text = function()
-				return L["Gear spec, trainers, map spots and more. Found something off? Type %s."]:format(cmd("/ar report"))
+			{ glyph = "palette", color = "accent", head = L["A new look"], text = function()
+				return L["The Azeroth colours and the route mark, with every theme still in Options."]
 			end },
 		},
 	},
