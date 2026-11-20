@@ -56,7 +56,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T26 [S21] Import guides: paste AzerothRoute guide text (optional first line `guide <Name>`), saved in db.global.importedGuides, parsed again at login before resume, delete from the Guide Center (Guides/Import.lua, UI/Menu/ImportWindow.lua) — inline · 167/167
 - [x] T27 [S22] Guide Center Home: Continue + Suggested for you — inline · 168/168
 - [x] T28 [S22] Dungeon quest objectives and a pick-up route guide (DB/QuestObjectives.lua, Guides/DungeonRoute.lua) — inline · 169/169
-- [ ] T29 [S22] Upgrade line in item tooltips — inline
+- [x] T29 [S22] Upgrade line in item tooltips (Modules/Gear/Tooltip.lua) + fix: Upgrades compared against nothing outside tests, now reads the equipped item (weaker of ring/trinket pairs) — inline · 170/170
 - [ ] T30 [S22] Colour schemes in Options — inline
 - [ ] T31 [S22] Bag space notice and What's new card — inline
 

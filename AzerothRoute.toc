@@ -75,6 +75,7 @@ Modules\Gear\ItemScore.lua
 Modules\Gear\Upgrades.lua
 Modules\Gear\QuestReward.lua
 Modules\Gear\GearFinder.lua
+Modules\Gear\Tooltip.lua
 
 # SPEC-09: Gold Scanner, ServerTrends, GoldGuide & Appraiser
 Modules\Gold\Scanner.lua

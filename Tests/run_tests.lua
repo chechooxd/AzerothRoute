@@ -99,6 +99,7 @@ function T:BootstrapAddon()
         "Modules/Gear/Upgrades.lua",
         "Modules/Gear/QuestReward.lua",
         "Modules/Gear/GearFinder.lua",
+        "Modules/Gear/Tooltip.lua",
         "Modules/Gold/Scanner.lua",
         "Modules/Gold/ServerTrends.lua",
         "Modules/Gold/GoldGuide.lua",

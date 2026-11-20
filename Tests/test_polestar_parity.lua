@@ -622,3 +622,35 @@ T:Describe("Polestar parity: Guide Center home", function()
         AR.GuideMenu:Reset()
     end)
 end)
+
+T:Describe("Polestar parity: gear tooltip", function()
+    T:It("adds an upgrade line to item tooltips and compares against the real equipped item", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.Upgrades:Reset()
+        MockWoW.player.class = MockWoW.player.class or "WARRIOR"
+        MockWoW.tooltips.items["item:2001"] = { armorType = "MAIL", slot = "INVTYPE_CHEST", stats = { STR = 4 } }
+        MockWoW.tooltips.items["item:2002"] = { armorType = "MAIL", slot = "INVTYPE_CHEST", stats = { STR = 10 } }
+        MockWoW.player.equipped["INVTYPE_CHEST"] = "item:2001"
+        local lines = {}
+        local tip = { GetItem = function() return "Chest", "item:2002" end, AddLine = function(_, t) lines[#lines + 1] = t end }
+        local line = AR.GearTooltip:OnTooltipSetItem(tip)
+        T:AssertTrue(line ~= nil and line:find("%+%d+%%") ~= nil, "Upgrade with percentage: " .. tostring(line))
+        T:AssertEqual(lines[1], line, "Line added to the tooltip")
+        tip.GetItem = function() return "Chest", "item:2001" end
+        T:AssertEqual(AR.GearTooltip:OnTooltipSetItem(tip), nil, "The equipped item is no upgrade")
+
+        -- Live client path: no mock table; the equipped item comes from GetInventoryItemLink.
+        local savedEquipped, savedInv = MockWoW.player.equipped, _G.GetInventoryItemLink
+        MockWoW.player.equipped = nil
+        _G.GetInventoryItemLink = function(_, slot) if slot == 5 then return "item:2002" end end
+        local ok, err = pcall(function()
+            T:AssertEqual(AR.Upgrades:EquippedLinkFor("INVTYPE_CHEST"), "item:2002", "Chest slot 5 read from the client")
+            local eval = AR.Upgrades:EvaluateCandidate("item:2001")
+            T:AssertFalse(eval.isUpgrade, "A weaker chest is not an upgrade over what is worn")
+        end)
+        MockWoW.player.equipped, _G.GetInventoryItemLink = savedEquipped, savedInv
+        if not ok then error(err, 0) end
+    end)
+end)
