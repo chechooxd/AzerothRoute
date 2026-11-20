@@ -654,3 +654,43 @@ T:Describe("Polestar parity: gear tooltip", function()
         if not ok then error(err, 0) end
     end)
 end)
+
+T:Describe("Polestar parity: bags and what's new", function()
+    T:It("warns in the guide window when the bags are almost full", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        local g = AR.Parser:ParseGuide("BagGuide", "step One\n    talk Devrak##3615\n")
+        AR.Progression:LoadGuide(g, 1)
+        AR.Progression.pause = true
+        local saved = _G.C_Container.GetContainerNumFreeSlots
+        local free = 10
+        _G.C_Container.GetContainerNumFreeSlots = function(bag) return bag == 0 and free or 0 end
+        local ok, err = pcall(function()
+            local vm = AR.ViewerFrame:RefreshVisuals()
+            T:AssertEqual(vm.notice, nil, "Plenty of room")
+            free = 1
+            AR.ViewerFrame._tick = 99
+            AR.ViewerFrame:OnTick(0)
+            T:AssertTrue(AR.ViewerFrame.noticeText:IsShown(), "Band shown when the bags fill up")
+            T:AssertEqual(AR.ViewerFrame.noticeText:GetText(), AR.L:Format("UI_BAGS_FULL_FMT", 1))
+        end)
+        _G.C_Container.GetContainerNumFreeSlots = saved
+        AR.ViewerFrame._bagLow = false
+        if not ok then error(err, 0) end
+    end)
+
+    T:It("shows the what's new card once for these notes", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.db.global.whatsNewSeen = nil
+        AR.WhatsNew:Reset()
+        T:AssertTrue(AR.WhatsNew:ShowIfNew(), "Shown the first time")
+        T:AssertTrue(AR.WhatsNew.frame.lines[1]:GetText():find(AR.L:Get("WN_1"), 1, true) ~= nil, "Lists the notes")
+        AR.WhatsNew.okButton:Click("LeftButton")
+        T:AssertFalse(AR.WhatsNew.frame:IsShown(), "Closed")
+        T:AssertFalse(AR.WhatsNew:ShowIfNew(), "Not again")
+        AR.WhatsNew:Reset()
+    end)
+end)

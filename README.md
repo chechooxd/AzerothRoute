@@ -134,6 +134,12 @@ Run `luajit Tests/run_tests.lua` from the repository root (`` across 36 test sui
 - Characters tab: log in two characters; each shows level, class, gold, zone, guide and step, rested XP; the total gold is in the header; "Forget this character" removes an alt.
 - Options tab: change the accent colour, guide-window opacity and size and see the guide window repaint; Reload UI applies the accent everywhere.
 - Import: in the Guide Center click "+ Import", paste a guide (first line `guide My Loop`, then `step` blocks), Import: it opens selected in the list; `/reload` keeps it; "Delete imported guide" removes it. Try text without steps to see the error.
+- Home: the Guide Center opens on Home with the guide in progress first; its button reads Continue and brings the guide window back at the same step.
+- Dungeons: hover a quest to read its objective; "Pick up the quests" opens a route tab that walks to each quest giver nearest-first.
+- Gear tooltips: hover a better item: "AzerothRoute: upgrade +N%"; hover a worse one: no line. Check rings and trinkets compare against the weaker one you wear.
+- Colour schemes: Options > Appearance > Colour scheme; the guide window repaints, other windows after Reload UI.
+- Bags: fill your bags to 2 free slots; the guide window says so in its notice band within 5 s.
+- What's new: on the first login after updating, a card lists the new features once.
 
 The mock suite cannot establish live-client protected-action compatibility,
 minimap positioning, talent texture availability, or leveling-route completeness.

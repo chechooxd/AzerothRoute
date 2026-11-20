@@ -58,7 +58,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T28 [S22] Dungeon quest objectives and a pick-up route guide (DB/QuestObjectives.lua, Guides/DungeonRoute.lua) — inline · 169/169
 - [x] T29 [S22] Upgrade line in item tooltips (Modules/Gear/Tooltip.lua) + fix: Upgrades compared against nothing outside tests, now reads the equipped item (weaker of ring/trinket pairs) — inline · 170/170
 - [x] T30 [S22] Colour schemes in Options (Dusk, Midnight, Slate, Forest) — inline · 171/171
-- [ ] T31 [S22] Bag space notice and What's new card — inline
+- [x] T31 [S22] Bag space notice and What's new card (UI/WhatsNew.lua) — inline · 173/173
 
 ## Log
 - L1 (2026-11-19): "corrige el addon que estamos desarrollando, quiero que te inspires en polestar, sobretodo en la interfaz, es totalmente lo que busco para mi addon" — done as ced39ce (viewer + guide center) and 94f6faa (arrow).
@@ -77,3 +77,4 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - L14 (2026-11-20): T22-T25 done. Guide Center now has two rows of mode tabs (Guides, Lookup, Dungeons / Rares, Characters, Options). Rare sightings come from nameplates, target and mouse-over; rare drops are limited to items whose top-3 droppers include the rare. Accent colour repaints the guide window at once; other windows pick it up after Reload UI. Import of guides left out: it needs a multi-line editor and a guide-format contract worth agreeing with the user first.
 - L15 (2026-11-20): "Sigue con eso". Format chosen: the addon's own guide language (no foreign formats). Imported titles live under an 'Imported' title prefix so they never replace a built-in guide. Errors are shown in the window (no name, no steps, too long, unreadable).
 - L16 (2026-11-20): "sigue con lo que falta de polestar" (second pass). Left out on purpose: quest XP numbers (no XP data), gamepad mode, route recorder, problem reports (needs a web endpoint), zone art (Blizzard map art per zone is not available as single textures in Classic).
+- L17 (2026-11-20): T27-T31 done. Found and fixed a live-client bug: Upgrades compared every item against nothing outside the mock (equipped items came only from MockWoW), so every scored item counted as an upgrade; it now reads GetInventoryItemLink (weaker of ring/trinket pairs). The What's new card is keyed by a notes id, not the toc Version (version bumps stay the user's call).

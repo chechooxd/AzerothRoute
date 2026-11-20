@@ -169,6 +169,9 @@ function AR:Initialize()
         if self.GearTooltip and self.GearTooltip.Hook then
             self.GearTooltip:Hook()
         end
+        if self.WhatsNew and self.WhatsNew.ShowIfNew then
+            self.WhatsNew:ShowIfNew()
+        end
         if self.ClassSpells and self.ClassSpells.RegisterLiveEvents then
             self.ClassSpells:RegisterLiveEvents()
         end

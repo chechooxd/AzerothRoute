@@ -797,12 +797,30 @@ function ViewerFrame:FormatXPLine(now)
     return string.format(L("UI_XP_LINE_FMT", "%s XP/h · %s to level"), shortNumber(rate), shortDuration(left))
 end
 
+ViewerFrame.BAG_LOW = 2
+
+-- Free slots in the backpack and bags, or nil when the client cannot tell.
+function ViewerFrame:FreeBagSlots()
+    local C = _G.C_Container
+    local count = (C and C.GetContainerNumFreeSlots) or _G.GetContainerNumFreeSlots
+    if not count then return nil end
+    local free = 0
+    for bag = 0, 4 do free = free + ((count(bag)) or 0) end
+    return free
+end
+
 -- Every 5 s: resample XP; relayout only when the XP line appears or disappears.
 ViewerFrame.TICK_SECONDS = 5
 function ViewerFrame:OnTick(elapsed)
     self._tick = (self._tick or 0) + (elapsed or 0)
     if self._tick < self.TICK_SECONDS then return end
     self._tick = 0
+    local free = self:FreeBagSlots()
+    local low = free ~= nil and free <= self.BAG_LOW
+    if low ~= (self._bagLow == true) then
+        self._bagLow = low
+        self:RefreshVisuals()
+    end
     for _, row in ipairs(self.lineRows) do
         if row:IsShown() and row.dismiss and row.dismiss:IsShown() then self:UpdateRowDistance(row) end
     end
@@ -1019,6 +1037,13 @@ function ViewerFrame:RenderCurrentStep()
     end
 
     local notice = AR.Progression and AR.Progression:GetStepNotice(step)
+    -- Bags almost full: told in the notice band when nothing more urgent is there.
+    if not notice then
+        local free = self:FreeBagSlots()
+        if free and free <= self.BAG_LOW then
+            notice = { type = "bags", message = string.format(L("UI_BAGS_FULL_FMT", "Bags almost full: %d free slots"), free) }
+        end
+    end
     local previewLines = self:BuildPreviewLines(step)
 
     local journey

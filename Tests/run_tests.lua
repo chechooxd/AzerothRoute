@@ -130,6 +130,7 @@ function T:BootstrapAddon()
         "UI/MinimapButton.lua",
         "UI/Bindings.lua",
         "UI/SpellToast.lua",
+        "UI/WhatsNew.lua",
         "UI/Menu/Config.lua",
         "Data/Catalog.lua",
         "Guides/Autoload.lua",
