@@ -217,21 +217,55 @@ function ViewerFrame:BuildHeader(f)
     end)
     attachHintTooltip(self.nextButton, "UI_NEXT_HINT")
 
-    self.menuButton = createFlatButton(f, "AzerothRouteMenuButton", L("UI_GUIDES", "Guides"), 56, 20)
-    self.menuButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -PAD, toolbarY)
+    -- Step counter opens the all-steps browser.
+    self.stepsButton = AR.UI:Create("Button", f, "AzerothRouteStepsButton")
+    self.stepsButton:SetSize(60, 20)
+    self.stepsButton:SetPoint("TOPLEFT", f, "TOPLEFT", PAD + 22, toolbarY)
+    self.stepsButton:SetScript("OnClick", function()
+        if AR.StepBrowser then AR.StepBrowser:Toggle() end
+    end)
+    attachHintTooltip(self.stepsButton, "UI_STEPS_HINT")
+
+    -- Right side, from the edge inwards: [...] [Guides] [Talents] [map] [Skip]
+    self.moreButton = createFlatButton(f, "AzerothRouteMoreButton", "...", 22, 20, "GameFontHighlight")
+    self.moreButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -PAD, toolbarY)
+    self.moreButton:SetScript("OnClick", function(b) self:ShowMoreMenu(b) end)
+    attachHintTooltip(self.moreButton, "UI_MORE_HINT")
+
+    self.menuButton = createFlatButton(f, "AzerothRouteMenuButton", L("UI_GUIDES", "Guides"), 50, 20)
+    self.menuButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(PAD + 24), toolbarY)
     self.menuButton:SetScript("OnClick", function()
         if AR.GuideMenu and AR.GuideMenu.Toggle then
             AR.GuideMenu:Toggle()
         end
     end)
 
-    self.talentButton = createFlatButton(f, "AzerothRouteTalentButton", L("UI_TALENTS", "Talents"), 62, 20)
-    self.talentButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(PAD + 60), toolbarY)
+    self.talentButton = createFlatButton(f, "AzerothRouteTalentButton", L("UI_TALENTS", "Talents"), 58, 20)
+    self.talentButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(PAD + 76), toolbarY)
     self.talentButton:SetScript("OnClick", function()
         if AR.TalentAdvisor and AR.TalentAdvisor.ToggleUI then
             AR.TalentAdvisor:ToggleUI()
         end
     end)
+
+    self.mapButton = createFlatButton(f, "AzerothRouteMapButton", "", 22, 20)
+    self.mapButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(PAD + 136), toolbarY)
+    if self.mapButton.CreateTexture then
+        self.mapButton.icon = self.mapButton:CreateTexture(nil, "ARTWORK")
+        self.mapButton.icon:SetSize(14, 14)
+        self.mapButton.icon:SetPoint("CENTER", self.mapButton, "CENTER", 0, 0)
+        self.mapButton.icon:SetTexture(Skins:GetActionIcon("goto"))
+    end
+    self.mapButton:SetScript("OnClick", function() self:ShowWaypointOnMap() end)
+    attachHintTooltip(self.mapButton, "UI_MAP_HINT")
+
+    self.skipButton = createFlatButton(f, "AzerothRouteSkipButton", L("UI_SKIP", "Skip"), 40, 20)
+    self.skipButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -(PAD + 160), toolbarY)
+    self.skipButton:SetScript("OnClick", function()
+        if AR.Progression then AR.Progression:SkipStep(false) end
+        self:RefreshVisuals()
+    end)
+    attachHintTooltip(self.skipButton, "UI_SKIP_HINT")
 
     if f.CreateFontString then
         self.noticeText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -396,6 +430,15 @@ function ViewerFrame:BuildFooter(f)
         if self.percentText.SetTextColor then self.percentText:SetTextColor(Skins:RGBA("text")) end
         self.percentText:SetText("0%")
 
+        -- "» 24.0k XP/h · 1m to level" above the bar once a rate is known.
+        self.xpText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        self.xpText:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", PAD + 2, 24)
+        if self.xpText.SetWidth then self.xpText:SetWidth(self.WIDTH - PAD * 2 - 4) end
+        if self.xpText.SetWordWrap then self.xpText:SetWordWrap(false) end
+        self.xpText:SetJustifyH("LEFT")
+        if self.xpText.SetTextColor then self.xpText:SetTextColor(Skins:RGBA("textMuted")) end
+        self.xpText:Hide()
+
         -- "Guide complete" banner above the footer.
         self.completeText = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
         self.completeText:SetPoint("BOTTOM", f, "BOTTOM", 0, FOOTER_H + 4)
@@ -449,7 +492,107 @@ function ViewerFrame:Initialize()
         table.insert(self.lineRows, self:CreateRow(f, i))
     end
     self:BuildFooter(f)
+    f:SetScript("OnUpdate", function(_, elapsed) self:OnTick(elapsed) end)
     return f
+end
+
+-- Opens the world map on the current waypoint's zone.
+function ViewerFrame:ShowWaypointOnMap()
+    local target = AR.Pointer and AR.Pointer.activeTarget
+    if not target or not target.map then return false end
+    local wm = _G.WorldMapFrame
+    if wm and not (wm.IsShown and wm:IsShown()) then
+        if _G.ToggleWorldMap then _G.ToggleWorldMap() elseif wm.Show then wm:Show() end
+    end
+    if wm and wm.SetMapID then wm:SetMapID(target.map) end
+    return true
+end
+
+function ViewerFrame:BuildMoreMenuItems()
+    local items = {
+        { text = L("UI_MENU_STEPS", "All steps"), onClick = function() if AR.StepBrowser then AR.StepBrowser:Show() end end },
+        { text = L("UI_MENU_QUESTLOG", "Clean up quest log"), onClick = function() if AR.QuestLogCleanup then AR.QuestLogCleanup:Show() end end },
+        { separator = true },
+        { text = L("UI_GUIDES", "Guides"), onClick = function() if AR.GuideMenu then AR.GuideMenu:Show() end end },
+        { text = L("UI_TALENTS", "Talents"), onClick = function() if AR.TalentAdvisor and AR.TalentAdvisor.ToggleUI then AR.TalentAdvisor:ToggleUI() end end },
+        { text = L("UI_MENU_OPTIONS", "Options"), onClick = function() if AR.Config and AR.Config.Open then AR.Config:Open() end end },
+        { separator = true },
+        { text = L("UI_MENU_HIDE", "Hide guide window"), onClick = function() if self.frame then self.frame:Hide() end end },
+    }
+    return items
+end
+
+function ViewerFrame:ShowMoreMenu(anchor)
+    return AR.UI:ShowMenu(anchor or self.moreButton, self:BuildMoreMenuItems())
+end
+
+-- XP rate over the session: gained XP (level-ups included) divided by elapsed time.
+ViewerFrame.XP_MIN_SECONDS = 30
+
+function ViewerFrame:ResetXPTracker()
+    self.xp = nil
+end
+
+function ViewerFrame:SampleXP(now)
+    if not _G.UnitXP or not _G.UnitXPMax then return end
+    now = now or (_G.GetTime and _G.GetTime()) or 0
+    local cur, max = _G.UnitXP("player") or 0, _G.UnitXPMax("player") or 0
+    local x = self.xp
+    if not x then
+        self.xp = { start = now, gained = 0, cur = cur, max = max }
+        return
+    end
+    if cur >= x.cur then
+        x.gained = x.gained + (cur - x.cur)
+    else -- levelled up: the rest of the old bar plus the new progress
+        x.gained = x.gained + math.max(0, x.max - x.cur) + cur
+    end
+    x.cur, x.max = cur, max
+end
+
+function ViewerFrame:GetXPPerHour(now)
+    local x = self.xp
+    if not x then return nil end
+    now = now or (_G.GetTime and _G.GetTime()) or 0
+    local elapsed = now - x.start
+    if elapsed < self.XP_MIN_SECONDS or x.gained <= 0 then return nil end
+    return x.gained / elapsed * 3600
+end
+
+local function shortNumber(n)
+    if n >= 1000 then return string.format("%.1fk", n / 1000) end
+    return tostring(math.floor(n + 0.5))
+end
+
+local function shortDuration(secs)
+    secs = math.max(0, math.floor(secs + 0.5))
+    if secs < 60 then return secs .. "s" end
+    if secs < 3600 then return math.floor(secs / 60) .. "m" end
+    return string.format("%dh %dm", math.floor(secs / 3600), math.floor((secs % 3600) / 60))
+end
+
+-- "24.0k XP/h · 1m to level", or nil until enough XP has been gained to estimate.
+function ViewerFrame:FormatXPLine(now)
+    local rate = self:GetXPPerHour(now)
+    if not rate or not self.xp or self.xp.max <= 0 then return nil end
+    local left = (self.xp.max - self.xp.cur) / rate * 3600
+    return string.format(L("UI_XP_LINE_FMT", "%s XP/h · %s to level"), shortNumber(rate), shortDuration(left))
+end
+
+-- Every 5 s: resample XP; relayout only when the XP line appears or disappears.
+ViewerFrame.TICK_SECONDS = 5
+function ViewerFrame:OnTick(elapsed)
+    self._tick = (self._tick or 0) + (elapsed or 0)
+    if self._tick < self.TICK_SECONDS then return end
+    self._tick = 0
+    self:SampleXP()
+    local line = self:FormatXPLine()
+    local shown = self.xpText and self.xpText:IsShown()
+    if (line ~= nil) ~= (shown == true) then
+        self:RefreshVisuals()
+    elseif line and self.xpText then
+        self.xpText:SetText("» " .. line)
+    end
 end
 
 local function modifierDown(fnName)
@@ -847,6 +990,9 @@ function ViewerFrame:RefreshVisuals()
     if self.talentButton and self.talentButton.label then
         self.talentButton.label:SetText(L("UI_TALENTS", "Talents"))
     end
+    if self.skipButton and self.skipButton.label then
+        self.skipButton.label:SetText(L("UI_SKIP", "Skip"))
+    end
     if self.stickyHeader then
         self.stickyHeader:SetText(L("UI_WHILE_HERE", "While you're here"))
     end
@@ -1049,6 +1195,27 @@ function ViewerFrame:RefreshVisuals()
         self.percentText:SetText(string.format("%d%%", math.floor(frac * 100 + 0.5)))
     end
 
+    -- XP rate line grows the footer when shown.
+    self:SampleXP()
+    local footerH = FOOTER_H
+    local xpLine = self:FormatXPLine()
+    vm.xpLine = xpLine
+    if self.xpText then
+        if xpLine then
+            self.xpText:SetText("» " .. xpLine)
+            self.xpText:Show()
+            footerH = FOOTER_H + 18
+        else
+            self.xpText:Hide()
+        end
+    end
+    if f.footerDivider then
+        f.footerDivider:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", PAD, footerH)
+    end
+    if self.completeText then
+        self.completeText:SetPoint("BOTTOM", f, "BOTTOM", 0, footerH + 4)
+    end
+
     if self.completeText then
         if vm.guideComplete then
             self.completeText:SetText(L("UI_GUIDE_COMPLETE", "Guide complete!"))
@@ -1060,7 +1227,7 @@ function ViewerFrame:RefreshVisuals()
     end
 
     -- Grow the window to fit the visible rows (never below the default height).
-    local wanted = math.max(self.HEIGHT, y + 6 + FOOTER_H)
+    local wanted = math.max(self.HEIGHT, y + 6 + footerH)
     if f.SetHeight then
         f:SetHeight(wanted)
     else

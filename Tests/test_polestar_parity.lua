@@ -93,3 +93,55 @@ T:Describe("Polestar parity: viewer body", function()
         AR.db.profile.previewsteps = 0
     end)
 end)
+
+T:Describe("Polestar parity: toolbar and footer", function()
+    T:It("skips with the Skip button and opens the map on the waypoint", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        local g = load(AR)
+        AR.ViewerFrame:RefreshVisuals()
+        T:AssertEqual(AR.ViewerFrame.skipButton.label:GetText(), AR.L:Get("UI_SKIP"))
+        AR.ViewerFrame.skipButton:Click("LeftButton")
+        T:AssertEqual(AR.Progression.currentStep.num, 2, "Skip advances one step")
+        AR.Pointer.activeTarget = { type = "waypoint", map = 1413, x = 0.5, y = 0.5 }
+        _G.WorldMapFrame._mapID = nil
+        AR.ViewerFrame.mapButton:Click("LeftButton")
+        T:AssertEqual(_G.WorldMapFrame:GetMapID(), 1413, "World map on the waypoint zone")
+    end)
+
+    T:It("opens the ... menu with steps, quest log, guides, talents, options and hide", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        load(AR)
+        AR.ViewerFrame:RefreshVisuals()
+        AR.ViewerFrame.moreButton:Click("LeftButton")
+        T:AssertTrue(AR.UI.menu:IsShown(), "Menu open")
+        for _, key in ipairs({ "UI_MENU_STEPS", "UI_MENU_QUESTLOG", "UI_GUIDES", "UI_TALENTS", "UI_MENU_OPTIONS", "UI_MENU_HIDE" }) do
+            T:AssertTrue(AR.UI:FindMenuItem(AR.L:Get(key)) ~= nil, key .. " present")
+        end
+        AR.UI:FindMenuItem(AR.L:Get("UI_MENU_HIDE")):Click("LeftButton")
+        T:AssertFalse(AR.ViewerFrame.frame:IsShown(), "Hide closes the guide window")
+        T:AssertFalse(AR.UI.menu:IsShown(), "Menu closes after a pick")
+        AR.ViewerFrame.frame:Show()
+    end)
+
+    T:It("shows XP per hour and time to level once enough XP was earned", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        load(AR)
+        AR.ViewerFrame:ResetXPTracker()
+        MockWoW.player.xp, MockWoW.player.maxXp = 100, 1000
+        AR.ViewerFrame:RefreshVisuals()
+        T:AssertFalse(AR.ViewerFrame.xpText:IsShown(), "No rate yet")
+        MockWoW:AdvanceTime(60000)
+        MockWoW.player.xp = 400
+        local vm = AR.ViewerFrame:RefreshVisuals()
+        T:AssertEqual(vm.xpLine, "18.0k XP/h · 2m to level", "300 XP in 60 s; 600 left")
+        T:AssertTrue(AR.ViewerFrame.xpText:IsShown(), "Line shown")
+        -- Level up: rest of the old bar plus the new progress counts.
+        MockWoW.player.xp, MockWoW.player.maxXp = 50, 1200
+        AR.ViewerFrame:SampleXP()
+        T:AssertEqual(AR.ViewerFrame.xp.gained, 950, "300 + 600 + 50")
+        AR.ViewerFrame:ResetXPTracker()
+    end)
+end)
