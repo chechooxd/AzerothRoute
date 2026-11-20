@@ -23,7 +23,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T5 [S6] Minimap dropdown menu + hide all (right-click now opens the menu; left-click hides/shows all) — inline · 130/130
 - [x] T6 [S7] Guide center search, row tags, details (chips, status, stats) — inline · 132/132
 - [x] T7 [S8] Quest log cleanup dialog — inline · 134/134
-- [ ] T8 [S10] Key bindings — inline
+- [x] T8 [S10] Key bindings (Bindings.xml + UI/Bindings.lua) — inline · 135/135
 - [ ] T9 Merge to master, README checklist
 
 ## Log

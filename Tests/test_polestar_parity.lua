@@ -353,3 +353,28 @@ T:Describe("Polestar parity: quest log cleanup", function()
         T:AssertEqual(n, 0)
     end)
 end)
+
+T:Describe("Polestar parity: key bindings", function()
+    T:It("declares every binding in Bindings.xml with a label and a working action", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        load(AR)
+        AR.ViewerFrame:RefreshVisuals()
+        local fh = assert(io.open("Bindings.xml", "r"))
+        local xml = fh:read("*a")
+        fh:close()
+        local count = 0
+        for name, action in xml:gmatch('<Binding name="AZEROTHROUTE_(%u+)"[^>]*>%s*AzerothRoute%.Bindings:Run%("(%l+)"%)') do
+            count = count + 1
+            local label = _G["BINDING_NAME_AZEROTHROUTE_" .. name]
+            T:AssertTrue(type(label) == "string" and not label:find("^BIND_"), name .. " has a label")
+            T:AssertTrue(AR.Bindings.Run ~= nil and action ~= "", name .. " has an action")
+        end
+        T:AssertEqual(count, 6, "Six bindings")
+        AR.Bindings:Run("next")
+        T:AssertEqual(AR.Progression.currentStep.num, 2, "Next step binding")
+        AR.Bindings:Run("prev")
+        T:AssertEqual(AR.Progression.currentStep.num, 1, "Previous step binding")
+        T:AssertFalse(AR.Bindings:Run("nope"), "Unknown action refused")
+    end)
+end)

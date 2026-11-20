@@ -96,6 +96,7 @@ UI\Menu\Options.lua
 UI\Menu\GuideMenu.lua
 UI\Menu\QuestLogCleanup.lua
 UI\MinimapButton.lua
+UI\Bindings.lua
 UI\Menu\Config.lua
 
 # SPEC-14B: Static Data & Guide Catalog

@@ -112,6 +112,7 @@ function T:BootstrapAddon()
         "UI/Menu/GuideMenu.lua",
         "UI/Menu/QuestLogCleanup.lua",
         "UI/MinimapButton.lua",
+        "UI/Bindings.lua",
         "UI/Menu/Config.lua",
         "Data/Catalog.lua",
         "Guides/Autoload.lua",
