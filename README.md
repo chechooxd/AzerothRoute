@@ -84,7 +84,7 @@ bearing, and minimap radar offsets never mix coordinate spaces.
 
 ## Verification
 
-Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 118 passed, 0 failed` across 35 test suites). Client verification is pending:
+Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 119 passed, 0 failed` across 35 test suites). Client verification is pending:
 
 - Check the minimap button, its clicks and tooltip; move it, `/reload`, and check that it keeps its position.
 - `/ar config`: change a toggle, `/reload`, check it stuck; create a second profile, switch, check the toggle follows the profile.

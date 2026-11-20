@@ -12,6 +12,7 @@ local Pointer = {
         { hex = "#fb923c", r = 0.98, g = 0.57, b = 0.24 }, -- Orange
     },
     ARROW_TEXTURE = "Interface\\Minimap\\Minimap-QuestArrow",
+    ARROW_SIZE = 56,
     MINIMAP_RADIUS_PX = 70,
     MINIMAP_VIEW_YARDS = 200,
     worldMapPins = {},
@@ -82,7 +83,7 @@ function Pointer:InitializeFrames()
     self:EnsureWorldMapHook()
     if not self.arrowFrame then
         local af = _G.CreateFrame("Button", "AzerothRoutePointerArrow", _G.UIParent)
-        af:SetSize(52, 52)
+        af:SetSize(self.ARROW_SIZE, self.ARROW_SIZE)
         af:SetPoint("TOP", _G.UIParent, "TOP", 0, -90)
         if af.SetFrameStrata then af:SetFrameStrata("HIGH") end
         if af.SetMovable then af:SetMovable(true) end
@@ -95,31 +96,37 @@ function Pointer:InitializeFrames()
             if frame.StopMovingOrSizing then frame:StopMovingOrSizing() end
         end)
 
+        -- Free-floating arrow (no backdrop) with a soft drop shadow, then three centred lines:
+        -- distance (large, coloured by closeness), destination, and ETA (muted).
         if af.CreateTexture then
-            af.ring = af:CreateTexture(nil, "BACKGROUND")
-            af.ring:SetSize(44, 44)
-            af.ring:SetPoint("CENTER", af, "CENTER", 0, 0)
-            af.ring:SetTexture("Interface\\Minimap\\UI-Minimap-Background")
-            if af.ring.SetVertexColor then
-                af.ring:SetVertexColor(0.05, 0.07, 0.12, 0.70)
-            end
+            af.shadow = af:CreateTexture(nil, "BACKGROUND")
+            af.shadow:SetSize(self.ARROW_SIZE, self.ARROW_SIZE)
+            af.shadow:SetPoint("CENTER", af, "CENTER", 1, -3)
+            af.shadow:SetTexture(self.ARROW_TEXTURE)
+            if af.shadow.SetVertexColor then af.shadow:SetVertexColor(0, 0, 0, 0.55) end
 
             af.icon = af:CreateTexture(nil, "ARTWORK")
-            af.icon:SetSize(42, 42)
+            af.icon:SetSize(self.ARROW_SIZE, self.ARROW_SIZE)
             af.icon:SetPoint("CENTER", af, "CENTER", 0, 0)
             af.icon:SetTexture(self.ARROW_TEXTURE)
             if af.icon.SetVertexColor then
-                af.icon:SetVertexColor(0.15, 0.95, 0.35, 1.0)
+                af.icon:SetVertexColor(0.22, 0.92, 0.48, 1.0)
             end
         end
         if af.CreateFontString then
-            af.label = af:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-            af.label:SetPoint("TOP", af, "BOTTOM", 0, -4)
+            af.sublabel = af:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
+            af.sublabel:SetPoint("TOP", af, "BOTTOM", 0, -2)
+            af.sublabel:SetText("")
+
+            af.label = af:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+            af.label:SetPoint("TOP", af, "BOTTOM", 0, -22)
+            if af.label.SetTextColor then af.label:SetTextColor(0.93, 0.92, 0.88, 1) end
             af.label:SetText("AzerothRoute")
 
-            af.sublabel = af:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-            af.sublabel:SetPoint("TOP", af, "BOTTOM", 0, -18)
-            af.sublabel:SetText("")
+            af.etaLabel = af:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+            af.etaLabel:SetPoint("TOP", af, "BOTTOM", 0, -38)
+            if af.etaLabel.SetTextColor then af.etaLabel:SetTextColor(0.72, 0.74, 0.80, 1) end
+            af.etaLabel:SetText("")
         end
         self.arrowFrame = af
     end
@@ -452,16 +459,19 @@ function Pointer:CheckCorpseArrow()
     return false
 end
 
+-- Arrow tint by heading error: green on course, gold when sideways, ember red when behind.
+local BEARING_ON = { 0.22, 0.92, 0.48 }
+local BEARING_SIDE = { 0.96, 0.77, 0.29 }
+local BEARING_BACK = { 0.95, 0.25, 0.18 }
+
 function Pointer:ComputeBearingColor(relAngleRad)
     local diff = math.abs(math.atan2(math.sin(relAngleRad or 0), math.cos(relAngleRad or 0)))
     local t = diff / math.pi
-    if t < 0.5 then
-        local k = t * 2
-        return 0.15 + 0.85 * k, 0.95, 0.25 * (1 - k)
-    else
-        local k = (t - 0.5) * 2
-        return 1.0, 0.95 * (1 - k) + 0.15 * k, 0.15
+    local a, b, k = BEARING_ON, BEARING_SIDE, t * 2
+    if t >= 0.5 then
+        a, b, k = BEARING_SIDE, BEARING_BACK, (t - 0.5) * 2
     end
+    return a[1] + (b[1] - a[1]) * k, a[2] + (b[2] - a[2]) * k, a[3] + (b[3] - a[3]) * k
 end
 
 function Pointer:UpdateArrow(elapsed)
@@ -515,6 +525,9 @@ function Pointer:UpdateArrow(elapsed)
             af.sublabel:SetTextColor(1, 1, 1)
         end
     end
+    if af.etaLabel then
+        af.etaLabel:SetText(arrived and "" or self:FormatETA(dist))
+    end
 end
 
 Pointer.ARRIVED_TEXTURE = "Interface\\RAIDFRAME\\ReadyCheck-Ready"
@@ -539,6 +552,11 @@ function Pointer:ShowPointing()
         self.arrowState = "pointing"
     end
     if icon.SetRotation then icon:SetRotation(self.arrowBearing) end
+    local shadow = self.arrowFrame.shadow
+    if shadow then
+        if shadow.SetRotation then shadow:SetRotation(self.arrowBearing) end
+        shadow:Show()
+    end
     if icon.SetVertexColor then
         local r, g, b = self:ComputeBearingColor(self.arrowBearing)
         icon:SetVertexColor(r, g, b, 1.0)
@@ -555,6 +573,7 @@ function Pointer:ShowArrived(elapsed)
     end
     if icon.SetRotation then icon:SetRotation(0) end
     if icon.SetVertexColor then icon:SetVertexColor(1, 1, 1, 1) end
+    if self.arrowFrame.shadow then self.arrowFrame.shadow:Hide() end
     self.bounceTime = (self.bounceTime or 0) + elapsed
     local offset = math.abs(math.sin(self.bounceTime * math.pi / 0.6)) * 6
     if icon.ClearAllPoints then icon:ClearAllPoints() end
@@ -591,13 +610,15 @@ function Pointer:FormatSubLabel(dist, arrived)
         local info = self.activeTarget.map and _G.C_Map and _G.C_Map.GetMapInfo and _G.C_Map.GetMapInfo(self.activeTarget.map)
         return (info and info.name) or ""
     end
-    local text = string.format("%d yd", math.floor(dist + 0.5))
+    return string.format("%d yd", math.floor(dist + 0.5))
+end
+
+-- "m:ss" time to arrival from the rolling speed average, or "" while standing still.
+function Pointer:FormatETA(dist)
     local eta = self:GetETA(dist)
-    if eta then
-        local secs = math.floor(eta + 0.5)
-        text = text .. string.format(" · %d:%02d", math.floor(secs / 60), secs % 60)
-    end
-    return text
+    if not eta then return "" end
+    local secs = math.floor(eta + 0.5)
+    return string.format("%d:%02d", math.floor(secs / 60), secs % 60)
 end
 
 -- Distance text color: red far away, yellow midway, green close (relative to the starting distance).

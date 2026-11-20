@@ -51,10 +51,12 @@ T:Describe("Package 2: arrow", function()
             local P = AR.Pointer
             P:UpdateArrow(0.033)
             T:AssertEqual(P.arrowFrame.sublabel:GetText(), "70 yd", "No ETA while standing still")
+            T:AssertEqual(P.arrowFrame.etaLabel:GetText(), "", "No ETA while standing still")
             _G.GetUnitSpeed = function() return 7 end
             for _ = 1, 10 do P:SampleSpeed(0.2) end
             P:UpdateArrow(0.033)
-            T:AssertEqual(P.arrowFrame.sublabel:GetText(), "70 yd · 0:10", "Distance plus m:ss ETA")
+            T:AssertEqual(P.arrowFrame.sublabel:GetText(), "70 yd", "Distance on the large line")
+            T:AssertEqual(P.arrowFrame.etaLabel:GetText(), "0:10", "m:ss ETA on its own line")
             T:AssertEqual(P.arrowFrame.label:GetText(), "Devrak", "Title on its own line")
         end)
     end)
@@ -117,6 +119,19 @@ T:Describe("Package 2: arrow", function()
             T:AssertEqual(AR.Progression:ConsumeWaypointVisited(), false)
             AR.ViewerFrame:RefreshVisuals()
             T:AssertEqual(AR.Pointer.activeTarget.x, 0.6, "Arrow moved to the second waypoint")
+        end)
+    end)
+
+    T:It("tints the arrow gold when sideways and keeps its shadow under the arrow", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        local r, g, b = AR.Pointer:ComputeBearingColor(math.pi / 2)
+        T:AssertTrue(r > 0.9 and g > 0.7 and b < 0.35, "Sideways is gold")
+        withArrow(70, function(_, _)
+            local P = AR.Pointer
+            P:UpdateArrow(0.033)
+            T:AssertEqual(P.arrowFrame.shadow:GetRotation(), P.arrowFrame.icon:GetRotation(), "Shadow turns with the arrow")
+            T:AssertTrue(P.arrowFrame.shadow:IsShown(), "Shadow while pointing")
         end)
     end)
 end)
