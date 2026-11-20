@@ -75,6 +75,7 @@ Skins.ACTION_ICONS = {
     collect = "Interface\\GossipFrame\\BankerGossipIcon",
     create = "Interface\\GossipFrame\\BankerGossipIcon",
     talk = "Interface\\GossipFrame\\GossipGossipIcon",
+    ["goto"] = "Interface\\Icons\\INV_Misc_Map_01",
 }
 Skins.DEFAULT_ACTION_ICON = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_1"
 Skins.CHECK_ICON = "Interface\\RAIDFRAME\\ReadyCheck-Ready"

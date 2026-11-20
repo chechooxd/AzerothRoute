@@ -153,6 +153,7 @@ function T:RunAll()
         "Tests/test_guide_progression_ux.lua",
         "Tests/test_arrow_ux.lua",
         "Tests/test_viewer_ux.lua",
+        "Tests/test_polestar_parity.lua",
         "Tests/test_racial_flightpaths.lua",
         "Tests/test_live_ux_gaps.lua",
     }

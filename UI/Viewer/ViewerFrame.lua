@@ -240,6 +240,26 @@ function ViewerFrame:BuildHeader(f)
         if self.noticeText.SetTextColor then self.noticeText:SetTextColor(Skins:RGBA("accent")) end
         self.noticeText:Hide()
 
+        -- Step heading: who/where in large coloured text, the zone under it.
+        self.headingText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
+        if self.headingText.SetWidth then self.headingText:SetWidth(self.WIDTH - 44) end
+        if self.headingText.SetWordWrap then self.headingText:SetWordWrap(false) end
+        self.headingText:SetJustifyH("LEFT")
+        self.headingText:Hide()
+        self.headingSub = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        self.headingSub:SetJustifyH("LEFT")
+        if self.headingSub.SetTextColor then self.headingSub:SetTextColor(Skins:RGBA("textMuted")) end
+        self.headingSub:Hide()
+        if f.CreateTexture then
+            self.headingIcon = f:CreateTexture(nil, "ARTWORK")
+            self.headingIcon:SetSize(16, 16)
+            self.headingIcon:Hide()
+            self.headingBar = f:CreateTexture(nil, "ARTWORK")
+            self.headingBar:SetWidth(2)
+            Skins:Paint(self.headingBar, "accent")
+            self.headingBar:Hide()
+        end
+
         self.stickyHeader = f:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
         self.stickyHeader:SetJustifyH("LEFT")
         if self.stickyHeader.SetTextColor then self.stickyHeader:SetTextColor(Skins:RGBA("accent")) end
@@ -257,6 +277,11 @@ function ViewerFrame:BuildHeader(f)
 end
 
 function ViewerFrame:OnRowClick(r, button)
+    if r._isFold then
+        self.expandDone = not self.expandDone
+        self:RefreshVisuals()
+        return
+    end
     if not r._goal then return end
     if r._isPreview and button == "RightButton" then return end
     if button == "RightButton" and r._goal:ToggleManualArrival() then
@@ -627,6 +652,9 @@ function ViewerFrame:RenderCurrentStep()
     local previewLines = self:BuildPreviewLines(step)
 
     return {
+        heading = self:BuildHeading(step),
+        note = self:FindStepNote(step),
+        thenLine = (#previewLines == 0) and self:BuildThenLine(step) or nil,
         previewLines = previewLines,
         stepNum = step and step.num or 1,
         mainLines = mainLines,
@@ -639,6 +667,82 @@ function ViewerFrame:RenderCurrentStep()
         progress = self:ComputeProgress(self.progressMode, step and step.num),
         guideComplete = (AR.Progression and AR.Progression.guideComplete) == true,
     }
+end
+
+local function mapName(mapID)
+    if not mapID or not _G.C_Map or not _G.C_Map.GetMapInfo then return nil end
+    local ok, info = pcall(_G.C_Map.GetMapInfo, mapID)
+    return ok and info and info.name or nil
+end
+
+local HEADING_ACTIONS = { talk = true, vendor = true, trainer = true, kill = true }
+
+-- Step heading: the step's explicit title, else the first person to see, else the place to go.
+-- Returns { text = rich text, plain = text, sub = zone name or nil, icon = texture } or nil.
+function ViewerFrame:BuildHeading(step)
+    if not step or not step.goals then return nil end
+    local zoneID = step.map
+    local text, plain, icon
+    if step.title and step.title ~= "" then
+        text, plain = step.title, step.title
+    end
+    for _, g in ipairs(step.goals) do
+        if not zoneID and g.map then zoneID = g.map end
+        if not text and HEADING_ACTIONS[g.action] and g:IsVisible() then
+            local name, kind = g:GetSubject()
+            if type(name) == "string" and name ~= "" then
+                text, plain = AR.Skins:Colorize(name, kind), name
+                icon = AR.Skins:GetActionIcon(g.action)
+            end
+        end
+    end
+    local zone = mapName(zoneID)
+    if not text then
+        if not zone then return nil end
+        return { text = zone, plain = zone, icon = AR.Skins:GetActionIcon("goto") }
+    end
+    return { text = text, plain = plain, sub = zone, icon = icon or AR.Skins:GetActionIcon("talk") }
+end
+
+-- The first author tip attached to the step's goals, shown as a muted note line.
+function ViewerFrame:FindStepNote(step)
+    for _, g in ipairs((step and step.goals) or {}) do
+        if type(g.tooltip) == "string" and g.tooltip ~= "" and g:IsVisible() then
+            return g.tooltip
+        end
+    end
+    return nil
+end
+
+-- One-line summary of the next visible regular step: "Then: <heading or first goal>".
+function ViewerFrame:BuildThenLine(step)
+    local guide = AR.Progression and AR.Progression.currentGuide
+    if not guide or not step or not guide.GetStep then return nil end
+    for n = step.num + 1, #guide.steps do
+        local nextStep = guide:GetStep(n)
+        if nextStep and not nextStep.is_sticky and nextStep:IsVisible() then
+            local heading = self:BuildHeading(nextStep)
+            local summary, plain
+            if heading and heading.sub then
+                summary, plain = heading.text, heading.plain
+            end
+            for _, g in ipairs(nextStep.goals or {}) do
+                local status = g:GetStatus()
+                if status ~= "hidden" and status ~= "complete" and g.action ~= "goto" then
+                    local text = g:GetText(false)
+                    local rich = self:HighlightSubject(g, text, false)
+                    summary = summary and (summary .. " · " .. rich) or rich
+                    plain = plain and (plain .. " · " .. text) or text
+                    break
+                end
+            end
+            if not summary and heading then summary, plain = heading.text, heading.plain end
+            if not summary then return nil end
+            local prefix = L("UI_THEN", "Then:")
+            return { isHeader = true, isThen = true, text = prefix .. " " .. plain, richText = prefix .. " " .. summary, stepNum = n }
+        end
+    end
+    return nil
 end
 
 -- Upcoming steps, dimmed, each under a "Step N" header. No pins.
@@ -673,6 +777,7 @@ local function paintRow(row, line, tone)
     row._goal = line.goal
     row._isPreview = line.isPreview == true
     row._isHeader = line.isHeader == true
+    row._isFold = line.isFold == true
     row._plainText = line.text
     local done = line.status == "complete"
     local dim = (tone == "preview") and 0.55 or 1
@@ -731,6 +836,10 @@ function ViewerFrame:RefreshVisuals()
     Skins = AR.Skins
     local vm = self:RenderCurrentStep()
     local f = self.frame
+    if vm.stepNum ~= self._lastStepNum then
+        self.expandDone = false
+        self._lastStepNum = vm.stepNum
+    end
 
     if self.menuButton and self.menuButton.label then
         self.menuButton.label:SetText(L("UI_GUIDES", "Guides"))
@@ -764,6 +873,40 @@ function ViewerFrame:RefreshVisuals()
         if f.noticeBg then f.noticeBg:Hide() end
     end
 
+    -- Step heading (who / where) with the zone underneath and a gold bar.
+    if vm.heading and self.headingText then
+        local top = y
+        if self.headingIcon then
+            self.headingIcon:SetTexture(vm.heading.icon)
+            self.headingIcon:SetPoint("TOPLEFT", f, "TOPLEFT", PAD + 8, -(y + 2))
+            self.headingIcon:Show()
+        end
+        self.headingText:SetPoint("TOPLEFT", f, "TOPLEFT", PAD + 28, -y)
+        self.headingText:SetText(vm.heading.text)
+        if self.headingText.SetTextColor then self.headingText:SetTextColor(Skins:RGBA("text")) end
+        self.headingText:Show()
+        y = y + 20
+        if vm.heading.sub then
+            self.headingSub:SetPoint("TOPLEFT", f, "TOPLEFT", PAD + 28, -y)
+            self.headingSub:SetText(vm.heading.sub)
+            self.headingSub:Show()
+            y = y + 14
+        else
+            self.headingSub:Hide()
+        end
+        if self.headingBar then
+            self.headingBar:SetPoint("TOPLEFT", f, "TOPLEFT", PAD, -top)
+            self.headingBar:SetSize(2, y - top)
+            self.headingBar:Show()
+        end
+        y = y + 6
+    else
+        if self.headingText then self.headingText:Hide() end
+        if self.headingSub then self.headingSub:Hide() end
+        if self.headingIcon then self.headingIcon:Hide() end
+        if self.headingBar then self.headingBar:Hide() end
+    end
+
     local rowIdx = 0
     local currentMarked = false
     local function nextRow()
@@ -771,8 +914,27 @@ function ViewerFrame:RefreshVisuals()
         return self.lineRows[rowIdx]
     end
 
+    -- Two or more finished goals fold into one "N done" line (click to unfold).
+    local doneCount = 0
     for _, line in ipairs(vm.mainLines) do
-        local row = nextRow()
+        if line.status == "complete" then doneCount = doneCount + 1 end
+    end
+    local fold = doneCount >= 2 and not self.expandDone
+    vm.doneFolded = fold and doneCount or 0
+    local foldShown = false
+
+    for _, line in ipairs(vm.mainLines) do
+        local folded = fold and line.status == "complete"
+        local row = (not folded or not foldShown) and nextRow() or nil
+        if folded and row then
+            foldShown = true
+            local text = string.format(L("UI_DONE_FMT", "%d done"), doneCount)
+            paintRow(row, { isFold = true, text = text, status = "complete", icon = AR.Skins.CHECK_ICON }, "normal")
+            placeRow(self, row, y)
+            if row.flash then row.flash:Hide() end
+            y = y + ROW_H
+            row = nil
+        end
         if row then
             local tone = "normal"
             if not currentMarked and (line.status == "incomplete" or line.status == "warning") then
@@ -789,6 +951,17 @@ function ViewerFrame:RefreshVisuals()
                     row.flash:Hide()
                 end
             end
+            y = y + ROW_H
+        end
+    end
+
+    -- Author tip for the step, muted, on one line.
+    if vm.note then
+        local row = nextRow()
+        if row then
+            paintRow(row, { isHeader = true, text = "› " .. vm.note }, "header")
+            placeRow(self, row, y)
+            if row.flash then row.flash:Hide() end
             y = y + ROW_H
         end
     end
@@ -831,6 +1004,17 @@ function ViewerFrame:RefreshVisuals()
         if self.stickyHeader then self.stickyHeader:Hide() end
         if f.whileHereBg then f.whileHereBg:Hide() end
         if f.whileHereBar then f.whileHereBar:Hide() end
+    end
+
+    if vm.thenLine then
+        local row = nextRow()
+        if row then
+            y = y + 2
+            paintRow(row, vm.thenLine, "header")
+            placeRow(self, row, y)
+            if row.flash then row.flash:Hide() end
+            y = y + ROW_H
+        end
     end
 
     if #vm.previewLines > 0 then y = y + 4 end
