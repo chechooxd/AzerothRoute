@@ -136,3 +136,84 @@ T:Describe("Nearby services", function()
         if not ok then error(err, 0) end
     end)
 end)
+
+T:Describe("Journey: hearthstone", function()
+    local function withHearth(cooldownLeft, fn)
+        local AR = _G.AzerothRoute
+        local saved = { _G.GetBindLocation, AR.Compat.GetItemCount, _G.GetItemCooldown, _G.C_Container }
+        _G.GetBindLocation = function() return "Far Inn" end
+        AR.Compat.GetItemCount = function(_, id) return id == 6948 and 1 or 0 end
+        _G.C_Container = nil
+        _G.GetItemCooldown = function()
+            if cooldownLeft == 0 then return 0, 0 end
+            return _G.GetTime() - (3600 - cooldownLeft), 3600
+        end
+        local ok, err = pcall(fn, AR)
+        _G.GetBindLocation, AR.Compat.GetItemCount, _G.GetItemCooldown, _G.C_Container = saved[1], saved[2], saved[3], saved[4]
+        if not ok then error(err, 0) end
+    end
+
+    T:It("records where the stone is set and hearths there when it is the fastest way", function()
+        MockWoW:Reset()
+        local player = { map = 9101, x = 0.5, y = 0.5 }
+        withWorld(player, function(AR)
+            AR.Storage:Initialize()
+            withHearth(0, function()
+                -- Bind at the inn on the far continent, then travel back home.
+                local rec = AR.TaxiTracker:RecordHearth()
+                T:AssertEqual(rec.name, "Far Inn")
+                T:AssertEqual(rec.map, 9101)
+                player.map, player.x, player.y = 9001, 0.1, 0.5
+                local plan = AR.Journey:Plan({ map = 9101, x = 0.55, y = 0.5, title = "Next to the inn" })
+                local modes = {}
+                for _, l in ipairs(plan.legs) do modes[#modes + 1] = l.mode end
+                T:AssertEqual(table.concat(modes, ","), "hearth,walk", "Hearth then a short walk")
+                T:AssertEqual(plan.legs[1].label, AR.L:Format("UI_LEG_HEARTH", "Far Inn"))
+                T:AssertTrue(math.abs(plan.legs[1].seconds - 10) < 0.01, "10 s cast when ready")
+            end)
+        end)
+    end)
+
+    T:It("counts the cooldown and forgets a bind position once the stone is set elsewhere", function()
+        MockWoW:Reset()
+        local player = { map = 9101, x = 0.5, y = 0.5 }
+        withWorld(player, function(AR)
+            AR.Storage:Initialize()
+            withHearth(300, function()
+                AR.TaxiTracker:RecordHearth()
+                player.map, player.x, player.y = 9001, 0.1, 0.5
+                local plan = AR.Journey:Plan({ map = 9101, x = 0.55, y = 0.5, title = "Next to the inn" })
+                T:AssertEqual(plan.legs[1].mode, "hearth", "Still the fastest despite the wait")
+                T:AssertTrue(math.abs(plan.legs[1].seconds - 310) < 0.5, "5 minutes left plus the cast")
+                _G.GetBindLocation = function() return "Somewhere Else" end
+                T:AssertEqual(AR.TaxiTracker:GetHearthLocation(), nil, "Old position no longer applies")
+                local noHearth = AR.Journey:Plan({ map = 9101, x = 0.55, y = 0.5, title = "Next to the inn" })
+                for _, l in ipairs(noHearth.legs) do T:AssertTrue(l.mode ~= "hearth", "No hearth leg") end
+            end)
+        end)
+    end)
+end)
+
+T:Describe("Journey: hearthstone on cooldown", function()
+    T:It("prefers flying and the boat when the stone is far from ready", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        local player = { map = 9101, x = 0.5, y = 0.5 }
+        withWorld(player, function()
+            AR.Storage:Initialize()
+            local saved = { _G.GetBindLocation, AR.Compat.GetItemCount, _G.GetItemCooldown, _G.C_Container }
+            _G.GetBindLocation = function() return "Far Inn" end
+            AR.Compat.GetItemCount = function() return 1 end
+            _G.C_Container = nil
+            _G.GetItemCooldown = function() return _G.GetTime() - 600, 3600 end -- 50 minutes left
+            local ok, err = pcall(function()
+                AR.TaxiTracker:RecordHearth()
+                player.map, player.x, player.y = 9001, 0.1, 0.5
+                local plan = AR.Journey:Plan({ map = 9101, x = 0.55, y = 0.5, title = "Next to the inn" })
+                T:AssertTrue(plan.legs[1].mode ~= "hearth", "Long cooldown loses to travelling")
+            end)
+            _G.GetBindLocation, AR.Compat.GetItemCount, _G.GetItemCooldown, _G.C_Container = saved[1], saved[2], saved[3], saved[4]
+            if not ok then error(err, 0) end
+        end)
+    end)
+end)

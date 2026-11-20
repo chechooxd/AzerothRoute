@@ -1,5 +1,6 @@
 -- AzerothRoute: multi-leg journey planner (walk, known flight paths, boats, zeppelins, tram).
 -- Plans the fastest way to the arrow's destination with Dijkstra over: the player, the target,
+-- the hearthstone landing (when the stone is in the bags; its cooldown counts as waiting),
 -- the flight masters the character knows (TravelData snapped to the database) and transport docks.
 -- Times are estimates: walking at the player's average speed (at least run speed), flying at a
 -- fixed effective speed, and each transport at its listed crossing time.
@@ -93,6 +94,34 @@ function Journey:BuildNodes()
     return nodes
 end
 
+Journey.HEARTHSTONE_ITEM = 6948
+Journey.HEARTH_CAST = 10 -- s of casting
+
+-- Seconds until the hearthstone can be used (0 when ready), or nil without one in the bags.
+function Journey:HearthWait()
+    local count = (AR.Compat and AR.Compat:GetItemCount(self.HEARTHSTONE_ITEM, false)) or 0
+    if count <= 0 then return nil end
+    local getCD = (_G.C_Container and _G.C_Container.GetItemCooldown) or _G.GetItemCooldown
+    if not getCD then return 0 end
+    local start, duration = getCD(self.HEARTHSTONE_ITEM)
+    if not start or start == 0 or not duration then return 0 end
+    local now = (_G.GetTime and _G.GetTime()) or 0
+    return math.max(0, start + duration - now)
+end
+
+-- Hearth landing node with its world position, or nil (no stone, no known bind location).
+function Journey:HearthNode()
+    local wait = self:HearthWait()
+    if not wait or not AR.TaxiTracker or not AR.TaxiTracker.GetHearthLocation then return nil end
+    local loc = AR.TaxiTracker:GetHearthLocation()
+    if not loc then return nil end
+    local c, wx, wy = world(loc.map, loc.x, loc.y)
+    if not c then return nil end
+    local name = (AR.TaxiTracker.GetLocalizedNodeName and AR.TaxiTracker:GetLocalizedNodeName(loc.name)) or loc.name
+    return { kind = "hearth", name = name, map = loc.map, x = loc.x, y = loc.y, c = c, wx = wx, wy = wy,
+        cost = wait + self.HEARTH_CAST }
+end
+
 function Journey:WalkSpeed()
     local P = AR.Pointer
     local samples = P and P.speedSamples or {}
@@ -122,6 +151,9 @@ function Journey:Plan(target)
     local E = { kind = "end", name = target.title, map = target.map, x = target.x, y = target.y, c = ec, wx = ewx, wy = ewy }
     local nodes = { S, E }
     for _, n in ipairs(self:BuildNodes()) do nodes[#nodes + 1] = n end
+    -- The hearthstone works from anywhere: one edge from the start, its cooldown included.
+    local H = self:HearthNode()
+    if H then nodes[#nodes + 1] = H end
 
     local speed = self:WalkSpeed()
     local best, prev, how, done = {}, {}, {}, {}
@@ -149,6 +181,9 @@ function Journey:Plan(target)
         if u.kind == "dock" and u.pair and not done[u.pair] then
             relax(u.pair, u.transport.seconds, u.transport.mode, 0)
         end
+        if u == S and H and not done[H] then
+            relax(H, H.cost, "hearth", 0)
+        end
     end
     if not best[E] then return nil end
 
@@ -168,7 +203,7 @@ function Journey:Plan(target)
             c.step.yards = c.step.yards + last.yards
         end
         local name = c.node.name or ""
-        local key = ({ walk = "UI_LEG_WALK", fly = "UI_LEG_FLY", boat = "UI_LEG_BOAT", zeppelin = "UI_LEG_ZEPPELIN", tram = "UI_LEG_TRAM" })[c.step.mode]
+        local key = ({ walk = "UI_LEG_WALK", fly = "UI_LEG_FLY", boat = "UI_LEG_BOAT", zeppelin = "UI_LEG_ZEPPELIN", tram = "UI_LEG_TRAM", hearth = "UI_LEG_HEARTH" })[c.step.mode]
         legs[#legs + 1] = {
             mode = c.step.mode, name = name, label = string.format(L(key, "%s"), name),
             map = c.node.map, x = c.node.x, y = c.node.y, seconds = c.step.seconds, yards = c.step.yards,

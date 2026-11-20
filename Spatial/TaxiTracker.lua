@@ -272,9 +272,41 @@ function TaxiTracker:OnUIInfoMessage(_, message)
     return learned
 end
 
+-- Stores where the hearthstone is set: the bind name from the client and the player's position
+-- while binding (the player stands at the innkeeper), so journeys can land there.
+function TaxiTracker:RecordHearth()
+    if not AR.db or not AR.db.char or not _G.GetBindLocation or not AR.Coords then return nil end
+    local name = _G.GetBindLocation()
+    local map, x, y = AR.Coords:GetPlayerPosition()
+    if type(name) ~= "string" or name == "" or not map or not x then return nil end
+    AR.db.char.hearth = { name = name, map = map, x = x, y = y }
+    return AR.db.char.hearth
+end
+
+-- Where the hearthstone lands: the recorded bind position while the bind name still matches,
+-- else a flight-path node of the same name. { name, map, x (0..1), y (0..1) } or nil.
+function TaxiTracker:GetHearthLocation()
+    if not _G.GetBindLocation then return nil end
+    local bound = _G.GetBindLocation()
+    if type(bound) ~= "string" or bound == "" then return nil end
+    local rec = AR.db and AR.db.char and AR.db.char.hearth
+    if rec and rec.name == bound and rec.map then return rec end
+    local f = _G.UnitFactionGroup and _G.UnitFactionGroup("player")
+    local me = (f == "Alliance" and "A") or (f == "Horde" and "H") or nil
+    for _, n in ipairs((AR.TravelData and AR.TravelData.TAXI_NODES) or {}) do
+        if (n.side == "B" or not me or n.side == me) and nodeNameMatches(bound, n.name) then
+            return { name = bound, map = n.map, x = n.x / 100, y = n.y / 100 }
+        end
+    end
+    return nil
+end
+
 function TaxiTracker:RegisterLiveEvents()
     if self._liveRegistered or not AR.Events then return end
     self._liveRegistered = true
+    AR.Events:RegisterEvent("HEARTHSTONE_BOUND", function()
+        self:RecordHearth()
+    end)
     AR.Events:RegisterEvent("TAXIMAP_OPENED", function()
         self:OnTaxiMapOpened()
     end)

@@ -1229,7 +1229,7 @@ function ViewerFrame:RefreshVisuals()
             if i > 5 then break end
             local row = nextRow()
             if row then
-                local icon = Skins:GetActionIcon(({ walk = "goto", fly = "fly" })[leg.mode] or "goto")
+                local icon = Skins:GetActionIcon(({ walk = "goto", fly = "fly", hearth = "hearth" })[leg.mode] or "goto")
                 if leg.mode == "boat" or leg.mode == "zeppelin" or leg.mode == "tram" then
                     icon = "Interface\\Icons\\Ability_Hunter_Pathfinding"
                 end
