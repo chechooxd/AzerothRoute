@@ -11,7 +11,7 @@ local GuideMenu = {
         { id = "guides", labelKey = "UI_GUIDES", icon = "Interface\\Icons\\INV_Misc_Book_09" },
         { id = "lookup", labelKey = "UI_LOOKUP", icon = "Interface\\Icons\\INV_Misc_Spyglass_03" },
         { id = "dungeons", labelKey = "UI_DUNGEONS", icon = "Interface\\Icons\\INV_Misc_Key_14" },
-        { action = "talents", labelKey = "UI_TALENTS", icon = "Interface\\Icons\\Ability_Marksmanship" },
+        { id = "talents", labelKey = "UI_TALENTS", icon = "Interface\\Icons\\Ability_Marksmanship" },
         { id = "rares", labelKey = "UI_LK_RARES", icon = "Interface\\Icons\\INV_Misc_Head_Dragon_01" },
         { id = "characters", labelKey = "UI_CHARACTERS", icon = "Interface\\Icons\\INV_Misc_Head_Human_01" },
         { id = "options", labelKey = "UI_MENU_OPTIONS", icon = "Interface\\Icons\\INV_Misc_Gear_01" },
@@ -78,6 +78,7 @@ function GuideMenu:Reset()
     self.modeButtons = {}
     if AR.Lookup and AR.Lookup.Reset then AR.Lookup:Reset() end
     if AR.Dungeons and AR.Dungeons.Reset then AR.Dungeons:Reset() end
+    if AR.TalentsPanel and AR.TalentsPanel.Reset then AR.TalentsPanel:Reset() end
     self.frame = nil
     self.headerText = nil
     self.closeButton = nil
@@ -379,11 +380,7 @@ function GuideMenu:InitializeFrame()
         b._action = mode.action
         b._labelKey = mode.labelKey
         b:SetScript("OnClick", function()
-            if mode.action == "talents" then
-                if AR.TalentAdvisor and AR.TalentAdvisor.ToggleUI then AR.TalentAdvisor:ToggleUI() end
-            else
-                self:SetMode(mode.id)
-            end
+            self:SetMode(mode.id)
         end)
         self.modeButtons[idx] = b
     end
@@ -732,7 +729,7 @@ function GuideMenu:GetVisibleGuides()
     return self:GetGuidesForCategory(self.activeCategory)
 end
 
-local MODE_MODULES = { lookup = "Lookup", dungeons = "Dungeons", rares = "Rares", characters = "Characters", options = "OptionsPanel" }
+local MODE_MODULES = { lookup = "Lookup", dungeons = "Dungeons", rares = "Rares", characters = "Characters", talents = "TalentsPanel", options = "OptionsPanel" }
 
 function GuideMenu:ModeModule(mode)
     local name = MODE_MODULES[mode or self.mode]

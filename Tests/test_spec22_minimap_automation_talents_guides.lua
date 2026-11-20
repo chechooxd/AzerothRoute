@@ -182,13 +182,14 @@ T:Describe("SPEC-22: Minimap Green Dot Fix, Live Automations, Talent Icons & Zyg
         T:AssertFalse(gNegTaxi.steps[1]:IsComplete(), "Opening an unrelated Flight Master must NOT falsely mark fpath Undercity complete")
     end)
 
-    T:It("renders class crest icons, talent spell icons, and translates 100% of all 27 builds' talents to Spanish", function()
+    T:It("renders talent spell icons and translates 100% of all 27 builds' talents to Spanish", function()
         MockWoW:Reset()
         MockWoW.locale = "esMX"
         local AR = _G.AzerothRoute
         AR.TalentAdvisor:Reset()
         AR.TalentAdvisor:LoadDefaultBuilds()
-        AR.TalentAdvisor:InitializeUI()
+        AR.Storage:Initialize()
+        AR.GuideMenu:Reset()
         AR.TalentAdvisor:ShowUI()
 
         -- Verify 100% of all talents in all 27 builds have Spanish translations & valid icons
@@ -204,12 +205,9 @@ T:Describe("SPEC-22: Minimap Green Dot Fix, Live Automations, Talent Icons & Zyg
             end
         end
 
-        T:AssertEqual(#AR.TalentAdvisor.classButtons, 9, "Must render 9 class buttons")
-        for _, cBtn in ipairs(AR.TalentAdvisor.classButtons) do
-            T:AssertTrue(cBtn.icon ~= nil and cBtn.icon:GetTexture() == "Interface\\GLUES\\CHARACTERCREATE\\UI-CHARACTERCREATE-CLASSES", "Class button must render Blizzard class icon sheet")
-        end
-        T:AssertTrue(AR.TalentAdvisor.nextTalentIcon ~= nil and AR.TalentAdvisor.nextTalentIcon:GetTexture() ~= nil, "Next talent banner must render spell icon texture")
-        T:AssertTrue(AR.TalentAdvisor.roadmapRows[1].icon ~= nil and AR.TalentAdvisor.roadmapRows[1].icon:GetTexture() ~= nil, "Roadmap rows must render talent icon textures")
+        local TP = AR.TalentsPanel
+        T:AssertTrue(TP.panel.lastRows[1].text:find("|T", 1, true) ~= nil, "Pick rows show the talent icon")
+        AR.GuideMenu:Reset()
         MockWoW.npc = { name = "Wrong Vendor", guid = "Creature-0-0-0-0-9999-0000000000" }
         AR.Parser:Reset()
         local gNegVendor = AR.Parser:ParseGuide("Test\\NegVendor", [[

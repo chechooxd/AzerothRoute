@@ -572,30 +572,60 @@ T:Describe("Polestar parity: reward preview", function()
     end)
 end)
 
-T:Describe("Polestar parity: talent window", function()
-    T:It("uses the sidebar, spec underline, next-point card and ticked roadmap", function()
+T:Describe("Polestar parity: talents tab", function()
+    T:It("lists the class plans in the Guide Center, ticks learned picks, marks the next and follows a plan", function()
         MockWoW:Reset()
+        MockWoW.player.class = "MAGE"
         local AR = _G.AzerothRoute
         AR.Storage:Initialize()
-        local TA = AR.TalentAdvisor
-        TA:ShowUI()
-        TA:SelectClass("MAGE")
-        local mage
-        for _, b in ipairs(TA.classButtons) do if b._classToken == "MAGE" then mage = b end end
-        T:AssertTrue(mage.accent:IsShown(), "Selected class carries the gold bar")
-        T:AssertEqual(mage.label:GetText(), TA:GetClassFullName("MAGE"), "Full class name in the sidebar")
-        T:AssertTrue(TA.frame.specUnderline:IsShown(), "Selected spec underlined")
-        T:AssertTrue(TA.headerSub:GetText():find(TA:GetClassFullName("MAGE"), 1, true) ~= nil, "Header names class and build")
+        AR.db.profile.talentplan = nil
+        AR.GuideMenu:Reset()
+        local TA, TP = AR.TalentAdvisor, AR.TalentsPanel
         local origSpent = TA.GetSpentPointsCount
         TA.GetSpentPointsCount = function() return 3 end
-        TA:RefreshUI()
-        T:AssertTrue(TA.roadmapRows[1].check:IsShown(), "Spent points ticked")
-        T:AssertTrue(TA.roadmapRows[4].accent:IsShown(), "Next point highlighted")
-        T:AssertTrue(TA.frame.fill:IsShown(), "Points progress bar")
+        local ok, err = pcall(function()
+            TA:ShowUI()
+            local p = TP.panel
+            T:AssertTrue(p.main:IsShown(), "Talents is a tab of the Guide Center, not a window")
+            T:AssertTrue(TA.frame == nil, "No separate talent window")
+            local cats = TP:GetCategories()
+            T:AssertEqual(#cats, 3, "One entry per Mage spec")
+            T:AssertEqual(p.category, TP:FollowedIdent(), "Opens on the followed (suggested) plan")
+            T:AssertTrue(cats[1].label ~= "", "Spec names in the sidebar")
+            T:AssertEqual(#p.lastRows, 51, "Every pick, level 10 to 60")
+            T:AssertTrue(p.lastRows[1].data.done and p.lastRows[3].data.done, "Spent points ticked")
+            T:AssertEqual(p.lastRows[1].tag:find(AR.L:Get("UI_TALENT_DONE_TAG"), 1, true) ~= nil, true)
+            T:AssertTrue(p.lastRows[4].data.isNext, "Next point marked")
+            T:AssertTrue(p.selected == p.lastRows[4], "Selected on open")
+            T:AssertEqual(p.main.title:GetText(), TA:GetLocalizedTalentName(p.lastRows[4].data.name), "Details name the pick")
+            T:AssertTrue(AR.GuideMenu.headerSub:GetText():find("3 / 51", 1, true) ~= nil, "Header shows progress")
+
+            -- Another spec: follow it.
+            local other = cats[1].id == p.category and cats[2].id or cats[1].id
+            p:SelectCategory(other)
+            T:AssertTrue(p.selected.data.isNext, "Opens that plan on its next pick too")
+            T:AssertTrue(p.secondary:IsShown(), "Follow button for a plan not followed")
+            p.secondary:Click("LeftButton")
+            T:AssertEqual(AR.db.profile.talentplan, other, "Followed plan saved in the profile")
+            T:AssertEqual(TP:FollowedIdent(), other)
+            T:AssertTrue(not p.secondary:IsShown(), "No follow button on the followed plan")
+
+            local learned = 0
+            local origLearn = TA.LearnBuild
+            TA.LearnBuild = function(_, ident, cap) learned = cap; T:AssertEqual(ident, other) end
+            p.primary:Click("LeftButton")
+            TA.LearnBuild = origLearn
+            T:AssertEqual(learned, 4, "Apply spends up to the next point")
+
+            AR.GuideMenu:SetSearch("zzzz")
+            T:AssertEqual(#p.lastRows, 0, "Search filters picks by talent name")
+        end)
         TA.GetSpentPointsCount = origSpent
-        TA.frame:GetScript("OnMouseWheel")(TA.frame, -1)
-        T:AssertEqual(TA.scrollOffset, 3, "Mouse wheel scrolls the roadmap")
-        TA.frame:Hide()
+        AR.db.profile.talentplan = nil
+        AR.GuideMenu:SetSearch("")
+        AR.GuideMenu:Reset()
+        MockWoW.player.class = "PALADIN"
+        if not ok then error(err, 0) end
     end)
 end)
 
@@ -1020,14 +1050,17 @@ T:Describe("Guide Center navigation", function()
         local labels, talents = {}, nil
         for _, b in ipairs(GM.modeButtons) do
             labels[#labels + 1] = b._labelKey
-            if b._action == "talents" then talents = b end
+            if b._mode == "talents" then talents = b end
         end
         T:AssertEqual(#labels, 7, "Seven rail entries")
         T:AssertTrue(talents ~= nil, "Talents lives in the rail")
         T:AssertTrue(GM.talentButton == nil, "No Talents button beside a selected guide")
         local mode = GM:SetMode("guides")
         T:AssertEqual(mode, "guides")
-        T:AssertTrue(talents._selected ~= true, "Talents never shows as the selected mode")
+        T:AssertTrue(talents._selected ~= true, "Talents idle on the guide list")
+        T:AssertEqual(GM:SetMode("talents"), "talents", "Talents is a Guide Center mode")
+        T:AssertTrue(AR.TalentsPanel.panel:IsShown(), "Its tab shows in place")
+        GM:SetMode("guides")
     end)
 
     T:It("leaves Blizzard placeholder records out of search and rares", function()

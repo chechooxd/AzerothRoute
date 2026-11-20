@@ -266,6 +266,15 @@ function MenuPanel:Render()
 
     local rows = m:GetRows(self.category) or {}
     self.lastRows = rows
+    -- Optional module hook: open a category on a given row (Talents opens on the next pick).
+    if m.FocusRow and self._focused ~= self.category then
+        self._focused = self.category
+        local idx = m:FocusRow(rows)
+        if idx and rows[idx] then
+            self.page = math.floor((idx - 1) / ROWS)
+            self.selected = rows[idx]
+        end
+    end
     local maxPage = math.max(0, math.ceil(#rows / ROWS) - 1)
     self.page = math.max(0, math.min(self.page, maxPage))
     for i, b in ipairs(self.rows) do

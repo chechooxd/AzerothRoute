@@ -22,7 +22,7 @@ opening an unrelated flightmaster no longer fabricates the requested discovery.
 ## Minimap button & map pins
 
 A minimap button opens the addon: left-click shows/hides the guide, right-click opens
-the guide menu, middle-click opens the talent advisor. Drag it around the minimap
+the guide menu, middle-click opens the Guide Center on Talents. Drag it around the minimap
 edge; `/ar minimap` hides or shows it. Its position is saved per account.
 
 Step waypoints appear on the world map (zone and continent) and on the minimap
@@ -137,7 +137,7 @@ Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 183 passed,
 - Tabs: load a second guide from the Guide Center; switch tabs and check each resumes at its step; close one with ×; + opens the guide list.
 - Group quests: reach a step with a group quest (e.g. Wanted: "Hogger"): a banner offers "Skip it" (its accept, kill and turn-in leave the route) or "Do it with a group" (banner goes away); `/reload` keeps the choice.
 - Rewards: open a quest offer with item rewards, accept it: under the accept/turn-in line the guide shows "Reward: <item>" ("new" for an upgrade, "at turn-in" on accepts). With the quest log open, check it does not jump to another quest.
-- Talents: open the talent window: classes in the sidebar with the gold bar, spec tabs underlined, the next point in the gold card, spent points ticked, the mouse wheel scrolls.
+- Talents: the rail entry, `/ar talents`, the minimap middle-click and the guide window toolbar all open the Guide Center on its Talents tab (no separate window): your class specs in the sidebar (">" marks the followed plan), picks level 10-60 with icons, learned ones ticked, opening on the next pick; "Follow this plan" switches plans, "Apply talents" spends up to the next point.
 - Rares tab: target or see a rare's nameplate: chat says "Rare nearby" once; the Rares tab lists it under Seen with when and how often; "Set waypoint" points the arrow.
 - Characters tab: log in two characters; each shows level, class, gold, zone, guide and step, rested XP; the total gold is in the header; "Forget this character" removes an alt.
 - Options tab: change the accent colour, guide-window opacity and size and see the guide window repaint; Reload UI applies the accent everywhere.

@@ -107,7 +107,7 @@ T:Describe("SPEC-21: Localization, WorldMap Canvas Pins, Talent Advisor UI & 50+
         T:AssertTrue(_G.GameTooltip:IsShown(), "Hovering WorldMap pin must open GameTooltip")
     end)
 
-    T:It("loads all 9 classes x 3 specs (27 builds, 51 points) and opens interactive Talent Advisor UI", function()
+    T:It("loads all 9 classes x 3 specs (27 builds, 51 points) and opens them in the Guide Center Talents tab", function()
         MockWoW:Reset()
         MockWoW.locale = "esMX"
         MockWoW.player.level = 15
@@ -127,21 +127,22 @@ T:Describe("SPEC-21: Localization, WorldMap Canvas Pins, Talent Advisor UI & 50+
         end
         T:AssertEqual(totalBuilds, 27, "TalentAdvisor must register all 27 builds")
 
-        -- Toggle UI via /ar talents
+        -- /ar talents opens the Guide Center on its Talents tab, on the player's class plans.
+        AR.Storage:Initialize()
+        AR.GuideMenu:Reset()
         _G.SlashCmdList["AZEROTHROUTE"]("talents")
-        T:AssertTrue(AR.TalentAdvisor.frame ~= nil and AR.TalentAdvisor.frame:IsShown(), "/ar talents must open TalentAdvisor frame")
-        T:AssertEqual(AR.TalentAdvisor.selectedClass, "PALADIN", "TalentAdvisor must default to player class PALADIN")
-        T:AssertEqual(#AR.TalentAdvisor.classButtons, 9, "Must render 9 class buttons")
-        T:AssertEqual(#AR.TalentAdvisor.specTabs, 3, "Must render 3 spec tabs")
-        T:AssertTrue(AR.TalentAdvisor.nextTalentText:GetText():find("Nivel", 1, true) ~= nil, "Next talent banner must be Spanish in esMX")
-
-        -- Switch to Mage -> Frost/Fire/Arcane tabs and scroll down
-        AR.TalentAdvisor:SelectClass("MAGE")
-        T:AssertEqual(AR.TalentAdvisor.selectedClass, "MAGE", "Selecting Mage must update selectedClass")
-        T:AssertEqual(#AR.TalentAdvisor:GetClassBuilds("MAGE"), 3, "Mage must expose 3 spec tabs")
-
-        AR.TalentAdvisor.scrollDownBtn:Click("LeftButton")
-        T:AssertTrue(AR.TalentAdvisor.scrollOffset > 0, "Clicking scroll down must advance roadmap rows")
+        local TP = AR.TalentsPanel
+        T:AssertTrue(AR.GuideMenu.frame:IsShown() and AR.GuideMenu.mode == "talents", "/ar talents opens the Talents tab")
+        T:AssertEqual(TP:Class(), "PALADIN", "Player class plans")
+        T:AssertEqual(#TP:GetCategories(), 3, "One sidebar entry per spec")
+        T:AssertTrue(TP.panel.lastRows[1].text:find("Nivel", 1, true) ~= nil, "Picks in Spanish in esMX")
+        T:AssertTrue(TP.panel.selected.data.isNext, "Opens on the next pick")
+        T:AssertEqual(TP.panel.page, 0, "Level 15: the next pick is on the first page")
+        TP.panel:Page(1)
+        T:AssertEqual(TP.panel.page, 1, "Pages through the 51 picks")
+        _G.SlashCmdList["AZEROTHROUTE"]("talents")
+        T:AssertTrue(not AR.GuideMenu.frame:IsShown(), "/ar talents again closes it")
+        AR.GuideMenu:Reset()
     end)
 
     T:It("registers 50+ classic guides across all categories and supports GuideMenu pagination", function()

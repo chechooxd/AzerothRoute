@@ -128,6 +128,7 @@ function T:BootstrapAddon()
         "UI/Menu/Rares.lua",
         "UI/Menu/Characters.lua",
         "UI/Menu/OptionsPanel.lua",
+        "UI/Menu/Talents.lua",
         "UI/Menu/ImportWindow.lua",
         "UI/MinimapButton.lua",
         "UI/Bindings.lua",
