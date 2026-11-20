@@ -198,10 +198,11 @@ end
 do
     local Th = ns.Theme
     local r, g, b = Th.Accent()
-    if not (r and math.abs(r - 0.949) < 1e-3 and math.abs(g - 0.42) < 1e-3 and math.abs(b - 0.114) < 1e-3) then fail("accent is not ember orange: " .. tostring(r) .. "," .. tostring(g) .. "," .. tostring(b)) end
+    -- #FF5A12 ember, #13285A sapphire, #ECE6DC pearl.
+    if not (r and math.abs(r - 1) < 1e-3 and math.abs(g - 0.353) < 1e-3 and math.abs(b - 0.071) < 1e-3) then fail("accent is not ember orange #FF5A12: " .. tostring(r) .. "," .. tostring(g) .. "," .. tostring(b)) end
     local dusk = Th.SCHEMES and Th.SCHEMES.dusk
-    if not (dusk and math.abs(dusk.bg[3] - 0.161) < 1e-6) then fail("default scheme is not deep sapphire") end
-    if not (dusk and math.abs(dusk.text[1] - 0.973) < 1e-6 and math.abs(dusk.text[3] - 0.925) < 1e-6) then fail("default scheme text is not pearl white") end
+    if not (dusk and math.abs(dusk.bg[1] - 0.075) < 1e-6 and math.abs(dusk.bg[2] - 0.157) < 1e-6 and math.abs(dusk.bg[3] - 0.353) < 1e-6) then fail("default scheme ground is not sapphire #13285A") end
+    if not (dusk and math.abs(dusk.text[1] - 0.925) < 1e-6 and math.abs(dusk.text[2] - 0.902) < 1e-6 and math.abs(dusk.text[3] - 0.863) < 1e-6) then fail("default scheme text is not pearl white #ECE6DC") end
     for _, name in ipairs({ "emblem", "logo", "wordmark", "wordmark-small", "watermark", "band-stars", "emblem-hot" }) do
         local mine = read("tools/fork/assets/AzerothRoute/Media/UI/" .. name .. ".tga")
         local shipped = read(ROOT .. "/AzerothRoute/Media/UI/" .. name .. ".tga")
