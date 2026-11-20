@@ -849,3 +849,46 @@ T:Describe("Polestar parity: route recorder", function()
         if not ok then error(err, 0) end
     end)
 end)
+
+T:Describe("Polestar parity: gamepad", function()
+    T:It("binds the pad to an open Guide Center, moves focus, presses, switches tabs and lets go on close", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.Gamepad:Reset()
+        local bound, cleared = {}, 0
+        local saved = { _G.C_GamePad, _G.SetOverrideBindingClick, _G.ClearOverrideBindings }
+        _G.C_GamePad = { IsEnabled = function() return true end }
+        _G.SetOverrideBindingClick = function(_, _, key, button) bound[key] = button end
+        _G.ClearOverrideBindings = function() cleared = cleared + 1; bound = {} end
+        local ok, err = pcall(function()
+            T:AssertEqual(AR.Gamepad:Update(), nil, "Nothing open: pad untouched")
+            AR.GuideMenu:Reset()
+            AR.GuideMenu:Show("guides")
+            AR.GuideMenu:SelectCategory("ALL")
+            T:AssertEqual(AR.Gamepad:Update(), "guidecenter", "Guide Center takes the pad")
+            T:AssertEqual(bound.PAD1, "AzerothRoutePadPAD1", "A bound")
+            T:AssertEqual(bound.PADDDOWN, "AzerothRoutePadPADDDOWN", "D-pad bound")
+            T:AssertEqual(AR.Gamepad:Focused(), AR.GuideMenu.guideRowButtons[1], "Focus starts on the guide list")
+            T:AssertTrue(AR.Gamepad.focus:IsShown(), "Gold focus frame")
+            _G.AzerothRoutePadPADDDOWN:Click()
+            T:AssertEqual(AR.Gamepad:Focused(), AR.GuideMenu.guideRowButtons[2], "Down moves the focus")
+            _G.AzerothRoutePadPAD1:Click()
+            T:AssertEqual(AR.GuideMenu.selectedGuide, AR.GuideMenu.guideRowButtons[2]._guide, "A presses the focused row")
+            _G.AzerothRoutePadPADRSHOULDER:Click()
+            T:AssertEqual(AR.GuideMenu.mode, "lookup", "RB moves to the next tab")
+            _G.AzerothRoutePadPAD2:Click()
+            T:AssertFalse(AR.GuideMenu.frame:IsShown(), "B closes the Guide Center")
+            T:AssertEqual(AR.Gamepad.active, nil, "Pad released")
+            T:AssertTrue(cleared >= 2, "Override bindings cleared")
+            AR.db.profile.gamepad = false
+            AR.GuideMenu:Show("guides")
+            T:AssertEqual(AR.Gamepad:Update(), nil, "Off in Options")
+            AR.db.profile.gamepad = true
+        end)
+        _G.C_GamePad, _G.SetOverrideBindingClick, _G.ClearOverrideBindings = saved[1], saved[2], saved[3]
+        AR.GuideMenu:Reset()
+        AR.Gamepad:Reset()
+        if not ok then error(err, 0) end
+    end)
+end)

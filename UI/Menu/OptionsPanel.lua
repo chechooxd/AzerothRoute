@@ -59,6 +59,7 @@ OptionsPanel.SETTINGS = {
     { key = "stepsound", group = "guide", kind = "bool", default = true, label = "OPT_STEPSOUND", desc = "OPT_STEPSOUND_DESC" },
     { key = "questxp", group = "guide", kind = "bool", default = true, label = "OPT_QUESTXP", desc = "OPT_QUESTXP_DESC" },
     { key = "spelltoasts", group = "guide", kind = "bool", default = true, label = "OPT_SPELLTOASTS", desc = "OPT_SPELLTOASTS_DESC" },
+    { key = "gamepad", group = "guide", kind = "bool", default = true, label = "OPT_GAMEPAD", desc = "OPT_GAMEPAD_DESC" },
     { key = "journey", group = "travel", kind = "bool", default = true, label = "OPT_JOURNEY", desc = "OPT_JOURNEY_DESC" },
     { key = "keeparrow", group = "travel", kind = "bool", default = true, label = "OPT_KEEPARROW", desc = "OPT_KEEPARROW_DESC" },
     { key = "corpsearrow", group = "travel", kind = "bool", default = true, label = "OPT_CORPSEARROW", desc = "OPT_CORPSEARROW_DESC" },

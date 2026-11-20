@@ -118,6 +118,7 @@ UI\Bindings.lua
 UI\SpellToast.lua
 UI\WhatsNew.lua
 UI\Report.lua
+UI\Gamepad.lua
 UI\Menu\Config.lua
 
 # SPEC-14B: Static Data & Guide Catalog

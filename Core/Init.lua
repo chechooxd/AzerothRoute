@@ -185,6 +185,9 @@ function AR:Initialize()
         if self.Recorder and self.Recorder.RegisterLiveEvents then
             self.Recorder:RegisterLiveEvents()
         end
+        if self.Gamepad and self.Gamepad.Start then
+            self.Gamepad:Start()
+        end
         if self.ClassSpells and self.ClassSpells.RegisterLiveEvents then
             self.ClassSpells:RegisterLiveEvents()
         end

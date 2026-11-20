@@ -64,7 +64,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T33 [S23] Zone art from C_Map.GetMapArtLayers/GetMapArtLayerTextures in the Guide Center details (UI/ZoneArt.lua) — inline · 175/175
 - [x] T34 [S23] Report a problem: copyable report with guide, step, goals, position, versions, addons, errors (UI/Report.lua, /ar report, ... menu) — inline · 176/176
 - [x] T35 [S23] Route recorder: record goto/accept/turnin/talk/home as you play into a guide you can save (Guides/Recorder.lua, /ar record) — inline · 177/177
-- [ ] T36 [S23] Gamepad: navigate guide window and Guide Center with gamepad buttons — inline
+- [x] T36 [S23] Gamepad: D-pad/A/B/LB/RB drive popup menus and the Guide Center through override bindings, gold focus frame (UI/Gamepad.lua) — inline · 178/178
 
 ## Log
 - L1 (2026-11-19): "corrige el addon que estamos desarrollando, quiero que te inspires en polestar, sobretodo en la interfaz, es totalmente lo que busco para mi addon" — done as ced39ce (viewer + guide center) and 94f6faa (arrow).
@@ -85,3 +85,4 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - L16 (2026-11-20): "sigue con lo que falta de polestar" (second pass). Left out on purpose: quest XP numbers (no XP data), gamepad mode, route recorder, problem reports (needs a web endpoint), zone art (Blizzard map art per zone is not available as single textures in Classic).
 - L17 (2026-11-20): T27-T31 done. Found and fixed a live-client bug: Upgrades compared every item against nothing outside the mock (equipped items came only from MockWoW), so every scored item counted as an upgrade; it now reads GetInventoryItemLink (weaker of ring/trinket pairs). The What's new card is keyed by a notes id, not the toc Version (version bumps stay the user's call).
 - L18 (2026-11-20): user challenged L16's left-out list; checking Polestar showed quest XP, zone art and reports use the client (no data or server needed). L16 reasons were wrong; all five are now in scope.
+- L19 (2026-11-20): "Yes, all five": T32-T36 done with our own code (Polestar only read to learn which client APIs exist). Report errors are captured by chaining the game's error handler (only messages mentioning AzerothRoute are kept). Gamepad bindings are temporary override bindings, set and cleared out of combat.

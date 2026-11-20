@@ -84,7 +84,7 @@ bearing, and minimap radar offsets never mix coordinate spaces.
 
 ## Verification
 
-Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 173 passed, 0 failed` across 36 test suites). Client verification is pending:
+Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 178 passed, 0 failed` across 36 test suites). Client verification is pending:
 
 - Check the minimap button, its clicks and tooltip; move it, `/reload`, and check that it keeps its position.
 - `/ar config`: change a toggle, `/reload`, check it stuck; create a second profile, switch, check the toggle follows the profile.
@@ -140,6 +140,11 @@ Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 173 passed,
 - Colour schemes: Options > Appearance > Colour scheme; the guide window repaints, other windows after Reload UI.
 - Bags: fill your bags to 2 free slots; the guide window says so in its notice band within 5 s.
 - What's new: on the first login after updating, a card lists the new features once.
+- Quest XP: finish a quest: a green stretch appears on the XP bar after your XP; hovering the bar lists pending quest XP; the turn-in line shows "+N XP".
+- Zone art: in Dungeons, Rares and the guide list the details title sits on the zone's map painting (from your client); unknown maps show no art.
+- Report: "..." menu > Report a problem (or `/ar report`): type what happened, Make the report, Ctrl+C copies the selected text.
+- Recorder: "..." menu > Record a route (or `/ar record`): Record, accept and hand in a few quests in two places, Save: a guide appears in the Guide Center.
+- Gamepad: with a controller enabled, open the Guide Center: the D-pad moves a gold frame, A presses, B closes, LB/RB change tabs; the pad works normally again once it closes.
 
 The mock suite cannot establish live-client protected-action compatibility,
 minimap positioning, talent texture availability, or leveling-route completeness.

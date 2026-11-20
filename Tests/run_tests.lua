@@ -134,6 +134,7 @@ function T:BootstrapAddon()
         "UI/SpellToast.lua",
         "UI/WhatsNew.lua",
         "UI/Report.lua",
+        "UI/Gamepad.lua",
         "UI/Menu/Config.lua",
         "Data/Catalog.lua",
         "Guides/Autoload.lua",
