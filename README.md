@@ -84,7 +84,7 @@ bearing, and minimap radar offsets never mix coordinate spaces.
 
 ## Verification
 
-Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 181 passed, 0 failed` across 36 test suites). Client verification is pending:
+Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 183 passed, 0 failed` across 36 test suites). Client verification is pending:
 
 - Check the minimap button, its clicks and tooltip; move it, `/reload`, and check that it keeps its position.
 - `/ar config`: change a toggle, `/reload`, check it stuck; create a second profile, switch, check the toggle follows the profile.
@@ -192,3 +192,9 @@ The Guide Center's "+ Import" takes text in the same guide language as `Guides/A
 (header lines such as `type`, `startlevel`, `endlevel`, `description`, then `step` blocks). An optional
 first line `guide <Name>` names it; otherwise the name field is used. Imported guides are saved in the
 shared SavedVariables and appear in the list like any other guide.
+
+## Auditing the guides
+
+`luajit tools/audit_guides.lua` checks every accept, turn-in and talk line of the built-in guides
+against the NPC positions in the database (for every race and class) and lists the ones more than 1%
+of the map away; `--fix` rewrites them to the NPC's position.

@@ -62,7 +62,12 @@ function GuidesCatalog:LoadAll()
             turnin Rude Awakening##363
             accept The Mindless Ones##364
 
-        #include "HordeDeathknellTrainer" npc="Brother Malach" npcid="5675"
+        step DeathknellTrainer
+            talk Dannal Stern##2119 |goto 1420 32.7,65.6 |only Warrior
+            talk David Trias##2122 |goto 1420 32.5,65.7 |only Rogue
+            talk Dark Cleric Duesten##2123 |goto 1420 31.1,66.0 |only Priest
+            talk Isabella##2124 |goto 1420 30.9,66.1 |only Mage
+            talk Maximillion##2126 |goto 1420 30.9,66.3 |only Warlock
 
         stickystart "GhoulCleanup"
         step GhoulCleanup
@@ -105,7 +110,7 @@ function GuidesCatalog:LoadAll()
             goto 1420 30.9,66.1
             talk Novice Elreth##1661
             turnin The Damned##376
-            accept Marla's Last Wish##6395
+            accept Marla's Last Wish##6 |goto 1429 48.2,42.9395
 
         step DeathknellTurnin2
             goto 1420 30.8,66.2
@@ -142,13 +147,13 @@ function GuidesCatalog:LoadAll()
 
         step RoadToBrill
             goto 1420 38.2,56.8
-            talk Deathguard Linnea##1497
-            accept Beyond the Scarlet Wall##382
+            talk Deathguard Linnea##1497 |goto 1420 68.2,41.9
+            accept Beyond the Scarlet Wall##382 |goto 1420 32.2,66.0
             ding 5
 
         step BrillArrival
             goto 1420 60.6,51.8
-            talk Deathguard Dillinger##1496
+            talk Deathguard Dillinger##1496 |goto 1420 58.2,51.4
             accept A Putrid Task##404 |goto Tirisfal Glades 58.2,51.4
             home Brill
 
@@ -157,7 +162,7 @@ function GuidesCatalog:LoadAll()
             vendor Abigail Shiel##2118
             trainer Cain Firesong##2128 |only Mage
             trainer Marion Call##2130 |only Rogue
-            accept At War With The Scarlet Crusade##427 |goto Tirisfal Glades 61.3,52.6
+            accept At War With The Scarlet Crusade##427 |goto 1420 60.6,51.8
 
         step ColdHearthFarm
             goto 1420 52.0,45.0
@@ -166,14 +171,14 @@ function GuidesCatalog:LoadAll()
 
         step BrillTurninsAndMills
             goto 1420 61.3,52.6
-            turnin A Putrid Task##404
-            turnin At War With The Scarlet Crusade##427
-            accept The Mills Overrun##426 |goto Tirisfal Glades 60.9,52.0
+            turnin A Putrid Task##404 |goto 1420 58.2,51.4
+            turnin At War With The Scarlet Crusade##427 |goto 1420 60.6,51.8
+            accept The Mills Overrun##426 |goto 1420 58.2,51.4
             accept The Chill of Death##375 |goto Tirisfal Glades 61.9,52.6
 
         step UndercityFlightAndZeppelin
             goto 1458 63.3,48.5
-            talk Michael Garrett##2389
+            talk Michael Garrett##2389 |goto 1416 58.6,80.2
             fpath Undercity
             ding 12
     ]])
@@ -195,37 +200,37 @@ function GuidesCatalog:LoadAll()
 
         step MeetGornek
             goto Durotar 42.1,68.4
-            talk Gornek##3297
+            talk Gornek##3297 |goto 1411 56.0,75.2
             turnin Your Place In The World##4641
             accept Cutting Teeth##788
 
         step PigAndScorpidPrep
             goto Durotar 40.6,62.6
-            talk Galgar##9796
-            accept Galgar's Cactus Apple Surprise##4402
+            talk Galgar##9796 |goto 1411 42.7,67.2
+            accept Galgar's Cactus Apple Surprise##4402 |goto 1411 42.7,67.2
             kill 10 Mottled Boar##3098 |q 788/1 |goto Durotar 44.2,63.8
 
         step TurnInBoars
             goto Durotar 42.1,68.4
-            talk Gornek##3297
+            talk Gornek##3297 |goto 1411 56.0,75.2
             turnin Cutting Teeth##788
             accept Sting of the Scorpid##789
 
         step AcceptSarkoth
             goto Durotar 40.6,68.5
-            talk Hana'zua##3188
-            accept Sarkoth##790
+            talk Hana'zua##3188 |goto 1411 55.9,74.7
+            accept Sarkoth##790 |goto 1411 40.6,62.6
 
         step KillSarkoth
             goto Durotar 40.5,67.1
             kill Sarkoth##3143 |q 790/1
-            turnin Sarkoth##790 |goto Durotar 40.6,68.5
-            accept Sarkoth##804
+            turnin Sarkoth##790 |goto 1411 40.6,62.6
+            accept Sarkoth##804 |goto 1411 40.6,62.6
 
         step ScorpidsAndImps
             goto Durotar 44.6,68.6
-            talk Zureetha Fargaze##3145
-            accept Vile Familiars##792
+            talk Zureetha Fargaze##3145 |goto 1411 42.8,69.1
+            accept Vile Familiars##792 |goto 1411 42.8,69.1
             kill Scorpid Worker##3101 |q 789/1 |count 10 |goto Durotar 45.2,64.0
             kill Vile Familiar##3103 |q 792/1 |count 12 |goto Durotar 45.0,56.8
 
@@ -245,21 +250,21 @@ function GuidesCatalog:LoadAll()
             goto Durotar 42.1,68.4
             turnin Burning Blade Medallion##794
             accept Report to Sen'jin Village##805
-            accept A Peon's Burden##2161 |goto Durotar 49.9,69.1
+            accept A Peon's Burden##2161 |goto 1411 52.1,68.3
 
         step SenjinArrival
             goto Durotar 55.9,74.7
-            talk Master Gadrin##3188
+            talk Master Gadrin##3188 |goto 1411 55.9,74.7
             turnin Report to Sen'jin Village##805
             accept Minshina's Skull##808
             accept Practical Prey##817
 
         step RazorHillArrive
             goto Durotar 51.9,43.5
-            turnin A Peon's Burden##2161
+            turnin A Peon's Burden##2161 |goto 1411 51.5,41.6
             home Razor Hill
             accept Vanquish the Betrayers##784
-            accept Encroachment##837 |goto Durotar 51.1,42.4
+            accept Encroachment##837 |goto 1411 51.9,43.5
 
         step RazorHillVendor
             goto Durotar 51.5,41.6
@@ -290,7 +295,7 @@ function GuidesCatalog:LoadAll()
             goto Durotar 51.1,42.4
             kill Quilboar##3111 |q 837/1 |count 4
             accept Lost But Not Forgotten##816 |goto Durotar 43.1,30.3
-            turnin Dark Storms##806 |goto Durotar 46.4,22.9
+            turnin Dark Storms##806 |goto 1411 52.2,43.2
 
         step OrgrimmarFlight
             goto 1454 45.2,63.9
@@ -312,7 +317,7 @@ function GuidesCatalog:LoadAll()
 
         step NaracheStart
             goto Mulgore 44.9,77.1
-            talk Chief Hawkwind##2981
+            talk Chief Hawkwind##2981 |goto 1412 44.2,76.1
             accept The Hunt Begins##747
 
         step HuntBeginKills
@@ -346,8 +351,8 @@ function GuidesCatalog:LoadAll()
         step NaracheVendor
             goto Mulgore 44.9,77.1
             vendor Kawnie Softbreeze##3072
-            turnin Rite of Strength##757
-            accept Rites of the Earthmother##763
+            turnin Rite of Strength##757 |goto 1412 44.2,76.1
+            accept Rites of the Earthmother##763 |goto 1412 44.2,76.1
             ding 5
 
         step WalkToBloodhoof
@@ -355,7 +360,7 @@ function GuidesCatalog:LoadAll()
             turnin Rites of the Earthmother##763
             home Bloodhoof Village
             accept Sharing the Land##745
-            accept Swoop Hunting##761
+            accept Swoop Hunting##761 |goto 1412 48.7,59.3
 
         step BloodhoofHubQuests
             goto Mulgore 48.5,60.4
@@ -377,9 +382,9 @@ function GuidesCatalog:LoadAll()
         step TurnInBloodhoof1
             goto Mulgore 47.5,60.2
             turnin Sharing the Land##745
-            turnin Poison Water##748
-            turnin Swoop Hunting##761
-            accept Thunderhorn Totem##756
+            turnin Poison Water##748 |goto 1412 48.5,60.4
+            turnin Swoop Hunting##761 |goto 1412 48.7,59.3
+            accept Thunderhorn Totem##756 |goto 1412 48.5,60.4
 
         step HarpiesNorthEast
             goto Mulgore 62.0,62.0
@@ -388,24 +393,24 @@ function GuidesCatalog:LoadAll()
 
         step MazzranacheHunt
             goto Mulgore 46.8,59.4
-            accept Mazzranache##766
+            accept Mazzranache##766 |goto 1412 47.0,57.1
             kill Praire Stalkers & Cougars |q 766/1
 
         step SacredFireAndWell
             goto Mulgore 59.8,25.6
-            accept Sacred Fire##5062
+            accept Sacred Fire##5062 |goto 1441 21.5,32.3
             kill Venture Co. Supervisor##2979 |q 751/1 |goto Mulgore 61.5,47.2
 
         step ThunderBluffFlight
             goto 1456 46.8,50.0
-            talk Tal##2995
+            talk Tal##2995 |goto 1412 39.4,27.0
             fpath Thunder Bluff
-            turnin Journey into Thunder Bluff##775 |goto Thunder Bluff 69.9,30.9
+            turnin Journey into Thunder Bluff##775 |goto 1412 42.1,27.3
 
         step CrossroadsJourney
             goto Mulgore 61.6,21.0
-            turnin Rites of the Earthmother##776
-            accept Journey to the Crossroads##854
+            turnin Rites of the Earthmother##776 |goto 1412 42.1,27.3
+            accept Journey to the Crossroads##854 |goto 1413 44.9,58.6
 
         step MulgoreVendorAndTrainer
             goto Mulgore 46.5,58.6
@@ -425,9 +430,9 @@ function GuidesCatalog:LoadAll()
 
         step CrossroadsArrival
             goto 1413 51.5,30.8
-            talk Tonga Runetotem##3446
-            accept The Forgotten Pools##870
-            accept Kolkar Leaders##850
+            talk Tonga Runetotem##3446 |goto 1413 62.4,37.6
+            accept The Forgotten Pools##870 |goto 1413 52.3,31.9
+            accept Kolkar Leaders##850 |goto 1413 45.3,28.4
 
         stickystart "CentaurBracersSticky"
         step CentaurBracersSticky
@@ -440,21 +445,21 @@ function GuidesCatalog:LoadAll()
 
         step KodobaneTurnin
             goto 1413 51.5,30.8
-            turnin Kolkar Leaders##850
-            accept Centaur Bracers##855
+            turnin Kolkar Leaders##85 |goto 1429 43.1,85.70
+            accept Centaur Bracers##855 |goto 1413 45.3,28.4
 
         step CrossroadsHubSetup
             goto 1413 51.5,30.4
             talk Devrak##3615
             fpath Crossroads
             home Crossroads
-            accept Plainstrider Menace##844 |goto 1413 52.6,29.8
+            accept Plainstrider Menace##844 |goto 1413 52.2,31.0
             accept The Zhevra##845 |goto 1413 52.2,31.0
 
         step ThorkAndHarpyAccept
             goto 1413 51.5,30.9
             talk Darsok Swiftdagger##3449
-            accept Harpy Raiders##867
+            accept Harpy Raiders##86 |goto 1429 43.1,85.77
             accept Supplies for the Crossroads##5041 |goto 1413 51.5,30.9
             accept Disruption Attacks##871 |goto 1413 51.5,30.9
 
@@ -466,15 +471,15 @@ function GuidesCatalog:LoadAll()
 
         step TurnInCrossroads1
             goto 1413 52.6,29.8
-            turnin Plainstrider Menace##844
-            turnin The Zhevra##845
-            accept Prowlers of the Barrens##903
-            turnin Disruption Attacks##871
-            accept The Disruption Ends##872
+            turnin Plainstrider Menace##844 |goto 1413 52.2,31.0
+            turnin The Zhevra##845 |goto 1413 52.2,31.0
+            accept Prowlers of the Barrens##903 |goto 1413 52.2,31.0
+            turnin Disruption Attacks##871 |goto 1413 51.5,30.9
+            accept The Disruption Ends##872 |goto 1413 51.5,30.9
 
         step RatchetSideLoop
             goto 1413 62.7,37.2
-            talk Gazlowe##3453
+            talk Gazlowe##3453 |goto 1413 63.4,38.5
             accept Southsea Freebooters##887
             accept The Guns of Northwatch##891 |goto 1413 62.3,38.4
             accept WANTED: Baron Longshore##895
@@ -485,7 +490,7 @@ function GuidesCatalog:LoadAll()
             kill Southsea Brigand##3381 |q 887/1 |count 12
             kill Baron Longshore##3467 |q 895/1
             turnin Southsea Freebooters##887 |goto 1413 62.7,37.2
-            turnin WANTED: Baron Longshore##895
+            turnin WANTED: Baron Longshore##895 |goto 1413 62.7,36.2
 
         step FungalSporesAndPools
             goto 1413 44.9,22.5
@@ -501,7 +506,7 @@ function GuidesCatalog:LoadAll()
         step RegtharAndVerog
             goto 1413 45.3,28.4
             talk Regthar Deathgate##3389
-            turnin Centaur Bracers##855
+            turnin Centaur Bracers##85 |goto 1429 43.1,85.75
             accept Verog the Dervish##851
             kill Verog the Dervish##3395 |q 851/1 |goto 1413 52.8,41.7
 
@@ -513,16 +518,16 @@ function GuidesCatalog:LoadAll()
 
         step CrossroadsTurnInVendor
             goto 1413 51.5,30.9
-            turnin Verog the Dervish##851 |goto 1413 45.3,28.4
-            turnin The Forgotten Pools##870
-            accept The Stagnant Oasis##877
+            turnin Verog the Dervish##85 |goto 1429 43.1,85.71
+            turnin The Forgotten Pools##870 |goto 1413 52.3,31.9
+            accept The Stagnant Oasis##877 |goto 1413 52.3,31.9
             vendor Tari'qa##3499
 
         step StagnantOasisLoop
             goto 1413 55.6,42.7
             click Crackling Fissure |q 877/1
             turnin The Stagnant Oasis##877 |goto 1413 52.3,31.9
-            accept Altered Beings##880
+            accept Altered Beings##880 |goto 1413 52.3,31.9
 
         step ProwlersAndEcheyakee
             goto 1413 42.0,32.0
@@ -534,7 +539,7 @@ function GuidesCatalog:LoadAll()
             goto 1413 44.5,59.2
             talk Omusa Thunderhorn##10378
             fpath Camp Taurajo
-            accept Weapons of Choice##893
+            accept Weapons of Choice##893 |goto 1413 45.1,57.7
             accept Betrayal from Within##879
             ding 22
     ]])
@@ -550,23 +555,23 @@ function GuidesCatalog:LoadAll()
 
         step BrillLink
             goto Silverpine Forest 53.5,13.4
-            accept Prove Your Allegiance##422
+            accept Prove Your Allegiance##422 |goto 1421 44.2,39.8
         step SepulcherArrival
             goto Silverpine Forest 44.2,39.8
             fpath The Sepulcher
             home The Sepulcher
-            accept Border Crossings##477
+            accept Border Crossings##477 |goto 1421 44.0,40.9
         step EscortErland
             goto Silverpine Forest 56.2,9.2
             accept Escorting Erland##435
-            turnin Escorting Erland##435
+            turnin Escorting Erland##435 |goto 1421 53.5,13.4
         step IvarTheFoul
             goto Silverpine Forest 51.5,13.9
-            accept Ivar the Foul##425
+            accept Ivar the Foul##425 |goto 1421 53.5,13.4
             kill Ivar the Foul##1954 |q 425/1
         step DeadFieldGnolls
             goto Silverpine Forest 45.2,29.1
-            accept Return to Quinn##430
+            accept Return to Quinn##430 |goto 1421 42.8,40.9
             kill Rot Hide Mongrel##1772 |q 423/1 |count 6
         step DalaranAndFenris
             goto Silverpine Forest 57.6,62.3
@@ -574,10 +579,10 @@ function GuidesCatalog:LoadAll()
         step SepulcherVendorTurnin
             goto Silverpine Forest 44.2,39.8
             vendor Nadia Vernon##3550
-            turnin Ivar the Foul##425
+            turnin Ivar the Foul##425 |goto 1421 53.5,13.4
         step ExitToHillsbrad
             goto Silverpine Forest 45.6,41.0
-            accept Beren's Peril##516
+            accept Beren's Peril##516 |goto 1421 44.0,40.9
             ding 20
     ]])
 
@@ -591,11 +596,11 @@ function GuidesCatalog:LoadAll()
 
         step StonetalonEntrance
             goto Stonetalon Mountains 71.2,95.0
-            accept Goblin Invaders##1062
+            accept Goblin Invaders##1062 |goto 1413 35.3,27.9
         step MalakaJin
             goto Stonetalon Mountains 74.0,97.8
-            accept Letter to Jin'Zil##1060
-            accept Blood Feeders##6461
+            accept Letter to Jin'Zil##1060 |goto 1413 51.6,30.9
+            accept Blood Feeders##6 |goto 1429 48.2,42.9461
         step WindshearLogging
             goto Stonetalon Mountains 63.0,55.0
             kill Venture Co. Logger##3988 |q 1062/1 |count 15
@@ -603,18 +608,18 @@ function GuidesCatalog:LoadAll()
             goto Stonetalon Mountains 47.4,58.5
             fpath Sun Rock Retreat
             home Sun Rock Retreat
-            accept Boulderslide Ravine##6421
-            accept Cycle of Rebirth##6301
+            accept Boulderslide Ravine##6 |goto 1429 48.2,42.9421
+            accept Cycle of Rebirth##6 |goto 1429 48.2,42.9301
         step SunRockCragAndCharred
             goto Stonetalon Mountains 32.5,67.5
             get 6 Stonetalon Stand Stone |q 6421/1
         step SunRockTurnin
             goto Stonetalon Mountains 47.4,58.5
-            turnin Boulderslide Ravine##6421
+            turnin Boulderslide Ravine##6421 |goto 1442 47.2,64.0
             vendor Borand##4084
         step JinZilForestTurnin
             goto Stonetalon Mountains 74.5,97.9
-            turnin Goblin Invaders##1062
+            turnin Goblin Invaders##1062 |goto 1413 35.3,27.9
             ding 25
     ]])
 
@@ -632,9 +637,9 @@ function GuidesCatalog:LoadAll()
             home Tarren Mill
         step TarrenMillAccepts
             goto Hillsbrad Foothills 62.4,20.3
-            accept Time To Strike##494
-            accept Battle of Hillsbrad##527
-            accept Elixir of Suffering##496
+            accept Time To Strike##494 |goto 1424 20.8,47.4
+            accept Battle of Hillsbrad##527 |goto 1416 61.1,82.1
+            accept Elixir of Suffering##496 |goto 1416 60.1,80.7
         step DurnholdeKeep
             goto Hillsbrad Foothills 76.0,45.0
             kill Syndicate Shadow Mage##2246 |q 494/1 |count 10
@@ -644,16 +649,16 @@ function GuidesCatalog:LoadAll()
             kill Elder Gray Bear##2356 |q 496/1 |count 10
         step TurnInElixirAndBattle
             goto Hillsbrad Foothills 62.4,20.3
-            turnin Time To Strike##494
-            turnin Battle of Hillsbrad##527
-            turnin Elixir of Suffering##496
-            accept Battle of Hillsbrad##528
+            turnin Time To Strike##494 |goto 1416 61.1,82.1
+            turnin Battle of Hillsbrad##527 |goto 1416 61.1,82.1
+            turnin Elixir of Suffering##496 |goto 1416 60.1,80.7
+            accept Battle of Hillsbrad##528 |goto 1416 61.1,82.1
         step FarmerHuntPart2
             goto Hillsbrad Foothills 36.0,45.0
             kill Hillsbrad Peasant##2267 |q 528/1 |count 15
         step TarrenMillFinalVendor
             goto Hillsbrad Foothills 62.4,20.3
-            turnin Battle of Hillsbrad##528
+            turnin Battle of Hillsbrad##528 |goto 1416 61.1,82.1
             vendor Christy Punchcog##2395
             ding 30
     ]])
@@ -671,7 +676,7 @@ function GuidesCatalog:LoadAll()
             fpath Freewind Post
             home Freewind Post
             accept Pacify the Centaur##4841
-            accept Alien Egg##4821
+            accept Alien Egg##4821 |goto 1441 44.6,50.3
         step WindfuryAndCentaur
             goto Thousand Needles 39.0,37.0
             kill Galak Scout##4093 |q 4841/1 |count 12
@@ -679,13 +684,13 @@ function GuidesCatalog:LoadAll()
         step TurnInFreewind
             goto Thousand Needles 45.7,50.8
             turnin Pacify the Centaur##4841
-            turnin Alien Egg##4821
+            turnin Alien Egg##4821 |goto 1441 44.6,50.3
             accept Grimtotem Spying##5064
         step ShimmeringFlatsHub
             goto Thousand Needles 78.1,77.1
             accept Rocket Car Parts##1110
             accept Hardened Shells##1105
-            accept Load Lightening##1176
+            accept Load Lightening##1176 |goto 1441 80.2,75.9
         step FlatsFarmingLoop
             goto Thousand Needles 82.0,68.0
             get 10 Rocket Car Parts##5798 |q 1110/1
@@ -716,7 +721,7 @@ function GuidesCatalog:LoadAll()
             goto Stranglethorn Vale 32.5,29.4
             fpath Grom'gol
             home Grom'gol
-            accept Bloodscalp Ears##189
+            accept Bloodscalp Ears##189 |goto 1434 27.0,77.1
         step HuntTigersAndPanthers
             goto Stranglethorn Vale 31.0,16.0
             kill Young Stranglethorn Tiger##681 |q 185/1 |count 10
@@ -732,7 +737,7 @@ function GuidesCatalog:LoadAll()
             get 15 Bloodscalp Ear##1519 |q 189/1
         step TurnInGromgol
             goto Stranglethorn Vale 32.2,27.8
-            turnin Bloodscalp Ears##189
+            turnin Bloodscalp Ears##189 |goto 1434 27.0,77.1
             vendor Uthok##1383
         step BootyBayFlight
             goto Stranglethorn Vale 26.9,77.1
@@ -752,8 +757,8 @@ function GuidesCatalog:LoadAll()
             goto Tanaris 51.6,25.5
             fpath Gadgetzan
             home Gadgetzan
-            accept Wastewander Justice##1690
-            accept Water Pouch Bounty##1707
+            accept Wastewander Justice##1690 |goto 1446 52.5,28.5
+            accept Water Pouch Bounty##170 |goto 1426 29.7,71.37
         step NoonshadeRuins
             goto Tanaris 61.5,24.0
             kill Wastewander Bandit##5618 |q 1690/1 |count 10
@@ -765,11 +770,11 @@ function GuidesCatalog:LoadAll()
             accept More Wastewander Justice##1691
         step SteamwheedlePirates
             goto Tanaris 67.0,22.3
-            accept Wanted - Andre Firebeard##2875
+            accept Wanted - Andre Firebeard##287 |goto 1426 46.7,53.85
             kill Andre Firebeard##7883 |q 2875/1 |goto Tanaris 73.4,47.1
         step InsectHivesSouth
             goto Tanaris 56.0,69.0
-            accept The Dunemaul Compound##5863
+            accept The Dunemaul Compound##5863 |goto 1446 52.8,27.4
             kill Gor'marok the Ravager##12046 |q 5863/1 |goto Tanaris 41.4,57.8
         step GadgetzanVendorFinal
             goto Tanaris 52.5,28.5
@@ -788,9 +793,9 @@ function GuidesCatalog:LoadAll()
         step MarshalsRefuge
             goto Un'Goro Crater 45.2,5.8
             fpath Un'Goro Crater
-            accept The Apes of Un'Goro##4289
-            accept Shizzle's Flyer##4503
-            accept Chasing A-Me 01##4243
+            accept The Apes of Un'Goro##4289 |goto 1446 27.5,42.7
+            accept Shizzle's Flyer##4503 |goto 1449 44.2,11.6
+            accept Chasing A-Me 01##4243 |goto 1449 46.4,13.4
         step CrystalsAndBones
             goto Un'Goro Crater 46.5,13.5
             get 7 Green Power Crystal##11185
@@ -805,8 +810,8 @@ function GuidesCatalog:LoadAll()
             kill Young Diemetradon##9162 |q 4503/1 |count 10
         step RefugeTurnIns
             goto Un'Goro Crater 43.1,9.7
-            turnin The Apes of Un'Goro##4289
-            turnin Shizzle's Flyer##4503
+            turnin The Apes of Un'Goro##4289 |goto 1446 27.5,42.7
+            turnin Shizzle's Flyer##4503 |goto 1449 44.2,11.6
             ding 54
     ]])
 
@@ -820,11 +825,11 @@ function GuidesCatalog:LoadAll()
 
         step BulwarkQuests
             goto Tirisfal Glades 83.2,68.9
-            accept A Plague Upon Thee##5901
-            accept Scarlet Diversions##5096
+            accept A Plague Upon Thee##5901 |goto 1422 26.7,59.6
+            accept Scarlet Diversions##5096 |goto 1422 26.5,56.0
         step FelstoneCauldron
             goto Western Plaguelands 37.2,56.8
-            accept Better Late Than Never##5021
+            accept Better Late Than Never##5021 |goto 1422 38.4,54.1
             kill Cauldron Lord Bilemaw##11076
         step DalsonsAndWrithing
             goto Western Plaguelands 46.0,52.0
@@ -833,7 +838,7 @@ function GuidesCatalog:LoadAll()
             kill Cauldron Lord Razarch##11078
         step SorrowHillTurnin
             goto Western Plaguelands 26.5,58.6
-            turnin A Plague Upon Thee##5901
+            turnin A Plague Upon Thee##5901 |goto 1422 26.7,59.6
             ding 57
     ]])
 
@@ -846,22 +851,22 @@ function GuidesCatalog:LoadAll()
 
         step TirionFordringCamp
             goto Eastern Plaguelands 7.6,43.7
-            accept Demon Dogs##5542
-            accept Blood Tinged Skies##5543
-            accept Carrion Grubbage##5544
+            accept Demon Dogs##5542 |goto 1422 67.3,24.2
+            accept Blood Tinged Skies##5543 |goto 1422 67.3,24.2
+            accept Carrion Grubbage##5544 |goto 1422 67.3,24.2
         step PlaguehoundHunt
             goto Eastern Plaguelands 28.0,45.0
             kill Plaguehound Runt##8596 |q 5542/1 |count 20
             kill Plaguebat##8600 |q 5543/1 |count 30
         step TurnInTirion
             goto Eastern Plaguelands 7.6,43.7
-            turnin Demon Dogs##5542
-            turnin Blood Tinged Skies##5543
-            turnin Carrion Grubbage##5544
+            turnin Demon Dogs##5542 |goto 1422 67.3,24.2
+            turnin Blood Tinged Skies##5543 |goto 1422 67.3,24.2
+            turnin Carrion Grubbage##5544 |goto 1422 67.3,24.2
         step LightsHopeChapel
             goto Eastern Plaguelands 81.5,59.7
             fpath Light's Hope Chapel
-            accept Zaeldarr the Outcast##6021
+            accept Zaeldarr the Outcast##6 |goto 1429 48.2,42.9021
             kill Zaeldarr the Outcast##10809 |q 6021/1 |goto Eastern Plaguelands 27.3,85.3
             ding 60
     ]])
@@ -881,7 +886,7 @@ function GuidesCatalog:LoadAll()
 
         step NorthshireStart
             goto 1429 48.2,42.9
-            talk Deputy Willem##196
+            talk Deputy Willem##196 |goto 1429 48.9,40.2
             accept A Threat Within##783
 
         step NorthshireTurnin
@@ -892,10 +897,10 @@ function GuidesCatalog:LoadAll()
 
         step NorthshireWolvesAccept
             goto 1429 48.2,42.9
-            talk Deputy Willem##196
+            talk Deputy Willem##196 |goto 1429 48.9,40.2
             accept Eagan Peltskinner##5261
             turnin Eagan Peltskinner##5261 |goto 1429 48.9,40.1
-            accept Wolves Across the Border##33
+            accept Wolves Across the Border##33 |goto 1429 48.9,40.2
 
         step KoboldAndWolvesHunt
             goto 1429 49.0,36.0
@@ -924,7 +929,7 @@ function GuidesCatalog:LoadAll()
             turnin Investigate Echo Ridge##15
             accept Skirmish at Echo Ridge##21
             turnin Brotherhood of Thieves##18 |goto 1429 48.2,42.9
-            accept Bounty on Garrick Padfoot##6
+            accept Bounty on Garrick Padfoot##6 |goto 1429 48.2,42.9
 
         step KillGarrickAndWorkers
             goto 1429 57.5,48.6
@@ -944,7 +949,7 @@ function GuidesCatalog:LoadAll()
             goto 1429 42.1,65.9
             talk Marshal Dughan##240
             turnin Report to Goldshire##54
-            accept The Fargodeep Mine##62
+            accept The Fargodeep Mine##6 |goto 1429 48.2,42.92
 
         step GoldshireInnAndTrainer
             goto 1429 43.8,65.8
@@ -954,15 +959,15 @@ function GuidesCatalog:LoadAll()
 
         step GoldshireAcceptChain
             goto 1429 43.3,65.7
-            accept Kobold Candles##60
+            accept Kobold Candles##6 |goto 1429 48.2,42.90
             accept Gold Dust Exchange##47 |goto 1429 42.2,67.2
 
         step StonefieldAndMaclure
             goto 1429 34.5,84.3
             accept Lost Necklace##85
             accept Princess Must Die!##88 |goto 1429 34.6,84.5
-            turnin Lost Necklace##85 |goto 1429 43.1,89.6
-            accept Pie for Billy##86
+            turnin Lost Necklace##85 |goto 1429 43.1,85.7
+            accept Pie for Billy##86 |goto 1429 43.1,85.7
 
         step FargodeepMine
             goto 1429 39.5,82.0
@@ -1013,21 +1018,21 @@ function GuidesCatalog:LoadAll()
 
         step ColdridgeStart
             goto Dun Morogh 29.9,71.2
-            talk Sten Stoutarm##786
+            talk Sten Stoutarm##786 |goto 1426 25.1,75.7
             accept Dwarven Outfitters##179
 
         step WolfHuntColdridge
             goto Dun Morogh 29.0,74.5
             kill Ragged Young Wolf##705 |q 179/1 |count 8
             turnin Dwarven Outfitters##179 |goto Dun Morogh 29.9,71.2
-            accept Coldridge Valley Mail Delivery##233
+            accept Coldridge Valley Mail Delivery##233 |goto 1426 29.9,71.2
 
         step AcceptBoarAndTrolls
             goto Dun Morogh 28.8,67.8
-            accept A New Threat##170
-            accept A Refugee's Quandary##3361
+            accept A New Threat##170 |goto 1426 29.7,71.3
+            accept A Refugee's Quandary##33 |goto 1429 48.9,40.261
             turnin Coldridge Valley Mail Delivery##233 |goto Dun Morogh 22.6,71.4
-            accept Coldridge Valley Mail Delivery##234
+            accept Coldridge Valley Mail Delivery##234 |goto 1426 22.6,71.4
 
         step TrollCampAndBoars
             goto Dun Morogh 26.5,79.5
@@ -1051,20 +1056,20 @@ function GuidesCatalog:LoadAll()
             goto Dun Morogh 30.5,80.1
             kill Grik'nir the Cold##808 |q 218/1
             turnin The Stolen Journal##218 |goto Dun Morogh 25.0,75.7
-            accept Senir's Observations##282
+            accept Senir's Observations##282 |goto 1426 25.1,75.7
 
         step PassTunnelToKharanos
             goto Dun Morogh 33.5,71.8
             turnin Senir's Observations##282
             accept Senir's Observations##420
-            accept Supplies to Tannok##2160 |goto Dun Morogh 40.7,70.5
+            accept Supplies to Tannok##2160 |goto 1426 33.8,72.2
 
         step KharanosArrival
             goto Dun Morogh 46.8,52.4
-            turnin Senir's Observations##420
+            turnin Senir's Observations##420 |goto 1426 46.7,53.8
             home Kharanos
             accept Beer Basted Boar Ribs##384
-            accept Frostmane Hold##287 |goto Dun Morogh 46.8,52.4
+            accept Frostmane Hold##287 |goto 1426 46.7,53.8
 
         step AmberstillRanch
             goto Dun Morogh 63.1,49.8
@@ -1080,7 +1085,7 @@ function GuidesCatalog:LoadAll()
 
         step ShimmerRidgeAndTundra
             goto Dun Morogh 38.4,53.9
-            accept Tundra MacGrann's Stolen Stash##312
+            accept Tundra MacGrann's Stolen Stash##312 |goto 1426 34.6,51.7
             kill Old Icebeard##1387 |q 312/1
 
         step GnomereganLeperGnomes
@@ -1102,7 +1107,7 @@ function GuidesCatalog:LoadAll()
             goto Dun Morogh 79.7,36.2
             accept Pilot's Revenge##417
             kill Mangeclaw##1961 |q 417/1 |goto Dun Morogh 78.3,37.7
-            turnin Pilot's Revenge##417 |goto Dun Morogh 79.7,36.2
+            turnin Pilot's Revenge##417 |goto 1426 83.9,39.2
 
         step DunMoroghVendorTrain
             goto Dun Morogh 47.4,52.5
@@ -1129,7 +1134,7 @@ function GuidesCatalog:LoadAll()
 
         step ShadowglenStart
             goto Teldrassil 58.7,44.4
-            talk Conservator Ilthalaine##2077
+            talk Conservator Ilthalaine##2077 |goto 1438 59.9,42.5
             accept The Balance of Nature##456
 
         step BalanceNightsabers
@@ -1153,7 +1158,7 @@ function GuidesCatalog:LoadAll()
         step AcceptWebwoodLine
             goto Teldrassil 57.8,41.6
             accept Webwood Venom##916
-            turnin The Woodland Protector##459 |goto Teldrassil 59.9,42.5
+            turnin The Woodland Protector##459 |goto 1438 57.8,45.2
             turnin The Balance of Nature##457 |goto Teldrassil 58.7,44.4
             vendor Keina##3588
 
@@ -1161,29 +1166,29 @@ function GuidesCatalog:LoadAll()
             goto Teldrassil 56.8,31.6
             get 10 Webwood Venom Sac##3261 |q 916/1
             turnin Webwood Venom##916 |goto Teldrassil 57.8,41.6
-            accept Webwood Egg##917
+            accept Webwood Egg##917 |goto 1438 57.8,41.7
             ding 5
 
         step ShadowthreadCave
             goto Teldrassil 56.8,26.6
             get 1 Webwood Egg##5167 |q 917/1
             turnin Webwood Egg##917 |goto Teldrassil 57.8,41.6
-            accept Tenaron's Summons##920
+            accept Tenaron's Summons##920 |goto 1438 57.8,41.7
             turnin Tenaron's Summons##920 |goto Teldrassil 59.1,39.4
-            accept Crown of the Earth##921
+            accept Crown of the Earth##921 |goto 1438 59.1,39.4
 
         step CrownPhial1AndLeave
             goto Teldrassil 59.9,33.1
             use Crystal Phial##5185 |q 921/1
             turnin Crown of the Earth##921 |goto Teldrassil 59.1,39.4
-            accept Crown of the Earth##928
+            accept Crown of the Earth##928 |goto 1438 59.1,39.4
 
         step DolanaarArrival
             goto Teldrassil 55.6,59.8
             home Dolanaar
             accept Zenn's Bidding##488 |goto Teldrassil 60.5,56.3
             turnin Crown of the Earth##928 |goto Teldrassil 56.1,61.7
-            accept Crown of the Earth##929
+            accept Crown of the Earth##929 |goto 1438 56.1,61.7
 
         step DolanaarQuests
             goto Teldrassil 55.9,57.3
@@ -1195,7 +1200,7 @@ function GuidesCatalog:LoadAll()
             goto Teldrassil 63.3,58.0
             use Jade Phial##5619 |q 929/1
             turnin Denalan's Earth##997 |goto Teldrassil 60.9,68.5
-            accept Timberling Seeds##918
+            accept Timberling Seeds##918 |goto 1438 60.9,68.5
 
         step HarpyAndMelenas
             goto Teldrassil 50.8,50.8
@@ -1212,16 +1217,16 @@ function GuidesCatalog:LoadAll()
         step OracleGladePhial
             goto Teldrassil 42.4,67.2
             use Tourmaline Phial##5621 |q 933/1
-            accept Ferocitas the Dream Eater##2459 |goto Teldrassil 60.5,56.3
+            accept Ferocitas the Dream Eater##2459 |goto 1438 55.6,56.9
 
         step GnarlpineAndFerocitas
             goto Teldrassil 68.0,53.0
             kill Ferocitas the Dream Eater##7234 |q 2459/1
-            turnin Ferocitas the Dream Eater##2459 |goto Teldrassil 60.5,56.3
+            turnin Ferocitas the Dream Eater##2459 |goto 1438 55.6,56.9
 
         step BanethilBarrowDen
             goto Teldrassil 44.0,57.0
-            accept Seek Redemption!##489 |goto Teldrassil 66.2,58.6
+            accept Seek Redemption!##489 |goto 1438 56.1,57.7
             kill Gnarlpine Mystic##7235 |q 489/1 |count 4
             turnin Seek Redemption!##489 |goto Teldrassil 60.5,56.3
 
@@ -1232,7 +1237,7 @@ function GuidesCatalog:LoadAll()
 
         step DarnassusAndRuttheran
             goto 1457 38.3,21.4
-            accept Crown of the Earth##935
+            accept Crown of the Earth##935 |goto 1438 56.1,61.7
             goto Teldrassil 58.4,94.0
             talk Vesprystus##3838
             fpath Rut'theran Village
@@ -1250,7 +1255,7 @@ function GuidesCatalog:LoadAll()
 
         step BorderBridgeQuest
             goto Westfall 60.0,19.4
-            talk Farmer Furlbrow##241
+            talk Farmer Furlbrow##241 |goto 1429 42.1,67.3
             accept Poor Old Blanchy##151
             accept Westfall Stew##36 |goto Westfall 60.0,19.3
 
@@ -1271,12 +1276,12 @@ function GuidesCatalog:LoadAll()
         step PatrolWestfallAccept
             goto Westfall 56.3,47.6
             accept Patrolling Westfall##102
-            accept A Swift Message##6181
+            accept A Swift Message##6 |goto 1429 48.2,42.9181
 
         step WestfallCourierFly
             goto Westfall 56.6,52.6
             fly Stormwind
-            turnin A Swift Message##6181 |goto Stormwind City 56.2,64.6
+            turnin A Swift Message##6181 |goto 1436 56.6,52.6
             fly Sentinel Hill
 
         step BoarsVulturesMurlocs
@@ -1329,7 +1334,7 @@ function GuidesCatalog:LoadAll()
             goto Westfall 56.3,47.5
             turnin The People's Militia##13
             accept The People's Militia##14
-            accept The Defias Brotherhood##65 |goto Westfall 56.3,47.5
+            accept The Defias Brotherhood##6 |goto 1429 48.2,42.95
 
         step DefiasMessengerAndTower
             goto Westfall 44.0,70.0
@@ -1370,7 +1375,7 @@ function GuidesCatalog:LoadAll()
             goto Loch Modan 33.9,50.9
             fpath Thelsamar
             home Thelsamar
-            accept Thelsamar Blood Sausages##418
+            accept Thelsamar Blood Sausages##418 |goto 1432 34.8,49.3
             accept In Defense of the King's Lands##224 |goto Loch Modan 22.1,73.1
         step TroggClearing1
             goto Loch Modan 30.0,68.0
@@ -1378,8 +1383,8 @@ function GuidesCatalog:LoadAll()
             kill Stonesplinter Scout##1162 |q 224/2 |count 10
         step FarstriderLodge
             goto Loch Modan 83.8,62.4
-            accept Crocolisk Hunting##385
-            accept A Hunter's Boast##257
+            accept Crocolisk Hunting##385 |goto 1432 81.8,61.7
+            accept A Hunter's Boast##257 |goto 1432 83.5,65.5
         step IronbandExcavation
             goto Loch Modan 65.9,65.6
             accept Excavation Progress Report##298
@@ -1387,7 +1392,7 @@ function GuidesCatalog:LoadAll()
         step TurnInThelsamarFinal
             goto Loch Modan 34.8,49.3
             turnin Thelsamar Blood Sausages##418
-            turnin Excavation Progress Report##298
+            turnin Excavation Progress Report##298 |goto 1432 37.2,47.4
             vendor Khara Deepwater##1682
             ding 20
     ]])
@@ -1404,9 +1409,9 @@ function GuidesCatalog:LoadAll()
             goto Darkshore 36.3,45.6
             fpath Auberdine
             home Auberdine
-            accept Buzzbox 827##983
-            accept Plagued Lands##2118
-            accept Bashal'Aran##954 |goto Darkshore 37.7,43.4
+            accept Buzzbox 827##983 |goto 1439 37.0,44.1
+            accept Plagued Lands##2118 |goto 1439 38.8,43.4
+            accept Bashal'Aran##954 |goto 1439 37.4,40.1
         step CrabCoastline
             goto Darkshore 36.5,50.5
             get 6 Crawler Leg##5412 |q 983/1
@@ -1418,11 +1423,11 @@ function GuidesCatalog:LoadAll()
             kill Grellkin##2189 |q 955/1 |count 8
         step TowerOfAlthalaxx
             goto Darkshore 55.0,24.9
-            accept The Tower of Althalaxx##965
+            accept The Tower of Althalaxx##965 |goto 1439 39.0,43.6
             kill Dark Strand Fanatic##2336 |q 965/1 |count 8
         step AuberdineTurnInVendor
             goto Darkshore 37.4,41.8
-            turnin Plagued Lands##2118
+            turnin Plagued Lands##2118 |goto 1439 38.8,43.4
             vendor Laird##10364
             ding 20
     ]])
@@ -1439,11 +1444,11 @@ function GuidesCatalog:LoadAll()
             goto Redridge Mountains 30.6,59.4
             fpath Lakeshire
             home Lakeshire
-            accept Blackrock Menace##20
-            accept Encroaching Gnolls##244 |goto Redridge Mountains 30.9,60.2
+            accept Blackrock Menace##20 |goto 1433 33.5,49.0
+            accept Encroaching Gnolls##244 |goto 1433 15.3,71.5
         step LakeEverstillMurlocs
             goto Redridge Mountains 40.0,55.0
-            accept Selling Fish##127
+            accept Selling Fish##127 |goto 1433 27.7,47.4
             kill Murloc Nightcrawler##544 |q 127/1 |count 10
         step RedridgeGnolls
             goto Redridge Mountains 31.0,78.0
@@ -1451,7 +1456,7 @@ function GuidesCatalog:LoadAll()
         step RedridgeOrcsAndTurnIn
             goto Redridge Mountains 74.0,78.0
             get 10 Battleworn Axe##3014 |q 20/1
-            turnin Blackrock Menace##20 |goto Redridge Mountains 30.0,44.4
+            turnin Blackrock Menace##20 |goto 1433 33.5,49.0
             vendor Brikk Keencraft##3081
             ding 25
     ]])
@@ -1468,7 +1473,7 @@ function GuidesCatalog:LoadAll()
             goto Duskwood 77.5,44.3
             fpath Darkshire
             home Darkshire
-            accept The Legend of Stalvan##66 |goto Duskwood 75.8,45.3
+            accept The Legend of Stalvan##6 |goto 1429 48.2,42.96
             accept Night Watch##56 |goto Duskwood 73.6,46.8
         step RavenHillUndead
             goto Duskwood 20.0,42.0
@@ -1480,7 +1485,7 @@ function GuidesCatalog:LoadAll()
         step DarkshireTurninVendor
             goto Duskwood 73.6,46.8
             turnin Night Watch##56
-            turnin The Legend of Stalvan##66 |goto Duskwood 75.8,45.3
+            turnin The Legend of Stalvan##66 |goto 1431 72.5,46.9
             vendor Gavin Gnarlbeard##226
             ding 30
     ]])
@@ -1497,14 +1502,14 @@ function GuidesCatalog:LoadAll()
             goto Ashenvale 34.4,48.0
             fpath Astranaar
             home Astranaar
-            accept Raene's Cleansing##1025
+            accept Raene's Cleansing##1025 |goto 1440 36.6,49.6
             accept Pridewings of Stonetalon##1134
         step AstranaarWolvesAndFurlbogs
             goto Ashenvale 54.0,35.0
             kill Foulweald Den Watcher##3746 |q 1025/1 |count 10
         step MaestrasPostAndZoram
             goto Ashenvale 26.2,38.7
-            accept The Zoram Strand##1008
+            accept The Zoram Strand##1008 |goto 1440 34.7,48.8
             kill Writhing Deep Crawler##3727 |q 1008/1 |count 20
         step AstranaarTurnIn
             goto Ashenvale 36.6,49.6
@@ -1522,7 +1527,7 @@ function GuidesCatalog:LoadAll()
 
         step RebelCamp
             goto Stranglethorn Vale 38.0,3.4
-            accept Kurzen's Mystery##207
+            accept Kurzen's Mystery##20 |goto 1433 33.5,49.07
             accept Jungle Secrets##215
         step NesingwarySafari
             goto Stranglethorn Vale 35.6,10.5
@@ -1536,7 +1541,7 @@ function GuidesCatalog:LoadAll()
             goto Stranglethorn Vale 27.5,77.8
             fpath Booty Bay
             home Booty Bay
-            accept Singing Blue Shards##605
+            accept Singing Blue Shards##6 |goto 1429 48.2,42.905
             ding 42
     ]])
 
@@ -1552,7 +1557,7 @@ function GuidesCatalog:LoadAll()
             goto Searing Gorge 37.9,30.8
             fpath Thorium Point
             accept Fiery Menace!##7724 |goto Searing Gorge 38.6,27.8
-            accept Incendosaurs? Whateverosaur is More Like It##7727
+            accept Incendosaurs? Whateverosaur is More Like It##7727 |goto 1427 38.6,27.8
         step SlagPitAndLava
             goto Searing Gorge 42.0,45.0
             kill Greater Lava Spider##5858 |q 7724/1 |count 20
@@ -1576,16 +1581,16 @@ function GuidesCatalog:LoadAll()
             goto Winterspring 62.3,36.6
             fpath Everlook
             home Everlook
-            accept Are We There, Yeti?##3783 |goto Winterspring 61.3,38.9
-            accept Threat of the Winterfall##5082
+            accept Are We There, Yeti?##3783 |goto 1452 60.9,37.6
+            accept Threat of the Winterfall##5082 |goto 1452 31.3,45.2
         step YetiCaveLoop
             goto Winterspring 66.0,42.0
             get 10 Thick Yeti Fur##12366 |q 3783/1
             kill Winterfall Pathfinder##7442 |q 5082/1 |count 8
         step TurnInEverlook
             goto Winterspring 61.3,38.9
-            turnin Are We There, Yeti?##3783
-            turnin Threat of the Winterfall##5082
+            turnin Are We There, Yeti?##3783 |goto 1452 60.9,37.6
+            turnin Threat of the Winterfall##5082 |goto 1452 31.3,45.2
             ding 56
     ]])
 
@@ -1598,8 +1603,8 @@ function GuidesCatalog:LoadAll()
 
         step FordringCamp
             goto Eastern Plaguelands 7.6,43.7
-            accept Demon Dogs##5542
-            accept Blood Tinged Skies##5543
+            accept Demon Dogs##5542 |goto 1422 67.3,24.2
+            accept Blood Tinged Skies##5543 |goto 1422 67.3,24.2
         step PlaguehoundsAlliance
             goto Eastern Plaguelands 28.0,45.0
             kill Plaguehound Runt##8596 |q 5542/1 |count 20
@@ -1607,7 +1612,7 @@ function GuidesCatalog:LoadAll()
         step LightsHopeFinalAlliance
             goto Eastern Plaguelands 81.6,59.3
             fpath Light's Hope Chapel
-            turnin Demon Dogs##5542 |goto Eastern Plaguelands 7.6,43.7
+            turnin Demon Dogs##5542 |goto 1422 67.3,24.2
             ding 60
     ]])
 
@@ -1622,8 +1627,8 @@ function GuidesCatalog:LoadAll()
         endlevel 18
         step RFCStart
             goto Orgrimmar 52.8,49.0
-            accept Hidden Enemies##5726
-            accept Testing an Enemy's Strength##5723
+            accept Hidden Enemies##5726 |goto 1454 31.7,37.8
+            accept Testing an Enemy's Strength##5723 |goto 1412 44.1,22.8
         step RFCBosses
             kill Bazzalan##11519
             kill Taragaman the Hungerer##11520
@@ -1637,8 +1642,8 @@ function GuidesCatalog:LoadAll()
         endlevel 24
         step DMQuests
             goto Westfall 42.6,71.8
-            accept Red Silk Bandanas##214
-            accept Underground Assault##2040
+            accept Red Silk Bandanas##214 |goto 1436 56.7,47.3
+            accept Underground Assault##20 |goto 1433 33.5,49.040
         step DMBosses
             kill Edwin VanCleef##639
     ]])
@@ -1651,7 +1656,7 @@ function GuidesCatalog:LoadAll()
         endlevel 24
         step WCStart
             goto The Barrens 46.0,36.2
-            accept Leaders of the Fang##914
+            accept Leaders of the Fang##914 |goto 1412 45.2,23.3
             accept Deviate Eradication##1487
         step WCBosses
             kill Mutanus the Devourer##3654
@@ -1666,8 +1671,8 @@ function GuidesCatalog:LoadAll()
 
         step SFKQuests
             goto 1421 45.6,42.6
-            accept Arugal Must Die##1014
-            accept The Book of Ur##1013
+            accept Arugal Must Die##1014 |goto 1421 44.2,39.8
+            accept The Book of Ur##1013 |goto 1458 53.7,54.5
 
         step SFKBosses
             kill Archmage Arugal##4275 |q 1014/1
@@ -1682,7 +1687,7 @@ function GuidesCatalog:LoadAll()
         endlevel 30
         step BFDStart
             goto Ashenvale 14.2,13.9
-            accept Allegiance to the Old Gods##6564
+            accept Allegiance to the Old Gods##6 |goto 1429 48.2,42.9564
             kill Aku'mai##4829
     ]])
 
@@ -1694,8 +1699,8 @@ function GuidesCatalog:LoadAll()
         endlevel 35
         step GnomerQuests
             goto Dun Morogh 24.3,39.8
-            accept Rig Wars##2841
-            accept Save Techbot's Brain##2922
+            accept Rig Wars##2841 |goto 1454 76.0,25.4
+            accept Save Techbot's Brain##2922 |goto 1455 69.5,50.3
             kill Mekgineer Thermaplugg##7800
     ]])
 
@@ -1707,7 +1712,7 @@ function GuidesCatalog:LoadAll()
         endlevel 36
         step RFKStart
             goto The Barrens 42.9,89.4
-            accept A Vengeful Fate##1102
+            accept A Vengeful Fate##1102 |goto 1412 37.1,29.0
             kill Charlga Razorflank##4421
     ]])
 
@@ -1719,7 +1724,7 @@ function GuidesCatalog:LoadAll()
         endlevel 42
         step SMWings
             goto Tirisfal Glades 85.3,32.1
-            accept Into The Scarlet Monastery##1048
+            accept Into The Scarlet Monastery##1048 |goto 1421 74.2,13.5
             kill High Inquisitor Whitemane##3977
     ]])
 
@@ -1731,7 +1736,7 @@ function GuidesCatalog:LoadAll()
         endlevel 46
         step UldaStart
             goto Badlands 42.4,13.5
-            accept Solution to Doom##709
+            accept Solution to Doom##709 |goto 1418 51.4,76.9
             kill Archaedas##2748
     ]])
 
@@ -1743,7 +1748,7 @@ function GuidesCatalog:LoadAll()
         endlevel 50
         step ZFQuests
             goto Tanaris 39.2,21.3
-            accept Gahz'rilla##2770
+            accept Gahz'rilla##2770 |goto 1441 78.1,77.1
             kill Chief Ukorz Sandscalp##7267
     ]])
 
@@ -1755,7 +1760,7 @@ function GuidesCatalog:LoadAll()
         endlevel 53
         step MaraStart
             goto Desolace 29.1,62.5
-            accept Legends of Maraudon##7044
+            accept Legends of Maraudon##7044 |goto 1443 32.0,63.7
             kill Princess Theradras##12201
     ]])
 
@@ -1767,7 +1772,7 @@ function GuidesCatalog:LoadAll()
         endlevel 60
         step BRDStart
             goto Searing Gorge 34.8,85.3
-            accept Marshal Windsor##6402
+            accept Marshal Windsor##6 |goto 1429 48.2,42.9402
             kill Emperor Dagran Thaurissan##9019
     ]])
 

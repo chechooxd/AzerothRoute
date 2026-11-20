@@ -954,3 +954,60 @@ T:Describe("Live client safety (Forever)", function()
         T:AssertTrue(started.fine, "The next module still started")
     end)
 end)
+
+T:Describe("Guide data", function()
+    T:It("sends A Peon's Burden to Ukor and names him in the step heading", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        local function find()
+            for title, gd in pairs(AR.Parser.guidesByTitle) do
+                if title:find("Horde", 1, true) and title:find("Durotar (1-12)", 1, true) then return gd end
+            end
+        end
+        if not find() then AR.GuidesCatalog:LoadAll() end
+        local g = find()
+        T:AssertTrue(g ~= nil, "Durotar guide")
+        local step, goal
+        for _, st in ipairs(g.steps) do
+            for _, gl in ipairs(st.goals) do
+                if gl.action == "accept" and gl.questid == 2161 then step, goal = st, gl end
+            end
+        end
+        T:AssertEqual(goal.map, 1411)
+        T:AssertTrue(math.abs(goal.x * 100 - 52.1) < 0.05 and math.abs(goal.y * 100 - 68.3) < 0.05, "Ukor's position")
+        -- As on screen: the medallion handed in and Sen'jin taken, the Peon's Burden still to take.
+        MockWoW.quests.completed[794] = true
+        MockWoW.quests.inLog[805] = { title = "Report to Sen'jin Village", isComplete = false, objectives = {} }
+        AR.QuestTracking:ScanQuestLog()
+        local heading = AR.ViewerFrame:BuildHeading(step)
+        MockWoW.quests.completed[794], MockWoW.quests.inLog[805] = nil, nil
+        T:AssertEqual(heading.plain, "Ukor", "Heading names the quest giver")
+    end)
+
+    T:It("has every accept, turn-in and talk where its NPC stands (tools/audit_guides.lua)", function()
+        local AR = _G.AzerothRoute
+        local bad = 0
+        AR.GuidesCatalog:LoadAll()
+        for title, guide in pairs(AR.Parser.guidesByTitle) do
+            if title:find("^Leveling") or title:find("^Dungeons") then
+                for _, st in ipairs(guide.steps or {}) do
+                    for _, g in ipairs(st.goals or {}) do
+                        if g.questid and (g.action == "accept" or g.action == "turnin") and g.map and g.x then
+                            local q = AR.DB:GetQuest(g.questid)
+                            local refs = q and (g.action == "accept" and q.starts or q.ends) or {}
+                            for _, r in ipairs(refs) do
+                                local u = r.kind == "U" and AR.DB:GetUnit(r.id)
+                                if u and u.map > 0 then
+                                    if u.map ~= g.map or math.abs(u.x - g.x * 100) > 1 or math.abs(u.y - g.y * 100) > 1 then bad = bad + 1 end
+                                    break
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+        T:AssertEqual(bad, 0, "Quest goals away from their NPC")
+    end)
+end)

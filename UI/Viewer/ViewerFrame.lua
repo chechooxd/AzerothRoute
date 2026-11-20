@@ -1110,6 +1110,32 @@ function ViewerFrame:BuildHeading(step)
             end
         end
     end
+    -- No one to talk to in the step: name who gives (accept) or takes (turn-in) its first quest.
+    if not text and AR.DB and AR.DB.GetQuest then
+        -- The first quest still to do decides (finished ones point at someone already visited).
+        local ordered, finished = {}, {}
+        for _, g in ipairs(step.goals) do
+            if g.questid and (g.action == "accept" or g.action == "turnin") and g:IsVisible() then
+                if g:GetStatus() == "complete" then finished[#finished + 1] = g else ordered[#ordered + 1] = g end
+            end
+        end
+        for _, g in ipairs(finished) do ordered[#ordered + 1] = g end
+        for _, g in ipairs(ordered) do
+            do
+                local q = AR.DB:GetQuest(g.questid)
+                for _, ref in ipairs((q and (g.action == "accept" and q.starts or q.ends)) or {}) do
+                    local u = ref.kind == "U" and AR.DB:GetUnit(ref.id)
+                    if u then
+                        text, plain = AR.Skins:Colorize(u.name, "npc"), u.name
+                        icon = AR.Skins:GetActionIcon("talk")
+                        if u.map > 0 then zoneID = u.map end
+                        break
+                    end
+                end
+                if text then break end
+            end
+        end
+    end
     local zone = mapName(zoneID)
     if not text then
         if not zone then return nil end
