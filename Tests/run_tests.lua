@@ -124,6 +124,7 @@ function T:BootstrapAddon()
         "UI/Menu/Dungeons.lua",
         "UI/Menu/Rares.lua",
         "UI/Menu/Characters.lua",
+        "UI/Menu/OptionsPanel.lua",
         "UI/MinimapButton.lua",
         "UI/Bindings.lua",
         "UI/SpellToast.lua",

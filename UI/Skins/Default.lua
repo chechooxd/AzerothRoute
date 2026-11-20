@@ -87,7 +87,12 @@ function Skins:GetActionIcon(action)
 end
 
 function Skins:GetProp(key)
-    local styleName = (AR.db and AR.db.profile and AR.db.profile.style) or "default"
+    local profile = AR.db and AR.db.profile
+    -- Accent colour chosen in Options (gold by default).
+    if key == "accent" and profile and profile.accent and AR.OptionsPanel and AR.OptionsPanel.ACCENTS[profile.accent] then
+        return AR.OptionsPanel.ACCENTS[profile.accent]
+    end
+    local styleName = (profile and profile.style) or "default"
     local style = self.styles[styleName] or self.styles.default
     if style[key] ~= nil then return style[key] end
     return PALETTE[key]
@@ -97,6 +102,10 @@ end
 function Skins:RGBA(key, alpha)
     local c = self:GetProp(key)
     if type(c) ~= "table" then c = PALETTE.text end
+    -- Guide-window background opacity chosen in Options (only when no alpha is forced).
+    if key == "bg" and alpha == nil and AR.db and AR.db.profile and AR.db.profile.bgalpha then
+        alpha = AR.db.profile.bgalpha
+    end
     return c.r, c.g, c.b, alpha or c.a or 1
 end
 

@@ -50,7 +50,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T22 [S20] Talent window restyled like the Guide Center (class sidebar, spec underline tabs, next-point card, ticked roadmap, points bar, gold Apply) — inline · 162/162
 - [x] T23 [S20] Rares mode in the Guide Center with sightings (seen log, drops, where, set waypoint) — inline · 163/163
 - [x] T24 [S20] Characters mode (alts: level, guide, step, gold, place, rested) — inline · 164/164
-- [ ] T25 [S20] Options/appearance mode (accent colour, background opacity, scale, toggles) — inline
+- [x] T25 [S20] Options/appearance mode (accent colour, background opacity, scale, toggles) — inline · 165/165
 
 ## Log
 - L1 (2026-11-19): "corrige el addon que estamos desarrollando, quiero que te inspires en polestar, sobretodo en la interfaz, es totalmente lo que busco para mi addon" — done as ced39ce (viewer + guide center) and 94f6faa (arrow).
@@ -66,3 +66,4 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - L11 (2026-11-20): T16-T19 done. Rares from pfQuest meta (flag x); quest-starting loot from quest start items; new spells from the class trainer list recorded in game (TRAINER_SHOW) with a level-up card; tabs keep each guide's step in db.char.tabsteps.
 - L12 (2026-11-20): "sigue con el aviso de misión de grupo". pfQuest has no group flag, so the generator flags quests whose objective creatures (or only droppers of an objective item) are open-world elites (rank 1-3), 159 quests; the client's suggested group size (quest log, quest offer) also marks them. Goal:GetStatus now returns hidden for skipped quests (db.char.skippedQuests) — shared engine code, guarded so nothing changes until a player skips.
 - L13 (2026-11-20): "sigue con la vista previa de recompensas". pfQuest has no rewards: they are recorded in game (QUEST_DETAIL; quest log on accept and login, restoring the log selection) into db.global.questRewards shared by all characters. A quest shows a preview once its offer has been seen or it is in the log.
+- L14 (2026-11-20): T22-T25 done. Guide Center now has two rows of mode tabs (Guides, Lookup, Dungeons / Rares, Characters, Options). Rare sightings come from nameplates, target and mouse-over; rare drops are limited to items whose top-3 droppers include the rare. Accent colour repaints the guide window at once; other windows pick it up after Reload UI. Import of guides left out: it needs a multi-line editor and a guide-format contract worth agreeing with the user first.

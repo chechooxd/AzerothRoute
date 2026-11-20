@@ -339,3 +339,42 @@ T:Describe("Characters mode", function()
         if not ok then error(err, 0) end
     end)
 end)
+
+T:Describe("Options mode", function()
+    T:It("changes settings from the Guide Center and repaints the guide window", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.db.profile.accent, AR.db.profile.bgalpha, AR.db.profile.viewerscale = nil, nil, nil
+        AR.ViewerFrame:RefreshVisuals()
+        AR.GuideMenu:Reset()
+        AR.GuideMenu:Show("options")
+        local panel = AR.OptionsPanel.panel
+        T:AssertTrue(panel.main:IsShown(), "Options tab open")
+        T:AssertEqual(#panel.lastRows, 3, "Three appearance settings")
+        T:AssertEqual(panel.main.title:GetText(), AR.L:Get("OPT_ACCENT"))
+        T:AssertEqual(panel.lastRows[1].tag, AR.L:Get("OPT_ACCENT_GOLD"), "Gold by default")
+        panel.primary:Click("LeftButton")
+        T:AssertEqual(AR.db.profile.accent, "sky", "Next accent")
+        local c = AR.Skins:GetProp("accent")
+        T:AssertEqual(c.b, AR.OptionsPanel.ACCENTS.sky.b, "Skins use the chosen accent")
+        T:AssertEqual(AR.ViewerFrame.frame.tabUnderline:GetColorTexture().b, c.b, "Guide window repainted")
+        panel:SelectRow(panel.lastRows[2])
+        panel.primary:Click("LeftButton")
+        T:AssertEqual(AR.db.profile.bgalpha, 0.85)
+        T:AssertEqual(AR.ViewerFrame.frame.bg:GetColorTexture().a, 0.85, "Background opacity applied")
+        panel:SelectCategory("travel")
+        local journeyRow
+        for _, r in ipairs(panel.lastRows) do if r.data.key == "journey" then journeyRow = r end end
+        panel:SelectRow(journeyRow)
+        panel.primary:Click("LeftButton")
+        T:AssertEqual(AR.db.profile.journey, false, "Switch toggled")
+        panel.secondary:Click("LeftButton")
+        T:AssertEqual(AR.db.profile.journey, true, "Reset to default")
+        AR.GuideMenu:SetSearch("opac")
+        T:AssertEqual(#panel.lastRows, 1, "Search finds settings by name")
+        AR.db.profile.accent, AR.db.profile.bgalpha = nil, nil
+        AR.GuideMenu:Reset()
+        AR.ViewerFrame:RefreshVisuals()
+    end)
+end)

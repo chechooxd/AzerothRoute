@@ -1261,6 +1261,11 @@ function ViewerFrame:RefreshVisuals()
     if self.stickyHeader then
         self.stickyHeader:SetText(L("UI_WHILE_HERE", "While you're here"))
     end
+    -- Appearance from Options: background opacity, accent bars and window scale.
+    if f.bg then Skins:Paint(f.bg, "bg") end
+    if f.tabUnderline then Skins:Paint(f.tabUnderline, "accent") end
+    if self.progressBar and self.progressBar.fill then Skins:Paint(self.progressBar.fill, "accent") end
+    if f.SetScale then f:SetScale((AR.db and AR.db.profile and AR.db.profile.viewerscale) or 1) end
     self:LayoutTabs()
     if self.titleText and AR.Progression and AR.Progression.currentGuide then
         self.titleText:SetText(getShortGuideTitle(AR.Progression.currentGuide))

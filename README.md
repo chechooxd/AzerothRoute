@@ -84,7 +84,7 @@ bearing, and minimap radar offsets never mix coordinate spaces.
 
 ## Verification
 
-Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 161 passed, 0 failed` across 36 test suites). Client verification is pending:
+Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 165 passed, 0 failed` across 36 test suites). Client verification is pending:
 
 - Check the minimap button, its clicks and tooltip; move it, `/reload`, and check that it keeps its position.
 - `/ar config`: change a toggle, `/reload`, check it stuck; create a second profile, switch, check the toggle follows the profile.
@@ -129,6 +129,10 @@ Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 161 passed,
 - Tabs: load a second guide from the Guide Center; switch tabs and check each resumes at its step; close one with ×; + opens the guide list.
 - Group quests: reach a step with a group quest (e.g. Wanted: "Hogger"): a banner offers "Skip it" (its accept, kill and turn-in leave the route) or "Do it with a group" (banner goes away); `/reload` keeps the choice.
 - Rewards: open a quest offer with item rewards, accept it: under the accept/turn-in line the guide shows "Reward: <item>" ("new" for an upgrade, "at turn-in" on accepts). With the quest log open, check it does not jump to another quest.
+- Talents: open the talent window: classes in the sidebar with the gold bar, spec tabs underlined, the next point in the gold card, spent points ticked, the mouse wheel scrolls.
+- Rares tab: target or see a rare's nameplate: chat says "Rare nearby" once; the Rares tab lists it under Seen with when and how often; "Set waypoint" points the arrow.
+- Characters tab: log in two characters; each shows level, class, gold, zone, guide and step, rested XP; the total gold is in the header; "Forget this character" removes an alt.
+- Options tab: change the accent colour, guide-window opacity and size and see the guide window repaint; Reload UI applies the accent everywhere.
 
 The mock suite cannot establish live-client protected-action compatibility,
 minimap positioning, talent texture availability, or leveling-route completeness.
