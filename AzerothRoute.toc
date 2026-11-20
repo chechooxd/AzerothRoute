@@ -46,6 +46,7 @@ Quest\WhoWhere.lua
 Quest\QuestLoot.lua
 Quest\GroupQuests.lua
 Quest\QuestRewards.lua
+Quest\QuestXP.lua
 
 # SPEC-05: Spatial Engine, Multi-Hop Pathfinder & Pointer UI
 Spatial\Coords.lua

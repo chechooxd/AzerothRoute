@@ -57,6 +57,7 @@ OptionsPanel.SETTINGS = {
     { key = "previewsteps", group = "guide", kind = "cycle", values = { 0, 1, 2, 3, 4 }, default = 0,
         label = "OPT_PREVIEWSTEPS", desc = "OPT_PREVIEWSTEPS_DESC" },
     { key = "stepsound", group = "guide", kind = "bool", default = true, label = "OPT_STEPSOUND", desc = "OPT_STEPSOUND_DESC" },
+    { key = "questxp", group = "guide", kind = "bool", default = true, label = "OPT_QUESTXP", desc = "OPT_QUESTXP_DESC" },
     { key = "spelltoasts", group = "guide", kind = "bool", default = true, label = "OPT_SPELLTOASTS", desc = "OPT_SPELLTOASTS_DESC" },
     { key = "journey", group = "travel", kind = "bool", default = true, label = "OPT_JOURNEY", desc = "OPT_JOURNEY_DESC" },
     { key = "keeparrow", group = "travel", kind = "bool", default = true, label = "OPT_KEEPARROW", desc = "OPT_KEEPARROW_DESC" },

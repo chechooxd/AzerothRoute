@@ -694,3 +694,45 @@ T:Describe("Polestar parity: bags and what's new", function()
         AR.WhatsNew:Reset()
     end)
 end)
+
+T:Describe("Polestar parity: quest XP", function()
+    T:It("sums finished quests' XP on the XP bar, its tooltip and turn-in lines", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.db.profile.previewsteps = 0
+        local savedFn, savedBar = _G.GetQuestLogRewardXP, _G.MainMenuExpBar
+        _G.GetQuestLogRewardXP = function(id) return ({ [176] = 1350, [40] = 600 })[id] end
+        _G.MainMenuExpBar = CreateFrame("StatusBar", "MainMenuExpBar")
+        _G.MainMenuExpBar.GetWidth = function() return 1000 end
+        MockWoW.player.xp, MockWoW.player.maxXp = 1000, 10000
+        local ok, err = pcall(function()
+            MockWoW.quests.inLog[176] = { title = "Wanted: Hogger", isComplete = true, objectives = {} }
+            MockWoW.quests.inLog[40] = { title = "A Fishy Peril", isComplete = false, objectives = {} }
+            AR.QuestTracking:ScanQuestLog()
+            local total, count = AR.QuestXP:Refresh()
+            T:AssertEqual(total, 1350, "Only finished quests count")
+            T:AssertEqual(count, 1)
+            local from, to = AR.QuestXP:Draw()
+            T:AssertEqual(from, 0.1); T:AssertEqual(to, 0.235)
+            T:AssertTrue(AR.QuestXP.overlay:IsShown(), "Stretch drawn on the XP bar")
+            local lines = {}
+            local tip = { AddDoubleLine = function(_, a, b) lines[#lines + 1] = a .. "=" .. b end, AddLine = function(_, a) lines[#lines + 1] = a end }
+            AR.QuestXP:AddTooltipLines(tip)
+            T:AssertTrue(lines[1]:find("+1350", 1, true) ~= nil, "Pending XP in the bar tooltip")
+            local g = AR.Parser:ParseGuide("XPGuide", 'step Back\n    turnin Wanted: "Hogger"##176\n')
+            AR.Progression:LoadGuide(g, 1)
+            AR.Progression.pause = true
+            local vm = AR.ViewerFrame:RefreshVisuals()
+            T:AssertTrue(vm.mainLines[1].richText:find("+1350 XP", 1, true) ~= nil, "Turn-in line shows its XP")
+            AR.db.profile.questxp = false
+            AR.QuestXP:Draw()
+            T:AssertFalse(AR.QuestXP.overlay:IsShown(), "Off in Options hides it")
+            AR.db.profile.questxp = true
+        end)
+        _G.GetQuestLogRewardXP, _G.MainMenuExpBar = savedFn, savedBar
+        AR.QuestXP.overlay = nil
+        MockWoW.quests.inLog[176], MockWoW.quests.inLog[40] = nil, nil
+        if not ok then error(err, 0) end
+    end)
+end)

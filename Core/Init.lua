@@ -172,6 +172,9 @@ function AR:Initialize()
         if self.WhatsNew and self.WhatsNew.ShowIfNew then
             self.WhatsNew:ShowIfNew()
         end
+        if self.QuestXP and self.QuestXP.RegisterLiveEvents then
+            self.QuestXP:RegisterLiveEvents()
+        end
         if self.ClassSpells and self.ClassSpells.RegisterLiveEvents then
             self.ClassSpells:RegisterLiveEvents()
         end

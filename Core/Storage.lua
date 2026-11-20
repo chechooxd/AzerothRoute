@@ -69,6 +69,7 @@ Storage.ProfileDefaults = {
     keeparrow = true,
     journey = true,
     spelltoasts = true,
+    questxp = true,
 }
 
 -- Keys that used to live in AzerothRouteSavedDB.global and now belong to the profile.

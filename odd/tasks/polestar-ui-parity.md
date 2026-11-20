@@ -26,6 +26,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - S20: "Continua con las mejoras e implementar iones de polestar, y arregla la ventana de talentos con el mismo enfoque de diseño" (screenshots 232536 rares, 232552 options, 110447 home).
 - S21: "Sigue con eso" (import guides, the last Polestar piece).
 - S22: "sigue con lo que falta de polestar" (second pass, from Polestar's feature list: Home tab, dungeon quest details and pick-up route, gear tooltip, colour schemes, bag space, what's new).
+- S23: "estas dejando fuera cosas que polstaer tiene ? por que ? si ellos ya lo manejan bien por que tu lo sacas ?" then "Yes, all five": quest XP, zone art, report a problem, route recorder, gamepad.
 
 ## Tasks
 - [x] T1 [S3] Viewer heading, folded done goals, Then preview, note line — inline · 122/122
@@ -59,6 +60,11 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T29 [S22] Upgrade line in item tooltips (Modules/Gear/Tooltip.lua) + fix: Upgrades compared against nothing outside tests, now reads the equipped item (weaker of ring/trinket pairs) — inline · 170/170
 - [x] T30 [S22] Colour schemes in Options (Dusk, Midnight, Slate, Forest) — inline · 171/171
 - [x] T31 [S22] Bag space notice and What's new card (UI/WhatsNew.lua) — inline · 173/173
+- [x] T32 [S23] Quest XP from GetQuestLogRewardXP: XP bar stretch, bar tooltip, +N XP on turn-ins (Quest/QuestXP.lua) — inline · 174/174
+- [ ] T33 [S23] Zone art from C_Map.GetMapArtLayers/GetMapArtLayerTextures in the Guide Center details — inline
+- [ ] T34 [S23] Report a problem: copyable report with guide, step, goals, position, versions, addons, errors — inline
+- [ ] T35 [S23] Route recorder: record goto/accept/turnin/talk as you play into a guide you can save — inline
+- [ ] T36 [S23] Gamepad: navigate guide window and Guide Center with gamepad buttons — inline
 
 ## Log
 - L1 (2026-11-19): "corrige el addon que estamos desarrollando, quiero que te inspires en polestar, sobretodo en la interfaz, es totalmente lo que busco para mi addon" — done as ced39ce (viewer + guide center) and 94f6faa (arrow).
@@ -78,3 +84,4 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - L15 (2026-11-20): "Sigue con eso". Format chosen: the addon's own guide language (no foreign formats). Imported titles live under an 'Imported' title prefix so they never replace a built-in guide. Errors are shown in the window (no name, no steps, too long, unreadable).
 - L16 (2026-11-20): "sigue con lo que falta de polestar" (second pass). Left out on purpose: quest XP numbers (no XP data), gamepad mode, route recorder, problem reports (needs a web endpoint), zone art (Blizzard map art per zone is not available as single textures in Classic).
 - L17 (2026-11-20): T27-T31 done. Found and fixed a live-client bug: Upgrades compared every item against nothing outside the mock (equipped items came only from MockWoW), so every scored item counted as an upgrade; it now reads GetInventoryItemLink (weaker of ring/trinket pairs). The What's new card is keyed by a notes id, not the toc Version (version bumps stay the user's call).
+- L18 (2026-11-20): user challenged L16's left-out list; checking Polestar showed quest XP, zone art and reports use the client (no data or server needed). L16 reasons were wrong; all five are now in scope.

@@ -964,10 +964,17 @@ function ViewerFrame:FormatGoalLine(goal, index, isSticky)
 
     local isDone = status == "complete"
     local plain = goal:GetText(isDone)
+    local rich = self:HighlightSubject(goal, plain, isDone)
+    -- Turn-ins show the reward XP the client reports for quests in the log.
+    if not isDone and goal.action == "turnin" and goal.questid and AR.QuestXP
+        and not (AR.db and AR.db.profile and AR.db.profile.questxp == false) then
+        local xp = AR.QuestXP:RewardOf(goal.questid)
+        if xp then rich = rich .. string.format(" |cff5c944f+%d XP|r", xp) end
+    end
     return {
         goal = goal,
         text = plain,
-        richText = self:HighlightSubject(goal, plain, isDone),
+        richText = rich,
         status = status,
         bgColor = bgColor,
         icon = isDone and AR.Skins.CHECK_ICON or AR.Skins:GetActionIcon(goal.action),

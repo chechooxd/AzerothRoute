@@ -78,6 +78,7 @@ function T:BootstrapAddon()
         "Quest/QuestLoot.lua",
         "Quest/GroupQuests.lua",
         "Quest/QuestRewards.lua",
+        "Quest/QuestXP.lua",
         "Spatial/Coords.lua",
         "Spatial/TaxiTracker.lua",
         "Spatial/Pathfinder.lua",
