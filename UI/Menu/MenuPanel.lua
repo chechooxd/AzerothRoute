@@ -138,12 +138,21 @@ function MenuPanel:Attach(f, prefix)
 
     -- Details pane.
     local dx = 332
+    -- Zone painting behind the details title (Dungeons, Rares, Lookup places).
+    if AR.ZoneArt then
+        self.art = AR.ZoneArt:Create(main, W - 154 - 317, 50, prefix .. "Art")
+        self.art:SetPoint("TOPLEFT", main, "TOPLEFT", 317, 0)
+    end
     main.title = main:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     main.title:SetPoint("TOPLEFT", main, "TOPLEFT", dx, -14)
     if main.title.SetWidth then main.title:SetWidth(220) end
     main.title:SetJustifyH("LEFT")
     if main.title.SetTextColor then main.title:SetTextColor(S:RGBA("text")) end
     main.subtitle = main:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    if AR.ZoneArt then
+        AR.ZoneArt:Lift(self.art, main.title)
+        AR.ZoneArt:Lift(self.art, main.subtitle)
+    end
     main.subtitle:SetPoint("TOPLEFT", main, "TOPLEFT", dx, -36)
     if main.subtitle.SetTextColor then main.subtitle:SetTextColor(S:RGBA("textMuted")) end
     self.chips = {}
@@ -294,6 +303,7 @@ function MenuPanel:RenderDetails()
     local d = (self.selected and self.module:Describe(self.selected)) or {}
     self.details = d
     main.title:SetText(d.title or "")
+    if self.art and AR.ZoneArt then AR.ZoneArt:Paint(self.art, d.art, d.artFocus) end
     main.subtitle:SetText(d.subtitle or "")
     local x = 332
     for i, c in ipairs(self.chips) do

@@ -113,6 +113,7 @@ function T:BootstrapAddon()
         "Modules/Sync/NotificationCenter.lua",
         "Modules/Sync/PartySync.lua",
         "UI/Widgets/Core.lua",
+        "UI/ZoneArt.lua",
         "UI/Skins/Default.lua",
         "UI/Viewer/Tabs.lua",
         "UI/Viewer/ViewerFrame.lua",

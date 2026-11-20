@@ -247,7 +247,13 @@ function GuideMenu:InitializeFrame()
         if self.headerSub.SetTextColor then self.headerSub:SetTextColor(S:RGBA("textMuted")) end
         self.headerSub:SetText("")
 
+        -- Zone painting behind the selected guide's title.
+        if AR.ZoneArt then
+            self.detailArt = AR.ZoneArt:Create(f, 250, 40, "AzerothRouteGuideArt")
+            self.detailArt:SetPoint("TOPLEFT", f, "TOPLEFT", 469, -46)
+        end
         self.detailTitle = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+        if AR.ZoneArt then AR.ZoneArt:Lift(self.detailArt, self.detailTitle) end
         if self.detailTitle.SetTextColor then self.detailTitle:SetTextColor(S:RGBA("text")) end
         self.detailTitle:SetPoint("TOPLEFT", f, "TOPLEFT", 488, -60)
         if self.detailTitle.SetWidth then self.detailTitle:SetWidth(210) end
@@ -588,6 +594,7 @@ function GuideMenu:SelectGuide(guide)
         self.detailDesc:SetText(desc)
     end
     self:RenderDetails(guide)
+    if self.detailArt and AR.ZoneArt then AR.ZoneArt:Paint(self.detailArt, AR.ZoneArt:GuideMap(guide)) end
     if self.deleteButton then
         if AR.GuideImport and AR.GuideImport:IsImported(guide) then self.deleteButton:Show() else self.deleteButton:Hide() end
     end

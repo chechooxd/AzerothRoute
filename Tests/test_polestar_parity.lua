@@ -736,3 +736,39 @@ T:Describe("Polestar parity: quest XP", function()
         if not ok then error(err, 0) end
     end)
 end)
+
+T:Describe("Polestar parity: zone art", function()
+    T:It("paints the zone's map tiles from the client behind the details title", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        local savedLayers, savedTex = _G.C_Map.GetMapArtLayers, _G.C_Map.GetMapArtLayerTextures
+        _G.C_Map.GetMapArtLayers = function(id)
+            if id == 1436 then return { { layerWidth = 1002, layerHeight = 668, tileWidth = 256, tileHeight = 256 } } end
+        end
+        _G.C_Map.GetMapArtLayerTextures = function(id) if id == 1436 then local t = {} for i = 1, 12 do t[i] = 700000 + i end return t end end
+        local ok, err = pcall(function()
+            local lay = AR.ZoneArt:Layout(1436)
+            T:AssertEqual(lay.cols, 4); T:AssertEqual(lay.rows, 3)
+            local band = AR.ZoneArt:Create(_G.UIParent, 250, 50, "TestArtBand")
+            T:AssertTrue(AR.ZoneArt:Paint(band, 1436, 0.5), "Painted")
+            T:AssertEqual(#band.tiles, 12, "One texture per tile")
+            T:AssertEqual(band.tiles[1]:GetTexture(), 700001, "Client file ids")
+            T:AssertTrue(band.fade:IsShown(), "Fade into the panel")
+            T:AssertFalse(AR.ZoneArt:Paint(band, 9999), "Unknown map: nothing painted")
+            T:AssertFalse(band.fade:IsShown())
+            T:AssertFalse(band.tiles[1]:IsShown(), "Old tiles cleared")
+
+            MockWoW.player.level, MockWoW.player.faction = 20, "Alliance"
+            AR.GuideMenu:Reset()
+            AR.GuideMenu:Show("dungeons")
+            local panel = AR.Dungeons.panel
+            panel:SelectCategory("all")
+            for _, r in ipairs(panel.lastRows) do if r.data.key == "DM" then panel:SelectRow(r) end end
+            T:AssertEqual(panel.art.mapID, 1436, "Deadmines details painted with Westfall")
+            AR.GuideMenu:Reset()
+        end)
+        _G.C_Map.GetMapArtLayers, _G.C_Map.GetMapArtLayerTextures = savedLayers, savedTex
+        if not ok then error(err, 0) end
+    end)
+end)

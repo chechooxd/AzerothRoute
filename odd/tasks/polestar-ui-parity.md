@@ -61,7 +61,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T30 [S22] Colour schemes in Options (Dusk, Midnight, Slate, Forest) — inline · 171/171
 - [x] T31 [S22] Bag space notice and What's new card (UI/WhatsNew.lua) — inline · 173/173
 - [x] T32 [S23] Quest XP from GetQuestLogRewardXP: XP bar stretch, bar tooltip, +N XP on turn-ins (Quest/QuestXP.lua) — inline · 174/174
-- [ ] T33 [S23] Zone art from C_Map.GetMapArtLayers/GetMapArtLayerTextures in the Guide Center details — inline
+- [x] T33 [S23] Zone art from C_Map.GetMapArtLayers/GetMapArtLayerTextures in the Guide Center details (UI/ZoneArt.lua) — inline · 175/175
 - [ ] T34 [S23] Report a problem: copyable report with guide, step, goals, position, versions, addons, errors — inline
 - [ ] T35 [S23] Route recorder: record goto/accept/turnin/talk as you play into a guide you can save — inline
 - [ ] T36 [S23] Gamepad: navigate guide window and Guide Center with gamepad buttons — inline

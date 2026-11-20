@@ -210,6 +210,8 @@ function Rares:Describe(row)
     return {
         title = u.name,
         subtitle = zone,
+        art = u.map > 0 and u.map or nil,
+        artFocus = u.map > 0 and u.y / 100 or nil,
         chips = { { text = L("UI_SV_RARE", "Rare"), accent = true } },
         info = info,
         list = list,

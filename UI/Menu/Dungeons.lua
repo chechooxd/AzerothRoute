@@ -131,6 +131,7 @@ function Dungeons:Describe(row)
     return {
         title = AR.DB:DungeonName(d),
         subtitle = zone,
+        art = d.zone,
         chips = chips,
         info = {
             { L("UI_LK_ZONE"), zone },

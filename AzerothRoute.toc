@@ -97,6 +97,7 @@ Modules\Sync\PartySync.lua
 
 # SPEC-12 & SPEC-13: UI Framework, Skins, ViewerFrame, Tabs & GuideMenu
 UI\Widgets\Core.lua
+UI\ZoneArt.lua
 UI\Skins\Default.lua
 UI\Viewer\Tabs.lua
 UI\Viewer\ViewerFrame.lua
