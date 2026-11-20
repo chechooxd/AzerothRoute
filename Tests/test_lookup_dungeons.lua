@@ -444,3 +444,40 @@ T:Describe("Import guides", function()
         AR.ImportWindow:Reset()
     end)
 end)
+
+T:Describe("Dungeon pick-up route", function()
+    T:It("builds a nearest-first route of quest givers and opens it in a tab", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.db.char.tabguides = {}
+        MockWoW.player.level, MockWoW.player.faction = 18, "Alliance"
+        local dm
+        for _, d in ipairs(AR.DB:GetDungeons()) do if d.key == "DM" then dm = d end end
+        local text, givers = AR.DungeonRoute:BuildText(dm)
+        T:AssertTrue(givers >= 1, "At least one quest giver")
+        T:AssertTrue(text:find("accept The Defias Brotherhood##166", 1, true) ~= nil, "Accept line for VanCleef's quest")
+        T:AssertTrue(text:find("goto 1436 56.3,47.5", 1, true) ~= nil, "Goes to Gryan Stoutmantle")
+        T:AssertEqual(AR.DB:QuestObjective(166), "Kill Edwin VanCleef and bring his head to Gryan Stoutmantle.", "Objective text")
+
+        AR.GuideMenu:Reset()
+        AR.GuideMenu:Show("dungeons")
+        local panel = AR.Dungeons.panel
+        panel:SelectCategory("all")
+        for _, r in ipairs(panel.lastRows) do if r.data.key == "DM" then panel:SelectRow(r) end end
+        T:AssertEqual(panel.primary.label:GetText(), AR.L:Get("UI_DG_PICKUP"))
+        panel.primary:Click("LeftButton")
+        local g = AR.Progression.currentGuide
+        T:AssertEqual(g.title, AR.DungeonRoute.PREFIX .. "DM", "Route guide loaded")
+        T:AssertEqual(g.displayTitleEN, AR.L:Format("UI_DG_ROUTE_FMT", AR.DB:DungeonName(dm)))
+        T:AssertTrue(#AR.Tabs:GetTabs() >= 1, "Opened as a tab")
+        T:AssertFalse(AR.GuideMenu.frame:IsShown(), "Guide Center closes")
+
+        MockWoW.quests.inLog[166] = { title = "The Defias Brotherhood", isComplete = false, objectives = {} }
+        AR.QuestTracking:ScanQuestLog()
+        local after = AR.DungeonRoute:BuildText(dm)
+        T:AssertTrue(after == nil or after:find("##166", 1, true) == nil, "Quests already taken are left out")
+        AR.GuideMenu:Reset()
+        AR.db.char.tabguides = {}
+    end)
+end)

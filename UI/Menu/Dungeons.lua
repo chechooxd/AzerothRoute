@@ -117,9 +117,11 @@ function Dungeons:Describe(row)
     if d.raid then chips[#chips + 1] = { text = L("UI_DG_RAID") } end
     local list = {}
     for _, q in ipairs(quests) do
+        local objective = AR.DB.QuestObjective and AR.DB:QuestObjective(q.id)
         list[#list + 1] = {
             text = AR.Skins:Colorize(q.name, "quest"),
             tag = tostring(q.level),
+            tooltip = objective,
             onClick = function()
                 local loc = AR.DB:LocationOf(q)
                 if loc and AR.Lookup then AR.Lookup:Navigate(loc) end
@@ -135,7 +137,10 @@ function Dungeons:Describe(row)
             { L("UI_DG_QUESTS"), #quests > 0 and string.format(L("UI_DG_QUESTS_FMT"), #quests) or L("UI_DG_NOQUESTS") },
         },
         list = list,
-        primary = { text = L("UI_LK_SHOW_MAP"), onClick = function()
+        primary = (#quests > 0 and AR.DungeonRoute) and { text = L("UI_DG_PICKUP", "Pick up the quests"), onClick = function()
+            if not AR.DungeonRoute:Open(d) and AR.Print then AR:Print(L("UI_DG_PICKUP_NONE", "No quests left to take here.")) end
+        end } or nil,
+        secondary = { text = L("UI_LK_SHOW_MAP"), onClick = function()
             local wm = _G.WorldMapFrame
             if wm and not (wm.IsShown and wm:IsShown()) then
                 if _G.ToggleWorldMap then _G.ToggleWorldMap() elseif wm.Show then wm:Show() end

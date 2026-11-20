@@ -245,10 +245,11 @@ for id, d in pairs(pfDB.items.data) do
 end
 
 -- Spanish names (loaded only on esES/esMX clients) --------------------------------------------
-local es = { quests = {}, units = {}, objects = {}, items = {} }
+local es = { quests = {}, units = {}, objects = {}, items = {}, objectives = {} }
 for id in pairs(questNames) do
     local loc = pfDB.quests.esES[id]
     if loc and loc.T and loc.T ~= "" and loc.T ~= pfDB.quests.enUS[id].T then es.quests[id] = clean(loc.T) end
+    if loc and loc.O and loc.O ~= "" and loc.O ~= pfDB.quests.enUS[id].O then es.objectives[id] = clean(loc.O) end
 end
 for kind, src in pairs({ units = units, objects = objects, items = items }) do
     for id in pairs(src) do
@@ -325,13 +326,21 @@ writeTable(OUT .. "/Objects.lua", HEADER, "Objects", objects, sortedKeys(objects
 writeTable(OUT .. "/Items.lua", HEADER, "Items", items, sortedKeys(items))
 writeTable(OUT .. "/Quests.lua", HEADER, "Quests", quests, sortedKeys(quests))
 writeTable(OUT .. "/QuestNames.lua", HEADER, "QuestNames", questNames, sortedKeys(questNames))
+do
+    local objectives = {}
+    for id in pairs(questNames) do
+        local o = pfDB.quests.enUS[id] and pfDB.quests.enUS[id].O
+        if o and o ~= "" then objectives[id] = clean(o) end
+    end
+    writeTable(OUT .. "/QuestObjectives.lua", HEADER, "QuestObjectives", objectives, sortedKeys(objectives))
+end
 
 do
     local fh = assert(io.open(OUT .. "/Names_esES.lua", "w"))
     fh:write(HEADER)
     fh:write("local loc = _G.GetLocale and _G.GetLocale()\nif loc ~= \"esES\" and loc ~= \"esMX\" then return end\n")
-    fh:write("local DB = _G.AzerothRoute.DB\nDB.NamesES = { quests = {}, units = {}, objects = {}, items = {} }\n")
-    for _, kind in ipairs({ "quests", "units", "objects", "items" }) do
+    fh:write("local DB = _G.AzerothRoute.DB\nDB.NamesES = { quests = {}, units = {}, objects = {}, items = {}, objectives = {} }\n")
+    for _, kind in ipairs({ "quests", "units", "objects", "items", "objectives" }) do
         fh:write("DB.NamesES." .. kind .. " = {\n")
         for _, id in ipairs(sortedKeys(es[kind])) do fh:write("[" .. id .. "]=" .. q(es[kind][id]) .. ",\n") end
         fh:write("}\n")

@@ -189,6 +189,8 @@ function Lookup:Describe(row)
             { L("UI_LK_MINLEVEL"), tostring(q.minLevel) },
             { L("UI_LK_SIDE"), sideLabel(q.side) },
         }, {}
+        local objective = DB.QuestObjective and DB:QuestObjective(q.id)
+        if objective then info[#info + 1] = { L("UI_LK_OBJECTIVE", "Objective"), objective } end
         for _, ref in ipairs(q.starts) do
             if ref.kind == "U" then
                 local line = unitLine(self, ref.id, "UI_LK_STARTS")

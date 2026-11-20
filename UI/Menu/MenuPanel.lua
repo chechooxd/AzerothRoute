@@ -178,6 +178,15 @@ function MenuPanel:Attach(f, prefix)
         if b.label.SetFontObject then b.label:SetFontObject("GameFontHighlightSmall") end
         if b.label.SetWidth then b.label:SetWidth(170) end
         b:SetScript("OnClick", function(btn) if btn._onClick then btn._onClick() end end)
+        b:HookScript("OnEnter", function(btn)
+            if btn._tooltip and _G.GameTooltip and _G.GameTooltip.SetOwner then
+                _G.GameTooltip:SetOwner(btn, "ANCHOR_RIGHT")
+                _G.GameTooltip:SetText(btn.label:GetText() or "")
+                _G.GameTooltip:AddLine(btn._tooltip, 1, 1, 1, true)
+                _G.GameTooltip:Show()
+            end
+        end)
+        b:HookScript("OnLeave", function() if _G.GameTooltip and _G.GameTooltip.Hide then _G.GameTooltip:Hide() end end)
         b:Hide()
         self.list[i] = b
     end
@@ -313,6 +322,7 @@ function MenuPanel:RenderDetails()
             b.label:SetText(item.text)
             b.tag:SetText(item.tag or "")
             b._onClick = item.onClick
+            b._tooltip = item.tooltip
             b:Show()
         else
             b._onClick = nil

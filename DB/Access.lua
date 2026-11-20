@@ -32,6 +32,13 @@ local function isSpanish()
     return DB.NamesES ~= nil and AR.L and AR.L.IsSpanish and AR.L:IsSpanish()
 end
 
+-- Objective text of a quest in the client language, or nil.
+function DB:QuestObjective(id)
+    local en = DB.QuestObjectives and DB.QuestObjectives[id]
+    if not en then return nil end
+    return self:LocalName("objectives", id, en)
+end
+
 -- Localized display name for a record kind ("quests", "units", "objects", "items").
 function DB:LocalName(kind, id, english)
     if isSpanish() then
