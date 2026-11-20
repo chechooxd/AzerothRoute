@@ -63,7 +63,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T32 [S23] Quest XP from GetQuestLogRewardXP: XP bar stretch, bar tooltip, +N XP on turn-ins (Quest/QuestXP.lua) — inline · 174/174
 - [x] T33 [S23] Zone art from C_Map.GetMapArtLayers/GetMapArtLayerTextures in the Guide Center details (UI/ZoneArt.lua) — inline · 175/175
 - [x] T34 [S23] Report a problem: copyable report with guide, step, goals, position, versions, addons, errors (UI/Report.lua, /ar report, ... menu) — inline · 176/176
-- [ ] T35 [S23] Route recorder: record goto/accept/turnin/talk as you play into a guide you can save — inline
+- [x] T35 [S23] Route recorder: record goto/accept/turnin/talk/home as you play into a guide you can save (Guides/Recorder.lua, /ar record) — inline · 177/177
 - [ ] T36 [S23] Gamepad: navigate guide window and Guide Center with gamepad buttons — inline
 
 ## Log

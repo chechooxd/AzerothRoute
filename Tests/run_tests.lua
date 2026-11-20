@@ -139,6 +139,7 @@ function T:BootstrapAddon()
         "Guides/Autoload.lua",
         "Guides/Import.lua",
         "Guides/DungeonRoute.lua",
+        "Guides/Recorder.lua",
         "DB/Access.lua",
         "DB/DungeonDefs.lua",
         "DB/Quests.lua",

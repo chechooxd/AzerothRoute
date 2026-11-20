@@ -803,3 +803,49 @@ T:Describe("Polestar parity: report a problem", function()
         AR.Report:Reset()
     end)
 end)
+
+T:Describe("Polestar parity: route recorder", function()
+    T:It("records accepts, turn-ins and binds by place and saves them as a guide", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.db.global.importedGuides = {}
+        AR.Recorder:Reset()
+        local C = AR.Coords
+        local saved = { C.GetPlayerPosition, C.GetDistanceBetween, _G.UnitName, _G.UnitGUID, _G.GetBindLocation }
+        local pos = { 1429, 0.42, 0.65 }
+        C.GetPlayerPosition = function() return pos[1], pos[2], pos[3] end
+        C.GetDistanceBetween = function(_, m1, x1, y1, m2, x2, y2)
+            if m1 ~= m2 then return nil end
+            return math.sqrt(((x2 - x1) * 1000) ^ 2 + ((y2 - y1) * 1000) ^ 2)
+        end
+        _G.UnitName = function(u) if u == "npc" then return "Marshal Dughan" end return "Me" end
+        _G.UnitGUID = function() return "Creature-0-1-0-1-240-0000AA" end
+        _G.GetBindLocation = function() return "Goldshire" end
+        local ok, err = pcall(function()
+            T:AssertEqual(AR.Recorder:OnQuestAccepted(176), nil, "Nothing while not recording")
+            AR.Recorder:ShowBar()
+            AR.Recorder.bar.toggle:Click("LeftButton")
+            T:AssertTrue(AR.Recorder.recording, "Record button starts")
+            AR.Recorder:OnQuestAccepted(176)
+            AR.Recorder:OnHearthBound()
+            pos[2] = 0.52
+            AR.Recorder:OnQuestTurnedIn(176)
+            T:AssertEqual(#AR.Recorder.steps, 2, "A new step after moving away")
+            local text = AR.Recorder:BuildText()
+            T:AssertTrue(text:find("goto 1429 42.0,65.0", 1, true) ~= nil, "Where the first step happened")
+            T:AssertTrue(text:find("talk Marshal Dughan##240", 1, true) ~= nil, "Who gave the quest")
+            T:AssertTrue(text:find("##176", 1, true) ~= nil and text:find("home Goldshire", 1, true) ~= nil, "Accept and bind")
+            T:AssertTrue(text:find("turnin", 1, true) ~= nil, "Turn-in recorded")
+            local guide = AR.Recorder:Save("My Route")
+            T:AssertTrue(guide ~= nil and #guide.steps == 2, "Saved as a two-step guide")
+            T:AssertTrue(AR.db.global.importedGuides["My Route"] ~= nil, "Kept like an imported guide")
+            T:AssertEqual(#AR.Recorder.steps, 0, "Recorder cleared after saving")
+            T:AssertEqual(AR.Recorder:Save("Empty"), nil, "Nothing to save")
+            AR.GuideImport:Delete(guide)
+        end)
+        C.GetPlayerPosition, C.GetDistanceBetween, _G.UnitName, _G.UnitGUID, _G.GetBindLocation = saved[1], saved[2], saved[3], saved[4], saved[5]
+        AR.Recorder:Reset()
+        if not ok then error(err, 0) end
+    end)
+end)

@@ -734,6 +734,7 @@ function ViewerFrame:BuildMoreMenuItems()
         { text = L("UI_DUNGEONS", "Dungeons"), onClick = function() if AR.GuideMenu then AR.GuideMenu:Show("dungeons") end end },
         { text = L("UI_TALENTS", "Talents"), onClick = function() if AR.TalentAdvisor and AR.TalentAdvisor.ToggleUI then AR.TalentAdvisor:ToggleUI() end end },
         { text = L("UI_MENU_OPTIONS", "Options"), onClick = function() if AR.Config and AR.Config.Open then AR.Config:Open() end end },
+        { text = L("UI_REC_MENU", "Record a route"), onClick = function() if AR.Recorder then AR.Recorder:ShowBar() end end },
         { text = L("UI_REPORT_TITLE", "Report a problem"), onClick = function() if AR.Report then AR.Report:Show() end end },
         { separator = true },
         { text = L("UI_MENU_HIDE", "Hide guide window"), onClick = function() if self.frame then self.frame:Hide() end end },
