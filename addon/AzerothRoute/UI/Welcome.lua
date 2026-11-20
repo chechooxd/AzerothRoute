@@ -795,7 +795,7 @@ PAGES[#PAGES + 1] = {
 		local p = P.Body
 		p.Title = para(p, "hero", "text", CW, 2)
 		p.Line = para(p, "body", "textDim", CW)
-		p.Line:SetText(L["AzerothRoute guides you step by step: who to talk to, what to kill or collect, and where to go."])
+		p.Line:SetText(L["AzerothRoute plans your route step by step: who to talk to, what to kill or collect, and where to go next."])
 		p.Cards = {
 			card(p, L["The guide window"], L["Goals tick off as you play."]),
 			card(p, L["The arrow"], L["Points the way. The map marks each place."]),

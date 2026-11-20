@@ -349,6 +349,16 @@ for _, folder in ipairs(listFolders(SRC)) do
     end
 end
 local applied, missed = applyPatches(OUT)
+-- AzerothRoute's own art (tools/fork/assets, drawn by tools/fork/make_art.lua) over Polestar's.
+local art = 0
+local assets = ROOT .. "/tools/fork/assets"
+if io.open(assets .. "/AzerothRoute/Media/UI/emblem.tga", "rb") then
+    for _, rel in ipairs(listFiles(assets)) do
+        write(OUT .. "/" .. rel, read(assets .. "/" .. rel))
+        art = art + 1
+    end
+end
+print(string.format("%d art files", art))
 print(string.format("%d folders, %d files (%d renamed), %d patches applied, %d missed; from Polestar %s",
     folders, files, renamed, applied, missed, version))
 os.exit(missed == 0 and 0 or 1)

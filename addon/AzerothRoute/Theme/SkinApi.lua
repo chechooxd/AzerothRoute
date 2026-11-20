@@ -371,7 +371,7 @@ end
 -- Polestar_Looks/GameSkins.lua adds the game looks' painters), taken as they are:
 -- tests/theme holds each to the legibility rule, so login checks nothing.
 local BUILTIN_SCHEME_LABEL = {
-	dusk = function() return ns.L["Dusk"] end,
+	dusk = function() return ns.L["Azeroth"] end,
 	night = function() return ns.L["Night"] end,
 	graphite = function() return ns.L["Graphite"] end,
 }

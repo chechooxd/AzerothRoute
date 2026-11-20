@@ -12,15 +12,15 @@ local House = {}
 ns.House = House
 
 -- Polestar gold: the accent of every scheme.
-local DEFAULT_ACCENT = { 0.9, 0.73, 0.4 }
+local DEFAULT_ACCENT = { 0.302, 0.706, 1 } -- AzerothRoute: Forever azure
 
 -- Status and subject colours: one set for every scheme (all schemes are
 -- night grounds), so a quest is the same gold everywhere.
 local SHARED = {
-	success = { 0.42, 0.85, 0.6, 1 },
+	success = { 0.361, 0.769, 0.604, 1 }, -- AzerothRoute: jade
 	warning = { 0.98, 0.75, 0.3, 1 },
 	danger = { 0.96, 0.45, 0.45, 1 },
-	quest = { 1, 0.84, 0.45, 1 },
+	quest = { 0.949, 0.757, 0.306, 1 }, -- AzerothRoute: route gold
 	npc = { 0.58, 0.79, 1, 1 },
 	item = { 0.78, 0.68, 1, 1 },
 	place = { 0.96, 0.68, 0.52, 1 },
@@ -49,22 +49,23 @@ House.EXPERIMENTAL = { 0.78, 0.49, 1, 1 }
 -- (text and glyphs on an accent fill) and shadow (window drop shadow).
 local SCHEMES = {
 	-- The default: Night lifted to dusk, still navy, clearly lighter.
+	-- AzerothRoute: the default scheme, "Azeroth": deep Forever blue grounds.
 	dusk = {
-		bg = { 0.095, 0.115, 0.178, 0.97 },
-		panel = { 0.11, 0.133, 0.203, 0.98 },
-		panelAlt = { 0.139, 0.166, 0.249, 1 },
-		sidebar = { 0.072, 0.088, 0.14, 1 },
-		footer = { 0.08, 0.097, 0.151, 1 },
-		sky = { 0.156, 0.196, 0.329, 1 },
-		text = { 0.967, 0.974, 0.991, 1 },
-		textDim = { 0.765, 0.793, 0.868, 1 },
-		textMuted = { 0.606, 0.637, 0.726, 1 },
+		bg = { 0.039, 0.102, 0.2, 0.97 },
+		panel = { 0.059, 0.141, 0.278, 0.98 },
+		panelAlt = { 0.086, 0.2, 0.384, 1 },
+		sidebar = { 0.031, 0.078, 0.157, 1 },
+		footer = { 0.035, 0.09, 0.18, 1 },
+		sky = { 0.102, 0.231, 0.439, 1 },
+		text = { 0.918, 0.949, 1, 1 },
+		textDim = { 0.761, 0.824, 0.918, 1 },
+		textMuted = { 0.561, 0.651, 0.776, 1 },
 		ink = { 1, 1, 1, 1 },
-		star = { 1, 1, 1, 1 },
-		shade = { 0, 0, 0.02, 1 },
-		scrim = { 0.02, 0.03, 0.06, 1 },
-		onAccent = { 0.04, 0.05, 0.08, 1 },
-		shadow = { 0, 0, 0.02, 0.6 },
+		star = { 0.561, 0.784, 1, 1 },
+		shade = { 0, 0.01, 0.03, 1 },
+		scrim = { 0.01, 0.04, 0.09, 1 },
+		onAccent = { 0.02, 0.07, 0.15, 1 },
+		shadow = { 0, 0.01, 0.03, 0.6 },
 	},
 	-- The original deep night navy-black, unchanged.
 	night = {

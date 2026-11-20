@@ -4309,7 +4309,7 @@ function W.Shell(name, opts)
 	f.Wordmark:SetPoint("TOPLEFT", side, "TOPLEFT", textX - WORD_INK, -WORD_TOP)
 	f.Tagline = W.Text(side, "small", "textDim")
 	f.Tagline:SetPoint("TOPLEFT", side, "TOPLEFT", textX, -(WORD_TOP + 30))
-	f.Tagline:SetText(opts.tagline or L["A community project"])
+	f.Tagline:SetText(opts.tagline or L["Your route through Azeroth"])
 	if opts.headerSearch then
 		-- The search is in the header (below); the navigation starts under
 		-- the band, a hairline over it.

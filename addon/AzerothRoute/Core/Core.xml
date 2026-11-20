@@ -31,4 +31,5 @@
 	<Script file="Update.lua"/>
 	<Script file="Perf.lua"/>
 	<Script file="MigrateV1.lua"/>
+	<Script file="Identity.lua"/>
 </Ui>

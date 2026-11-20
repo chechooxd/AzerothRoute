@@ -32,6 +32,10 @@ minimap button settings carry over on the first login.
 - `tools/fork/patches.lua` lists AzerothRoute's changes: text replacements in Polestar's files and whole
   files of its own (`tools/fork/files/`). A patch that no longer applies fails the run, which is how a
   new Polestar release shows what needs a look.
+- `tools/fork/assets/` holds AzerothRoute's own art (emblem, logo, wordmark, watermark, header band),
+  drawn by `luajit tools/fork/make_art.lua` and copied over Polestar's. AzerothRoute's look: deep
+  Forever-blue grounds, Forever azure accent, gold for the route and names, jade for what is done
+  (the "Azeroth" scheme, the default).
 
 Left out of `addon/` (see THIRD_PARTY.md): Polestar's Doom arcade and the race guide parts (only
 `Legs.lua`, made with Leffe's navigation maps under a permission given to Polestar's author). The

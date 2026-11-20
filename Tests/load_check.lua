@@ -194,6 +194,22 @@ do
     end
 end
 
+-- 7. Identity: AzerothRoute's colours, art and words
+do
+    local Th = ns.Theme
+    local r, g, b = Th.Accent()
+    if not (r and math.abs(r - 0.302) < 1e-3 and math.abs(b - 1) < 1e-3) then fail("accent is not Forever azure: " .. tostring(r) .. "," .. tostring(g) .. "," .. tostring(b)) end
+    local dusk = Th.SCHEMES and Th.SCHEMES.dusk
+    if not (dusk and math.abs(dusk.bg[3] - 0.2) < 1e-6) then fail("default scheme is not AzerothRoute blue") end
+    for _, name in ipairs({ "emblem", "logo", "wordmark", "wordmark-small", "watermark", "band-stars", "emblem-hot" }) do
+        local mine = read("tools/fork/assets/AzerothRoute/Media/UI/" .. name .. ".tga")
+        local shipped = read(ROOT .. "/AzerothRoute/Media/UI/" .. name .. ".tga")
+        if not mine or mine ~= shipped then fail("texture " .. name .. " is not AzerothRoute's") end
+    end
+    if ns.L["Your route through Azeroth"] ~= "Tu camino por Azeroth" then fail("tagline not in Spanish: " .. tostring(ns.L["Your route through Azeroth"])) end
+    print("identity: checked")
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end
