@@ -186,3 +186,44 @@ step After
         if not ok then error(err, 0) end
     end)
 end)
+
+T:Describe("Polestar parity: all steps", function()
+    T:It("lists every step as a card with done ticks and jumps on click", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.StepBrowser:Reset()
+        local g = load(AR)
+        MockWoW.quests.inLog[844] = { title = "Plainstrider Menace", isComplete = false, objectives = {} }
+        AR.ViewerFrame:RefreshVisuals()
+        AR.ViewerFrame.stepsButton:Click("LeftButton")
+        local SB = AR.StepBrowser
+        T:AssertTrue(SB.frame:IsShown(), "Opened from the step counter")
+        T:AssertEqual(SB.visibleCount, 3, "One card per step")
+        local first = SB.cards[1]
+        T:AssertEqual(first.header:GetText():sub(1, 1), "1", "Card header starts with the step number")
+        T:AssertTrue(first.accent:IsShown(), "Current step marked")
+        T:AssertEqual(first.icons[2]:GetTexture(), AR.Skins.CHECK_ICON, "Accepted quest ticked")
+        SB.cards[3]:Click("LeftButton")
+        T:AssertEqual(AR.Progression.currentStep.num, 3, "Jumped to step 3")
+        T:AssertFalse(SB.frame:IsShown(), "Browser closes after the jump")
+    end)
+
+    T:It("folds long steps into '+N more' and scrolls by step", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.StepBrowser:Reset()
+        local lines = { "step Big" }
+        for i = 1, 9 do table.insert(lines, "    talk Npc" .. i .. "##" .. (5000 + i)) end
+        table.insert(lines, "step Small")
+        table.insert(lines, "    talk Gazlowe##3391")
+        load(AR, table.concat(lines, "\n"))
+        local SB = AR.StepBrowser
+        SB:Show()
+        local model = SB.cards[1]._model
+        T:AssertEqual(model.more, 3, "9 goals: 6 shown, 3 folded")
+        T:AssertEqual(SB.cards[1].lines[7]:GetText(), "+3 more")
+        SB:Scroll(1)
+        T:AssertEqual(SB.cards[1]._step.num, 2, "Wheel moves one step")
+        SB.frame:Hide()
+    end)
+end)

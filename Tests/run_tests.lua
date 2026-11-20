@@ -106,6 +106,7 @@ function T:BootstrapAddon()
         "UI/Skins/Default.lua",
         "UI/Viewer/Tabs.lua",
         "UI/Viewer/ViewerFrame.lua",
+        "UI/Viewer/StepBrowser.lua",
         "UI/Menu/DashboardWidgets.lua",
         "UI/Menu/Options.lua",
         "UI/Menu/GuideMenu.lua",
