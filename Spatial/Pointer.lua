@@ -47,6 +47,7 @@ function Pointer:Reset()
     self.arrowBearing = 0
     self.arrowFrame = nil
     self.arrowState = nil
+    self.manualTarget = nil
     self.worldMapHooked = false
     self.speedSamples = {}
     self.speedSampleTimer = 0
@@ -402,6 +403,12 @@ function Pointer:PlaceStepPins(pinSpecs)
         table.insert(self.minimapPinFrames, mmPin)
     end
 
+    -- A destination picked in Lookup/Dungeons wins over the step's pins until it is reached.
+    if self.manualTarget then
+        self.activeTarget = self.manualTarget
+        return
+    end
+
     if #self.worldMapPins > 0 then
         local first = self.worldMapPins[1]
         local previous = self.activeTarget
@@ -419,6 +426,24 @@ function Pointer:PlaceStepPins(pinSpecs)
         self.activeTarget = nil
         if self.arrowFrame then self.arrowFrame:Hide() end
     end
+end
+
+-- Points the arrow at a chosen place (Lookup, Dungeons) until the player arrives or clears it.
+-- map is a uiMapID, x/y in 0..1.
+function Pointer:SetManualTarget(map, x, y, title)
+    if not map or not x or not y then
+        self.manualTarget = nil
+        return nil
+    end
+    self.manualTarget = { type = "manual", map = map, x = x, y = y, title = title or "Waypoint" }
+    self.activeTarget = self.manualTarget
+    if not self.arrowFrame then self:InitializeFrames() end
+    self:UpdateArrow(0)
+    return self.manualTarget
+end
+
+function Pointer:ClearManualTarget()
+    self.manualTarget = nil
 end
 
 function Pointer:SpawnCurveAnts(p1, p2, count)
@@ -511,6 +536,10 @@ function Pointer:UpdateArrow(elapsed)
     local arrived = dist and not onTaxi and dist <= self:GetArrivalRadius()
 
     if af.label then af.label:SetText(target.title or "Waypoint") end
+    if arrived and target.type == "manual" then
+        -- Reached a chosen place: hand the arrow back to the guide's own waypoints.
+        self.manualTarget = nil
+    end
     if af.icon then
         if arrived then
             self:ShowArrived(elapsed or 0)

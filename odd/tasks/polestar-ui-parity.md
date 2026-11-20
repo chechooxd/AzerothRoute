@@ -14,6 +14,9 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - S9 ("While you're here", screenshots 03/04/11): each sticky goal shows its distance in yards and a × to dismiss it for the session.
 - S10 (keybinds, screenshot 14): key bindings for toggle guide window, next step, previous step, guide center.
 - Out of scope (need item/NPC/route databases this addon does not ship): Lookup, Dungeons browser, Nearby services, multi-leg Journey, new-spell costs, quest-starting loot glow.
+- S11: "sigue con lookup y mazmorras, crea las bases de datos" — data source chosen by the user: pfQuest (MIT), generated into DB/ by tools/build_db.lua.
+- S12 (Lookup, screenshot 08): search guides, quests, NPCs, items, mounts, recipes and world objects; details with where to get it; "Show on map" points the arrow there.
+- S13 (Dungeons, screenshot_232430): every Classic dungeon/raid with level range, zone, "Your level", and the quests that lead into it for your faction.
 
 ## Tasks
 - [x] T1 [S3] Viewer heading, folded done goals, Then preview, note line — inline · 122/122
@@ -25,6 +28,8 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T7 [S8] Quest log cleanup dialog — inline · 134/134
 - [x] T8 [S10] Key bindings (Bindings.xml + UI/Bindings.lua) — inline · 135/135
 - [x] T9 Merge to master, README checklist
+- [x] T10 [S11] Generated database (DB/, tools/build_db.lua, DB/LICENSE-pfQuest.txt) — inline
+- [x] T11 [S12-S13] Lookup and Dungeons modes in the Guide Center (MenuPanel, Lookup, Dungeons) + manual arrow target — inline � 142/142
 
 ## Log
 - L1 (2026-11-19): "corrige el addon que estamos desarrollando, quiero que te inspires en polestar, sobretodo en la interfaz, es totalmente lo que busco para mi addon" — done as ced39ce (viewer + guide center) and 94f6faa (arrow).
@@ -32,3 +37,4 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - L3: Route: all tasks inline (no writer trigger: sequential units sharing ViewerFrame/Locale). Data-dependent Polestar features listed as out of scope.
 - L4: T6 replaced level-band section headers with a right-hand row tag ("x/y" on the loaded guide, "Your level" on matching guides): headers inside the paged list would change the 14-rows-per-page contract that existing tests pin (Page 1/4 for 55 guides).
 - L5: All tasks done inline (no writer trigger). Suite 135/135 (34 suites). README checklist added. Risk: item 6 (layout, fonts, glyphs and the abandon popup are only verifiable in the live client) and a requested behaviour change: minimap left-click now hides/shows everything and right-click opens the menu.
+- L6 (2026-11-19): "sigue con lookup y mazmorras, crea las bases de datos". User chose pfQuest MIT as the data source (rev 104f356). pfQuest keeps no coordinates for instance creatures, so dungeon quests are attached heuristically (objective text names the dungeon; or description names it with an instance-only objective; or an instance-only objective given in the dungeon zone at its level) — lists are useful but not exact. Forever-only dungeons (Hall of Thanes, Ruins of Lordaeron) are not in pfQuest and are missing. Dungeon entrances have no coordinates; "Show on map" opens the zone map.

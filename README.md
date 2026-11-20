@@ -84,7 +84,7 @@ bearing, and minimap radar offsets never mix coordinate spaces.
 
 ## Verification
 
-Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 135 passed, 0 failed` across 34 test suites). Client verification is pending:
+Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 142 passed, 0 failed` across 35 test suites). Client verification is pending:
 
 - Check the minimap button, its clicks and tooltip; move it, `/reload`, and check that it keeps its position.
 - `/ar config`: change a toggle, `/reload`, check it stuck; create a second profile, switch, check the toggle follows the profile.
@@ -113,6 +113,11 @@ Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 135 passed,
 - "Clean up quest log": only quests the route never hands in; Abandon must open the game's own confirmation and cancel must keep the quest.
 - Key Bindings > AddOns > AzerothRoute: six bindings with readable names; Next/Previous step work from the keyboard.
 - Arrow: no backdrop, a shadow that turns with it, gold when sideways; distance, destination and ETA on three lines.
+- Guide Center tabs Guides / Lookup / Dungeons: the search box follows the tab; reopening keeps the last tab.
+- Lookup: type "swift", "defias" or "linen": categories show counts; a quest shows level, giver and turn-in NPC; "Show on map" points the arrow there and the guide's next refresh does not take it back until you arrive.
+- Lookup on an esES/esMX client: quest, NPC and item names come out in Spanish.
+- Dungeons: "For your level" matches your level; a dungeon lists only your faction's quests; clicking one points the arrow at the giver. Check a few lists against your own knowledge (the quest attachment is heuristic).
+- `/reload` with Lookup open and check memory with the addon list (the database adds about 2.5 MB of text).
 
 The mock suite cannot establish live-client protected-action compatibility,
 minimap positioning, talent texture availability, or leveling-route completeness.
@@ -126,3 +131,18 @@ waypoint pins and arrows. Drag the viewer to save its position in the profile.
 
 Target marking on Forever remains unverified in the live client. No forbidden-action
 warnings are hidden. Rendered route overlays and complete Zygor parity are not claimed.
+
+## Lookup and Dungeons database
+
+`DB/` holds quest, NPC, item and world-object records generated from
+[pfQuest](https://github.com/shagu/pfQuest) (MIT, notice in `DB/LICENSE-pfQuest.txt`) by
+`tools/build_db.lua`. `DB/DungeonDefs.lua` is hand-written (names, level ranges, entrance zone).
+To regenerate after updating pfQuest:
+
+```bash
+luajit tools/build_db.lua <path-to-pfQuest>/db
+```
+
+Limits: pfQuest stores no positions for creatures inside instances, so each dungeon's quest list is
+attached from the quest texts and may miss or misplace a few quests. Forever-only dungeons are not in
+pfQuest and are not listed. Dungeon entrances have no coordinates; "Show on map" opens the zone.

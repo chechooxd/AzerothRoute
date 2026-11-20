@@ -5,6 +5,12 @@ local GuideMenu = {
     WIDTH = 720,
     HEIGHT = 480,
     MAX_ROWS = 14,
+    MODES = {
+        { id = "guides", labelKey = "UI_GUIDES" },
+        { id = "lookup", labelKey = "UI_LOOKUP" },
+        { id = "dungeons", labelKey = "UI_DUNGEONS" },
+    },
+    mode = "guides",
     CATEGORIES = {
         { id = "SUGGESTED", labelKey = "UI_SUGGESTED" },
         { id = "LEVELING",  labelKey = "UI_LEVELING" },
@@ -60,6 +66,11 @@ function GuideMenu:Reset()
     self.selectedGuide = nil
     self.searchQuery = ""
     self.searchBox = nil
+    self.mode = "guides"
+    self.modeQueries = {}
+    self.modeButtons = {}
+    if AR.Lookup and AR.Lookup.Reset then AR.Lookup:Reset() end
+    if AR.Dungeons and AR.Dungeons.Reset then AR.Dungeons:Reset() end
     self.frame = nil
     self.headerText = nil
     self.closeButton = nil
@@ -316,10 +327,22 @@ function GuideMenu:InitializeFrame()
         f:Hide()
     end)
 
-    -- Sidebar search box: filters the list by guide name (or quest:<id>) as you type.
+    -- Mode tabs: Guides | Lookup | Dungeons.
+    self.modeButtons = {}
+    for idx, mode in ipairs(self.MODES) do
+        local b = createMenuButton(f, "AzerothRouteModeBtn" .. idx, LGet(mode.labelKey), 50, 24, true, "list")
+        b:SetPoint("TOPLEFT", f, "TOPLEFT", 1 + (idx - 1) * 50, -50)
+        b._mode = mode.id
+        b._labelKey = mode.labelKey
+        b:SetScript("OnClick", function() self:SetMode(mode.id) end)
+        self.modeButtons[idx] = b
+    end
+
+    -- Sidebar search box: filters the list by guide name (or quest:<id>) as you type;
+    -- in Lookup and Dungeons it feeds their search instead.
     local box = _G.CreateFrame("EditBox", "AzerothRouteGuideSearch", f)
     box:SetSize(128, 22)
-    box:SetPoint("TOPLEFT", f, "TOPLEFT", 12, -56)
+    box:SetPoint("TOPLEFT", f, "TOPLEFT", 12, -78)
     if box.SetAutoFocus then box:SetAutoFocus(false) end
     if box.SetFontObject then box:SetFontObject("GameFontHighlightSmall") end
     if box.SetTextInsets then box:SetTextInsets(8, 8, 0, 0) end
@@ -353,7 +376,7 @@ function GuideMenu:InitializeFrame()
     self.categoryButtons = {}
     for idx, cat in ipairs(self.CATEGORIES) do
         local cBtn = createMenuButton(f, "AzerothRouteCatBtn" .. idx, LGet(cat.labelKey), 151, 28, false)
-        cBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -90 - (idx - 1) * 30)
+        cBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -108 - (idx - 1) * 30)
         if cBtn.CreateFontString then
             cBtn.count = cBtn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
             cBtn.count:SetPoint("RIGHT", cBtn, "RIGHT", -12, 0)
@@ -600,10 +623,56 @@ function GuideMenu:GetVisibleGuides()
     return self:GetGuidesForCategory(self.activeCategory)
 end
 
+local MODE_MODULES = { lookup = "Lookup", dungeons = "Dungeons" }
+
+function GuideMenu:ModeModule(mode)
+    local name = MODE_MODULES[mode or self.mode]
+    return name and AR[name] or nil
+end
+
 function GuideMenu:SetSearch(query)
-    self.searchQuery = query or ""
+    query = query or ""
+    local module = self:ModeModule()
+    if module then
+        self.modeQueries = self.modeQueries or {}
+        self.modeQueries[self.mode] = query
+        module:SetQuery(query)
+        return
+    end
+    self.searchQuery = query
     self.pageOffset = 0
+    if self.searchBox and self.searchBox.SetText and self.searchBox.GetText and self.searchBox:GetText() ~= query then
+        self.searchBox:SetText(query)
+    end
     if self.frame then self:RenderGuidePage() end
+end
+
+-- Switches the Guide Center between its guide list and the Lookup / Dungeons panels.
+function GuideMenu:SetMode(mode)
+    local f = self:InitializeFrame()
+    mode = MODE_MODULES[mode] and mode or "guides"
+    self.mode = mode
+    for _, name in pairs(MODE_MODULES) do
+        local m = AR[name]
+        if m and m.Attach then
+            local panel = m:Attach(f)
+            panel:SetShown(false)
+        end
+    end
+    local module = self:ModeModule(mode)
+    local query = (module and (self.modeQueries or {})[mode]) or (not module and self.searchQuery) or ""
+    if self.searchBox and self.searchBox.SetText then self.searchBox:SetText(query) end
+    for _, b in ipairs(self.modeButtons or {}) do
+        paintSelectable(b, b._mode == mode)
+        if b.label then b.label:SetText(LGet(b._labelKey)) end
+    end
+    if module then
+        module:SetQuery(query)
+        module.panel:SetShown(true)
+    else
+        self:RenderGuidePage()
+    end
+    return mode
 end
 
 function GuideMenu:RenderGuidePage()
@@ -699,9 +768,14 @@ function GuideMenu:PrevPage()
     end
 end
 
-function GuideMenu:Show()
+function GuideMenu:Show(mode)
     local f = self:InitializeFrame()
-    self:SelectCategory(self.activeCategory)
+    mode = mode or self.mode or "guides"
+    if mode ~= "guides" or (self.mode and self.mode ~= "guides") then
+        self:SetMode(mode)
+    else
+        self:SelectCategory(self.activeCategory)
+    end
     f:Show()
 end
 

@@ -91,7 +91,9 @@ function MinimapButton:BuildMenuItems()
         { text = text("UI_MM_KEEP_ARROW", "Keep the arrow when hidden"), checked = p.keeparrow ~= false,
             onClick = function() p.keeparrow = (p.keeparrow == false) end },
         { separator = true },
-        { text = text("UI_GUIDES", "Guides"), onClick = function() if AR.GuideMenu then AR.GuideMenu:Show() end end },
+        { text = text("UI_GUIDES", "Guides"), onClick = function() if AR.GuideMenu then AR.GuideMenu:Show("guides") end end },
+        { text = text("UI_LOOKUP", "Lookup"), onClick = function() if AR.GuideMenu then AR.GuideMenu:Show("lookup") end end },
+        { text = text("UI_DUNGEONS", "Dungeons"), onClick = function() if AR.GuideMenu then AR.GuideMenu:Show("dungeons") end end },
         { text = text("UI_TALENTS", "Talents"), onClick = function()
             if AR.TalentAdvisor and AR.TalentAdvisor.ToggleUI then AR.TalentAdvisor:ToggleUI() end end },
         { text = text("UI_MENU_OPTIONS", "Options"), onClick = function() if AR.Config then AR.Config:Open() end end },

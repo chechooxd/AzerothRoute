@@ -95,6 +95,9 @@ UI\Menu\DashboardWidgets.lua
 UI\Menu\Options.lua
 UI\Menu\GuideMenu.lua
 UI\Menu\QuestLogCleanup.lua
+UI\Menu\MenuPanel.lua
+UI\Menu\Lookup.lua
+UI\Menu\Dungeons.lua
 UI\MinimapButton.lua
 UI\Bindings.lua
 UI\Menu\Config.lua
@@ -102,3 +105,14 @@ UI\Menu\Config.lua
 # SPEC-14B: Static Data & Guide Catalog
 Data\Catalog.lua
 Guides\Autoload.lua
+
+# Lookup & Dungeons database (generated from pfQuest by tools/build_db.lua; see DB/LICENSE-pfQuest.txt)
+DB\Access.lua
+DB\DungeonDefs.lua
+DB\Quests.lua
+DB\QuestNames.lua
+DB\Units.lua
+DB\Objects.lua
+DB\Items.lua
+DB\Names_esES.lua
+DB\DungeonData.lua

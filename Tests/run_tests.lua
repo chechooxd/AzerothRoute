@@ -111,11 +111,23 @@ function T:BootstrapAddon()
         "UI/Menu/Options.lua",
         "UI/Menu/GuideMenu.lua",
         "UI/Menu/QuestLogCleanup.lua",
+        "UI/Menu/MenuPanel.lua",
+        "UI/Menu/Lookup.lua",
+        "UI/Menu/Dungeons.lua",
         "UI/MinimapButton.lua",
         "UI/Bindings.lua",
         "UI/Menu/Config.lua",
         "Data/Catalog.lua",
         "Guides/Autoload.lua",
+        "DB/Access.lua",
+        "DB/DungeonDefs.lua",
+        "DB/Quests.lua",
+        "DB/QuestNames.lua",
+        "DB/Units.lua",
+        "DB/Objects.lua",
+        "DB/Items.lua",
+        "DB/Names_esES.lua",
+        "DB/DungeonData.lua",
     }
     for _, path in ipairs(tocFiles) do
         dofile(path)
@@ -157,6 +169,7 @@ function T:RunAll()
         "Tests/test_arrow_ux.lua",
         "Tests/test_viewer_ux.lua",
         "Tests/test_polestar_parity.lua",
+        "Tests/test_lookup_dungeons.lua",
         "Tests/test_racial_flightpaths.lua",
         "Tests/test_live_ux_gaps.lua",
     }
