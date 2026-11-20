@@ -483,4 +483,70 @@ local NOTES = {
 ]=],
         why = "drops the rest of Polestar's Why paragraphs",
     },
+    -- Talents: icons and tooltips on the plan's picks (2026-11-20).
+    {
+        file = "AzerothRoute/Talents/View.lua",
+        find = [=[local function row(i)
+	local r = rows[i]
+	if r then return r end]=],
+        replace = [=[-- AzerothRoute: each pick shows its talent's icon, and the talent's tooltip on hover.
+local ICON = 18
+local function spellIcon(spell)
+	if not spell then return nil end
+	if C_Spell and C_Spell.GetSpellTexture then
+		local ok, t = pcall(C_Spell.GetSpellTexture, spell)
+		if ok and t then return t end
+	end
+	if GetSpellTexture then
+		local ok, t = pcall(GetSpellTexture, spell)
+		if ok and t then return t end
+	end
+	return table.concat({ "Interface", "Icons", "INV_Misc_QuestionMark" }, string.char(92))
+end
+TV.SpellIcon = spellIcon
+
+local function showPickTip(r)
+	local p, GT = r.psPick, GameTooltip
+	if not (p and GT) then return end
+	GT:SetOwner(r, "ANCHOR_RIGHT")
+	local ok = r.psSpell and GT.SetSpellByID and pcall(GT.SetSpellByID, GT, r.psSpell)
+	if not ok then GT:SetText(r.Title:GetText() or "") end
+	local n = r.psNode
+	GT:AddLine(" ")
+	GT:AddLine(format(L["Pick %d of the plan, rank %d of %d"], p.order, p.rank, n and n.max or p.rank), 0.6, 0.8, 1)
+	GT:Show()
+end
+
+local function row(i)
+	local r = rows[i]
+	if r then return r end]=],
+        why = "talent rows: icon helper and tooltip",
+    },
+    {
+        file = "AzerothRoute/Talents/View.lua",
+        find = [=[	r.Title = W.Text(r, "body", "text")
+	r.Title:SetPoint("LEFT", r, "LEFT", TEXT_X, 0)]=],
+        replace = [=[	r.Icon = r:CreateTexture(nil, "ARTWORK")
+	r.Icon:SetSize(ICON, ICON)
+	r.Icon:SetPoint("LEFT", r, "LEFT", TEXT_X, 0)
+	r.Icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+	r.Title = W.Text(r, "body", "text")
+	r.Title:SetPoint("LEFT", r.Icon, "RIGHT", 6, 0)
+	r:EnableMouse(true)
+	r:SetScript("OnEnter", showPickTip)
+	r:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)]=],
+        why = "talent rows: the icon before the name, tooltip on hover",
+    },
+    {
+        file = "AzerothRoute/Talents/View.lua",
+        find = [=[		r.Title:SetWidth(max(40, min(LIST_W - ROW_X * 2 - TEXT_X - 50, floor(r.Title:GetStringWidth() + 1))))
+		r.psPick = p]=],
+        replace = [=[		r.Title:SetWidth(max(40, min(LIST_W - ROW_X * 2 - TEXT_X - 50 - ICON - 6, floor(r.Title:GetStringWidth() + 1))))
+		r.psPick = p
+		r.psNode, r.psSpell = n, n and n.spell
+		r.Icon:SetTexture(spellIcon(n and n.spell))
+		r.Icon:SetDesaturated(done and true or false)
+		r.Icon:SetAlpha(done and 0.6 or 1)]=],
+        why = "talent rows: each pick's icon, dimmed once learned",
+    },
 }

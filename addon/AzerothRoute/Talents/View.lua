@@ -40,6 +40,34 @@ local root, shellRef, list, detail, soon
 local rows, bands, heads, notes = {}, {}, {}, {}
 local shown = {}
 
+-- AzerothRoute: each pick shows its talent's icon, and the talent's tooltip on hover.
+local ICON = 18
+local function spellIcon(spell)
+	if not spell then return nil end
+	if C_Spell and C_Spell.GetSpellTexture then
+		local ok, t = pcall(C_Spell.GetSpellTexture, spell)
+		if ok and t then return t end
+	end
+	if GetSpellTexture then
+		local ok, t = pcall(GetSpellTexture, spell)
+		if ok and t then return t end
+	end
+	return table.concat({ "Interface", "Icons", "INV_Misc_QuestionMark" }, string.char(92))
+end
+TV.SpellIcon = spellIcon
+
+local function showPickTip(r)
+	local p, GT = r.psPick, GameTooltip
+	if not (p and GT) then return end
+	GT:SetOwner(r, "ANCHOR_RIGHT")
+	local ok = r.psSpell and GT.SetSpellByID and pcall(GT.SetSpellByID, GT, r.psSpell)
+	if not ok then GT:SetText(r.Title:GetText() or "") end
+	local n = r.psNode
+	GT:AddLine(" ")
+	GT:AddLine(format(L["Pick %d of the plan, rank %d of %d"], p.order, p.rank, n and n.max or p.rank), 0.6, 0.8, 1)
+	GT:Show()
+end
+
 local function row(i)
 	local r = rows[i]
 	if r then return r end
@@ -57,8 +85,15 @@ local function row(i)
 	W.Color(r.Bar, "accent")
 	r.Level = W.Text(r, "number", "textMuted")
 	r.Level:SetPoint("RIGHT", r, "LEFT", TEXT_X - 8, 0)
+	r.Icon = r:CreateTexture(nil, "ARTWORK")
+	r.Icon:SetSize(ICON, ICON)
+	r.Icon:SetPoint("LEFT", r, "LEFT", TEXT_X, 0)
+	r.Icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 	r.Title = W.Text(r, "body", "text")
-	r.Title:SetPoint("LEFT", r, "LEFT", TEXT_X, 0)
+	r.Title:SetPoint("LEFT", r.Icon, "RIGHT", 6, 0)
+	r:EnableMouse(true)
+	r:SetScript("OnEnter", showPickTip)
+	r:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)
 	r.Sub = W.Text(r, "small", "textMuted")
 	r.Sub:SetJustifyH("RIGHT")
 	r.Sub:SetPoint("RIGHT", r, "RIGHT", -10, 0)
@@ -277,8 +312,12 @@ local function renderList(build, c, valid)
 		r.Title:SetText(T.NodeName(build.data, p.node, valid))
 		W.Color(r.Title, isNext and "accent" or (done and "textMuted" or "text"))
 		r.Sub:SetText(format("%d/%d", p.rank, n.max))
-		r.Title:SetWidth(max(40, min(LIST_W - ROW_X * 2 - TEXT_X - 50, floor(r.Title:GetStringWidth() + 1))))
+		r.Title:SetWidth(max(40, min(LIST_W - ROW_X * 2 - TEXT_X - 50 - ICON - 6, floor(r.Title:GetStringWidth() + 1))))
 		r.psPick = p
+		r.psNode, r.psSpell = n, n and n.spell
+		r.Icon:SetTexture(spellIcon(n and n.spell))
+		r.Icon:SetDesaturated(done and true or false)
+		r.Icon:SetAlpha(done and 0.6 or 1)
 		r:Show()
 		y = y + ROW_H
 	end

@@ -13,6 +13,7 @@ local ES = {
 	["AzerothRoute plans your route step by step: who to talk to, what to kill or collect, and where to go next."] =
 		"AzerothRoute traza tu ruta paso a paso: con quién hablar, qué matar o conseguir y a dónde ir después.",
 	["Based on Polestar by The Polestar authors"] = "Basado en Polestar, de los autores de Polestar",
+	["Pick %d of the plan, rank %d of %d"] = "Punto %d del plan, rango %d de %d",
 	["(trimmed)"] = "(recortado)",
 	["AzerothRoute plans your road through Azeroth: every quest, every flight and every step, in order, so you play instead of planning."] =
 		"AzerothRoute traza tu camino por Azeroth: cada misión, cada vuelo y cada paso, en orden, para que juegues en vez de planificar.",
