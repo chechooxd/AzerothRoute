@@ -143,7 +143,8 @@ end
 local units, unitArea = {}, {}
 for id, d in pairs(pfDB.units.data) do
     local name = pfDB.units.enUS[id]
-    if name and name ~= "" then
+    -- Placeholder records ("[UNUSED] ...", "[PH] ...") never spawn; leave them out.
+    if name and name ~= "" and not name:find("^%[") and not name:find("UNUSED", 1, true) then
         local map, x, y, area = bestCoord(d.coords)
         unitArea[id] = area
         units[id] = table.concat({ clean(name), clean(d.lvl or ""), sideOfFac(d.fac), map, x, y, unitFlags[id] or "" }, "^")

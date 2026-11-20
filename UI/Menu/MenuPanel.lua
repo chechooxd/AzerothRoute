@@ -79,8 +79,8 @@ function MenuPanel:Attach(f, prefix)
     local level = (f.GetFrameLevel and f:GetFrameLevel() or 1) + 20
 
     local side = AR.UI:Create("Frame", f, prefix .. "Side")
-    side:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -128)
-    side:SetSize(151, H - 129)
+    side:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -82)
+    side:SetSize(151, H - 83)
     if side.SetFrameLevel then side:SetFrameLevel(level) end
     if side.EnableMouse then side:EnableMouse(true) end
     side.bg = side:CreateTexture(nil, "BACKGROUND")
@@ -146,6 +146,7 @@ function MenuPanel:Attach(f, prefix)
     main.title = main:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
     main.title:SetPoint("TOPLEFT", main, "TOPLEFT", dx, -14)
     if main.title.SetWidth then main.title:SetWidth(220) end
+    if main.title.SetWordWrap then main.title:SetWordWrap(false) end
     main.title:SetJustifyH("LEFT")
     if main.title.SetTextColor then main.title:SetTextColor(S:RGBA("text")) end
     main.subtitle = main:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")

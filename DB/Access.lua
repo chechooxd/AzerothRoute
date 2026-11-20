@@ -48,6 +48,11 @@ function DB:LocalName(kind, id, english)
     return english
 end
 
+-- Blizzard placeholder records ("[UNUSED] ...", "[PH] ...", "[NOT USED] ...") that never spawn in game.
+function DB:IsPlaceholder(name)
+    return type(name) == "string" and (name:sub(1, 1) == "[" or name:find("UNUSED", 1, true) ~= nil)
+end
+
 function DB:GetUnit(id)
     local raw = DB.Units and DB.Units[id]
     if not raw then return nil end
@@ -132,7 +137,8 @@ function DB:Search(query, kinds, limit)
     limit = limit or 500
     local results = {}
     local function want(kind) return not kinds or kinds[kind] end
-    local function consider(kind, id, name)
+    local function consider(kind, id, name, english)
+        if self:IsPlaceholder(english or name) or self:IsPlaceholder(name) then return end
         local lower = name:lower()
         local at = lower:find(q, 1, true)
         if at then results[#results + 1] = { kind = kind, id = id, name = name, prefix = at == 1 } end
@@ -144,19 +150,22 @@ function DB:Search(query, kinds, limit)
     end
     if want("npc") then
         for id, raw in pairs(DB.Units or {}) do
-            consider("npc", id, self:LocalName("units", id, raw:match("^[^^]*")))
+            local en = raw:match("^[^^]*")
+            consider("npc", id, self:LocalName("units", id, en), en)
         end
     end
     if want("object") then
         for id, raw in pairs(DB.Objects or {}) do
-            consider("object", id, self:LocalName("objects", id, raw:match("^[^^]*")))
+            local en = raw:match("^[^^]*")
+            consider("object", id, self:LocalName("objects", id, en), en)
         end
     end
     if want("item") or want("mount") or want("recipe") then
         for id, raw in pairs(DB.Items or {}) do
             local tag = raw:match("%^([RMQ]?)$") or ""
             local kind = (tag == "R" and "recipe") or (tag == "M" and "mount") or "item"
-            if want(kind) then consider(kind, id, self:LocalName("items", id, raw:match("^[^^]*"))) end
+            local en = raw:match("^[^^]*")
+            if want(kind) then consider(kind, id, self:LocalName("items", id, en), en) end
         end
     end
     table.sort(results, function(a, b)

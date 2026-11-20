@@ -69,7 +69,7 @@ function Gamepad:Columns()
         else
             cols[#cols + 1] = visible(GM.categoryButtons)
             cols[#cols + 1] = visible(GM.guideRowButtons)
-            cols[#cols + 1] = visible({ GM.loadButton, GM.talentButton, GM.deleteButton, GM.importButton })
+            cols[#cols + 1] = visible({ GM.loadButton, GM.deleteButton, GM.importButton })
         end
         local out = {}
         for _, c in ipairs(cols) do if #c > 0 then out[#out + 1] = c end end

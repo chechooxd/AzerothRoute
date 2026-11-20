@@ -47,7 +47,7 @@ function Rares:All()
     local out = {}
     for id, raw in pairs((AR.DB and AR.DB.Units) or {}) do
         local flags = raw:match("%^([%a]*)$") or ""
-        if flags:find("x", 1, true) then
+        if flags:find("x", 1, true) and not AR.DB:IsPlaceholder(raw:match("^[^^]*")) then
             local u = AR.DB:GetUnit(id)
             if u then
                 u.levelNum = tonumber((u.level or ""):match("%d+")) or 0

@@ -1011,3 +1011,36 @@ T:Describe("Guide data", function()
         T:AssertEqual(bad, 0, "Quest goals away from their NPC")
     end)
 end)
+
+T:Describe("Guide Center navigation", function()
+    T:It("puts every section, Talents included, in the side rail and keeps Talents out of the guide details", function()
+        local AR = _G.AzerothRoute
+        local GM = AR.GuideMenu
+        GM:InitializeFrame()
+        local labels, talents = {}, nil
+        for _, b in ipairs(GM.modeButtons) do
+            labels[#labels + 1] = b._labelKey
+            if b._action == "talents" then talents = b end
+        end
+        T:AssertEqual(#labels, 7, "Seven rail entries")
+        T:AssertTrue(talents ~= nil, "Talents lives in the rail")
+        T:AssertTrue(GM.talentButton == nil, "No Talents button beside a selected guide")
+        local mode = GM:SetMode("guides")
+        T:AssertEqual(mode, "guides")
+        T:AssertTrue(talents._selected ~= true, "Talents never shows as the selected mode")
+    end)
+
+    T:It("leaves Blizzard placeholder records out of search and rares", function()
+        local AR = _G.AzerothRoute
+        T:AssertTrue(AR.DB:IsPlaceholder("[UNUSED] Ancient Guardian"))
+        T:AssertTrue(AR.DB:IsPlaceholder("[PH] Alliance A1 Tower Banner BIG"))
+        T:AssertTrue(not AR.DB:IsPlaceholder("Ukor"))
+        for _, r in ipairs(AR.DB:Search("guardian", { npc = true })) do
+            T:AssertTrue(not r.name:find("UNUSED", 1, true), "Search hides " .. r.name)
+        end
+        AR.Rares.list = nil
+        for _, u in ipairs(AR.Rares:All()) do
+            T:AssertTrue(not AR.DB:IsPlaceholder(u.name), "Rares hides " .. tostring(u.name))
+        end
+    end)
+end)

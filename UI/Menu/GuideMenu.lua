@@ -5,13 +5,16 @@ local GuideMenu = {
     WIDTH = 720,
     HEIGHT = 480,
     MAX_ROWS = 14,
+    RAIL_WIDTH = 68,
+    -- Navigation rail entries, top to bottom. `action` entries open their own window instead of a mode.
     MODES = {
-        { id = "guides", labelKey = "UI_GUIDES" },
-        { id = "lookup", labelKey = "UI_LOOKUP" },
-        { id = "dungeons", labelKey = "UI_DUNGEONS" },
-        { id = "rares", labelKey = "UI_LK_RARES" },
-        { id = "characters", labelKey = "UI_CHARACTERS" },
-        { id = "options", labelKey = "UI_MENU_OPTIONS" },
+        { id = "guides", labelKey = "UI_GUIDES", icon = "Interface\\Icons\\INV_Misc_Book_09" },
+        { id = "lookup", labelKey = "UI_LOOKUP", icon = "Interface\\Icons\\INV_Misc_Spyglass_03" },
+        { id = "dungeons", labelKey = "UI_DUNGEONS", icon = "Interface\\Icons\\INV_Misc_Key_14" },
+        { action = "talents", labelKey = "UI_TALENTS", icon = "Interface\\Icons\\Ability_Marksmanship" },
+        { id = "rares", labelKey = "UI_LK_RARES", icon = "Interface\\Icons\\INV_Misc_Head_Dragon_01" },
+        { id = "characters", labelKey = "UI_CHARACTERS", icon = "Interface\\Icons\\INV_Misc_Head_Human_01" },
+        { id = "options", labelKey = "UI_MENU_OPTIONS", icon = "Interface\\Icons\\INV_Misc_Gear_01" },
     },
     mode = "guides",
     CATEGORIES = {
@@ -257,6 +260,7 @@ function GuideMenu:InitializeFrame()
         if self.detailTitle.SetTextColor then self.detailTitle:SetTextColor(S:RGBA("text")) end
         self.detailTitle:SetPoint("TOPLEFT", f, "TOPLEFT", 488, -60)
         if self.detailTitle.SetWidth then self.detailTitle:SetWidth(210) end
+        if self.detailTitle.SetWordWrap then self.detailTitle:SetWordWrap(false) end
         self.detailTitle:SetJustifyH("LEFT")
         self.detailTitle:SetText(LGet("UI_SELECT_GUIDE"))
 
@@ -337,15 +341,50 @@ function GuideMenu:InitializeFrame()
         f:Hide()
     end)
 
-    -- Mode tabs: Guides | Lookup | Dungeons.
+    -- Navigation rail down the left edge of the window: one icon + label per section.
+    local rail = AR.UI:Create("Frame", f, "AzerothRouteGuideRail")
+    rail:SetSize(self.RAIL_WIDTH, self.HEIGHT)
+    rail:SetPoint("TOPRIGHT", f, "TOPLEFT", 1, 0)
+    if rail.EnableMouse then rail:EnableMouse(true) end
+    if rail.RegisterForDrag then rail:RegisterForDrag("LeftButton") end
+    rail:SetScript("OnDragStart", function() if f.StartMoving then f:StartMoving() end end)
+    rail:SetScript("OnDragStop", function() if f.StopMovingOrSizing then f:StopMovingOrSizing() end end)
+    if rail.CreateTexture then
+        rail.bg = rail:CreateTexture(nil, "BACKGROUND")
+        rail.bg:SetAllPoints(rail)
+        S:Paint(rail.bg, "bg", 0.98)
+        S:AddBorder(rail, "border")
+    end
+    self.rail = rail
     self.modeButtons = {}
     for idx, mode in ipairs(self.MODES) do
-        local b = createMenuButton(f, "AzerothRouteModeBtn" .. idx, LGet(mode.labelKey), 50, 24, true, "list")
-        -- Two rows of three tabs.
-        b:SetPoint("TOPLEFT", f, "TOPLEFT", 1 + ((idx - 1) % 3) * 50, -50 - math.floor((idx - 1) / 3) * 25)
+        local b = createMenuButton(rail, "AzerothRouteModeBtn" .. idx, LGet(mode.labelKey), self.RAIL_WIDTH - 2, 50, true, "list")
+        b:SetPoint("TOPLEFT", rail, "TOPLEFT", 1, -12 - (idx - 1) * 54)
+        if b.accent and b.accent.SetSize then b.accent:SetSize(2, 50) end
+        if b.CreateTexture and mode.icon then
+            b.icon = b:CreateTexture(nil, "ARTWORK")
+            b.icon:SetSize(20, 20)
+            b.icon:SetPoint("TOP", b, "TOP", 0, -7)
+            b.icon:SetTexture(mode.icon)
+            if b.icon.SetTexCoord then b.icon:SetTexCoord(0.08, 0.92, 0.08, 0.92) end
+        end
+        if b.label then
+            if b.label.ClearAllPoints then b.label:ClearAllPoints() end
+            b.label:SetPoint("BOTTOM", b, "BOTTOM", 0, 6)
+            if b.label.SetFontObject then b.label:SetFontObject("GameFontHighlightSmall") end
+            if b.label.SetWidth then b.label:SetWidth(self.RAIL_WIDTH - 6) end
+            if b.label.SetWordWrap then b.label:SetWordWrap(false) end
+        end
         b._mode = mode.id
+        b._action = mode.action
         b._labelKey = mode.labelKey
-        b:SetScript("OnClick", function() self:SetMode(mode.id) end)
+        b:SetScript("OnClick", function()
+            if mode.action == "talents" then
+                if AR.TalentAdvisor and AR.TalentAdvisor.ToggleUI then AR.TalentAdvisor:ToggleUI() end
+            else
+                self:SetMode(mode.id)
+            end
+        end)
         self.modeButtons[idx] = b
     end
 
@@ -353,7 +392,7 @@ function GuideMenu:InitializeFrame()
     -- in Lookup and Dungeons it feeds their search instead.
     local box = _G.CreateFrame("EditBox", "AzerothRouteGuideSearch", f)
     box:SetSize(128, 22)
-    box:SetPoint("TOPLEFT", f, "TOPLEFT", 12, -103)
+    box:SetPoint("TOPLEFT", f, "TOPLEFT", 12, -56)
     if box.SetAutoFocus then box:SetAutoFocus(false) end
     if box.SetFontObject then box:SetFontObject("GameFontHighlightSmall") end
     if box.SetTextInsets then box:SetTextInsets(8, 8, 0, 0) end
@@ -387,7 +426,7 @@ function GuideMenu:InitializeFrame()
     self.categoryButtons = {}
     for idx, cat in ipairs(self.CATEGORIES) do
         local cBtn = createMenuButton(f, "AzerothRouteCatBtn" .. idx, LGet(cat.labelKey), 151, 28, false)
-        cBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -132 - (idx - 1) * 30)
+        cBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -86 - (idx - 1) * 30)
         if cBtn.CreateFontString then
             cBtn.count = cBtn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
             cBtn.count:SetPoint("RIGHT", cBtn, "RIGHT", -12, 0)
@@ -438,15 +477,6 @@ function GuideMenu:InitializeFrame()
         self:NextPage()
     end)
 
-    -- Right Column "Talents" Advisor Button
-    self.talentButton = createMenuButton(f, "AzerothRouteMenuTalentsButton", LGet("UI_TALENTS"), 210, 28, true)
-    self.talentButton:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 488, 62)
-    self.talentButton:SetScript("OnClick", function()
-        if AR.TalentAdvisor and AR.TalentAdvisor.ToggleUI then
-            AR.TalentAdvisor:ToggleUI()
-        end
-    end)
-
     -- Right Column "Load Selected Guide" Action Button
     self.loadButton = createMenuButton(f, "AzerothRouteLoadGuideButton", LGet("UI_LOAD_GUIDE"), 210, 32, true, "primary")
     self.loadButton:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 488, 22)
@@ -483,7 +513,7 @@ function GuideMenu:InitializeFrame()
         if AR.ImportWindow then AR.ImportWindow:Show() end
     end)
     self.deleteButton = createMenuButton(f, "AzerothRouteGuideDelete", LGet("UI_IMPORT_DELETE"), 210, 24, true)
-    self.deleteButton:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 488, 98)
+    self.deleteButton:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 488, 62)
     if self.deleteButton.label and self.deleteButton.label.SetTextColor then
         self.deleteButton.label:SetTextColor(0.94, 0.45, 0.42, 1)
     end
@@ -742,7 +772,8 @@ function GuideMenu:SetMode(mode)
     local query = (module and (self.modeQueries or {})[mode]) or (not module and self.searchQuery) or ""
     if self.searchBox and self.searchBox.SetText then self.searchBox:SetText(query) end
     for _, b in ipairs(self.modeButtons or {}) do
-        paintSelectable(b, b._mode == mode)
+        paintSelectable(b, b._mode ~= nil and b._mode == mode)
+        if b.icon and b.icon.SetDesaturated then b.icon:SetDesaturated(b._mode ~= mode) end
         if b.label then b.label:SetText(LGet(b._labelKey)) end
     end
     if module then
@@ -757,7 +788,6 @@ end
 function GuideMenu:RenderGuidePage()
     if self.headerText then self.headerText:SetText(LGet("UI_GUIDE_MENU_TITLE")) end
     if self.loadButton and self.loadButton.label then self.loadButton.label:SetText(LGet("UI_LOAD_GUIDE")) end
-    if self.talentButton and self.talentButton.label then self.talentButton.label:SetText(LGet("UI_TALENTS")) end
     if self.prevPageButton and self.prevPageButton.label then self.prevPageButton.label:SetText(LGet("UI_PREV_PAGE")) end
     if self.nextPageButton and self.nextPageButton.label then self.nextPageButton.label:SetText(LGet("UI_NEXT_PAGE")) end
 
