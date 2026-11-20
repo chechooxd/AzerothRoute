@@ -220,7 +220,7 @@ function Lookup.UnitTooltip(tooltip, unit)
 		right = L["Class mount"]
 	end
 	H.AddLine(tooltip, L["Mount"] .. ": " .. info.name, right, lr, lg, lb, rr, rg, rb)
-	H.AddLine(tooltip, L["/pole mount: how to get it"], nil, color("textMuted", 0.5, 0.54, 0.63))
+	H.AddLine(tooltip, L["/ar mount: how to get it"], nil, color("textMuted", 0.5, 0.54, 0.63))
 end
 
 ns.Hooks.ItemLines("lookup", Lookup.ItemTooltip)

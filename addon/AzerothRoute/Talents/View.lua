@@ -115,6 +115,11 @@ function TV.Build(parent, shell)
 	d.Follow:SetPoint("BOTTOMRIGHT", d.Foot, "BOTTOMRIGHT", -FOOT_PAD, FOOT_PAD)
 	d.Auto = W.Button(d.Foot, L["Follow my spec"], function() TV.FollowSpec() end, { height = 28 })
 	d.Auto.psTip = L["Pick the plan for the spec AzerothRoute's gear advice uses."]
+	-- AzerothRoute: Apply talents, on the followed plan while a point waits (Talents/Apply.lua).
+	d.Apply = W.Button(d.Foot, L["Apply talents"], function() if T.Apply then T.Apply.Run() end end, { height = 28 })
+	d.Apply:SetPoint("BOTTOMLEFT", d.Foot, "BOTTOMLEFT", FOOT_PAD, FOOT_PAD)
+	d.Apply.psTip = L["Spend your unspent points on this plan's next picks, in order."]
+	d.Apply:Hide()
 	d.Scroll = W.Scroll(d)
 	d.Scroll:SetPoint("TOPLEFT", d, "TOPLEFT", 0, -1)
 	d.Scroll:SetPoint("BOTTOMRIGHT", d.Foot, "TOPRIGHT", -4, 4)
@@ -363,6 +368,10 @@ function TV.Render()
 	w.note(format(L["Picks from %s (%s), checked against the game's talent tree; notes in Polestar's words."], data.source, data.url))
 	local choice = T.Choice()
 	actions(not mine or choice == "auto", choice ~= "auto")
+	local canApply = mine and c and c.staged and c.staged.status == "behind" and (c.staged.unspent or 0) > 0 or false
+	detail.Apply:SetShown(canApply)
+	if canApply then detail.Foot:Show() end
+	shown.apply = canApply
 	if mine and choice == "auto" then W.SetButtonText(detail.Follow, L["Keep this plan"]) else W.SetButtonText(detail.Follow, L["Follow this plan"]) end
 	detail.Follow.psTip = L["Follow this plan whatever spec gear advice uses."]
 	shown.follow, shown.auto = detail.Follow:IsShown(), detail.Auto:IsShown()

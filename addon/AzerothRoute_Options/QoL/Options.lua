@@ -371,7 +371,7 @@ register(QOL, L["Vendors"], L["Trainers"], {
 -- The XP tracker, 0.3.7's Boosted Rest line under the guide window's XP line, the session's reset.
 register(QOL, L["Trackers & map"], L["Experience"], {
 	{ kind = "toggle", key = "qol.xpTracker", label = L["XP tracker"],
-		help = L["XP per hour, time, kills and quests to level, and level splits (/pole xp)."], search = "experience, xp per hour, exp, leveling speed, time to level" },
+		help = L["XP per hour, time, kills and quests to level, and level splits (/ar xp)."], search = "experience, xp per hour, exp, leveling speed, time to level" },
 	{ kind = "toggle", key = "qol.xpTargetMark", label = L["Guide level on the XP bar"],
 		help = L["A mark at the end of the game's XP bar with the level the guide wants you to reach before it moves on, and how many levels away that is when it is more than one."],
 		search = "experience bar, exp bar, target level" },

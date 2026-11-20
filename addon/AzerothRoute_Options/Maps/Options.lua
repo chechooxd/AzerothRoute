@@ -103,7 +103,7 @@ register({
 register({
 	page = QOL, tab = L["Trackers & map"], section = L["Instances"], move = "instances",
 	toggle = { kind = "toggle", key = "maps.instances", label = L["Track instances"], search = "dungeon, instance lockout, instance cap, reset, runs",
-		help = L["Records dungeon and raid entries, time and experience per run. /pole instances lists them."] },
+		help = L["Records dungeon and raid entries, time and experience per run. /ar instances lists them."] },
 	controls = {
 		{ kind = "toggle", key = "maps.instanceDisplay", label = L["Compact display"],
 			help = L["Shows the hourly instance count and the current run while it matters; drag to move."],

@@ -526,7 +526,7 @@ panelPage(INST, "instances", L["instance tracker"], {
 	section = L["Instance tracker"], preview = function(view) return TR.Preview(view, "instances") end, move = "instances",
 	toggle = { kind = "toggle", key = "maps.instances", label = L["Track instances"], search = "dungeon, instance lockout, instance cap, reset, runs",
 		needs = function() return ns.Maps end,
-		help = L["Records dungeon and raid entries, time and experience per run. /pole instances lists them."] },
+		help = L["Records dungeon and raid entries, time and experience per run. /ar instances lists them."] },
 	controls = {
 		{ kind = "toggle", key = "maps.instanceDisplay", label = L["Display"], needs = function() return ns.Maps end,
 			search = "compact display, tracker, panel, show",

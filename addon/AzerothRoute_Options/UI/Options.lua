@@ -560,7 +560,7 @@ for _, list in ipairs({
 	declare(QUESTING, "questing", "icon-accept", 40, L["Quest information, rewards and gear advice, and the quest buttons."], {
 		{ L["Quests"], { L["Faster questing"], L["Quest log and tooltips"], L["Group"], L["Party chat"] } },
 		{ L["Rewards & gear"], { L["Quest rewards"], L["Gear advice"] } },
-		-- Talents: { L["Talents"], { L["Talent plan"] } } here once the plans are back (Talents.lua, T.SOON).
+		{ L["Talents"], { L["Talent plan"] } },
 		{ L["Buttons"], { L["Action buttons"], L["Targeting"] } },
 	}),
 	declare(DISCOVERY, "discovery", "search", 50, L["Lookup, the dungeon journal and rares: finding things in the world."], {

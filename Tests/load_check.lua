@@ -142,6 +142,58 @@ ns.Set("behavior.autoAccept", true)
 if ns.MigrateV1() ~= 0 or ns.Get("behavior.autoAccept") ~= true then fail("migration ran twice") end
 print("migration: checked")
 
+-- 6. Talents: the plans are on and Apply talents spends the next picks in order
+do
+    local T = ns.Talents
+    local data = T and T.Data("PALADIN")
+    if T.SOON then fail("talent plans still 'coming soon'") end
+    if not data or #data.builds ~= 3 then fail("no Paladin talent plans") else
+        local build = data.builds[1]
+        local function liveWith(taken, granted)
+            local nodes = {}
+            for id, nd in pairs(data.nodes) do nodes[id] = { active = 0, current = 0, max = nd.max, spell = nd.spell, name = nd.name } end
+            for i = 1, taken do local pk = build.picks[i]; nodes[pk.node].active, nodes[pk.node].current = pk.rank, pk.rank end
+            return { config = 7, nodes = nodes, granted = granted }
+        end
+        local function current(live)
+            local valid = T.Validate(data, live)
+            local ranks = {}
+            for id, l in pairs(valid.map) do ranks[id] = live.nodes[l].current end
+            return { data = data, build = build, live = live, valid = valid, staged = T.State(build, ranks, 15, live.granted) }
+        end
+        local c = current(liveWith(3, 5))
+        local picks = T.Apply.Picks(c)
+        if #picks ~= 2 then fail("Apply picks: expected 2, got " .. #picks)
+        elseif picks[1].node ~= build.picks[4].node or picks[2].node ~= build.picks[5].node then fail("Apply picks out of plan order") end
+
+        local bought, commits = {}, 0
+        rawset(_G, "C_Traits", {
+            GetNodeInfo = function() return { entryIDs = { 1 } } end,
+            PurchaseRank = function(config, node) bought[#bought + 1] = node return config == 7 end,
+        })
+        rawset(_G, "C_ClassTalents", { CommitConfig = function() commits = commits + 1 return true end })
+        local refresh = T.Refresh
+        T.Refresh = function() return c end
+        local n = T.Apply.Run()
+        if n ~= 2 or #bought ~= 2 or commits ~= 1 then fail(string.format("Apply run: bought %d (%d calls), %d commits", n, #bought, commits)) end
+        if bought[1] ~= c.valid.map[build.picks[4].node] then fail("Apply bought the wrong node") end
+        -- Never in combat, never on a plan the character has left.
+        rawset(_G, "InCombatLockdown", function() return true end)
+        if T.Apply.Run() ~= 0 then fail("Apply ran in combat") end
+        rawset(_G, "InCombatLockdown", function() return false end)
+        local off = liveWith(3, 5)
+        for id, nd in pairs(off.nodes) do
+            local planned = false
+            for _, pk in ipairs(build.picks) do if pk.node == id then planned = true end end
+            if not planned then nd.active, nd.current = 1, 1 break end
+        end
+        c = current(off)
+        if select(2, T.Apply.Picks(c)) ~= "offplan" then fail("Apply would spend on a plan the character left") end
+        T.Refresh = refresh
+        print("talents: checked")
+    end
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end

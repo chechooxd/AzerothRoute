@@ -75,6 +75,7 @@ local function renameText(s)
     s = s:gsub("Polestar", "AzerothRoute")
     s = s:gsub("POLESTAR", "AZEROTHROUTE")
     s = s:gsub("/polestar", "/ar")
+    s = s:gsub("/pole%f[^%w]", "/ar")
     s = s:gsub("\1(%d+)\2", function(i) return urls[tonumber(i)] end)
     return s
 end

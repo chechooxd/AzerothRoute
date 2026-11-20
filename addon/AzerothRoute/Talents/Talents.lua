@@ -41,7 +41,7 @@ T.FIRST_LEVEL = 10 -- the fallback only: one point a level from here
 -- talent frame gets no marks, tooltips no lines, chat no reminders, and the
 -- Options page no Talents tab (Polestar_Options: Talents/Options.lua, UI/Options.lua). Unset it
 -- and restore that tab to bring the plans back.
-T.SOON = true
+T.SOON = false -- AzerothRoute: the plans are on (user request, 2026-11-20)
 
 ns.RegisterDefaults("talents", {
 	enabled = true,
