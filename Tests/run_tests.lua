@@ -110,6 +110,7 @@ function T:BootstrapAddon()
         "UI/Menu/DashboardWidgets.lua",
         "UI/Menu/Options.lua",
         "UI/Menu/GuideMenu.lua",
+        "UI/Menu/QuestLogCleanup.lua",
         "UI/MinimapButton.lua",
         "UI/Menu/Config.lua",
         "Data/Catalog.lua",

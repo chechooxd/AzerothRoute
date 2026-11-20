@@ -311,3 +311,45 @@ T:Describe("Polestar parity: guide center", function()
         AR.GuideMenu:Reset()
     end)
 end)
+
+T:Describe("Polestar parity: quest log cleanup", function()
+    T:It("lists quests the route never hands in and opens the game's abandon confirmation", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.QuestLogCleanup:Reset()
+        load(AR)
+        MockWoW.quests.inLog[844] = { title = "Plainstrider Menace", isComplete = false, objectives = {} }
+        MockWoW.quests.inLog[9999] = { title = "Dwarven Outfitters", isComplete = false, objectives = {} }
+        local calls = {}
+        local saved = { _G.SelectQuestLogEntry, _G.SetAbandonQuest, _G.StaticPopup_Show, _G.GetQuestLogIndexByID }
+        _G.SelectQuestLogEntry = function(i) table.insert(calls, "select:" .. i) end
+        _G.SetAbandonQuest = function() table.insert(calls, "set") end
+        _G.StaticPopup_Show = function(which, name) table.insert(calls, which .. ":" .. tostring(name)) end
+        _G.GetQuestLogIndexByID = function(id) return id == 9999 and 3 or 0 end
+        local ok, err = pcall(function()
+            AR.QuestLogCleanup:Show()
+            local list = AR.QuestLogCleanup.candidates
+            T:AssertEqual(#list, 1, "Only the off-route quest")
+            T:AssertEqual(list[1].id, 9999)
+            local row = AR.QuestLogCleanup.rows[1]
+            T:AssertTrue(row:IsShown(), "Row drawn")
+            T:AssertEqual(row.title:GetText(), "Dwarven Outfitters")
+            row.abandon:Click("LeftButton")
+            T:AssertEqual(table.concat(calls, ","), "select:3,set,ABANDON_QUEST:Dwarven Outfitters", "Select, mark, then the game's confirmation")
+            T:AssertTrue(MockWoW.quests.inLog[9999] ~= nil, "Nothing is abandoned without the player's confirmation")
+        end)
+        _G.SelectQuestLogEntry, _G.SetAbandonQuest, _G.StaticPopup_Show, _G.GetQuestLogIndexByID = saved[1], saved[2], saved[3], saved[4]
+        AR.QuestLogCleanup:Reset()
+        if not ok then error(err, 0) end
+    end)
+
+    T:It("lists nothing when no guide is loaded", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        local orig = AR.Progression.currentGuide
+        AR.Progression.currentGuide = nil
+        local n = #AR.QuestLogCleanup:GetCandidates()
+        AR.Progression.currentGuide = orig
+        T:AssertEqual(n, 0)
+    end)
+end)

@@ -65,6 +65,7 @@ function QuestTracking:ScanNativeQuestLog(current)
                     level = level or 1,
                     isComplete = (isComplete == 1 or isComplete == true or (#objs > 0 and objs[1].finished)),
                     objectives = objs,
+                    logIndex = i,
                     inlog = true,
                 }
             end
@@ -96,6 +97,7 @@ function QuestTracking:ScanNativeQuestLog(current)
                     level = info.level or 1,
                     isComplete = complete,
                     objectives = objs,
+                    logIndex = i,
                     inlog = true,
                 }
             end
