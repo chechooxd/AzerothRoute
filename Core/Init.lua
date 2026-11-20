@@ -8,7 +8,9 @@ function AR:RegisterSlashCommands()
     _G.SlashCmdList = _G.SlashCmdList or {}
     _G.SlashCmdList["AZEROTHROUTE"] = function(msg)
         msg = (msg or ""):match("^%s*(.-)%s*$"):lower()
-        if msg == "menu" then
+        if msg == "report" or msg == "reportar" then
+            if AR.Report then AR.Report:Show() end
+        elseif msg == "menu" then
             if AR.GuideMenu then
                 AR.GuideMenu:Toggle()
             end
@@ -174,6 +176,9 @@ function AR:Initialize()
         end
         if self.QuestXP and self.QuestXP.RegisterLiveEvents then
             self.QuestXP:RegisterLiveEvents()
+        end
+        if self.Report and self.Report.CaptureErrors then
+            self.Report:CaptureErrors()
         end
         if self.ClassSpells and self.ClassSpells.RegisterLiveEvents then
             self.ClassSpells:RegisterLiveEvents()

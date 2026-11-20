@@ -772,3 +772,34 @@ T:Describe("Polestar parity: zone art", function()
         if not ok then error(err, 0) end
     end)
 end)
+
+T:Describe("Polestar parity: report a problem", function()
+    T:It("builds a copyable report with the step, goals, arrow, settings and caught errors", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.Report:Reset()
+        AR.Report.errors = { "Interface/AddOns/AzerothRoute/UI/Foo.lua:12: boom" }
+        AR.db.profile.autoaccept = false
+        local g = AR.Parser:ParseGuide("ReportGuide", 'step One\n    talk Devrak##3615\n    accept Wanted: "Hogger"##176\n    goto 1413 50.0,40.0\n')
+        AR.Progression:LoadGuide(g, 1)
+        AR.Pointer:SetManualTarget(1413, 0.5, 0.4, "Somewhere")
+        local text = AR.Report:Build("The arrow points the wrong way")
+        T:AssertTrue(text:find("What happened: The arrow points the wrong way", 1, true) ~= nil, "Player's words first")
+        T:AssertTrue(text:find("Guide: ReportGuide · step 1/1", 1, true) ~= nil, "Guide and step")
+        T:AssertTrue(text:find("accept", 1, true) ~= nil and text:find("q176", 1, true) ~= nil, "Each goal with its ids")
+        T:AssertTrue(text:find("Arrow: Somewhere", 1, true) ~= nil, "The arrow")
+        T:AssertTrue(text:find("autoaccept=false", 1, true) ~= nil, "Changed settings")
+        T:AssertTrue(text:find("boom", 1, true) ~= nil, "Caught errors")
+        AR.ViewerFrame:RefreshVisuals()
+        AR.ViewerFrame:ShowMoreMenu()
+        AR.UI:FindMenuItem(AR.L:Get("UI_REPORT_TITLE")):Click("LeftButton")
+        T:AssertTrue(AR.Report.frame:IsShown(), "Opened from the ... menu")
+        _G.SlashCmdList["AZEROTHROUTE"]("report")
+        T:AssertTrue(AR.Report.lastText ~= nil, "And with /ar report")
+        AR.Report.errors = {}
+        AR.db.profile.autoaccept = true
+        AR.Pointer:Reset()
+        AR.Report:Reset()
+    end)
+end)
