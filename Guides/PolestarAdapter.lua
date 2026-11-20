@@ -473,6 +473,20 @@ function PolestarGuides:LoadAll(faction)
     return n
 end
 
+-- Built-in guides Polestar's replace once they are loaded: every leveling guide (Polestar covers
+-- 1-60 for every race) and the profession guides. Dungeon and gold guides stay. Replaced guides
+-- drop out of the Guide Center lists, search and suggestions; one already open keeps working.
+PolestarGuides.REPLACED_PREFIXES = { "Leveling\\", "Professions\\" }
+
+function PolestarGuides:Replaces(guide)
+    if not guide or guide.source == "polestar" or next(self.loaded) == nil then return false end
+    local title = guide.title or ""
+    for _, prefix in ipairs(self.REPLACED_PREFIXES) do
+        if title:sub(1, #prefix) == prefix then return true end
+    end
+    return false
+end
+
 function PolestarGuides:Reset()
     for id, guide in pairs(self.loaded) do
         if AR.Parser and AR.Parser.guidesByTitle and AR.Parser.guidesByTitle[guide.title] == guide then

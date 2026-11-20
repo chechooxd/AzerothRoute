@@ -217,6 +217,10 @@ engine: each Polestar goal becomes an AzerothRoute goal with its quest objective
 note (in the tooltip), and Polestar's race/class/faction filters and quest conditions decide which
 steps and goals you see.
 
+Once they load, AzerothRoute's own leveling and profession guides (which Polestar's cover) drop
+out of the Guide Center lists, search and suggestions; one you already have open keeps working.
+The dungeon and gold guides stay.
+
 To refresh them from a newer Polestar install:
 
 ```bash

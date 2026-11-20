@@ -122,6 +122,38 @@ T:Describe("Polestar guides", function()
         end)
     end)
 
+    T:It("hides the built-in leveling and profession guides Polestar's replace, keeping dungeons, gold and open ones", function()
+        run("Orc", "Warrior", "Horde", 1, function(AR)
+            AR.GuidesCatalog:LoadAll()
+            local GM = AR.GuideMenu
+            local old = AR.Parser.guidesByTitle["Leveling\\Horde\\Durotar (1-12)"]
+            local smithing = AR.Parser.guidesByTitle["Professions\\Blacksmithing (1-300)"]
+            local dungeon = AR.Parser.guidesByTitle["Dungeons\\Ragefire Chasm (13-18)"]
+            T:AssertTrue(old and smithing and dungeon, "Built-in guides registered")
+            T:AssertTrue(not AR.PolestarGuides:Replaces(old), "Nothing replaced before Polestar's guides load")
+
+            AR.PolestarGuides:LoadAll()
+            local function listed(category, guide)
+                for _, g in ipairs(GM:GetGuidesForCategory(category)) do if g == guide then return true end end
+                return false
+            end
+            T:AssertTrue(not listed("LEVELING", old) and not listed("ALL", old), "Old Durotar hidden")
+            T:AssertTrue(not listed("PROFESSIONS", smithing), "Old blacksmithing hidden")
+            T:AssertTrue(listed("DUNGEONS", dungeon), "Dungeon guides stay")
+            T:AssertTrue(listed("LEVELING", AR.Parser.guidesByTitle[DUROTAR]), "Polestar's Durotar listed")
+            for _, g in ipairs(GM:FindSuggestedGuides()) do
+                T:AssertTrue(not AR.PolestarGuides:Replaces(g), "Never suggested: " .. g.title)
+            end
+            for _, g in ipairs(GM:Search("Durotar")) do
+                T:AssertTrue(g.source == "polestar", "Search finds Polestar's only")
+            end
+
+            -- A replaced guide already in progress keeps running.
+            AR.Progression:LoadGuide(old, 1)
+            T:AssertTrue(AR.Progression.currentGuide == old, "Still loads")
+        end)
+    end)
+
     T:It("maps every Polestar goal kind to a goal the engine can show and finish", function()
         local AR = _G.AzerothRoute
         local P = AR.PolestarGuides

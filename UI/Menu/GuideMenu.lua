@@ -533,6 +533,12 @@ function GuideMenu:InitializeFrame()
     return f
 end
 
+-- A built-in guide that Polestar's imported guides replace (AR.PolestarGuides:Replaces).
+local function isReplaced(guide)
+    local P = AR.PolestarGuides
+    return P ~= nil and P.Replaces ~= nil and P:Replaces(guide)
+end
+
 local CATEGORY_ORDER = {
     LEVELING = 1,
     DUNGEONS = 2,
@@ -588,7 +594,7 @@ function GuideMenu:GetGuidesForCategory(categoryID)
 
     local list = {}
     for _, guide in pairs((AR.Parser and AR.Parser.guidesByTitle) or {}) do
-        if categoryID == "ALL" or categoryID == "SUGGESTED" or (guide.type and guide.type:upper() == categoryID) then
+        if not isReplaced(guide) and (categoryID == "ALL" or categoryID == "SUGGESTED" or (guide.type and guide.type:upper() == categoryID)) then
             table.insert(list, guide)
         end
     end
@@ -907,7 +913,7 @@ end
 function GuideMenu:FindSuggestedGuides()
     local suggested = {}
     for _, guide in pairs((AR.Parser and AR.Parser.guidesByTitle) or {}) do
-        if guide.condition_suggested then
+        if guide.condition_suggested and not isReplaced(guide) then
             local ok, res = pcall(guide.condition_suggested)
             if ok and res == true then
                 table.insert(suggested, guide)
@@ -929,7 +935,9 @@ function GuideMenu:Search(query)
 
     for _, guide in pairs((AR.Parser and AR.Parser.guidesByTitle) or {}) do
         local matched = false
-        if targetQuestID then
+        if isReplaced(guide) then
+            matched = false
+        elseif targetQuestID then
             for _, step in ipairs(guide.steps or {}) do
                 for _, goal in ipairs(step.goals or {}) do
                     if goal.questid == targetQuestID then

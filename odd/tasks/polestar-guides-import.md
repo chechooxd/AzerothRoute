@@ -19,3 +19,4 @@ Branch: claude/polestar-guides-import · Delivery: work-unit commits, merged int
 - L2: Polestar guides are compiled Lua tables (265 guides, 6780 steps, 28 goal kinds, 15 `when` kinds); an adapter maps them to Guide/Step/Goal objects instead of a lossy text conversion.
 - L3: Built headless for both factions: Horde 176 guides / 4058 steps, Alliance 186 / 4297, ~0.1 s each, no build errors. Race/class lookups first returned nil (`a and f()` keeps one value); fixed and covered by the class-letter test.
 - L4: Open: the old built-in guides stay next to Polestar's (duplicate zones); in-game check pending.
+- L5 (2026-11-20): "Yes, hide them" - built-in Leveling\ and Professions\ guides are hidden from lists, search and suggestions once Polestar guides load; open ones keep working; dungeons and gold stay.
