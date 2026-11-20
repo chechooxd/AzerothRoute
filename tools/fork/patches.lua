@@ -80,11 +80,11 @@ return {
 ]],
         why = "shows Apply talents only when a point waits on the followed plan",
     },
-    -- Identity: "the route" (2026-11-20). Blue grounds like WoW Forever, Forever azure accent,
-    -- gold for the route and names, jade for what is done; own art in tools/fork/assets.
+    -- Identity: "the route" (2026-11-20). Deep sapphire grounds, pearl white text, ember orange
+    -- accent, a lighter ember for the route and names, jade for what is done; own art in tools/fork/assets.
     {
         file = "AzerothRoute/Theme/House.lua", find = "local DEFAULT_ACCENT = { 0.9, 0.73, 0.4 }",
-        replace = "local DEFAULT_ACCENT = { 0.302, 0.706, 1 } -- AzerothRoute: Forever azure",
+        replace = "local DEFAULT_ACCENT = { 0.949, 0.42, 0.114 } -- AzerothRoute: ember orange",
         why = "AzerothRoute's accent",
     },
     {
@@ -94,8 +94,8 @@ return {
     },
     {
         file = "AzerothRoute/Theme/House.lua", find = "\tquest = { 1, 0.84, 0.45, 1 },",
-        replace = "\tquest = { 0.949, 0.757, 0.306, 1 }, -- AzerothRoute: route gold",
-        why = "AzerothRoute's gold for quests and the route",
+        replace = "\tquest = { 1, 0.698, 0.42, 1 }, -- AzerothRoute: ember glow",
+        why = "AzerothRoute's ember glow for quests and the route",
     },
     {
         file = "AzerothRoute/Theme/House.lua",
@@ -116,23 +116,23 @@ return {
 		onAccent = { 0.04, 0.05, 0.08, 1 },
 		shadow = { 0, 0, 0.02, 0.6 },
 	},]],
-        replace = [[	-- AzerothRoute: the default scheme, "Azeroth": deep Forever blue grounds.
+        replace = [[	-- AzerothRoute: the default scheme, "Azeroth": deep sapphire grounds, pearl white text.
 	dusk = {
-		bg = { 0.039, 0.102, 0.2, 0.97 },
-		panel = { 0.059, 0.141, 0.278, 0.98 },
-		panelAlt = { 0.086, 0.2, 0.384, 1 },
-		sidebar = { 0.031, 0.078, 0.157, 1 },
-		footer = { 0.035, 0.09, 0.18, 1 },
-		sky = { 0.102, 0.231, 0.439, 1 },
-		text = { 0.918, 0.949, 1, 1 },
-		textDim = { 0.761, 0.824, 0.918, 1 },
-		textMuted = { 0.561, 0.651, 0.776, 1 },
-		ink = { 1, 1, 1, 1 },
-		star = { 0.561, 0.784, 1, 1 },
-		shade = { 0, 0.01, 0.03, 1 },
-		scrim = { 0.01, 0.04, 0.09, 1 },
-		onAccent = { 0.02, 0.07, 0.15, 1 },
-		shadow = { 0, 0.01, 0.03, 0.6 },
+		bg = { 0.035, 0.071, 0.161, 0.97 },
+		panel = { 0.051, 0.102, 0.227, 0.98 },
+		panelAlt = { 0.071, 0.145, 0.318, 1 },
+		sidebar = { 0.027, 0.055, 0.125, 1 },
+		footer = { 0.031, 0.063, 0.141, 1 },
+		sky = { 0.059, 0.188, 0.42, 1 },
+		text = { 0.973, 0.957, 0.925, 1 },
+		textDim = { 0.851, 0.835, 0.804, 1 },
+		textMuted = { 0.631, 0.651, 0.718, 1 },
+		ink = { 0.973, 0.957, 0.925, 1 },
+		star = { 0.973, 0.957, 0.925, 1 },
+		shade = { 0, 0.008, 0.03, 1 },
+		scrim = { 0.012, 0.027, 0.075, 1 },
+		onAccent = { 0.035, 0.071, 0.161, 1 },
+		shadow = { 0, 0.008, 0.03, 0.6 },
 	},]],
         why = "AzerothRoute's default colour scheme",
     },

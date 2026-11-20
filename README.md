@@ -39,7 +39,7 @@ minimap button settings carry over on the first login.
   CREDITS files keep Polestar's copyright, as the GPL requires.
 - `tools/fork/assets/` holds AzerothRoute's own art (emblem, logo, wordmark, watermark, header band),
   drawn by `luajit tools/fork/make_art.lua` and copied over Polestar's. AzerothRoute's look: deep
-  Forever-blue grounds, Forever azure accent, gold for the route and names, jade for what is done
+  deep sapphire grounds, pearl white text, ember orange accent, a lighter ember for the route and names, jade for what is done
   (the "Azeroth" scheme, the default).
 
 Left out of `addon/` (see THIRD_PARTY.md): Polestar's Doom arcade and the race guide parts (only

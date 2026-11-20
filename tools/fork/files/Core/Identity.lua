@@ -1,5 +1,5 @@
 -- AzerothRoute: the words of AzerothRoute's own identity ("the route") in the client's language.
--- The theme (Theme/House.lua, patched: blue grounds, Forever azure accent, gold route) and the art
+-- The theme (Theme/House.lua, patched: deep sapphire grounds, pearl white text, ember orange accent) and the art
 -- (Media/UI: emblem, logo, wordmark, watermark, band) come from tools/fork. Original AzerothRoute
 -- code (GPL-3.0-only).
 

@@ -7,10 +7,10 @@
 
 local OUT = "tools/fork/assets/AzerothRoute/Media/UI/"
 
-local AZURE = { 0.302, 0.706, 1.0 }
-local GOLD = { 0.949, 0.757, 0.306 }
-local JADE = { 0.361, 0.769, 0.604 }
-local DEEP = { 0.039, 0.102, 0.2 }
+local EMBER = { 0.949, 0.42, 0.114 }
+local PEARL = { 0.973, 0.957, 0.925 }
+local SAPPHIRE = { 0.059, 0.322, 0.729 }
+local DEEP = { 0.035, 0.071, 0.161 }
 local WHITE = { 1, 1, 1 }
 
 local sqrt, max, min, abs, floor = math.sqrt, math.max, math.min, math.abs, math.floor
@@ -171,12 +171,13 @@ end
 
 -- Textures -------------------------------------------------------------------------------------
 
--- logo: in colour on a deep blue disc (minimap button, launcher, update card).
+-- logo: in colour on a deep sapphire disc with a sapphire rim (minimap button, launcher, update card).
 do
     local cv = canvas(64, 64)
     local s = 64 / 120
     shape(cv, s, disc(60, 60, 58), DEEP)
-    mark(cv, 64, { ring = AZURE, route = GOLD, dot = JADE, pin = AZURE }, 0.92)
+    shape(cv, s, ring(60, 60, 57, 2), SAPPHIRE)
+    mark(cv, 64, { ring = PEARL, route = EMBER, dot = PEARL, pin = EMBER }, 0.92)
     writeTGA(cv, "logo")
 end
 

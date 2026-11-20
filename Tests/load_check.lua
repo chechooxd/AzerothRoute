@@ -198,9 +198,10 @@ end
 do
     local Th = ns.Theme
     local r, g, b = Th.Accent()
-    if not (r and math.abs(r - 0.302) < 1e-3 and math.abs(b - 1) < 1e-3) then fail("accent is not Forever azure: " .. tostring(r) .. "," .. tostring(g) .. "," .. tostring(b)) end
+    if not (r and math.abs(r - 0.949) < 1e-3 and math.abs(g - 0.42) < 1e-3 and math.abs(b - 0.114) < 1e-3) then fail("accent is not ember orange: " .. tostring(r) .. "," .. tostring(g) .. "," .. tostring(b)) end
     local dusk = Th.SCHEMES and Th.SCHEMES.dusk
-    if not (dusk and math.abs(dusk.bg[3] - 0.2) < 1e-6) then fail("default scheme is not AzerothRoute blue") end
+    if not (dusk and math.abs(dusk.bg[3] - 0.161) < 1e-6) then fail("default scheme is not deep sapphire") end
+    if not (dusk and math.abs(dusk.text[1] - 0.973) < 1e-6 and math.abs(dusk.text[3] - 0.925) < 1e-6) then fail("default scheme text is not pearl white") end
     for _, name in ipairs({ "emblem", "logo", "wordmark", "wordmark-small", "watermark", "band-stars", "emblem-hot" }) do
         local mine = read("tools/fork/assets/AzerothRoute/Media/UI/" .. name .. ".tga")
         local shipped = read(ROOT .. "/AzerothRoute/Media/UI/" .. name .. ".tga")
