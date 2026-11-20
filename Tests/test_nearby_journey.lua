@@ -296,3 +296,61 @@ T:Describe("Trainers learned in game", function()
         if not ok then error(err, 0) end
     end)
 end)
+
+T:Describe("New spells on level up", function()
+    T:It("records the class trainer list and announces the spells of the new level", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.db.global.classSpells = {}
+        AR.db.global.trainers = {}
+        AR.SpellToast:Reset()
+        local services = {
+            { "Serpent Sting", "Rank 3", "unavailable", 18, 1800, "icon-Ability_Hunter_Quickshot" },
+            { "Aspect of the Hawk", "Rank 2", "unavailable", 18, 1800, "icon-Spell_Nature_RavenForm" },
+            { "Arcane Shot", "Rank 2", "available", 12, 600, "icon-Ability_ImpalingBolt" },
+        }
+        local saved = { _G.GetNumTrainerServices, _G.GetTrainerServiceInfo, _G.GetTrainerServiceLevelReq,
+            _G.GetTrainerServiceCost, _G.GetTrainerServiceIcon, _G.IsTradeskillTrainer, _G.UnitClass, _G.GetMoney }
+        _G.GetNumTrainerServices = function() return #services end
+        _G.GetTrainerServiceInfo = function(i) local s = services[i] return s[1], s[2], s[3] end
+        _G.GetTrainerServiceLevelReq = function(i) return services[i][4] end
+        _G.GetTrainerServiceCost = function(i) return services[i][5] end
+        _G.GetTrainerServiceIcon = function(i) return services[i][6] end
+        _G.IsTradeskillTrainer = function() return false end
+        _G.UnitClass = function() return "Hunter", "HUNTER" end
+        local money = 10000
+        _G.GetMoney = function() return money end
+        local ok, err = pcall(function()
+            T:AssertEqual(AR.ClassSpells:RecordTrainer(), 3, "Three spells recorded")
+            local model = AR.SpellToast:OnLevelUp(18)
+            T:AssertEqual(model.title, AR.L:Format("UI_SPELLS_TITLE_FMT", 2), "Two spells at 18")
+            T:AssertEqual(model.cost, AR.L:Format("UI_SPELLS_CAN_PAY_FMT", "36s"), "36 silver, affordable")
+            T:AssertTrue(AR.SpellToast.frame:IsShown(), "Card shown")
+            T:AssertTrue(AR.SpellToast.frame.icons[2]:IsShown(), "Spell icons")
+            T:AssertFalse(AR.SpellToast.frame.go:IsShown(), "No trainer known yet: no Go button")
+            money = 1000
+            model = AR.SpellToast:OnLevelUp(18)
+            T:AssertEqual(model.cost, AR.L:Format("UI_SPELLS_SHORT_FMT", "36s", "26s"), "Short by 26 silver")
+            T:AssertEqual(AR.SpellToast:OnLevelUp(19), nil, "Nothing new at 19")
+            AR.SpellToast.frame.off:Click("LeftButton")
+            T:AssertEqual(AR.db.profile.spelltoasts, false, "Turned off")
+            T:AssertEqual(AR.SpellToast:OnLevelUp(18), nil, "Silent once turned off")
+            AR.db.profile.spelltoasts = true
+            AR.db.global.classSpells = {}
+            model = AR.SpellToast:OnLevelUp(20)
+            T:AssertEqual(model.title, AR.L:Get("UI_SPELLS_UNKNOWN"), "Without a recorded list, ask to visit the trainer")
+        end)
+        _G.GetNumTrainerServices, _G.GetTrainerServiceInfo, _G.GetTrainerServiceLevelReq = saved[1], saved[2], saved[3]
+        _G.GetTrainerServiceCost, _G.GetTrainerServiceIcon, _G.IsTradeskillTrainer, _G.UnitClass, _G.GetMoney = saved[4], saved[5], saved[6], saved[7], saved[8]
+        AR.SpellToast:Reset()
+        if not ok then error(err, 0) end
+    end)
+
+    T:It("formats money in gold, silver and copper", function()
+        local CS = _G.AzerothRoute.ClassSpells
+        T:AssertEqual(CS:FormatMoney(12345), "1g 23s 45c")
+        T:AssertEqual(CS:FormatMoney(3600), "36s")
+        T:AssertEqual(CS:FormatMoney(0), "0c")
+    end)
+end)

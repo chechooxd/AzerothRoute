@@ -40,7 +40,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T15 [S16] Trainers learned in game (Spatial/Trainers.lua) in the map pin menu: own class trainer, weapon master, each profession — inline � 151/151
 - [x] T16 [S17] Rares: DB flag, nearest rare in the map menu, Lookup category — inline · 152/152
 - [x] T17 [S17] Quest-starting loot on the item bar with glow (Quest/QuestLoot.lua) — inline · 153/153
-- [ ] T18 [S17] New spells on level up (trainer list learned in game) toast — inline
+- [x] T18 [S17] New spells on level up (Modules/Professions/ClassSpells.lua, UI/SpellToast.lua) — inline · 155/155
 - [ ] T19 [S17] Guide tabs strip in the guide window — inline
 
 ## Log

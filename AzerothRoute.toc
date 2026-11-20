@@ -65,6 +65,7 @@ Modules\TalentAdvisor\TalentAdvisor.lua
 Modules\Professions\Profession.lua
 Modules\Professions\Skills.lua
 Modules\Professions\Inventory.lua
+Modules\Professions\ClassSpells.lua
 
 # SPEC-08: Gear Scoring, Upgrades, QuestReward & GearFinder
 Modules\Gear\Statweights.lua
@@ -105,6 +106,7 @@ UI\Menu\Lookup.lua
 UI\Menu\Dungeons.lua
 UI\MinimapButton.lua
 UI\Bindings.lua
+UI\SpellToast.lua
 UI\Menu\Config.lua
 
 # SPEC-14B: Static Data & Guide Catalog
