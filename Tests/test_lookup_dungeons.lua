@@ -296,3 +296,46 @@ T:Describe("Rares mode", function()
         if not ok then error(err, 0) end
     end)
 end)
+
+T:Describe("Characters mode", function()
+    T:It("keeps a snapshot per character and lists them with gold, guide and rested XP", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.db.global.characters = {
+            ["Altie-Realm"] = { name = "Altie", realm = "Realm", class = "MAGE", className = "Mage", level = 22,
+                faction = "Alliance", money = 15000, updated = 0 },
+        }
+        local saved = { _G.UnitName, _G.GetRealmName, _G.GetMoney, _G.GetXPExhaustion }
+        _G.UnitName = function() return "Mainie" end
+        _G.GetRealmName = function() return "Realm" end
+        _G.GetMoney = function() return 25000 end
+        _G.GetXPExhaustion = function() return 300 end
+        MockWoW.player.faction, MockWoW.player.level, MockWoW.player.maxXp = "Alliance", 30, 1000
+        local ok, err = pcall(function()
+            local g = AR.Parser:ParseGuide("CharGuide", "step One\n    talk Devrak##3615\n")
+            AR.Progression:LoadGuide(g, 1)
+            local snap = AR.Characters:Snapshot()
+            T:AssertEqual(snap.level, 30)
+            T:AssertEqual(snap.guide, "CharGuide")
+            AR.GuideMenu:Reset()
+            AR.GuideMenu:Show("characters")
+            local panel = AR.Characters.panel
+            T:AssertEqual(#panel.lastRows, 2, "Both characters")
+            T:AssertTrue(panel.lastRows[1].tag:find(AR.L:Get("UI_CHARS_YOU"), 1, true) ~= nil, "Highest level first, marked as you")
+            T:AssertTrue(AR.GuideMenu.headerSub:GetText():find("4g", 1, true) ~= nil, "Total gold of all characters")
+            panel:SelectRow(panel.lastRows[1])
+            local rested = false
+            for _, r in ipairs(panel.info) do if r.value:GetText() == "30%" then rested = true end end
+            T:AssertTrue(rested, "Rested XP shown")
+            T:AssertFalse(panel.secondary:IsShown(), "The current character cannot be forgotten")
+            panel:SelectRow(panel.lastRows[2])
+            panel.secondary:Click("LeftButton")
+            T:AssertEqual(AR.db.global.characters["Altie-Realm"], nil, "Alt forgotten")
+        end)
+        _G.UnitName, _G.GetRealmName, _G.GetMoney, _G.GetXPExhaustion = saved[1], saved[2], saved[3], saved[4]
+        AR.GuideMenu:Reset()
+        AR.db.global.characters = {}
+        if not ok then error(err, 0) end
+    end)
+end)

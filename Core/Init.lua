@@ -163,6 +163,9 @@ function AR:Initialize()
         if self.Rares and self.Rares.RegisterLiveEvents then
             self.Rares:RegisterLiveEvents()
         end
+        if self.Characters and self.Characters.RegisterLiveEvents then
+            self.Characters:RegisterLiveEvents()
+        end
         if self.ClassSpells and self.ClassSpells.RegisterLiveEvents then
             self.ClassSpells:RegisterLiveEvents()
         end
