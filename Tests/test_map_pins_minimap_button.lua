@@ -153,7 +153,8 @@ T:Describe("Phase 1: SavedVariables, HereBeDragons-Pins & minimap button", funct
             obj.OnClick(nil, "LeftButton")
             if viewer then T:AssertTrue(viewer:IsShown() ~= wasShown, "Left click toggles the viewer") end
             obj.OnClick(nil, "RightButton")
-            T:AssertEqual(menuToggles, 1, "Right click toggles the guide menu")
+            T:AssertTrue(AR.UI.menu ~= nil and AR.UI.menu:IsShown(), "Right click opens the AzerothRoute menu")
+            AR.UI:HideMenu()
             obj.OnClick(nil, "MiddleButton")
             T:AssertEqual(talentToggles, 1, "Middle click toggles the talent advisor")
 

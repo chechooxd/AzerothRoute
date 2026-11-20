@@ -29,15 +29,89 @@ function MinimapButton:GetSettings()
     return AR.db.global.minimap
 end
 
-function MinimapButton:HandleClick(button)
+local function profile()
+    return (AR.db and AR.db.profile) or {}
+end
+
+-- True when the arrow must stay hidden (its own switch, or everything hidden without "keep arrow").
+function MinimapButton:IsArrowSuppressed()
+    local p = profile()
+    if p.hidearrow then return true end
+    return p.hideall == true and p.keeparrow == false
+end
+
+local function hideFrame(f) if f and f.Hide then f:Hide() end end
+
+-- One click hides every AzerothRoute window (guide, arrow unless kept, browsers, menus);
+-- the next click brings back the guide window and the arrow.
+function MinimapButton:SetHideAll(hidden)
+    local p = profile()
+    p.hideall = hidden == true
+    if p.hideall then
+        hideFrame(AR.ViewerFrame and AR.ViewerFrame.frame)
+        hideFrame(AR.StepBrowser and AR.StepBrowser.frame)
+        hideFrame(AR.GuideMenu and AR.GuideMenu.frame)
+        hideFrame(AR.QuestLogCleanup and AR.QuestLogCleanup.frame)
+        if self:IsArrowSuppressed() then hideFrame(AR.Pointer and AR.Pointer.arrowFrame) end
+    else
+        local vf = AR.ViewerFrame
+        if vf then
+            if not vf.frame then vf:Initialize() end
+            vf.frame:Show()
+            vf:RefreshVisuals()
+        end
+        if AR.Pointer and AR.Pointer.UpdateArrow then AR.Pointer:UpdateArrow(0) end
+    end
+    return p.hideall
+end
+
+function MinimapButton:ToggleHideAll()
+    return self:SetHideAll(not profile().hideall)
+end
+
+function MinimapButton:SetArrowHidden(hidden)
+    profile().hidearrow = hidden == true
+    if hidden then
+        hideFrame(AR.Pointer and AR.Pointer.arrowFrame)
+    elseif AR.Pointer and AR.Pointer.UpdateArrow then
+        AR.Pointer:UpdateArrow(0)
+    end
+end
+
+function MinimapButton:BuildMenuItems()
+    local p = profile()
+    local vf = AR.ViewerFrame and AR.ViewerFrame.frame
+    return {
+        { text = text("UI_MM_GUIDE_WINDOW", "Guide window"), checked = vf ~= nil and vf:IsShown(),
+            onClick = function() AR:ToggleViewer() end },
+        { text = text("UI_MM_HIDE_ARROW", "Hide arrow"), checked = p.hidearrow == true,
+            onClick = function() self:SetArrowHidden(not p.hidearrow) end },
+        { text = p.hideall and text("UI_MM_SHOW_ALL", "Show AzerothRoute") or text("UI_MM_HIDE_ALL", "Hide AzerothRoute"),
+            onClick = function() self:ToggleHideAll() end },
+        { text = text("UI_MM_KEEP_ARROW", "Keep the arrow when hidden"), checked = p.keeparrow ~= false,
+            onClick = function() p.keeparrow = (p.keeparrow == false) end },
+        { separator = true },
+        { text = text("UI_GUIDES", "Guides"), onClick = function() if AR.GuideMenu then AR.GuideMenu:Show() end end },
+        { text = text("UI_TALENTS", "Talents"), onClick = function()
+            if AR.TalentAdvisor and AR.TalentAdvisor.ToggleUI then AR.TalentAdvisor:ToggleUI() end end },
+        { text = text("UI_MENU_OPTIONS", "Options"), onClick = function() if AR.Config then AR.Config:Open() end end },
+    }
+end
+
+function MinimapButton:ShowMenu(anchor)
+    return AR.UI:ShowMenu(anchor, self:BuildMenuItems(), "TOPRIGHT", "BOTTOMLEFT", 0, 0)
+end
+
+-- Left: hide/show everything · Right: menu · Middle: talents · Shift: options.
+function MinimapButton:HandleClick(button, anchor)
     if _G.IsShiftKeyDown and _G.IsShiftKeyDown() then
         if AR.Config then AR.Config:Open() end
     elseif button == "RightButton" then
-        if AR.GuideMenu and AR.GuideMenu.Toggle then AR.GuideMenu:Toggle() end
+        self:ShowMenu(anchor)
     elseif button == "MiddleButton" then
         if AR.TalentAdvisor and AR.TalentAdvisor.ToggleUI then AR.TalentAdvisor:ToggleUI() end
     else
-        AR:ToggleViewer()
+        self:ToggleHideAll()
     end
 end
 
@@ -69,7 +143,7 @@ function MinimapButton:Initialize()
         text = self.NAME,
         icon = self.ICON,
     })
-    self.dataObject.OnClick = function(_, button) self:HandleClick(button) end
+    self.dataObject.OnClick = function(owner, button) self:HandleClick(button, owner) end
     self.dataObject.OnTooltipShow = function(tooltip) self:FillTooltip(tooltip) end
 
     icon:Register(self.NAME, self.dataObject, self:GetSettings())

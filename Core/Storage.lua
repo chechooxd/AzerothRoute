@@ -64,6 +64,9 @@ Storage.ProfileDefaults = {
     style = "default",
     stepsound = true,
     previewsteps = 0,
+    hidearrow = false,
+    hideall = false,
+    keeparrow = true,
 }
 
 -- Keys that used to live in AzerothRouteSavedDB.global and now belong to the profile.

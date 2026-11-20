@@ -20,7 +20,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T2 [S4] Toolbar Skip/map/more menu + XP/h footer (search lives in the guide center, T6) — inline · 125/125
 - [x] T3 [S9] While-here distance and dismiss — inline · 126/126
 - [x] T4 [S5] All-steps browser — inline · 128/128
-- [ ] T5 [S6] Minimap dropdown menu + hide all — inline
+- [x] T5 [S6] Minimap dropdown menu + hide all (right-click now opens the menu; left-click hides/shows all) — inline · 130/130
 - [ ] T6 [S7] Guide center search, sections, details — inline
 - [ ] T7 [S8] Quest log cleanup dialog — inline
 - [ ] T8 [S10] Key bindings — inline

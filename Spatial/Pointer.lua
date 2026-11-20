@@ -486,7 +486,8 @@ function Pointer:UpdateArrow(elapsed)
         end
     end
 
-    if not self.activeTarget then
+    local suppressed = AR.MinimapButton and AR.MinimapButton.IsArrowSuppressed and AR.MinimapButton:IsArrowSuppressed()
+    if not self.activeTarget or suppressed then
         if self.arrowFrame then self.arrowFrame:Hide() end
         return
     end
