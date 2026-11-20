@@ -18,7 +18,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 ## Tasks
 - [x] T1 [S3] Viewer heading, folded done goals, Then preview, note line — inline · 122/122
 - [x] T2 [S4] Toolbar Skip/map/more menu + XP/h footer (search lives in the guide center, T6) — inline · 125/125
-- [ ] T3 [S9] While-here distance and dismiss — inline
+- [x] T3 [S9] While-here distance and dismiss — inline · 126/126
 - [ ] T4 [S5] All-steps browser — inline
 - [ ] T5 [S6] Minimap dropdown menu + hide all — inline
 - [ ] T6 [S7] Guide center search, sections, details — inline

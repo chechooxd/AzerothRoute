@@ -386,6 +386,24 @@ function ViewerFrame:CreateRow(f, i)
         if row.label.SetWordWrap then row.label:SetWordWrap(false) end
         row.label:SetJustifyH("LEFT")
     end
+    -- "While you're here" extras: distance to the goal and a × that dismisses it for the session.
+    if row.CreateFontString then
+        row.dist = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        row.dist:SetPoint("RIGHT", row, "RIGHT", -24, 0)
+        row.dist:SetJustifyH("RIGHT")
+        if row.dist.SetTextColor then row.dist:SetTextColor(Skins:RGBA("textMuted")) end
+        row.dist:Hide()
+    end
+    row.dismiss = createFlatButton(row, "AzerothRouteStepLine" .. i .. "Dismiss", "×", 18, 18)
+    row.dismiss:SetPoint("RIGHT", row, "RIGHT", -2, 0)
+    row.dismiss:SetScript("OnClick", function()
+        if row._goal then
+            row._goal.dismissed = true
+            self:RefreshVisuals()
+        end
+    end)
+    row.dismiss:Hide()
+
     if row.RegisterForClicks then row:RegisterForClicks("LeftButtonUp", "RightButtonUp") end
     row:SetScript("OnClick", function(r, button) self:OnRowClick(r, button) end)
     row:SetScript("OnEnter", function(r)
@@ -585,6 +603,9 @@ function ViewerFrame:OnTick(elapsed)
     self._tick = (self._tick or 0) + (elapsed or 0)
     if self._tick < self.TICK_SECONDS then return end
     self._tick = 0
+    for _, row in ipairs(self.lineRows) do
+        if row:IsShown() and row.dismiss and row.dismiss:IsShown() then self:UpdateRowDistance(row) end
+    end
     self:SampleXP()
     local line = self:FormatXPLine()
     local shown = self.xpText and self.xpText:IsShown()
@@ -770,7 +791,7 @@ function ViewerFrame:RenderCurrentStep()
     local activeStickies = (AR.Progression and AR.Progression:GetActiveStickies()) or {}
     for _, sStep in ipairs(activeStickies) do
         for i, g in ipairs(sStep.goals or {}) do
-            local line = self:FormatGoalLine(g, i, true)
+            local line = (not g.dismissed) and self:FormatGoalLine(g, i, true) or nil
             if line then
                 table.insert(stickyLines, line)
                 if g.map and g.x and g.y and line.status ~= "complete" then
@@ -915,6 +936,20 @@ function ViewerFrame:BuildPreviewLines(step)
     return lines
 end
 
+-- Yards from the player to a sticky goal's coordinates, shown at the row's right edge.
+function ViewerFrame:UpdateRowDistance(row)
+    if not row.dist then return end
+    local g = row._goal
+    local d = g and g.map and g.x and g.y and AR.Coords and AR.Coords.GetDistanceTo
+        and AR.Coords:GetDistanceTo(g.map, (g.x > 1) and g.x / 100 or g.x, (g.y > 1) and g.y / 100 or g.y)
+    if d then
+        row.dist:SetText(string.format("%d yd", math.floor(d + 0.5)))
+        row.dist:Show()
+    else
+        row.dist:Hide()
+    end
+end
+
 -- Paints one row. `tone` is "current", "normal", "done", "sticky", "preview" or "header".
 local function paintRow(row, line, tone)
     row._goal = line.goal
@@ -960,6 +995,20 @@ local function paintRow(row, line, tone)
     end
     if row.accent then
         if tone == "current" then row.accent:Show() else row.accent:Hide() end
+    end
+    local sticky = tone == "sticky" and line.goal ~= nil
+    if row.label and row.label.SetWidth then
+        row.label:SetWidth(ViewerFrame.WIDTH - PAD * 2 - 28 - (sticky and 70 or 22))
+    end
+    if row.dismiss then
+        if sticky then row.dismiss:Show() else row.dismiss:Hide() end
+    end
+    if sticky then
+        if row.check then row.check:Hide() end
+        if row.checkMark then row.checkMark:Hide() end
+        ViewerFrame:UpdateRowDistance(row)
+    elseif row.dist then
+        row.dist:Hide()
     end
     if row.bg then row.bg:SetColorTexture(0, 0, 0, 0) end
     row:Show()

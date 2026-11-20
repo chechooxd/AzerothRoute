@@ -145,3 +145,44 @@ T:Describe("Polestar parity: toolbar and footer", function()
         AR.ViewerFrame:ResetXPTracker()
     end)
 end)
+
+T:Describe("Polestar parity: while you're here", function()
+    T:It("shows each sticky goal's distance and dismisses it with ×", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        local g = load(AR, [[
+step Main
+    talk Devrak##3615
+stickystart
+step Side
+    kill 5 Plainstrider##3244
+    goto 1413 52.0,48.0
+stickystop
+step After
+    talk Gazlowe##3391
+]])
+        local origStickies = AR.Progression.GetActiveStickies
+        AR.Progression.GetActiveStickies = function() return { g:GetStep(2) } end
+        local origDist = AR.Coords.GetDistanceTo
+        AR.Coords.GetDistanceTo = function() return 134.6 end
+        local ok, err = pcall(function()
+            local kill = g:GetStep(2).goals[1]
+            kill.map, kill.x, kill.y = 1413, 0.52, 0.48
+            AR.ViewerFrame:RefreshVisuals()
+            local row
+            for _, r in ipairs(AR.ViewerFrame.lineRows) do if r._goal == kill and r:IsShown() then row = r end end
+            T:AssertTrue(row ~= nil, "Sticky kill row")
+            T:AssertEqual(row.dist:GetText(), "135 yd", "Distance in yards")
+            T:AssertTrue(row.dismiss:IsShown(), "Dismiss button")
+            T:AssertFalse(row.check:IsShown(), "No check box in the block")
+            row.dismiss:Click("LeftButton")
+            T:AssertTrue(kill.dismissed, "Dismissed for the session")
+            local still = false
+            for _, r in ipairs(AR.ViewerFrame.lineRows) do if r._goal == kill and r:IsShown() then still = true end end
+            T:AssertFalse(still, "Row gone after ×")
+        end)
+        AR.Progression.GetActiveStickies = origStickies
+        AR.Coords.GetDistanceTo = origDist
+        if not ok then error(err, 0) end
+    end)
+end)
