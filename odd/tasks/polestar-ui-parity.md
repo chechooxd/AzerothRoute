@@ -21,7 +21,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T3 [S9] While-here distance and dismiss — inline · 126/126
 - [x] T4 [S5] All-steps browser — inline · 128/128
 - [x] T5 [S6] Minimap dropdown menu + hide all (right-click now opens the menu; left-click hides/shows all) — inline · 130/130
-- [ ] T6 [S7] Guide center search, sections, details — inline
+- [x] T6 [S7] Guide center search, row tags, details (chips, status, stats) — inline · 132/132
 - [ ] T7 [S8] Quest log cleanup dialog — inline
 - [ ] T8 [S10] Key bindings — inline
 - [ ] T9 Merge to master, README checklist
@@ -30,3 +30,4 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - L1 (2026-11-19): "corrige el addon que estamos desarrollando, quiero que te inspires en polestar, sobretodo en la interfaz, es totalmente lo que busco para mi addon" — done as ced39ce (viewer + guide center) and 94f6faa (arrow).
 - L2 (2026-11-19): "sigue con todo lo demas, no pares hasta dejarlo al mismo nivel de polestar"
 - L3: Route: all tasks inline (no writer trigger: sequential units sharing ViewerFrame/Locale). Data-dependent Polestar features listed as out of scope.
+- L4: T6 replaced level-band section headers with a right-hand row tag ("x/y" on the loaded guide, "Your level" on matching guides): headers inside the paged list would change the 14-rows-per-page contract that existing tests pin (Page 1/4 for 55 guides).

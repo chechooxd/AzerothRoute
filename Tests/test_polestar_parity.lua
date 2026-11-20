@@ -271,3 +271,43 @@ T:Describe("Polestar parity: minimap menu", function()
         AR.MinimapButton:SetArrowHidden(false)
     end)
 end)
+
+T:Describe("Polestar parity: guide center", function()
+    T:It("filters the list as you type and clears the search on a category click", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        load(AR)
+        AR.GuideMenu:Reset()
+        AR.GuideMenu:Show()
+        local all = #AR.GuideMenu:GetVisibleGuides()
+        local box = AR.GuideMenu.searchBox
+        box.GetText = function() return "parity" end
+        box:GetScript("OnTextChanged")(box)
+        local hits = AR.GuideMenu:GetVisibleGuides()
+        T:AssertTrue(#hits >= 1 and #hits < all, "Search narrows the list (" .. #hits .. " of " .. all .. ")")
+        T:AssertTrue(AR.GuideMenu.guideRowButtons[1]._guide.title:lower():find("parity", 1, true) ~= nil, "First row matches")
+        AR.GuideMenu:SelectCategory("ALL")
+        T:AssertEqual(AR.GuideMenu.searchQuery, "", "Category click clears the search")
+        AR.GuideMenu:Reset()
+    end)
+
+    T:It("details show level chips, progress on the loaded guide and stats", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        local g = load(AR)
+        g.startlevel, g.endlevel, g.type = 1, 10, "LEVELING"
+        MockWoW.player.level = 5
+        AR.GuideMenu:Reset()
+        AR.GuideMenu:InitializeFrame()
+        AR.GuideMenu:SelectGuide(g)
+        local d = AR.GuideMenu.details
+        T:AssertEqual(d.chips[1].text, AR.L:Format("UI_LEVELS_FMT", 1, 10), "Level chip")
+        T:AssertEqual(d.chips[2].text, AR.L:Get("UI_YOUR_LEVEL"), "Your level chip")
+        T:AssertEqual(d.status, AR.L:Format("UI_STATUS_STEP_FMT", 1, 3), "Loaded guide shows its step")
+        T:AssertEqual(d.steps, 3)
+        T:AssertEqual(d.quests, 2, "Two distinct accepted quests")
+        T:AssertTrue(AR.GuideMenu.chips[1]:IsShown() and AR.GuideMenu.detailFill:IsShown(), "Chips and bar drawn")
+        T:AssertEqual(AR.GuideMenu.statRows[2].value:GetText(), "2")
+        AR.GuideMenu:Reset()
+    end)
+end)
