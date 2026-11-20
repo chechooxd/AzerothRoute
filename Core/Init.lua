@@ -184,6 +184,8 @@ function AR:Initialize()
         end
         if self.ViewerFrame then
             self.ViewerFrame:Initialize()
+            -- Imported guides come back before the last guide is resumed (it may be one of them).
+            if self.GuideImport then self.GuideImport:LoadSaved() end
             if not self.Progression.currentGuide then
                 if self.Progression:RestoreSaved() then
                     local guide = self.Progression.currentGuide

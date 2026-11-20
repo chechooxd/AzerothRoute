@@ -460,6 +460,26 @@ function GuideMenu:InitializeFrame()
         end
     end)
 
+    -- Sidebar "+ Import" (opens the import window) and, for imported guides, "Delete".
+    self.importButton = createMenuButton(f, "AzerothRouteGuideImport", "+ " .. LGet("UI_IMPORT_DO"), 151, 28, false)
+    self.importButton:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 1, 10)
+    self.importButton:SetScript("OnClick", function()
+        if AR.ImportWindow then AR.ImportWindow:Show() end
+    end)
+    self.deleteButton = createMenuButton(f, "AzerothRouteGuideDelete", LGet("UI_IMPORT_DELETE"), 210, 24, true)
+    self.deleteButton:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 488, 98)
+    if self.deleteButton.label and self.deleteButton.label.SetTextColor then
+        self.deleteButton.label:SetTextColor(0.94, 0.45, 0.42, 1)
+    end
+    self.deleteButton:SetScript("OnClick", function()
+        local g = self.selectedGuide
+        if g and AR.GuideImport and AR.GuideImport:Delete(g) then
+            self.selectedGuide = nil
+            self:RenderGuidePage()
+        end
+    end)
+    self.deleteButton:Hide()
+
     f:Hide()
     self.frame = f
     self:SelectCategory(self.activeCategory)
@@ -529,6 +549,9 @@ function GuideMenu:SelectGuide(guide)
         self.detailDesc:SetText(desc)
     end
     self:RenderDetails(guide)
+    if self.deleteButton then
+        if AR.GuideImport and AR.GuideImport:IsImported(guide) then self.deleteButton:Show() else self.deleteButton:Hide() end
+    end
 
     for _, rowBtn in ipairs(self.guideRowButtons) do
         paintSelectable(rowBtn, rowBtn._guide ~= nil and rowBtn._guide == guide)

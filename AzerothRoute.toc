@@ -109,6 +109,7 @@ UI\Menu\Dungeons.lua
 UI\Menu\Rares.lua
 UI\Menu\Characters.lua
 UI\Menu\OptionsPanel.lua
+UI\Menu\ImportWindow.lua
 UI\MinimapButton.lua
 UI\Bindings.lua
 UI\SpellToast.lua
@@ -117,6 +118,7 @@ UI\Menu\Config.lua
 # SPEC-14B: Static Data & Guide Catalog
 Data\Catalog.lua
 Guides\Autoload.lua
+Guides\Import.lua
 
 # Lookup & Dungeons database (generated from pfQuest by tools/build_db.lua; see DB/LICENSE-pfQuest.txt)
 DB\Access.lua

@@ -378,3 +378,69 @@ T:Describe("Options mode", function()
         AR.ViewerFrame:RefreshVisuals()
     end)
 end)
+
+T:Describe("Import guides", function()
+    local TEXT = table.concat({
+        "guide My Barrens Loop",
+        "type LEVELING",
+        "startlevel 12",
+        "endlevel 15",
+        "description A short loop.",
+        "step Start",
+        "    talk Devrak##3615",
+        "step Next",
+        "    talk Gazlowe##3391",
+    }, "\n")
+
+    T:It("imports pasted guide text, lists it, keeps it across reloads and deletes it", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.db.global.importedGuides = {}
+        AR.GuideMenu:Reset()
+        AR.ImportWindow:Reset()
+        AR.GuideMenu:Show("guides")
+        AR.GuideMenu.importButton:Click("LeftButton")
+        T:AssertTrue(AR.ImportWindow.frame:IsShown(), "+ Import opens the window")
+        local guide = AR.ImportWindow:Submit(TEXT, "")
+        T:AssertTrue(guide ~= nil, "Imported")
+        T:AssertEqual(guide.displayTitleEN, "My Barrens Loop", "Name from the first line")
+        T:AssertEqual(#guide.steps, 2)
+        T:AssertEqual(guide.startlevel, 12, "Header lines read")
+        T:AssertFalse(AR.ImportWindow.frame:IsShown(), "Window closes")
+        T:AssertEqual(AR.GuideMenu.selectedGuide, guide, "Selected in the Guide Center")
+        T:AssertTrue(AR.GuideMenu.deleteButton:IsShown(), "Imported guides can be deleted")
+        T:AssertTrue(AR.db.global.importedGuides["My Barrens Loop"] ~= nil, "Saved")
+
+        -- Next login: parsed again from the saved text.
+        AR.Parser.guidesByTitle[guide.title] = nil
+        T:AssertEqual(AR.GuideImport:LoadSaved(), 1, "Restored at login")
+        local again = AR.Parser.guidesByTitle[AR.GuideImport.PREFIX .. "My Barrens Loop"]
+        T:AssertTrue(again ~= nil and again.imported, "Back in the list")
+
+        AR.GuideMenu:SelectGuide(again)
+        AR.GuideMenu.deleteButton:Click("LeftButton")
+        T:AssertEqual(AR.Parser.guidesByTitle[AR.GuideImport.PREFIX .. "My Barrens Loop"], nil, "Deleted")
+        T:AssertEqual(AR.db.global.importedGuides["My Barrens Loop"], nil, "Removed from saved imports")
+        AR.GuideMenu:Reset()
+    end)
+
+    T:It("explains what is wrong instead of importing broken text", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.db.global.importedGuides = {}
+        AR.ImportWindow:Reset()
+        AR.ImportWindow:Show()
+        T:AssertEqual(AR.ImportWindow:Submit("step One\n    talk Devrak##3615\n", ""), nil, "No name")
+        T:AssertEqual(AR.ImportWindow.status:GetText(), AR.L:Get("UI_IMPORT_ERR_TITLE"))
+        T:AssertEqual(AR.ImportWindow:Submit("type LEVELING\n", "Empty"), nil, "No steps")
+        T:AssertEqual(AR.ImportWindow.status:GetText(), AR.L:Get("UI_IMPORT_ERR_EMPTY"))
+        T:AssertEqual(AR.Parser.guidesByTitle[AR.GuideImport.PREFIX .. "Empty"], nil, "Nothing left behind")
+        local g = AR.GuideImport:Import("step One\n    talk Devrak##3615\n", "Named Here")
+        T:AssertEqual(g.displayTitleEN, "Named Here", "Name field used without a guide line")
+        T:AssertTrue(AR.Parser.guidesByTitle["Named Here"] == nil, "Never replaces a built-in title")
+        AR.GuideImport:Delete(g)
+        AR.ImportWindow:Reset()
+    end)
+end)
