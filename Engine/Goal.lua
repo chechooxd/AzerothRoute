@@ -195,6 +195,10 @@ function Goal:GetStatus()
     if not self:IsVisible() then
         return "hidden"
     end
+    -- A group quest the player chose to skip drops out of the route (accept, kill and turn-in alike).
+    if self.questid and AR.GroupQuests and AR.GroupQuests:IsSkipped(self.questid) then
+        return "hidden"
+    end
     if self.action == "goto" and self.manualArrival then return "complete" end
     if not self:IsCompleteable() then
         return "passive"

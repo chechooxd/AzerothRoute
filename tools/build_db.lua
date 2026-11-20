@@ -6,7 +6,7 @@
 --   luajit tools/build_db.lua <path-to-pfQuest/db>
 --
 -- Record formats (fields separated by "^"; lists by ","):
---   Quests[id]  = "lvl^min^side^starts^ends^objUnits^objItems^objObjects"
+--   Quests[id]  = "lvl^min^side^starts^ends^objUnits^objItems^objObjects^flags"  (flags: G = group quest)
 --                 side: A, H or B; starts/ends: "U123,O45,I678" (unit/object/item ids)
 --   QuestNames[id] = title
 --   Units[id]   = "name^level^side^map^x^y^flags"   (map = uiMapID, 0 when unknown; flags: v r i f b a s, x = rare)
@@ -177,6 +177,28 @@ local function idList(list)
     for _, id in ipairs(list or {}) do out[#out + 1] = tostring(id) end
     return table.concat(out, ",")
 end
+-- Group quest: an objective creature (or the only droppers of an objective item) is an open-world
+-- elite (pfQuest rank 1 elite, 2 rare elite, 3 boss). Instance creatures have no spawns and are skipped,
+-- so dungeon quests are not flagged here.
+local function openWorldElite(uid)
+    local u = pfDB.units.data[uid]
+    local rank = u and tonumber(u.rnk)
+    return rank ~= nil and rank >= 1 and rank <= 3 and type(u.coords) == "table" and #u.coords > 0
+end
+local function groupQuest(obj)
+    for _, u in ipairs(obj.U or {}) do
+        if openWorldElite(u) then return true end
+    end
+    for _, iid in ipairs(obj.I or {}) do
+        local drops, elite = 0, 0
+        for u in pairs(((pfDB.items.data[iid] or {}).U) or {}) do
+            drops = drops + 1
+            if openWorldElite(u) then elite = elite + 1 end
+        end
+        if drops > 0 and elite == drops then return true end
+    end
+    return false
+end
 local quests, questNames, questItems = {}, {}, {}
 for id, d in pairs(pfDB.quests.data) do
     local loc = pfDB.quests.enUS[id]
@@ -184,7 +206,7 @@ for id, d in pairs(pfDB.quests.data) do
     if title and title ~= "" and not title:find("UNUSED", 1, true) and not title:find("%[") then
         local obj = d.obj or {}
         quests[id] = table.concat({ d.lvl or 0, d.min or 0, sideOfRace(d.race), refs(d.start), refs(d["end"]),
-            idList(obj.U), idList(obj.I), idList(obj.O) }, "^")
+            idList(obj.U), idList(obj.I), idList(obj.O), groupQuest(obj) and "G" or "" }, "^")
         questNames[id] = clean(title)
         for _, iid in ipairs(obj.I or {}) do questItems[iid] = true end
     end

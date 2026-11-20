@@ -301,6 +301,38 @@ function ViewerFrame:BuildHeader(f)
         if self.noticeText.SetTextColor then self.noticeText:SetTextColor(Skins:RGBA("accent")) end
         self.noticeText:Hide()
 
+        -- Group quest banner: what it is, why it matters, and the two choices.
+        if f.CreateTexture then
+            self.groupBg = f:CreateTexture(nil, "BACKGROUND")
+            Skins:Paint(self.groupBg, "whileHere")
+            self.groupBg:Hide()
+            self.groupIcon = f:CreateTexture(nil, "ARTWORK")
+            self.groupIcon:SetSize(16, 16)
+            self.groupIcon:SetTexture(Skins:GetActionIcon("kill"))
+            self.groupIcon:Hide()
+        end
+        self.groupTitle = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        if self.groupTitle.SetWidth then self.groupTitle:SetWidth(self.WIDTH - 50) end
+        self.groupTitle:SetJustifyH("LEFT")
+        self.groupTitle:Hide()
+        self.groupText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        if self.groupText.SetWidth then self.groupText:SetWidth(self.WIDTH - 50) end
+        self.groupText:SetJustifyH("LEFT")
+        if self.groupText.SetTextColor then self.groupText:SetTextColor(Skins:RGBA("textMuted")) end
+        self.groupText:Hide()
+        self.groupSkip = createFlatButton(f, "AzerothRouteGroupSkip", "", 80, 20)
+        self.groupSkip:SetScript("OnClick", function(b)
+            if b._questID and AR.GroupQuests then AR.GroupQuests:Skip(b._questID) end
+            self:RefreshVisuals()
+        end)
+        self.groupSkip:Hide()
+        self.groupKeep = createFlatButton(f, "AzerothRouteGroupKeep", "", 140, 20)
+        self.groupKeep:SetScript("OnClick", function(b)
+            if b._questID and AR.GroupQuests then AR.GroupQuests:Keep(b._questID) end
+            self:RefreshVisuals()
+        end)
+        self.groupKeep:Hide()
+
         -- Step heading: who/where in large coloured text, the zone under it.
         self.headingText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
         if self.headingText.SetWidth then self.headingText:SetWidth(self.WIDTH - 44) end
@@ -998,6 +1030,7 @@ function ViewerFrame:RenderCurrentStep()
     end
 
     return {
+        groupQuest = AR.GroupQuests and AR.GroupQuests:ForStep(step) or nil,
         journey = journey,
         heading = self:BuildHeading(step),
         note = self:FindStepNote(step),
@@ -1250,6 +1283,35 @@ function ViewerFrame:RefreshVisuals()
     elseif self.noticeText then
         self.noticeText:Hide()
         if f.noticeBg then f.noticeBg:Hide() end
+    end
+
+    -- Group quest banner: "Skip it" leaves the quest out of the route; the other keeps it.
+    local gq = vm.groupQuest
+    if gq and self.groupTitle then
+        local top = y - 4
+        self.groupBg:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -top)
+        self.groupBg:SetSize(self.WIDTH - 2, 66)
+        self.groupBg:Show()
+        self.groupIcon:SetPoint("TOPLEFT", f, "TOPLEFT", PAD + 6, -(top + 8))
+        self.groupIcon:Show()
+        self.groupTitle:SetPoint("TOPLEFT", f, "TOPLEFT", PAD + 28, -(top + 6))
+        self.groupTitle:SetText(string.format(L("UI_GROUP_TITLE_FMT", "Group quest: \"%s\""), Skins:Colorize(gq.name, "quest")))
+        self.groupTitle:Show()
+        self.groupText:SetPoint("TOPLEFT", f, "TOPLEFT", PAD + 28, -(top + 22))
+        self.groupText:SetText(L("UI_GROUP_TEXT", "It needs a group. Skip it and the guide keeps to the solo route."))
+        self.groupText:Show()
+        self.groupSkip._questID, self.groupKeep._questID = gq.questID, gq.questID
+        self.groupSkip.label:SetText(L("UI_GROUP_SKIP", "Skip it") .. " ›")
+        if self.groupSkip.label.SetTextColor then self.groupSkip.label:SetTextColor(Skins:RGBA("accent")) end
+        self.groupKeep.label:SetText(L("UI_GROUP_KEEP", "Do it with a group"))
+        self.groupSkip:SetPoint("TOPLEFT", f, "TOPLEFT", PAD + 22, -(top + 42))
+        self.groupKeep:SetPoint("TOPLEFT", f, "TOPLEFT", PAD + 108, -(top + 42))
+        self.groupSkip:Show()
+        self.groupKeep:Show()
+        y = top + 70
+    elseif self.groupTitle then
+        self.groupBg:Hide(); self.groupIcon:Hide(); self.groupTitle:Hide(); self.groupText:Hide()
+        self.groupSkip:Hide(); self.groupKeep:Hide()
     end
 
     -- Step heading (who / where) with the zone underneath and a gold bar.

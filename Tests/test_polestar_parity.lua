@@ -412,3 +412,78 @@ T:Describe("Polestar parity: guide tabs", function()
         AR.db.char.tabguides, AR.db.char.tabsteps = {}, {}
     end)
 end)
+
+T:Describe("Polestar parity: group quests", function()
+    local GUIDE = [[
+step Take
+    talk Marshal Dughan##240
+    accept Wanted: "Hogger"##176
+    accept A Fishy Peril##40
+step Hunt
+    kill Hogger##448 |q 176/1
+step Back
+    turnin Wanted: "Hogger"##176
+step Next
+    talk Gazlowe##3391
+]]
+
+    local function setup(AR)
+        AR.Storage:Initialize()
+        AR.db.profile.previewsteps = 0
+        AR.db.char.skippedQuests, AR.db.char.groupQuestsKept = {}, {}
+        AR.db.global.groupQuests = {}
+        MockWoW.player.faction = "Alliance"
+        local g = AR.Parser:ParseGuide("GroupGuide", GUIDE)
+        AR.Progression:LoadGuide(g, 1)
+        return g
+    end
+
+    T:It("warns about a group quest and keeps it when the player chooses a group", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        setup(AR)
+        local vm = AR.ViewerFrame:RefreshVisuals()
+        T:AssertEqual(vm.groupQuest.questID, 176, "Hogger is a group quest (database flag)")
+        local vf = AR.ViewerFrame
+        T:AssertTrue(vf.groupTitle:IsShown() and vf.groupSkip:IsShown() and vf.groupKeep:IsShown(), "Banner with both choices")
+        T:AssertTrue(vf.groupTitle:GetText():find("Hogger", 1, true) ~= nil, "Names the quest")
+        vf.groupKeep:Click("LeftButton")
+        T:AssertTrue(AR.GroupQuests:IsKept(176), "Kept")
+        T:AssertFalse(vf.groupTitle:IsShown(), "Banner gone")
+        T:AssertEqual(AR.GroupQuests:ForStep(AR.Progression.currentStep), nil, "No longer asked")
+    end)
+
+    T:It("skipping drops the quest's accept, kill and turn-in from the route", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        local g = setup(AR)
+        AR.ViewerFrame:RefreshVisuals()
+        AR.ViewerFrame.groupSkip:Click("LeftButton")
+        T:AssertTrue(AR.GroupQuests:IsSkipped(176), "Skipped")
+        T:AssertEqual(g:GetStep(1).goals[2]:GetStatus(), "hidden", "Accept hidden")
+        T:AssertTrue(g:GetStep(1).goals[3]:GetStatus() ~= "hidden", "The solo quest stays")
+        local hunt, back = g:GetStep(2), g:GetStep(3)
+        T:AssertEqual(hunt.goals[1]:GetStatus(), "hidden", "Kill hidden")
+        T:AssertEqual(back.goals[1]:GetStatus(), "hidden", "Turn-in hidden")
+        AR.Progression:FocusStep(2)
+        AR.GroupQuests:Skip(176)
+        T:AssertEqual(AR.Progression.currentStep.num >= 3, true, "A step left with nothing to do moves on")
+    end)
+
+    T:It("learns group size from the quest offer and the quest log", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        setup(AR)
+        T:AssertFalse(AR.GroupQuests:IsGroupQuest(40), "A Fishy Peril is solo")
+        local saved = { _G.GetQuestID, _G.GetSuggestedGroupNum }
+        _G.GetQuestID = function() return 40 end
+        _G.GetSuggestedGroupNum = function() return 3 end
+        AR.GroupQuests:OnQuestDetail()
+        _G.GetQuestID, _G.GetSuggestedGroupNum = saved[1], saved[2]
+        T:AssertTrue(AR.GroupQuests:IsGroupQuest(40), "Offer said 3 players")
+        AR.db.global.groupQuests = {}
+        AR.QuestTracking.questsById[40] = { id = 40, title = "A Fishy Peril", suggestedGroup = 2 }
+        T:AssertTrue(AR.GroupQuests:IsGroupQuest(40), "Quest log said 2 players")
+        AR.QuestTracking.questsById[40] = nil
+    end)
+end)

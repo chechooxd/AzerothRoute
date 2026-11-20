@@ -44,7 +44,7 @@ function QuestTracking:ScanNativeQuestLog(current)
     if _G.GetNumQuestLogEntries and _G.GetQuestLogTitle then
         local numEntries = _G.GetNumQuestLogEntries() or 0
         for i = 1, numEntries do
-            local title, level, _, isHeader, _, isComplete, _, questID = _G.GetQuestLogTitle(i)
+            local title, level, suggestedGroup, isHeader, _, isComplete, _, questID = _G.GetQuestLogTitle(i)
             if not isHeader and questID and questID > 0 then
                 local objs = {}
                 local numObj = (_G.GetNumQuestLeaderBoards and _G.GetNumQuestLeaderBoards(i)) or 0
@@ -66,6 +66,7 @@ function QuestTracking:ScanNativeQuestLog(current)
                     isComplete = (isComplete == 1 or isComplete == true or (#objs > 0 and objs[1].finished)),
                     objectives = objs,
                     logIndex = i,
+                    suggestedGroup = tonumber(suggestedGroup) or 0,
                     inlog = true,
                 }
             end

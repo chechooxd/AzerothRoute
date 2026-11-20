@@ -21,6 +21,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - S15: "sigue con la piedra de hogar en el viaje".
 - S16: "sigue con los entrenadores en servicios cercanos" — source chosen by the user: learn in game (tooltip title on mouse-over + TRAINER_SHOW).
 - S17: "sigue con lo que falta de polestar". Feasible with available data: new spells on level up (11), quest-starting loot glow (12), rares, guide tabs strip (01 "+" tab). Not feasible without new data: group-quest banner (no group flag), quest reward preview (no reward data), alts/characters, import.
+- S18: "sigue con el aviso de misión de grupo" (screenshot 15).
 
 ## Tasks
 - [x] T1 [S3] Viewer heading, folded done goals, Then preview, note line — inline · 122/122
@@ -42,6 +43,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T17 [S17] Quest-starting loot on the item bar with glow (Quest/QuestLoot.lua) — inline · 153/153
 - [x] T18 [S17] New spells on level up (Modules/Professions/ClassSpells.lua, UI/SpellToast.lua) — inline · 155/155
 - [x] T19 [S17] Guide tabs strip in the guide window (switch at the saved step, close ×, + opens guides) — inline · 156/156
+- [x] T20 [S18] Group-quest banner: DB flag (open-world elite objectives) + client suggested group size; Skip it hides the quest's goals, Do it with a group keeps it (Quest/GroupQuests.lua) — inline · 159/159
 
 ## Log
 - L1 (2026-11-19): "corrige el addon que estamos desarrollando, quiero que te inspires en polestar, sobretodo en la interfaz, es totalmente lo que busco para mi addon" — done as ced39ce (viewer + guide center) and 94f6faa (arrow).
@@ -55,3 +57,4 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - L9 (2026-11-20): "sigue con los entrenadores en servicios cercanos". pfQuest has no trainer flags; user chose in-game learning over a hand seed or GPL server data. Records in AR.db.global.trainers. Test found a real bug: `local _, c = _G.UnitClass and _G.UnitClass("player")` keeps only one return value; fixed with select(2, ...).
 - L10 (2026-11-20): "sigue con lo que falta de polestar". Scope set to T16-T19; infeasible items listed in S17.
 - L11 (2026-11-20): T16-T19 done. Rares from pfQuest meta (flag x); quest-starting loot from quest start items; new spells from the class trainer list recorded in game (TRAINER_SHOW) with a level-up card; tabs keep each guide's step in db.char.tabsteps.
+- L12 (2026-11-20): "sigue con el aviso de misión de grupo". pfQuest has no group flag, so the generator flags quests whose objective creatures (or only droppers of an objective item) are open-world elites (rank 1-3), 159 quests; the client's suggested group size (quest log, quest offer) also marks them. Goal:GetStatus now returns hidden for skipped quests (db.char.skippedQuests) — shared engine code, guarded so nothing changes until a player skips.

@@ -154,6 +154,9 @@ function AR:Initialize()
         if self.QuestLoot and self.QuestLoot.RegisterLiveEvents then
             self.QuestLoot:RegisterLiveEvents()
         end
+        if self.GroupQuests and self.GroupQuests.RegisterLiveEvents then
+            self.GroupQuests:RegisterLiveEvents()
+        end
         if self.ClassSpells and self.ClassSpells.RegisterLiveEvents then
             self.ClassSpells:RegisterLiveEvents()
         end

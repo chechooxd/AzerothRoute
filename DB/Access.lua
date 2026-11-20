@@ -77,7 +77,7 @@ function DB:GetQuest(id)
         kind = "quest", id = id, name = self:LocalName("quests", id, title),
         level = tonumber(f[1]) or 0, minLevel = tonumber(f[2]) or 0, side = f[3],
         starts = refList(f[4]), ends = refList(f[5]),
-        objUnits = idList(f[6]), objItems = idList(f[7]), objObjects = idList(f[8]),
+        objUnits = idList(f[6]), objItems = idList(f[7]), objObjects = idList(f[8]), group = f[9] == "G",
     }
 end
 
