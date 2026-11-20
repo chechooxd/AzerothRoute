@@ -487,3 +487,87 @@ step Next
         AR.QuestTracking.questsById[40] = nil
     end)
 end)
+
+T:Describe("Polestar parity: reward preview", function()
+    local function stubAll(AR, t)
+        local names = {}
+        for k in pairs(t) do names[#names + 1] = k end
+        local saved = {}
+        for _, k in ipairs(names) do saved[k] = _G[k]; _G[k] = t[k] end
+        return function() for _, k in ipairs(names) do _G[k] = saved[k] end end
+    end
+
+    T:It("records rewards from the quest offer and previews the pick the guide would make", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.db.global.questRewards = {}
+        local links = { choice = { "|cff1eff00|Hitem:2232:0:0:0|h[Dark Leather Belt]|h|r", "|cff1eff00|Hitem:2233:0:0:0|h[Shadow Weaver Leggings]|h|r" } }
+        local restore = stubAll(AR, {
+            GetQuestID = function() return 176 end,
+            GetNumQuestChoices = function() return 2 end,
+            GetNumQuestRewards = function() return 0 end,
+            GetQuestItemLink = function(kind, i) return links[kind] and links[kind][i] end,
+            GetItemInfo = function(link)
+                local id = tonumber(tostring(link):match("item:(%d+)"))
+                return ({ [2232] = "Dark Leather Belt", [2233] = "Shadow Weaver Leggings" })[id]
+            end,
+        })
+        local origPick = AR.QuestReward.SelectBestReward
+        AR.QuestReward.SelectBestReward = function(_, l) return { index = 2, itemLink = l[2], reason = "upgrade" } end
+        local ok, err = pcall(function()
+            local rec = AR.QuestRewards:OnQuestDetail()
+            T:AssertEqual(table.concat(rec.choice, ","), "2232,2233", "Both choices recorded")
+            local p = AR.QuestRewards:Preview(176)
+            T:AssertEqual(p.itemID, 2233)
+            T:AssertEqual(p.name, "Shadow Weaver Leggings")
+            T:AssertTrue(p.isUpgrade, "Upgrade marked")
+
+            AR.db.profile.previewsteps = 0
+            local g = AR.Parser:ParseGuide("RewardGuide", 'step Take\n    accept Wanted: "Hogger"##176\n')
+            AR.Progression:LoadGuide(g, 1)
+            AR.Progression.pause = true
+            AR.db.char.groupQuestsKept = { [176] = true }
+            AR.ViewerFrame:RefreshVisuals()
+            local found
+            for _, row in ipairs(AR.ViewerFrame.lineRows) do
+                if row:IsShown() and row.label:GetText():find("Shadow Weaver Leggings", 1, true) then found = row.label:GetText() end
+            end
+            T:AssertTrue(found ~= nil, "Reward line under the accept")
+            T:AssertTrue(found:find(AR.L:Get("UI_REWARD_NEW"), 1, true) ~= nil, "Marked new")
+            T:AssertTrue(found:find(AR.L:Get("UI_REWARD_AT_TURNIN"), 1, true) ~= nil, "Says at turn-in")
+        end)
+        restore()
+        AR.QuestReward.SelectBestReward = origPick
+        AR.db.char.groupQuestsKept = {}
+        if not ok then error(err, 0) end
+    end)
+
+    T:It("reads rewards of quests already in the log and restores the log selection", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.db.global.questRewards = {}
+        local selected = 7
+        local calls = {}
+        local restore = stubAll(AR, {
+            GetQuestLogSelection = function() return selected end,
+            SelectQuestLogEntry = function(i) selected = i; calls[#calls + 1] = i end,
+            GetNumQuestLogChoices = function() return 0 end,
+            GetNumQuestLogRewards = function() return selected == 3 and 1 or 0 end,
+            GetQuestLogItemLink = function(kind, i) if kind == "reward" and selected == 3 then return "item:1931" end end,
+        })
+        local origLog = AR.QuestTracking.questsById
+        AR.QuestTracking.questsById = { [40] = { id = 40, title = "A Fishy Peril", logIndex = 3 } }
+        local ok, err = pcall(function()
+            T:AssertEqual(AR.QuestRewards:ScanLog(), 1, "One quest read")
+            T:AssertEqual(AR.QuestRewards:Get(40).reward[1], 1931)
+            T:AssertEqual(selected, 7, "Selection restored")
+            T:AssertEqual(AR.QuestRewards:ScanLog(), 0, "Known quests are not read again")
+            T:AssertEqual(AR.QuestRewards:Preview(999), nil, "Unknown quest: no preview")
+        end)
+        AR.QuestTracking.questsById = origLog
+        restore()
+        if not ok then error(err, 0) end
+    end)
+end)

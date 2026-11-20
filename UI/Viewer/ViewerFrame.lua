@@ -1393,6 +1393,29 @@ function ViewerFrame:RefreshVisuals()
                 end
             end
             y = y + ROW_H
+            -- Reward preview under an open accept / turn-in line.
+            local g = line.goal
+            local reward = g and g.questid and line.status ~= "complete"
+                and (g.action == "accept" or g.action == "turnin")
+                and AR.QuestRewards and AR.QuestRewards:Preview(g.questid)
+            local rrow = reward and nextRow() or nil
+            if rrow then
+                local rich = string.format(L("UI_REWARD_FMT", "Reward: %s"), Skins:Colorize(reward.name, "item"))
+                local plain = string.format(L("UI_REWARD_FMT", "Reward: %s"), reward.name)
+                if reward.isUpgrade then
+                    rich = rich .. " |cff66d17a" .. L("UI_REWARD_NEW", "new") .. "|r"
+                    plain = plain .. " " .. L("UI_REWARD_NEW", "new")
+                end
+                if g.action == "accept" then
+                    rich = rich .. " · " .. L("UI_REWARD_AT_TURNIN", "at turn-in")
+                    plain = plain .. " · " .. L("UI_REWARD_AT_TURNIN", "at turn-in")
+                end
+                paintRow(rrow, { isHeader = true, isReward = true, text = plain, richText = rich }, "header")
+                placeRow(self, rrow, y - 6)
+                rrow.label:SetPoint("LEFT", rrow, "LEFT", 28, 0)
+                if rrow.flash then rrow.flash:Hide() end
+                y = y + ROW_H - 6
+            end
         end
     end
 

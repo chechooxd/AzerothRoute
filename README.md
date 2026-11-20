@@ -84,7 +84,7 @@ bearing, and minimap radar offsets never mix coordinate spaces.
 
 ## Verification
 
-Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 159 passed, 0 failed` across 36 test suites). Client verification is pending:
+Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 161 passed, 0 failed` across 36 test suites). Client verification is pending:
 
 - Check the minimap button, its clicks and tooltip; move it, `/reload`, and check that it keeps its position.
 - `/ar config`: change a toggle, `/reload`, check it stuck; create a second profile, switch, check the toggle follows the profile.
@@ -128,6 +128,7 @@ Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 159 passed,
 - New spells: open your class trainer once, then level up: a card above the guide window lists the new spells, their cost and whether you can pay; "Go to trainer" points the arrow; "Turn these off" stops the cards.
 - Tabs: load a second guide from the Guide Center; switch tabs and check each resumes at its step; close one with ×; + opens the guide list.
 - Group quests: reach a step with a group quest (e.g. Wanted: "Hogger"): a banner offers "Skip it" (its accept, kill and turn-in leave the route) or "Do it with a group" (banner goes away); `/reload` keeps the choice.
+- Rewards: open a quest offer with item rewards, accept it: under the accept/turn-in line the guide shows "Reward: <item>" ("new" for an upgrade, "at turn-in" on accepts). With the quest log open, check it does not jump to another quest.
 
 The mock suite cannot establish live-client protected-action compatibility,
 minimap positioning, talent texture availability, or leveling-route completeness.
