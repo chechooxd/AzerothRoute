@@ -23,6 +23,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - S17: "sigue con lo que falta de polestar". Feasible with available data: new spells on level up (11), quest-starting loot glow (12), rares, guide tabs strip (01 "+" tab). Not feasible without new data: group-quest banner (no group flag), quest reward preview (no reward data), alts/characters, import.
 - S18: "sigue con el aviso de misión de grupo" (screenshot 15).
 - S19: "sigue con la vista previa de recompensas" (screenshot 01: "Reward: Dryweed Belt new · at turn-in").
+- S20: "Continua con las mejoras e implementar iones de polestar, y arregla la ventana de talentos con el mismo enfoque de diseño" (screenshots 232536 rares, 232552 options, 110447 home).
 
 ## Tasks
 - [x] T1 [S3] Viewer heading, folded done goals, Then preview, note line — inline · 122/122
@@ -46,6 +47,10 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T19 [S17] Guide tabs strip in the guide window (switch at the saved step, close ×, + opens guides) — inline · 156/156
 - [x] T20 [S18] Group-quest banner: DB flag (open-world elite objectives) + client suggested group size; Skip it hides the quest's goals, Do it with a group keeps it (Quest/GroupQuests.lua) — inline · 159/159
 - [x] T21 [S19] Reward preview under accept/turn-in lines, rewards recorded from the quest offer and the quest log (Quest/QuestRewards.lua), pick via AR.QuestReward — inline · 161/161
+- [x] T22 [S20] Talent window restyled like the Guide Center (class sidebar, spec underline tabs, next-point card, ticked roadmap, points bar, gold Apply) — inline · 162/162
+- [ ] T23 [S20] Rares mode in the Guide Center with sightings (seen log, drops, where, set waypoint) — inline
+- [ ] T24 [S20] Characters mode (alts: level, guide, step, gold, place) — inline
+- [ ] T25 [S20] Options/appearance mode (accent colour, background opacity, scale, toggles) — inline
 
 ## Log
 - L1 (2026-11-19): "corrige el addon que estamos desarrollando, quiero que te inspires en polestar, sobretodo en la interfaz, es totalmente lo que busco para mi addon" — done as ced39ce (viewer + guide center) and 94f6faa (arrow).

@@ -571,3 +571,30 @@ T:Describe("Polestar parity: reward preview", function()
         if not ok then error(err, 0) end
     end)
 end)
+
+T:Describe("Polestar parity: talent window", function()
+    T:It("uses the sidebar, spec underline, next-point card and ticked roadmap", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        local TA = AR.TalentAdvisor
+        TA:ShowUI()
+        TA:SelectClass("MAGE")
+        local mage
+        for _, b in ipairs(TA.classButtons) do if b._classToken == "MAGE" then mage = b end end
+        T:AssertTrue(mage.accent:IsShown(), "Selected class carries the gold bar")
+        T:AssertEqual(mage.label:GetText(), TA:GetClassFullName("MAGE"), "Full class name in the sidebar")
+        T:AssertTrue(TA.frame.specUnderline:IsShown(), "Selected spec underlined")
+        T:AssertTrue(TA.headerSub:GetText():find(TA:GetClassFullName("MAGE"), 1, true) ~= nil, "Header names class and build")
+        local origSpent = TA.GetSpentPointsCount
+        TA.GetSpentPointsCount = function() return 3 end
+        TA:RefreshUI()
+        T:AssertTrue(TA.roadmapRows[1].check:IsShown(), "Spent points ticked")
+        T:AssertTrue(TA.roadmapRows[4].accent:IsShown(), "Next point highlighted")
+        T:AssertTrue(TA.frame.fill:IsShown(), "Points progress bar")
+        TA.GetSpentPointsCount = origSpent
+        TA.frame:GetScript("OnMouseWheel")(TA.frame, -1)
+        T:AssertEqual(TA.scrollOffset, 3, "Mouse wheel scrolls the roadmap")
+        TA.frame:Hide()
+    end)
+end)
