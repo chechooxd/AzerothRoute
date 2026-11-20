@@ -41,7 +41,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T16 [S17] Rares: DB flag, nearest rare in the map menu, Lookup category — inline · 152/152
 - [x] T17 [S17] Quest-starting loot on the item bar with glow (Quest/QuestLoot.lua) — inline · 153/153
 - [x] T18 [S17] New spells on level up (Modules/Professions/ClassSpells.lua, UI/SpellToast.lua) — inline · 155/155
-- [ ] T19 [S17] Guide tabs strip in the guide window — inline
+- [x] T19 [S17] Guide tabs strip in the guide window (switch at the saved step, close ×, + opens guides) — inline · 156/156
 
 ## Log
 - L1 (2026-11-19): "corrige el addon que estamos desarrollando, quiero que te inspires en polestar, sobretodo en la interfaz, es totalmente lo que busco para mi addon" — done as ced39ce (viewer + guide center) and 94f6faa (arrow).
@@ -54,3 +54,4 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - L8 (2026-11-20): "sigue con la piedra de hogar en el viaje". Bind position recorded on HEARTHSTONE_BOUND (player stands at the innkeeper); falls back to a flight-path node of the same name; an older bind is ignored when GetBindLocation changes. Characters that set their stone before this version get a position only after binding again or when the inn shares a flight-path name.
 - L9 (2026-11-20): "sigue con los entrenadores en servicios cercanos". pfQuest has no trainer flags; user chose in-game learning over a hand seed or GPL server data. Records in AR.db.global.trainers. Test found a real bug: `local _, c = _G.UnitClass and _G.UnitClass("player")` keeps only one return value; fixed with select(2, ...).
 - L10 (2026-11-20): "sigue con lo que falta de polestar". Scope set to T16-T19; infeasible items listed in S17.
+- L11 (2026-11-20): T16-T19 done. Rares from pfQuest meta (flag x); quest-starting loot from quest start items; new spells from the class trainer list recorded in game (TRAINER_SHOW) with a level-up card; tabs keep each guide's step in db.char.tabsteps.

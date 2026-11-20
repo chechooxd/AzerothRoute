@@ -379,3 +379,36 @@ T:Describe("Polestar parity: key bindings", function()
         T:AssertFalse(AR.Bindings:Run("nope"), "Unknown action refused")
     end)
 end)
+
+T:Describe("Polestar parity: guide tabs", function()
+    T:It("keeps open guides as tabs, switches between them at their step and closes them", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.db.profile.previewsteps = 0
+        AR.db.char.tabguides, AR.db.char.tabsteps = {}, {}
+        local a = AR.Parser:ParseGuide("Tabs Alpha", "step A1\n    talk Devrak##3615\nstep A2\n    talk Gazlowe##3391\nstep A3\n    talk Thrall##4949\n")
+        local b = AR.Parser:ParseGuide("Tabs Beta", "step B1\n    talk Gazlowe##3391\n")
+        AR.Progression:LoadGuide(a, 2)
+        AR.Progression.pause = true
+        AR.ViewerFrame:RefreshVisuals()
+        T:AssertEqual(#AR.ViewerFrame.visibleTabs, 1, "One tab")
+        T:AssertFalse(AR.ViewerFrame.tabCloseButtons[1]:IsShown(), "A lone tab cannot be closed")
+        T:AssertTrue(AR.ViewerFrame.addTabButton:IsShown(), "+ button")
+        AR.ViewerFrame:SwitchToGuide("Tabs Beta")
+        T:AssertEqual(AR.Progression.currentGuide, b)
+        T:AssertEqual(#AR.ViewerFrame.visibleTabs, 2, "Two tabs")
+        local other = AR.ViewerFrame.tabButtons[1]
+        T:AssertEqual(other._title, "Tabs Alpha", "Inactive tab is the first guide")
+        other:Click("LeftButton")
+        T:AssertEqual(AR.Progression.currentGuide, a, "Back to the first guide")
+        T:AssertEqual(AR.Progression.currentStep.num, 2, "At the step it was left on")
+        AR.ViewerFrame:CloseTab("Tabs Alpha")
+        T:AssertEqual(AR.Progression.currentGuide, b, "Closing the active tab opens the remaining one")
+        T:AssertEqual(#AR.Tabs:GetTabs(), 1)
+        AR.ViewerFrame.addTabButton:Click("LeftButton")
+        T:AssertTrue(AR.GuideMenu.frame:IsShown() and AR.GuideMenu.mode == "guides", "+ opens the guide list")
+        AR.GuideMenu:Reset()
+        AR.db.char.tabguides, AR.db.char.tabsteps = {}, {}
+    end)
+end)

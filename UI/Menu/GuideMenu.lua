@@ -441,7 +441,10 @@ function GuideMenu:InitializeFrame()
     self.loadButton:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 488, 22)
     self.loadButton:SetScript("OnClick", function()
         if self.selectedGuide and AR.Progression then
-            AR.Progression:LoadGuide(self.selectedGuide, 1)
+            -- Reopening a guide that is already a tab resumes at its step.
+            if AR.ViewerFrame and AR.ViewerFrame.RememberCurrentTab then AR.ViewerFrame:RememberCurrentTab() end
+            local steps = AR.db and AR.db.char and AR.db.char.tabsteps
+            AR.Progression:LoadGuide(self.selectedGuide, (steps and steps[self.selectedGuide.title]) or 1)
             if AR.Tabs then
                 AR.Tabs:AddTab(self.selectedGuide.title)
             end

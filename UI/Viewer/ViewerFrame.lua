@@ -7,6 +7,7 @@
 local AR = _G.AzerothRoute
 local ViewerFrame = {
     WIDTH = 360,
+    MAX_TABS = 3,
     HEIGHT = 140,
     LINES_PER_STEP = 20,
     progressMode = "steps", -- "steps" | "quests" | "xp"
@@ -188,6 +189,32 @@ function ViewerFrame:BuildHeader(f)
         if self.titleText.SetTextColor then self.titleText:SetTextColor(Skins:RGBA("text")) end
         self.titleText:SetText(L("UI_ADDON_TITLE", "AzerothRoute"))
     end
+
+    -- Guide tabs: inactive tabs (switch on click), a close × per tab and a "+" that opens the guides.
+    self.tabButtons = {}
+    for i = 1, self.MAX_TABS do
+        local tb = createFlatButton(f, "AzerothRouteGuideTab" .. i, "", 100, TAB_H - 2)
+        if tb.label then
+            if tb.label.ClearAllPoints then tb.label:ClearAllPoints() end
+            tb.label:SetPoint("LEFT", tb, "LEFT", 10, 0)
+            if tb.label.SetWordWrap then tb.label:SetWordWrap(false) end
+            tb.label:SetJustifyH("LEFT")
+        end
+        tb:SetScript("OnClick", function(b) if b._title then self:SwitchToGuide(b._title) end end)
+        tb:Hide()
+        self.tabButtons[i] = tb
+    end
+    self.tabCloseButtons = {}
+    for i = 1, self.MAX_TABS do
+        local cb = createFlatButton(f, "AzerothRouteGuideTabClose" .. i, "×", 16, 16)
+        cb:SetScript("OnClick", function(b) if b._title then self:CloseTab(b._title) end end)
+        cb:Hide()
+        self.tabCloseButtons[i] = cb
+    end
+    self.addTabButton = createFlatButton(f, "AzerothRouteGuideTabAdd", "+", 22, 22, "GameFontHighlight")
+    self.addTabButton:SetScript("OnClick", function()
+        if AR.GuideMenu then AR.GuideMenu:Show("guides") end
+    end)
 
     -- Toolbar: [<] n / N [>] ............ [Talents] [Guides]
     local toolbarY = -(TAB_H + 4)
@@ -512,6 +539,105 @@ function ViewerFrame:Initialize()
     self:BuildFooter(f)
     f:SetScript("OnUpdate", function(_, elapsed) self:OnTick(elapsed) end)
     return f
+end
+
+-- Open guides as tabs: the step reached in each is kept, so switching back resumes there.
+local function tabSteps()
+    if not AR.db or not AR.db.char then return {} end
+    AR.db.char.tabsteps = AR.db.char.tabsteps or {}
+    return AR.db.char.tabsteps
+end
+
+function ViewerFrame:RememberCurrentTab()
+    local P = AR.Progression
+    if P and P.currentGuide and P.currentGuide.title and P.currentStep then
+        tabSteps()[P.currentGuide.title] = P.currentStep.num
+    end
+end
+
+function ViewerFrame:SwitchToGuide(title)
+    local guide = AR.Parser and AR.Parser.guidesByTitle and AR.Parser.guidesByTitle[title]
+    local P = AR.Progression
+    if not guide or not P then return false end
+    if P.currentGuide == guide then return true end
+    self:RememberCurrentTab()
+    P:LoadGuide(guide, tabSteps()[title] or 1)
+    self:RefreshVisuals()
+    return true
+end
+
+function ViewerFrame:CloseTab(title)
+    if not AR.Tabs then return false end
+    local P = AR.Progression
+    local wasActive = P and P.currentGuide and P.currentGuide.title == title
+    if wasActive then self:RememberCurrentTab() end
+    AR.Tabs:RemoveTab(title)
+    local rest = AR.Tabs:GetTabs()
+    if wasActive and rest[#rest] then
+        self:SwitchToGuide(rest[#rest])
+    else
+        self:RefreshVisuals()
+    end
+    return true
+end
+
+-- Lays out the tab strip: the active tab keeps the title/underline widgets, others are buttons.
+function ViewerFrame:LayoutTabs()
+    local f = self.frame
+    if not f or not self.tabButtons then return end
+    local P = AR.Progression
+    local current = P and P.currentGuide and P.currentGuide.title
+    if current and AR.Tabs then AR.Tabs:AddTab(current) end
+    local all = (AR.Tabs and AR.Tabs:GetTabs()) or {}
+    -- Show the last MAX_TABS tabs, always including the active one.
+    local shown = {}
+    for i = math.max(1, #all - self.MAX_TABS + 1), #all do shown[#shown + 1] = all[i] end
+    local hasCurrent = false
+    for _, t in ipairs(shown) do if t == current then hasCurrent = true end end
+    if current and not hasCurrent then shown[1] = current end
+    if #shown == 0 then shown = { current or "" } end
+
+    local width = math.floor(math.min(240, (self.WIDTH - 30) / #shown))
+    local bi = 0
+    for i, title in ipairs(shown) do
+        local x = 1 + (i - 1) * width
+        local close = self.tabCloseButtons[i]
+        if title == current or (not current and i == 1) then
+            if f.tabActive then
+                f.tabActive:SetPoint("TOPLEFT", f, "TOPLEFT", x, -1)
+                f.tabActive:SetSize(width, TAB_H - 1)
+                f.tabUnderline:SetPoint("TOPLEFT", f, "TOPLEFT", x, -(TAB_H - 2))
+                f.tabUnderline:SetSize(width, 2)
+            end
+            if self.tabIcon then self.tabIcon:SetPoint("TOPLEFT", f, "TOPLEFT", x + 9, -8) end
+            if self.titleText then
+                self.titleText:SetPoint("TOPLEFT", f, "TOPLEFT", x + 25, -8)
+                if self.titleText.SetWidth then self.titleText:SetWidth(width - 46) end
+            end
+        else
+            bi = bi + 1
+            local tb = self.tabButtons[bi]
+            local guide = AR.Parser and AR.Parser.guidesByTitle and AR.Parser.guidesByTitle[title]
+            tb._title = title
+            tb:SetSize(width - 18, TAB_H - 2)
+            tb:SetPoint("TOPLEFT", f, "TOPLEFT", x, -1)
+            tb.label:SetText(getShortGuideTitle(guide or title))
+            if tb.label.SetWidth then tb.label:SetWidth(width - 30) end
+            tb:Show()
+        end
+        if close then
+            close._title = title
+            close:SetPoint("TOPLEFT", f, "TOPLEFT", x + width - 18, -6)
+            if #shown > 1 then close:Show() else close:Hide() end
+        end
+    end
+    for i = bi + 1, self.MAX_TABS do self.tabButtons[i]._title = nil; self.tabButtons[i]:Hide() end
+    for i = #shown + 1, self.MAX_TABS do self.tabCloseButtons[i]._title = nil; self.tabCloseButtons[i]:Hide() end
+    if self.addTabButton then
+        self.addTabButton:SetPoint("TOPLEFT", f, "TOPLEFT", 1 + #shown * width + 2, -3)
+        self.addTabButton:Show()
+    end
+    self.visibleTabs = shown
 end
 
 -- Opens the world map on the current waypoint's zone.
@@ -1102,6 +1228,7 @@ function ViewerFrame:RefreshVisuals()
     if self.stickyHeader then
         self.stickyHeader:SetText(L("UI_WHILE_HERE", "While you're here"))
     end
+    self:LayoutTabs()
     if self.titleText and AR.Progression and AR.Progression.currentGuide then
         self.titleText:SetText(getShortGuideTitle(AR.Progression.currentGuide))
     end
