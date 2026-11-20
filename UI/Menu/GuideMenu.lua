@@ -73,25 +73,74 @@ function GuideMenu:Reset()
     self.detailMeta = nil
 end
 
-local function createMenuButton(parent, name, labelText, width, height, centered)
+-- Paints a list/sidebar button as selected (raised plate, gold bar, bright text) or idle (flat, muted).
+local function paintSelectable(btn, selected)
+    local S = AR.Skins
+    btn._selected = selected == true
+    if btn.bg then
+        if selected then S:Paint(btn.bg, "selected") else btn.bg:SetColorTexture(0, 0, 0, 0) end
+    end
+    if btn.accent then
+        if selected then btn.accent:Show() else btn.accent:Hide() end
+    end
+    if btn.label and btn.label.SetTextColor then
+        btn.label:SetTextColor(S:RGBA(selected and "text" or "textMuted"))
+    end
+end
+
+-- Flat button. `style`: "list" (left-aligned, hover plate, gold selection bar),
+-- "primary" (gold plate, dark text) or "ghost" (bordered, centred).
+local function createMenuButton(parent, name, labelText, width, height, centered, style)
+    local S = AR.Skins
+    style = style or (centered and "ghost" or "list")
     local btn = AR.UI:Create("Button", parent, name)
     btn:SetSize(width, height)
+    btn._style = style
     if btn.CreateTexture then
         btn.bg = btn:CreateTexture(nil, "BACKGROUND")
         btn.bg:SetAllPoints(btn)
-        btn.bg:SetColorTexture(0.14, 0.17, 0.24, 0.95)
+        if style == "primary" then
+            S:Paint(btn.bg, "accent", 1)
+        elseif style == "ghost" then
+            S:Paint(btn.bg, "panelRaised")
+            S:AddBorder(btn, "border")
+        else
+            btn.bg:SetColorTexture(0, 0, 0, 0)
+            btn.accent = btn:CreateTexture(nil, "ARTWORK")
+            btn.accent:SetPoint("TOPLEFT", btn, "TOPLEFT", 0, 0)
+            btn.accent:SetSize(2, height)
+            S:Paint(btn.accent, "accent")
+            btn.accent:Hide()
+        end
     end
     if btn.CreateFontString then
-        btn.label = btn:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        btn.label = btn:CreateFontString(nil, "OVERLAY", style == "list" and "GameFontHighlight" or "GameFontNormal")
         if centered then
             btn.label:SetPoint("CENTER", btn, "CENTER", 0, 0)
             btn.label:SetJustifyH("CENTER")
         else
-            btn.label:SetPoint("LEFT", btn, "LEFT", 10, 0)
+            btn.label:SetPoint("LEFT", btn, "LEFT", 12, 0)
             btn.label:SetJustifyH("LEFT")
         end
         btn.label:SetText(labelText)
+        if btn.label.SetTextColor then
+            if style == "primary" then
+                btn.label:SetTextColor(0.10, 0.09, 0.07, 1)
+            else
+                btn.label:SetTextColor(S:RGBA(style == "ghost" and "text" or "textMuted"))
+            end
+        end
     end
+    btn:SetScript("OnEnter", function(b)
+        if b._style == "list" and not b._selected then S:Paint(b.bg, "hover") end
+        if b._style == "ghost" then S:Paint(b.bg, "hover", 1) end
+        if b._style == "primary" and b.bg then b.bg:SetColorTexture(1.0, 0.85, 0.42, 1) end
+    end)
+    btn:SetScript("OnLeave", function(b)
+        if b._style == "list" and not b._selected and b.bg then b.bg:SetColorTexture(0, 0, 0, 0) end
+        if b._style == "ghost" then S:Paint(b.bg, "panelRaised") end
+        if b._style == "primary" then S:Paint(b.bg, "accent", 1) end
+    end)
     return btn
 end
 
@@ -111,42 +160,79 @@ function GuideMenu:InitializeFrame()
         if frame.StopMovingOrSizing then frame:StopMovingOrSizing() end
     end)
 
+    local S = AR.Skins
     if f.CreateTexture then
         f.bg = f:CreateTexture(nil, "BACKGROUND")
         f.bg:SetAllPoints(f)
-        f.bg:SetColorTexture(0.06, 0.07, 0.10, 0.97)
+        S:Paint(f.bg, "panel", 0.98)
+        S:AddBorder(f, "border")
 
+        -- Sidebar (categories) on the raised panel colour, full height.
+        f.leftPaneBg = f:CreateTexture(nil, "BACKGROUND")
+        f.leftPaneBg:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -1)
+        f.leftPaneBg:SetSize(152, self.HEIGHT - 2)
+        S:Paint(f.leftPaneBg, "panelRaised")
+
+        -- Header band over the list and details.
         f.headerBar = f:CreateTexture(nil, "ARTWORK")
-        f.headerBar:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
-        f.headerBar:SetSize(self.WIDTH, 36)
-        f.headerBar:SetColorTexture(0.11, 0.13, 0.19, 1.0)
+        f.headerBar:SetPoint("TOPLEFT", f, "TOPLEFT", 153, -1)
+        f.headerBar:SetSize(self.WIDTH - 154, 44)
+        S:Paint(f.headerBar, "panel", 1)
+        f.headerRule = f:CreateTexture(nil, "ARTWORK")
+        f.headerRule:SetPoint("TOPLEFT", f, "TOPLEFT", 153, -45)
+        f.headerRule:SetSize(self.WIDTH - 154, 1)
+        S:Paint(f.headerRule, "divider")
 
-        -- Left sidebar divider
-        f.leftPaneBg = f:CreateTexture(nil, "ARTWORK")
-        f.leftPaneBg:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -44)
-        f.leftPaneBg:SetSize(140, self.HEIGHT - 54)
-        f.leftPaneBg:SetColorTexture(0.09, 0.10, 0.14, 0.95)
-
-        -- Center guide list background
+        -- Center guide list sits on the panel; a rule separates the details pane.
         f.centerPaneBg = f:CreateTexture(nil, "ARTWORK")
-        f.centerPaneBg:SetPoint("TOPLEFT", f, "TOPLEFT", 158, -44)
-        f.centerPaneBg:SetSize(310, self.HEIGHT - 54)
-        f.centerPaneBg:SetColorTexture(0.08, 0.09, 0.13, 0.95)
+        f.centerPaneBg:SetPoint("TOPLEFT", f, "TOPLEFT", 468, -46)
+        f.centerPaneBg:SetSize(1, self.HEIGHT - 47)
+        S:Paint(f.centerPaneBg, "divider")
 
         -- Right details pane background
-        f.rightPaneBg = f:CreateTexture(nil, "ARTWORK")
-        f.rightPaneBg:SetPoint("TOPLEFT", f, "TOPLEFT", 476, -44)
-        f.rightPaneBg:SetSize(234, self.HEIGHT - 54)
-        f.rightPaneBg:SetColorTexture(0.09, 0.11, 0.16, 0.95)
+        f.rightPaneBg = f:CreateTexture(nil, "BACKGROUND")
+        f.rightPaneBg:SetPoint("TOPLEFT", f, "TOPLEFT", 469, -46)
+        f.rightPaneBg:SetSize(self.WIDTH - 470, self.HEIGHT - 47)
+        S:Paint(f.rightPaneBg, "panelRaised", 0.6)
+
+        -- Sidebar brand underline.
+        f.brandRule = f:CreateTexture(nil, "ARTWORK")
+        f.brandRule:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -45)
+        f.brandRule:SetSize(126, 1)
+        S:Paint(f.brandRule, "accent", 0.6)
     end
 
     if f.CreateFontString then
+        -- Sidebar brand: gold star mark, addon name, tagline.
+        if f.CreateTexture then
+            -- Gold diamond mark (a rotated square; no font glyph dependency).
+            self.brandMark = f:CreateTexture(nil, "OVERLAY")
+            self.brandMark:SetPoint("TOPLEFT", f, "TOPLEFT", 17, -16)
+            self.brandMark:SetSize(10, 10)
+            S:Paint(self.brandMark, "accent", 1)
+            if self.brandMark.SetRotation then self.brandMark:SetRotation(math.pi / 4) end
+        end
+        self.brandName = f:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+        self.brandName:SetPoint("TOPLEFT", f, "TOPLEFT", 34, -10)
+        self.brandName:SetText("|cffffffffAzeroth|r|cfff4c54aRoute|r")
+        self.brandTag = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        self.brandTag:SetPoint("TOPLEFT", f, "TOPLEFT", 34, -26)
+        if self.brandTag.SetTextColor then self.brandTag:SetTextColor(S:RGBA("textMuted")) end
+        self.brandTag:SetText(LGet("UI_GUIDES"))
+
         self.headerText = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-        self.headerText:SetPoint("TOPLEFT", f, "TOPLEFT", 14, -10)
+        self.headerText:SetPoint("TOPLEFT", f, "TOPLEFT", 170, -10)
+        if self.headerText.SetTextColor then self.headerText:SetTextColor(S:RGBA("text")) end
         self.headerText:SetText(LGet("UI_GUIDE_MENU_TITLE"))
 
-        self.detailTitle = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
-        self.detailTitle:SetPoint("TOPLEFT", f, "TOPLEFT", 488, -56)
+        self.headerSub = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        self.headerSub:SetPoint("TOPLEFT", f, "TOPLEFT", 170, -28)
+        if self.headerSub.SetTextColor then self.headerSub:SetTextColor(S:RGBA("textMuted")) end
+        self.headerSub:SetText("")
+
+        self.detailTitle = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+        if self.detailTitle.SetTextColor then self.detailTitle:SetTextColor(S:RGBA("text")) end
+        self.detailTitle:SetPoint("TOPLEFT", f, "TOPLEFT", 488, -60)
         if self.detailTitle.SetWidth then self.detailTitle:SetWidth(210) end
         self.detailTitle:SetJustifyH("LEFT")
         self.detailTitle:SetText(LGet("UI_SELECT_GUIDE"))
@@ -155,23 +241,26 @@ function GuideMenu:InitializeFrame()
         self.detailMeta:SetPoint("TOPLEFT", f, "TOPLEFT", 488, -90)
         if self.detailMeta.SetWidth then self.detailMeta:SetWidth(210) end
         self.detailMeta:SetJustifyH("LEFT")
+        if self.detailMeta.SetTextColor then self.detailMeta:SetTextColor(S:RGBA("textMuted")) end
         self.detailMeta:SetText("")
 
         self.detailDesc = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         self.detailDesc:SetPoint("TOPLEFT", f, "TOPLEFT", 488, -120)
         if self.detailDesc.SetWidth then self.detailDesc:SetWidth(210) end
         self.detailDesc:SetJustifyH("LEFT")
+        if self.detailDesc.SetTextColor then self.detailDesc:SetTextColor(S:RGBA("text")) end
         self.detailDesc:SetText(LGet("UI_SELECT_GUIDE_DESC"))
 
         self.pageText = f:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         self.pageText:SetPoint("BOTTOM", f, "BOTTOMLEFT", 313, 24)
         self.pageText:SetJustifyH("CENTER")
+        if self.pageText.SetTextColor then self.pageText:SetTextColor(S:RGBA("textMuted")) end
         self.pageText:SetText("1/1")
     end
 
     -- Top-right Close [X] button
-    self.closeButton = createMenuButton(f, "AzerothRouteGuideMenuClose", "X", 26, 24, true)
-    self.closeButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -8, -6)
+    self.closeButton = createMenuButton(f, "AzerothRouteGuideMenuClose", "x", 22, 22, true)
+    self.closeButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -10)
     self.closeButton:SetScript("OnClick", function()
         f:Hide()
     end)
@@ -179,8 +268,14 @@ function GuideMenu:InitializeFrame()
     -- Left Sidebar Category Buttons
     self.categoryButtons = {}
     for idx, cat in ipairs(self.CATEGORIES) do
-        local cBtn = createMenuButton(f, "AzerothRouteCatBtn" .. idx, LGet(cat.labelKey), 128, 28, false)
-        cBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 16, -52 - (idx - 1) * 32)
+        local cBtn = createMenuButton(f, "AzerothRouteCatBtn" .. idx, LGet(cat.labelKey), 151, 28, false)
+        cBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -58 - (idx - 1) * 30)
+        if cBtn.CreateFontString then
+            cBtn.count = cBtn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+            cBtn.count:SetPoint("RIGHT", cBtn, "RIGHT", -12, 0)
+            cBtn.count:SetJustifyH("RIGHT")
+            if cBtn.count.SetTextColor then cBtn.count:SetTextColor(S:RGBA("textMuted")) end
+        end
         cBtn._categoryID = cat.id
         cBtn._labelKey = cat.labelKey
         cBtn:SetScript("OnClick", function()
@@ -192,8 +287,8 @@ function GuideMenu:InitializeFrame()
     -- Center Column Clickable Guide List Rows (14 per page)
     self.guideRowButtons = {}
     for r = 1, self.MAX_ROWS do
-        local rowBtn = createMenuButton(f, "AzerothRouteGuideRow" .. r, "", 298, 24, false)
-        rowBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 164, -50 - (r - 1) * 26)
+        local rowBtn = createMenuButton(f, "AzerothRouteGuideRow" .. r, "", 310, 24, false)
+        rowBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 156, -52 - (r - 1) * 26)
         rowBtn:SetScript("OnClick", function(btn)
             if btn._guide then
                 self:SelectGuide(btn._guide)
@@ -219,9 +314,6 @@ function GuideMenu:InitializeFrame()
     -- Right Column "Talents" Advisor Button
     self.talentButton = createMenuButton(f, "AzerothRouteMenuTalentsButton", LGet("UI_TALENTS"), 210, 28, true)
     self.talentButton:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 488, 62)
-    if self.talentButton.bg then
-        self.talentButton.bg:SetColorTexture(0.24, 0.34, 0.56, 1.0)
-    end
     self.talentButton:SetScript("OnClick", function()
         if AR.TalentAdvisor and AR.TalentAdvisor.ToggleUI then
             AR.TalentAdvisor:ToggleUI()
@@ -229,11 +321,8 @@ function GuideMenu:InitializeFrame()
     end)
 
     -- Right Column "Load Selected Guide" Action Button
-    self.loadButton = createMenuButton(f, "AzerothRouteLoadGuideButton", LGet("UI_LOAD_GUIDE"), 210, 32, true)
+    self.loadButton = createMenuButton(f, "AzerothRouteLoadGuideButton", LGet("UI_LOAD_GUIDE"), 210, 32, true, "primary")
     self.loadButton:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 488, 22)
-    if self.loadButton.bg then
-        self.loadButton.bg:SetColorTexture(0.14, 0.52, 0.28, 1.0)
-    end
     self.loadButton:SetScript("OnClick", function()
         if self.selectedGuide and AR.Progression then
             AR.Progression:LoadGuide(self.selectedGuide, 1)
@@ -318,13 +407,7 @@ function GuideMenu:SelectGuide(guide)
     end
 
     for _, rowBtn in ipairs(self.guideRowButtons) do
-        if rowBtn.bg then
-            if rowBtn._guide == guide then
-                rowBtn.bg:SetColorTexture(0.22, 0.42, 0.68, 0.98)
-            else
-                rowBtn.bg:SetColorTexture(0.13, 0.15, 0.22, 0.90)
-            end
-        end
+        paintSelectable(rowBtn, rowBtn._guide ~= nil and rowBtn._guide == guide)
     end
 end
 
@@ -339,17 +422,18 @@ function GuideMenu:RenderGuidePage()
         if cBtn.label and cBtn._labelKey then
             cBtn.label:SetText(LGet(cBtn._labelKey))
         end
-        if cBtn.bg then
-            if cBtn._categoryID == self.activeCategory then
-                cBtn.bg:SetColorTexture(0.24, 0.44, 0.72, 1.0)
-            else
-                cBtn.bg:SetColorTexture(0.14, 0.17, 0.24, 0.95)
-            end
+        paintSelectable(cBtn, cBtn._categoryID == self.activeCategory)
+        if cBtn.count then
+            cBtn.count:SetText(tostring(#self:GetGuidesForCategory(cBtn._categoryID)))
         end
     end
 
     local guides = self:GetGuidesForCategory(self.activeCategory)
     local total = #guides
+    if self.headerSub then
+        self.headerSub:SetText(LFormat("UI_GUIDE_COUNT_FMT", total))
+    end
+    if self.brandTag then self.brandTag:SetText(LGet("UI_GUIDES")) end
     local maxOff = math.max(0, math.floor((total - 1) / self.MAX_ROWS) * self.MAX_ROWS)
     self.pageOffset = math.max(0, math.min(maxOff, self.pageOffset or 0))
 

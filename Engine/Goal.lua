@@ -215,6 +215,30 @@ function Goal:GetStatus()
     return "incomplete"
 end
 
+-- The display name GetText embeds for this goal and its kind ("quest", "npc", "item", "place"),
+-- so the viewer can colour it. Returns nil when the goal has no named subject.
+function Goal:GetSubject()
+    local loc = AR.Localizers
+    local a = self.action
+    if a == "accept" or a == "turnin" then
+        return (loc and self.questid and loc:GetTranslatedQuest(self.questid, self.quest)) or self.quest, "quest"
+    elseif a == "kill" then
+        return (loc and self.targetid and loc:GetTranslatedNPC(self.targetid, self.target)) or self.target, "npc"
+    elseif a == "talk" then
+        return (loc and self.npcid and loc:GetTranslatedNPC(self.npcid, self.target)) or self.target, "npc"
+    elseif a == "vendor" or a == "trainer" then
+        return (loc and self.npcid and loc:GetTranslatedNPC(self.npcid, self.target)) or self.target or self.param, "npc"
+    elseif a == "get" or a == "buy" or a == "use" then
+        return (loc and self.targetid and loc:GetTranslatedItem(self.targetid, self.target)) or self.target or (a == "use" and self.param) or nil, "item"
+    elseif a == "fpath" or a == "fly" or a == "home" or a == "hearth" then
+        local tt = AR.TaxiTracker
+        return (tt and tt.GetLocalizedNodeName and tt:GetLocalizedNodeName(self.param)) or self.param, "place"
+    elseif a == "click" then
+        return self.target or self.param, "item"
+    end
+    return nil
+end
+
 -- isDone: render the past-tense form ("Accepted X") when the locale defines one (Zygor style).
 function Goal:GetText(isDone)
     local cur, max = self:GetProgress()

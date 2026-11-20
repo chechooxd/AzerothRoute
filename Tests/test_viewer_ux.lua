@@ -123,4 +123,53 @@ T:Describe("Package 3: viewer", function()
         T:AssertEqual(AR.db.profile.previewsteps, 3)
         AR.db.profile.previewsteps = 0
     end)
+
+    T:It("colours subjects, marks the current goal and boxes completed goals", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        local g = load(AR)
+        AR.ViewerFrame:RefreshVisuals()
+        local step = g:GetStep(1)
+        local accept, kill, talk, ding = step.goals[1], step.goals[2], step.goals[3], step.goals[4]
+        local acceptRow, killRow, talkRow, dingRow = rowFor(AR, accept), rowFor(AR, kill), rowFor(AR, talk), rowFor(AR, ding)
+        T:AssertTrue(acceptRow.label:GetText():find("|cfff4c54aPlainstrider Menace|r", 1, true) ~= nil, "Quest in gold")
+        T:AssertTrue(killRow.label:GetText():find("|cff8cc4f5Plainstrider|r", 1, true) ~= nil, "Mob in NPC blue")
+        T:AssertTrue(acceptRow.accent:IsShown(), "First unfinished goal carries the gold accent bar")
+        T:AssertFalse(killRow.accent:IsShown(), "Only one current goal")
+        T:AssertTrue(acceptRow.check:IsShown() and not acceptRow.checkMark:IsShown(), "Open box while pending")
+        T:AssertTrue(dingRow.checkMark:IsShown(), "Ticked box once done")
+        T:AssertEqual(dingRow.label:GetText():find("|c", 1, true), nil, "Done goals are not colourised")
+        T:AssertFalse(talkRow.check:IsShown(), "Passive talk has no box")
+    end)
+
+    T:It("shows the guide percentage on the footer bar and cycles its mode", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        load(AR)
+        AR.ViewerFrame:RefreshVisuals()
+        T:AssertEqual(AR.ViewerFrame.percentText:GetText(), "25%", "Step 1 of 4")
+        T:AssertTrue(AR.ViewerFrame.progressBar.fill:IsShown(), "Fill drawn")
+        AR.ViewerFrame.progressBar:Click("LeftButton")
+        T:AssertEqual(AR.ViewerFrame.progressMode, "quests")
+        T:AssertEqual(AR.ViewerFrame.percentText:GetText(), "0%", "No turn-in reached yet")
+        AR.ViewerFrame.progressMode = "steps"
+    end)
+
+    T:It("marks the active guide category with the gold bar and shows guide counts", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        load(AR)
+        AR.GuideMenu:Reset()
+        AR.GuideMenu:Show()
+        local active, other
+        for _, b in ipairs(AR.GuideMenu.categoryButtons) do
+            if b._categoryID == "ALL" then active = b elseif b._categoryID == "GOLD" then other = b end
+        end
+        T:AssertTrue(active.accent:IsShown(), "Active category carries the accent bar")
+        T:AssertFalse(other.accent:IsShown(), "Idle category has none")
+        T:AssertEqual(active.count:GetText(), tostring(#AR.GuideMenu:GetGuidesForCategory("ALL")), "Count matches the list")
+        local first = AR.GuideMenu.guideRowButtons[1]
+        T:AssertTrue(first.accent:IsShown(), "Selected guide row is highlighted")
+        AR.GuideMenu:Reset()
+    end)
 end)

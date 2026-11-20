@@ -2,6 +2,11 @@
 local MockWoW = require("Tests.mock_wow_api")
 local T = require("Tests.run_tests")
 
+-- Row labels colour the goal subject with |cAARRGGBB..|r escapes; compare the visible text.
+local function plain(text)
+    return (tostring(text or ""):gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", ""))
+end
+
 T:Describe("SPEC-17: Live WoW Visual Frames (ViewerFrame Rows, Pointer Arrow/Pins, GuideMenu & /ar Command)", function()
     T:It("builds visual StepLine frames, updates FontStrings/ColorTextures on RefreshVisuals, and navigates via Prev/Next buttons", function()
         MockWoW:Reset()
@@ -37,13 +42,14 @@ T:Describe("SPEC-17: Live WoW Visual Frames (ViewerFrame Rows, Pointer Arrow/Pin
         T:AssertEqual(#AR.ViewerFrame.lineRows, 20, "ViewerFrame must pre-allocate 20 visual StepLine row frames")
         T:AssertTrue(AR.ViewerFrame.lineRows[1]:IsShown(), "Row 1 (goto) must be shown")
         T:AssertTrue(AR.ViewerFrame.lineRows[2]:IsShown(), "Row 2 (accept) must be shown")
-        T:AssertEqual(AR.ViewerFrame.lineRows[2].label:GetText(), "Accept Rude Awakening", "Row 2 FontString must display goal text")
+        T:AssertEqual(plain(AR.ViewerFrame.lineRows[2].label:GetText()), "Accept Rude Awakening", "Row 2 FontString must display goal text")
+        T:AssertTrue(AR.ViewerFrame.lineRows[2].label:GetText():find("|cfff4c54aRude Awakening|r", 1, true) ~= nil, "Quest name is drawn in the gold quest colour")
         T:AssertTrue(AR.ViewerFrame.stickySeparator:IsShown(), "1px sticky separator texture must be shown when active sticky exists")
 
         -- Click Next button on ViewerFrame toolbar -> advances to StepTwo (step 3)
         AR.ViewerFrame.nextButton:Click("LeftButton")
         T:AssertEqual(AR.Progression.currentStep.label, "StepTwo", "Clicking Next button on ViewerFrame must advance to StepTwo")
-        T:AssertEqual(AR.ViewerFrame.lineRows[1].label:GetText(), "Turn in Rude Awakening", "ViewerFrame visual row 1 must update to StepTwo goal")
+        T:AssertEqual(plain(AR.ViewerFrame.lineRows[1].label:GetText()), "Turn in Rude Awakening", "ViewerFrame visual row 1 must update to StepTwo goal")
     end)
 
     T:It("creates real Pointer Arrow frame + WorldMap/Minimap pin frames and registers /ar slash commands", function()
