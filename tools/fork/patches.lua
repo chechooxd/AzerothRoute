@@ -549,6 +549,12 @@ local function row(i)
 		r.Icon:SetAlpha(done and 0.6 or 1)]=],
         why = "talent rows: each pick's icon, dimmed once learned",
     },
+    {
+        file = "AzerothRoute/UI/Thanks.lua",
+        find = "function T.HeaderLink(f)\n",
+        replace = "function T.HeaderLink(f)\n\tdo return end -- AzerothRoute: no special-thanks line (Polestar's supporters)\n",
+        why = "no Special thanks to: in the hub and options headers",
+    },
     -- Talents: the plan as talent trees, like a talent calculator (2026-11-20).
     {
         file = "AzerothRoute/Talents/Tree.lua", create = true, replace = read("Talents/Tree.lua"),
@@ -583,7 +589,7 @@ local function row(i)
         replace = [=[	-- AzerothRoute: the plan as the class's talent trees, above the notes.
 	if TV.DrawTree then
 		w.head(L["Talent trees"])
-		local th = TV.DrawTree(detail.Body, DPAD, w.y - 8, w.width, build, mine and c or nil)
+		local th = TV.DrawTree(detail.Body, DPAD, w.y - 8, w.width, build, c, mine)
 		w.y = w.y - 8 - th - 16
 	end
 	w.head(L["Notes"])

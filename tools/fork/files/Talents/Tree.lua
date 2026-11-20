@@ -1,11 +1,16 @@
 -- AzerothRoute: the talent plan drawn as the class's three talent trees, the way talent calculators
--- (Icy Veins and the like) show a build: each tree a grid of talent icons at their row and column,
--- the arrows between them, and on each talent the ranks the plan puts there (learned ranks too when
--- it is the character's own plan). Hovering a talent shows its tooltip. Original AzerothRoute code
--- (GPL-3.0-only).
+-- (Icy Veins and the like) show a build. The layout is the game's own tree when the client has it
+-- loaded (C_Traits: each talent's position, icon, learned ranks and arrows), so it matches the
+-- talent frame whatever Forever changes; before that, the plan's snapshot of the tree. On each
+-- talent: the ranks the plan puts there, and the learned ones on the character's own plan.
+-- Hovering a talent shows its tooltip. Original AzerothRoute code (GPL-3.0-only).
 --
---   TV.DrawTree(parent, x, y, width, build, c) -> height     draws under (x, y) in `parent`
+--   TV.TreeLayout(build, c)                          -> layout (see below), "live" | "snapshot"
+--   TV.DrawTree(parent, x, y, width, build, c, mine) -> height     draws under (x, y) in `parent`
 --   TV.HideTree()
+--
+-- layout = { trees = { { name, points }... }, rows, nodes = { { key, tree, row, col, spell, name,
+--            max, planned, first, have }... }, edges = { { fromKey, toKey }... } }
 
 local ADDON, ns = ...
 local UI, Theme, W = ns.UI, ns.Theme, ns.Widgets
@@ -13,7 +18,7 @@ local TV = UI and UI.TalentsSection
 local L = ns.L
 if not (TV and Theme and W) then return end
 
-local floor, max, min, format = math.floor, math.max, math.min, string.format
+local floor, max, min, format, abs = math.floor, math.max, math.min, string.format, math.abs
 
 local GAP_TREE = 18   -- between trees
 local HEAD = 26       -- a tree's name line
@@ -21,6 +26,156 @@ local MAX_NODE = 34   -- the largest talent square
 
 local root
 local cells, lines, heads = {}, {}, {}
+
+local function readable(v)
+	if issecretvalue and issecretvalue(v) then return nil end
+	return v
+end
+
+local function call(fn, ...)
+	if not fn then return nil end
+	local ok, a, b = pcall(fn, ...)
+	if ok then return a, b end
+end
+
+-- Layouts --------------------------------------------------------------------------------------
+
+-- The plan's ranks and first pick by plan node.
+local function planOf(build)
+	local plan, first = {}, {}
+	for _, p in ipairs(build.picks) do
+		plan[p.node] = max(plan[p.node] or 0, p.rank)
+		first[p.node] = first[p.node] or p.order
+	end
+	return plan, first
+end
+
+-- Index of each distinct value in sorted order (values within `tol` count as one).
+local function ranks(values, tol)
+	table.sort(values)
+	local out, last, n = {}, nil, 0
+	for _, v in ipairs(values) do
+		if not last or v - last > tol then n = n + 1 last = v end
+		out[v] = n
+	end
+	return out, n
+end
+
+-- Splits sorted x positions into `k` trees at the k-1 widest gaps -> function(x) -> tree.
+local function splitter(xs, k)
+	table.sort(xs)
+	local gaps = {}
+	for i = 2, #xs do gaps[#gaps + 1] = { at = (xs[i] + xs[i - 1]) / 2, size = xs[i] - xs[i - 1] } end
+	table.sort(gaps, function(a, b) return a.size > b.size end)
+	local cuts = {}
+	for i = 1, min(k - 1, #gaps) do cuts[#cuts + 1] = gaps[i].at end
+	table.sort(cuts)
+	return function(x)
+		local t = 1
+		for _, c in ipairs(cuts) do if x > c then t = t + 1 end end
+		return t
+	end
+end
+
+local function liveLayout(build, c, mine)
+	local T = ns.Talents
+	local data = build.data
+	local C = T and T.Client
+	if not (C and C_Traits and C_Traits.GetTreeNodes and C_Traits.GetNodeInfo) then return nil end
+	local config = C.ConfigID()
+	if not config then return nil end
+	local ids = call(C_Traits.GetTreeNodes, data.tree)
+	if type(ids) ~= "table" or not ids[1] then return nil end
+
+	local plan, first = planOf(build)
+	-- Plan node -> live node, by the spell or name Polestar's validation matches.
+	local back = {}
+	local valid = c and c.valid
+	if not valid and T.Read and T.Validate then
+		local live = T.Read(data)
+		valid = live and T.Validate(data, live) or nil
+	end
+	for planId, liveId in pairs(valid and valid.map or {}) do back[liveId] = planId end
+
+	local raw, xs, ys = {}, {}, {}
+	for _, id in ipairs(ids) do
+		local info = call(C_Traits.GetNodeInfo, config, id)
+		local nodeID = info and readable(info.ID)
+		local x, y = info and readable(info.posX), info and readable(info.posY)
+		if nodeID and nodeID ~= 0 and readable(info.isVisible) ~= false and type(x) == "number" and type(y) == "number" then
+			local entry = (info.activeEntry and readable(info.activeEntry.entryID)) or (info.entryIDs and readable(info.entryIDs[1]))
+			local spell, name = C.Entry(config, entry)
+			local rank = readable(info.activeRank) or readable(info.ranksPurchased) or 0
+			raw[#raw + 1] = { id = id, x = x, y = y, max = readable(info.maxRanks) or 1, spell = spell, name = name,
+				have = rank, edges = info.visibleEdges }
+			xs[#xs + 1], ys[#ys + 1] = x, y
+		end
+	end
+	if #raw == 0 then return nil end
+
+	local treeOf = splitter({ unpack(xs) }, 3)
+	local rowOf = ranks({ unpack(ys) }, 200)
+	local byTree = { {}, {}, {} }
+	for _, n in ipairs(raw) do
+		n.tree = treeOf(n.x)
+		local list = byTree[n.tree]
+		list[#list + 1] = n.x
+	end
+	local colOf = {}
+	for t = 1, 3 do colOf[t] = ranks(byTree[t], 200) end
+
+	local out = { trees = {}, nodes = {}, edges = {}, rows = 1 }
+	for t = 1, 3 do out.trees[t] = { name = data.specs and data.specs[t] and L[data.specs[t]] or "", points = 0 } end
+	for _, n in ipairs(raw) do
+		local planId = back[n.id]
+		local planned = planId and plan[planId] or 0
+		local node = {
+			key = n.id, tree = n.tree, row = rowOf[n.y], col = colOf[n.tree][n.x],
+			spell = n.spell, name = n.name, max = n.max,
+			planned = planned, first = planId and first[planId] or nil, have = mine and n.have or nil,
+		}
+		out.rows = max(out.rows, node.row)
+		out.trees[n.tree].points = out.trees[n.tree].points + planned
+		out.nodes[#out.nodes + 1] = node
+		for _, e in ipairs(type(n.edges) == "table" and n.edges or {}) do
+			local to = readable(e.targetNode)
+			if to then out.edges[#out.edges + 1] = { n.id, to } end
+		end
+	end
+	return out
+end
+
+local function snapshotLayout(build, c, mine)
+	local data = build.data
+	local plan, first = planOf(build)
+	local have
+	if mine and c and c.valid and c.live then
+		have = {}
+		for planId, liveId in pairs(c.valid.map) do
+			local n = c.live.nodes[liveId]
+			have[planId] = n and n.active or 0
+		end
+	end
+	local out = { trees = {}, nodes = {}, edges = {}, rows = 1 }
+	for t = 1, 3 do out.trees[t] = { name = data.specs and data.specs[t] and L[data.specs[t]] or "", points = 0 } end
+	for id, n in pairs(data.nodes) do
+		local planned = plan[id] or 0
+		out.nodes[#out.nodes + 1] = { key = id, tree = n.spec, row = n.row, col = n.col, spell = n.spell, name = n.name,
+			max = n.max, planned = planned, first = first[id], have = have and have[id] or nil }
+		out.rows = max(out.rows, n.row or 1)
+		out.trees[n.spec].points = out.trees[n.spec].points + planned
+	end
+	for _, e in ipairs(data.edges or {}) do out.edges[#out.edges + 1] = { e[1], e[2] } end
+	return out
+end
+
+function TV.TreeLayout(build, c, mine)
+	local live = liveLayout(build, c, mine)
+	if live then return live, "live" end
+	return snapshotLayout(build, c, mine), "snapshot"
+end
+
+-- Drawing --------------------------------------------------------------------------------------
 
 local function color(t, name, alpha)
 	local r, g, b = Theme.Color(name)
@@ -98,9 +253,10 @@ local function head(i, parent)
 	return h
 end
 
-function TV.DrawTree(parent, x, y, width, build, c)
-	local data = build and build.data
-	if not data then return 0 end
+function TV.DrawTree(parent, x, y, width, build, c, mine)
+	if not (build and build.data) then return 0 end
+	local layout, source = TV.TreeLayout(build, c, mine)
+	TV.treeSource = source
 	if not root then root = CreateFrame("Frame", nil, parent) end
 	root:SetParent(parent)
 	root:ClearAllPoints()
@@ -108,72 +264,46 @@ function TV.DrawTree(parent, x, y, width, build, c)
 	root:SetWidth(width)
 	hideAll()
 
-	-- The plan's ranks by node, and the pick that first reaches each node.
-	local plan, first = {}, {}
-	local perTree = { 0, 0, 0 }
-	for _, p in ipairs(build.picks) do
-		plan[p.node] = max(plan[p.node] or 0, p.rank)
-		first[p.node] = first[p.node] or p.order
-	end
-	-- Learned ranks on the character's own plan.
-	local have
-	if c and c.valid and c.live then
-		have = {}
-		for planId, liveId in pairs(c.valid.map) do
-			local n = c.live.nodes[liveId]
-			have[planId] = n and n.active or 0
-		end
-	end
-
-	local rows, cols = 1, 1
-	for _, n in pairs(data.nodes) do
-		rows, cols = max(rows, n.row or 1), max(cols, n.col or 1)
-		if plan[n.id] then perTree[n.spec] = perTree[n.spec] + plan[n.id] end
-	end
+	local cols = 1
+	for _, n in ipairs(layout.nodes) do cols = max(cols, n.col or 1) end
 	local treeW = floor((width - GAP_TREE * 2) / 3)
 	local size = min(MAX_NODE, floor(treeW / (cols + (cols - 1) * 0.45)))
 	local step = floor((treeW - size) / max(1, cols - 1))
 	local vstep = size + floor(size * 0.45)
-	local function pos(n)
-		local tx = (n.spec - 1) * (treeW + GAP_TREE)
-		return tx + (n.col - 1) * step, -(HEAD + (n.row - 1) * vstep)
+	local at = {}
+	for _, n in ipairs(layout.nodes) do
+		at[n.key] = { (n.tree - 1) * (treeW + GAP_TREE) + (n.col - 1) * step, -(HEAD + (n.row - 1) * vstep), n }
 	end
 
-	-- Tree names with the plan's points in each.
 	for t = 1, 3 do
 		local h = head(t, root)
 		h:ClearAllPoints()
 		h:SetPoint("TOPLEFT", root, "TOPLEFT", (t - 1) * (treeW + GAP_TREE), 0)
-		local name = data.specs and data.specs[t] and L[data.specs[t]] or ""
-		h:SetText(format("%s  |cff8fa6c6%d|r", name, perTree[t]))
+		local tr = layout.trees[t] or { name = "", points = 0 }
+		h:SetText(format("%s  |cff8fa6c6%d|r", tr.name, tr.points))
 		h:Show()
 	end
 
-	-- Arrows (prerequisites): a line from the source's centre to the target's, bent at the
-	-- target's column when they sit in different columns.
-	local li = 0
-	local half = size / 2
-	for _, e in ipairs(data.edges or {}) do
-		local a, b = data.nodes[e[1]], data.nodes[e[2]]
-		if a and b and a.spec == b.spec then
-			local ax, ay = pos(a)
-			local bx, by = pos(b)
-			local taken = (plan[e[1]] or 0) > 0 and (plan[e[2]] or 0) > 0
+	-- Arrows: a line from the source's centre to the target's, bent at the target's column.
+	local li, half = 0, size / 2
+	for _, e in ipairs(layout.edges) do
+		local a, b = at[e[1]], at[e[2]]
+		if a and b and a[3].tree == b[3].tree then
+			local taken = (a[3].planned or 0) > 0 and (b[3].planned or 0) > 0
 			local function seg(x1, y1, x2, y2)
 				li = li + 1
 				local t = line(li, root)
 				t:ClearAllPoints()
-				local lx, ty = min(x1, x2), max(y1, y2)
-				t:SetPoint("TOPLEFT", root, "TOPLEFT", lx - 1, ty + 1)
-				t:SetSize(max(3, math.abs(x2 - x1) + 3), max(3, math.abs(y2 - y1) + 3))
+				t:SetPoint("TOPLEFT", root, "TOPLEFT", min(x1, x2) - 1, max(y1, y2) + 1)
+				t:SetSize(max(3, abs(x2 - x1) + 3), max(3, abs(y2 - y1) + 3))
 				if taken then accent(t, 0.85) else color(t, "textMuted", 0.35) end
 				t:Show()
 			end
-			local acx, acy = ax + half, ay - half
-			local bcx, bcy = bx + half, by - half
-			if ax == bx then
+			local acx, acy = a[1] + half, a[2] - half
+			local bcx, bcy = b[1] + half, b[2] - half
+			if a[1] == b[1] then
 				seg(acx, acy - half, bcx, bcy + half)
-			elseif ay == by then
+			elseif a[2] == b[2] then
 				seg(acx + (bcx > acx and half or -half), acy, bcx + (bcx > acx and -half or half), bcy)
 			else
 				seg(acx, acy, bcx, acy)
@@ -182,29 +312,34 @@ function TV.DrawTree(parent, x, y, width, build, c)
 		end
 	end
 
-	-- Talents.
 	local ci = 0
-	for id, n in pairs(data.nodes) do
+	for _, n in ipairs(layout.nodes) do
 		ci = ci + 1
 		local f = cell(ci, root)
-		local px, py = pos(n)
+		local p = at[n.key]
 		f:ClearAllPoints()
-		f:SetPoint("TOPLEFT", root, "TOPLEFT", px, py)
+		f:SetPoint("TOPLEFT", root, "TOPLEFT", p[1], p[2])
 		f:SetSize(size, size)
 		f.Icon:SetTexture(TV.SpellIcon and TV.SpellIcon(n.spell) or nil)
-		local planned = plan[id] or 0
-		local got = have and have[id] or nil
-		f.Icon:SetDesaturated(planned == 0)
-		f.Icon:SetAlpha(planned == 0 and 0.45 or 1)
-		if got and got >= planned and planned > 0 then
+		local planned, got = n.planned or 0, n.have
+		f.Icon:SetDesaturated(planned == 0 and not (got and got > 0))
+		f.Icon:SetAlpha((planned == 0 and not (got and got > 0)) and 0.45 or 1)
+		if got and planned > 0 and got >= planned then
 			color(f.Edge, "success", 1)
 		elseif planned > 0 then
 			accent(f.Edge, 1)
+		elseif got and got > 0 then
+			color(f.Edge, "warning", 1)
 		else
 			color(f.Edge, "textMuted", 0.35)
 		end
-		if planned > 0 then
-			f.Rank:SetText(got and format("%d/%d", min(got, planned), planned) or format("%d/%d", planned, n.max))
+		if planned > 0 or (got and got > 0) then
+			-- Learned of planned on the own plan, planned of the talent's ranks otherwise.
+			if got then
+				f.Rank:SetText(format("%d/%d", got, planned > 0 and planned or n.max))
+			else
+				f.Rank:SetText(format("%d/%d", planned, n.max))
+			end
 			color(f.RankBg, "bg", 0.9)
 			f.RankBg:Show()
 			f.Rank:Show()
@@ -213,11 +348,11 @@ function TV.DrawTree(parent, x, y, width, build, c)
 			f.Rank:Hide()
 		end
 		f.psSpell, f.psName, f.psMax = n.spell, n.name, n.max
-		f.psPlan, f.psFirst, f.psHave = planned, first[id], got
+		f.psPlan, f.psFirst, f.psHave = planned, n.first, got
 		f:Show()
 	end
 
-	local height = HEAD + (rows - 1) * vstep + size + 6
+	local height = HEAD + (layout.rows - 1) * vstep + size + 6
 	root:SetHeight(height)
 	root:Show()
 	return height

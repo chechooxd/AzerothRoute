@@ -400,7 +400,7 @@ function TV.Render()
 	-- AzerothRoute: the plan as the class's talent trees, above the notes.
 	if TV.DrawTree then
 		w.head(L["Talent trees"])
-		local th = TV.DrawTree(detail.Body, DPAD, w.y - 8, w.width, build, mine and c or nil)
+		local th = TV.DrawTree(detail.Body, DPAD, w.y - 8, w.width, build, c, mine)
 		w.y = w.y - 8 - th - 16
 	end
 	w.head(L["Notes"])

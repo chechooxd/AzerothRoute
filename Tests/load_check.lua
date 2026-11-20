@@ -303,6 +303,54 @@ do
     end
 end
 
+-- 11. Talent trees from the game's own tree (C_Traits): positions, learned ranks, arrows
+do
+    local TV = ns.UI and ns.UI.TalentsSection
+    local T = ns.Talents
+    local data = T and T.Data("PALADIN")
+    if TV and TV.TreeLayout and data then
+        local build = data.builds[1]
+        -- A live tree: the plan's first pick node, one talent the plan never names, in three
+        -- trees 3000 apart; rows by posY, an arrow from the first to the second.
+        local p1 = data.nodes[build.picks[1].node]
+        local live = {
+            [9001] = { x = 1000, y = 1000, spell = p1.spell, max = p1.max, rank = 2, edge = 9002 },
+            [9002] = { x = 1600, y = 1600, spell = 4242, max = 1, rank = 0 },
+            [9003] = { x = 4000, y = 1000, spell = 4343, max = 3, rank = 0 },
+            [9004] = { x = 7000, y = 2200, spell = 4444, max = 2, rank = 0 },
+        }
+        rawset(_G, "C_Traits", {
+            GetTreeNodes = function() return { 9001, 9002, 9003, 9004 } end,
+            GetNodeInfo = function(_, id)
+                local n = live[id]
+                return { ID = id, posX = n.x, posY = n.y, maxRanks = n.max, activeRank = n.rank, isVisible = true,
+                    entryIDs = { id * 10 }, visibleEdges = n.edge and { { targetNode = n.edge } } or {} }
+            end,
+            GetEntryInfo = function(_, e) return { definitionID = e } end,
+            GetDefinitionInfo = function(d) local n = live[d / 10] return { spellID = n.spell } end,
+        })
+        T.Client.ConfigID = function() return 7 end
+        rawset(_G, "C_Spell", { GetSpellName = function(id) return "Talent " .. id end, GetSpellTexture = function() return 1 end })
+        local valid = { map = { [build.picks[1].node] = 9001 } }
+        local lay, source = TV.TreeLayout(build, { valid = valid }, true)
+        if source ~= "live" then fail("tree did not read the game's tree: " .. tostring(source)) else
+            local byKey = {}
+            for _, n in ipairs(lay.nodes) do byKey[n.key] = n end
+            if #lay.nodes ~= 4 then fail("live tree has " .. #lay.nodes .. " talents, not 4") end
+            if byKey[9001].tree ~= 1 or byKey[9003].tree ~= 2 or byKey[9004].tree ~= 3 then fail("live tree split wrong") end
+            if byKey[9001].row ~= 1 or byKey[9002].row ~= 2 or byKey[9004].row ~= 3 then fail("live tree rows wrong") end
+            if byKey[9002].col ~= 2 then fail("live tree columns wrong") end
+            if (byKey[9001].planned or 0) < 1 or byKey[9001].have ~= 2 then fail("plan or learned ranks not on the live talent") end
+            if (byKey[9002].planned or 0) ~= 0 then fail("a talent the plan never names carries plan ranks") end
+            if #lay.edges ~= 1 then fail("live arrows not read") end
+            print("live tree: checked")
+        end
+    end
+    if not (read(ROOT .. "/AzerothRoute/UI/Thanks.lua") or ""):find("function T.HeaderLink(f)\n\tdo return end", 1, true) then
+        fail("the special-thanks line is still on")
+    end
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end
