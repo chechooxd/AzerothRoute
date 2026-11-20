@@ -23,6 +23,7 @@ local CATEGORIES = {
     { id = "mount", key = "UI_LK_MOUNTS" },
     { id = "recipe", key = "UI_LK_RECIPES" },
     { id = "object", key = "UI_LK_OBJECTS" },
+    { id = "rare", key = "UI_LK_RARES" },
 }
 
 local KIND_COLOR = { quest = "quest", npc = "npc", item = "item", mount = "item", recipe = "item", object = "place" }
@@ -73,6 +74,9 @@ function Lookup:Results()
         end
         for _, r in ipairs((AR.DB and AR.DB.Search and AR.DB:Search(q)) or {}) do
             table.insert(buckets[r.kind], r)
+            if r.kind == "npc" and ((AR.DB.Units[r.id] or ""):match("%^([%a]*)$") or ""):find("x", 1, true) then
+                table.insert(buckets.rare, r)
+            end
             table.insert(buckets.all, r)
         end
     end

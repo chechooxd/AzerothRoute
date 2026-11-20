@@ -19,7 +19,8 @@ Branch: claude/addon-polestar-interface-71be44 â†’ master Â· Delivery: commit pe
 - S13 (Dungeons, screenshot_232430): every Classic dungeon/raid with level range, zone, "Your level", and the quests that lead into it for your faction.
 - S14: "sigue con servicios cercanos y el viaje por tramos" (screenshots 05 journey, 06 nearby).
 - S15: "sigue con la piedra de hogar en el viaje".
-- S16: "sigue con los entrenadores en servicios cercanos" — source chosen by the user: learn in game (tooltip title on mouse-over + TRAINER_SHOW).
+- S16: "sigue con los entrenadores en servicios cercanos" â€” source chosen by the user: learn in game (tooltip title on mouse-over + TRAINER_SHOW).
+- S17: "sigue con lo que falta de polestar". Feasible with available data: new spells on level up (11), quest-starting loot glow (12), rares, guide tabs strip (01 "+" tab). Not feasible without new data: group-quest banner (no group flag), quest reward preview (no reward data), alts/characters, import.
 
 ## Tasks
 - [x] T1 [S3] Viewer heading, folded done goals, Then preview, note line â€” inline Â· 122/122
@@ -33,10 +34,14 @@ Branch: claude/addon-polestar-interface-71be44 â†’ master Â· Delivery: commit pe
 - [x] T9 Merge to master, README checklist
 - [x] T10 [S11] Generated database (DB/, tools/build_db.lua, DB/LICENSE-pfQuest.txt) â€” inline
 - [x] T11 [S12-S13] Lookup and Dungeons modes in the Guide Center (MenuPanel, Lookup, Dungeons) + manual arrow target â€” inline · 142/142
-- [x] T12 [S14] Nearby services from DB flags in the map-pin menu (Spatial/Nearby.lua) — inline
-- [x] T13 [S14] Journey planner (Spatial/TravelData.lua, Spatial/Journey.lua), arrow steering and Journey section in the guide window — inline · 146/146
-- [x] T14 [S15] Hearthstone leg in the journey (TaxiTracker:RecordHearth on HEARTHSTONE_BOUND, GetHearthLocation, Journey hearth node with cooldown) — inline · 149/149
-- [x] T15 [S16] Trainers learned in game (Spatial/Trainers.lua) in the map pin menu: own class trainer, weapon master, each profession — inline · 151/151
+- [x] T12 [S14] Nearby services from DB flags in the map-pin menu (Spatial/Nearby.lua) â€” inline
+- [x] T13 [S14] Journey planner (Spatial/TravelData.lua, Spatial/Journey.lua), arrow steering and Journey section in the guide window â€” inline · 146/146
+- [x] T14 [S15] Hearthstone leg in the journey (TaxiTracker:RecordHearth on HEARTHSTONE_BOUND, GetHearthLocation, Journey hearth node with cooldown) â€” inline · 149/149
+- [x] T15 [S16] Trainers learned in game (Spatial/Trainers.lua) in the map pin menu: own class trainer, weapon master, each profession â€” inline · 151/151
+- [x] T16 [S17] Rares: DB flag, nearest rare in the map menu, Lookup category â€” inline Â· 152/152
+- [ ] T17 [S17] Quest-starting loot on the item bar with glow â€” inline
+- [ ] T18 [S17] New spells on level up (trainer list learned in game) toast â€” inline
+- [ ] T19 [S17] Guide tabs strip in the guide window â€” inline
 
 ## Log
 - L1 (2026-11-19): "corrige el addon que estamos desarrollando, quiero que te inspires en polestar, sobretodo en la interfaz, es totalmente lo que busco para mi addon" â€” done as ced39ce (viewer + guide center) and 94f6faa (arrow).
@@ -45,6 +50,7 @@ Branch: claude/addon-polestar-interface-71be44 â†’ master Â· Delivery: commit pe
 - L4: T6 replaced level-band section headers with a right-hand row tag ("x/y" on the loaded guide, "Your level" on matching guides): headers inside the paged list would change the 14-rows-per-page contract that existing tests pin (Page 1/4 for 55 guides).
 - L5: All tasks done inline (no writer trigger). Suite 135/135 (34 suites). README checklist added. Risk: item 6 (layout, fonts, glyphs and the abandon popup are only verifiable in the live client) and a requested behaviour change: minimap left-click now hides/shows everything and right-click opens the menu.
 - L6 (2026-11-19): "sigue con lookup y mazmorras, crea las bases de datos". User chose pfQuest MIT as the data source (rev 104f356). pfQuest keeps no coordinates for instance creatures, so dungeon quests are attached heuristically (objective text names the dungeon; or description names it with an instance-only objective; or an instance-only objective given in the dungeon zone at its level) â€” lists are useful but not exact. Forever-only dungeons (Hall of Thanes, Ruins of Lordaeron) are not in pfQuest and are missing. Dungeon entrances have no coordinates; "Show on map" opens the zone map.
-- L7 (2026-11-20): "sigue con servicios cercanos y el viaje por tramos". Flight nodes and docks are hand-written with approximate positions; nodes snap to the nearest database flight master. Only known flight paths are used (KnowsTaxi, English canonical names — Spanish clients may miss untranslated nodes). Hearthstone not planned. Map pin button now opens a menu (waypoint + services); its old test now clicks the menu item. Direct-arrow tests stub Journey:GetSteering.
+- L7 (2026-11-20): "sigue con servicios cercanos y el viaje por tramos". Flight nodes and docks are hand-written with approximate positions; nodes snap to the nearest database flight master. Only known flight paths are used (KnowsTaxi, English canonical names â€” Spanish clients may miss untranslated nodes). Hearthstone not planned. Map pin button now opens a menu (waypoint + services); its old test now clicks the menu item. Direct-arrow tests stub Journey:GetSteering.
 - L8 (2026-11-20): "sigue con la piedra de hogar en el viaje". Bind position recorded on HEARTHSTONE_BOUND (player stands at the innkeeper); falls back to a flight-path node of the same name; an older bind is ignored when GetBindLocation changes. Characters that set their stone before this version get a position only after binding again or when the inn shares a flight-path name.
 - L9 (2026-11-20): "sigue con los entrenadores en servicios cercanos". pfQuest has no trainer flags; user chose in-game learning over a hand seed or GPL server data. Records in AR.db.global.trainers. Test found a real bug: `local _, c = _G.UnitClass and _G.UnitClass("player")` keeps only one return value; fixed with select(2, ...).
+- L10 (2026-11-20): "sigue con lo que falta de polestar". Scope set to T16-T19; infeasible items listed in S17.

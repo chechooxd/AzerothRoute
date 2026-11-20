@@ -535,7 +535,9 @@ function ViewerFrame:BuildMapMenuItems()
     for _, s in ipairs((AR.Nearby and AR.Nearby:List()) or {}) do
         if s.record then
             items[#items + 1] = {
-                text = string.format("%s · %d yd", s.label, math.floor(s.distance + 0.5)),
+                -- Rares are named: the label alone would not say which one.
+                text = string.format("%s · %d yd", s.flag == "x" and (s.label .. ": " .. s.record.name) or s.label,
+                    math.floor(s.distance + 0.5)),
                 onClick = function() AR.Nearby:GoTo(s.flag) end,
             }
         else

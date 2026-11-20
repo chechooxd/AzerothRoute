@@ -12,6 +12,7 @@ local Nearby = {
         { flag = "a", key = "UI_SV_A" },
         { flag = "s", key = "UI_SV_S" },
         { flag = "m", key = "UI_SV_M", objects = true },
+        { flag = "x", key = "UI_SV_RARE" },
     },
     index = nil,
 }

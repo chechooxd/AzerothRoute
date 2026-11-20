@@ -175,3 +175,40 @@ T:Describe("Lookup and Dungeons entry points", function()
         AR.GuideMenu:Reset()
     end)
 end)
+
+T:Describe("Rares", function()
+    T:It("finds rares in Lookup and the nearest one in the map menu", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.Nearby:Reset()
+        AR.Lookup:SetQuery("Thuros")
+        local rares = AR.Lookup:Results().rare
+        T:AssertTrue(#rares >= 1 and rares[1].id == 61, "Thuros Lightfingers is a rare")
+        AR.Lookup:SetQuery("Guard Thomas")
+        T:AssertEqual(#AR.Lookup:Results().rare, 0, "Ordinary NPCs are not rares")
+        local C = AR.Coords
+        local savedPos, savedDist, savedSteer = C.GetPlayerPosition, C.GetDistanceTo, AR.Journey.GetSteering
+        C.GetPlayerPosition = function() return 1429, 0.50, 0.80 end
+        C.GetDistanceTo = function(_, map, x, y)
+            if map ~= 1429 then return nil end
+            return math.sqrt(((x - 0.5) * 1000) ^ 2 + ((y - 0.8) * 1000) ^ 2)
+        end
+        AR.Journey.GetSteering = function() return nil end
+        local ok, err = pcall(function()
+            local rec = AR.Nearby:FindNearest("x")
+            T:AssertEqual(rec.name, "Thuros Lightfingers", "Nearest rare in Elwynn")
+            AR.ViewerFrame:RefreshVisuals()
+            local items = AR.ViewerFrame:BuildMapMenuItems()
+            local found = false
+            for _, it in ipairs(items) do
+                if it.text and it.text:find(AR.L:Get("UI_SV_RARE") .. ": Thuros Lightfingers", 1, true) then found = true end
+            end
+            T:AssertTrue(found, "Map menu names the rare")
+        end)
+        C.GetPlayerPosition, C.GetDistanceTo, AR.Journey.GetSteering = savedPos, savedDist, savedSteer
+        AR.Lookup:SetQuery("")
+        AR.Nearby:Reset()
+        if not ok then error(err, 0) end
+    end)
+end)
