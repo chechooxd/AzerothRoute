@@ -62,18 +62,20 @@ User stories (HU). Each lists what the player sees; "Polestar module" names the 
 - S34 / HU-100 AzerothRoute 1 features Polestar lacks, ported onto the new base after review (decision D3): gold farming routes and auction appraiser, dungeon pick-up route, guide recorder, `/ar report` error report.
 
 ## Decisions
-- D1 (open, recommended: fork): adopt Polestar's code as the base (HU-01/02) vs port its modules into AzerothRoute 1's architecture. Evidence: AzerothRoute 1 is about 20,700 lines of addon Lua; Polestar's core, options and nav are about 172,000; porting means rewriting about eight times the current addon and diverging from every later Polestar fix.
+- D1 (decided 2026-11-20: fork, user "Yes, use it as base"): adopt Polestar's code as the base (HU-01/02) vs port its modules into AzerothRoute 1's architecture. Evidence: AzerothRoute 1 is about 20,700 lines of addon Lua; Polestar's core, options and nav are about 172,000; porting means rewriting about eight times the current addon and diverging from every later Polestar fix.
 - D2 (open): QuestieDB-derived facts in the quest/codex packs (S4).
 - D3 (open): which AzerothRoute 1 extras to keep (S34).
 
 ## Tasks
-- T1 (S1-S3, S6) P0 Fork, rename, exclusions, harness: first build of AzerothRoute 2 that loads in game. pending (needs D1)
-- T2 (S5) P0 Migration from AzerothRoute 1. pending
+- T1 (S1-S3, S6) P0 Fork, rename, exclusions, harness: first build of AzerothRoute 2. done a98561f, e7d27ad (headless: 400 files compile, 0 missing refs, 212 core files load, start-up events clean, /ar and bindings checked); in-game load pending
+- T2 (S5) P0 Migration from AzerothRoute 1. done e7d27ad (Core/MigrateV1.lua via patch: autoaccept, autoturnin, targetmacro, automark, minimap; checked RED/GREEN in Tests/load_check.lua)
 - T3 (S7-S33) P1 In-game verification rounds per epic (E1-E9), fixing what the rename broke. pending
 - T4 (S4) P1 Quest data provenance per D2. pending
 - T5 (S34) P2 Port the kept AzerothRoute 1 extras. pending
-- T6 (S2) P2 Upstream sync tool reproducing the tree. pending
+- T6 (S2) Upstream sync tool reproducing the tree. done a98561f (rerun on 0.4.1.1 leaves addon/ unchanged)
 
 ## Log
 - L1 (2026-11-20): "instale polestar y la experiencia es otro nivel, osea mira todo eso vs mi addon, porfavor dejemos ya de parches y comienza a trabajar de verdad en mi addon, si es necesario que generes plan con todas las hu a trabajar para llegar a eso dale, pero ten en consideracion una cosa, tenemos el acceso a todo el codigo de polestar, que no lo quieras tomar e implementar hace que esto esto se retrase innecesariamente"
 - L2: Survey of Polestar 0.4.1.1: core 143,549 Lua lines (UI 37.8k, Core 33.2k, Nav 19.3k, QoL 11.5k, Theme 9.2k, Quests 7.7k, Maps 6.5k, Dungeons 4.1k, Gear 4.1k, Lookup 3.7k, Talents 2.9k, Rares 2.8k, Alts 0.8k), Options 18.4k, Nav 10.3k plus EK/Kalimdor maps, 9 locale packs (~57k lines each), 10 skins. About 1,500 "Polestar" references in code; SavedVariables PolestarDB/PolestarCharDB; slash /polestar /pole /ps /rl /way. Licences: GPL-3.0-only (core, guides), GPL-3.0-or-later (Nav, from Shortest Path Forever), OFL fonts, esMX translations GPL-3.0 by Yendi; QuestDB/Codex/Experimental cite QuestieDB; race Legs.lua made with Leffe's maps under a permission to Polestar's author.
+- L3 (2026-11-20): "Yes, use it as base". Fork built: tools/fork_polestar.lua renames by Lua region (code: brand anywhere in identifiers so SLASH_/BINDING_ names pair with their strings; strings: brand, "/polestar" -> "/ar", URLs and project phrases kept; comments untouched); patches in tools/fork/patches.lua (+ files/). Repo layout: addon/<folders>, tools/install.sh copies them to AddOns. First rename bug caught before the game: SLASH_POLESTAR1 kept while SlashCmdList["AZEROTHROUTE"] changed.
+- L4: D2 evidence: the Codex pack is read by 30 core files (Search, Dungeons, Rares, Lookup, nearby services, maps) and QuestDB by 22 (quest tooltips, tracker, levels, party); leaving them out empties the Buscador, Calabozos and Raros sections.
