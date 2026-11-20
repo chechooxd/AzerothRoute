@@ -48,7 +48,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T20 [S18] Group-quest banner: DB flag (open-world elite objectives) + client suggested group size; Skip it hides the quest's goals, Do it with a group keeps it (Quest/GroupQuests.lua) — inline · 159/159
 - [x] T21 [S19] Reward preview under accept/turn-in lines, rewards recorded from the quest offer and the quest log (Quest/QuestRewards.lua), pick via AR.QuestReward — inline · 161/161
 - [x] T22 [S20] Talent window restyled like the Guide Center (class sidebar, spec underline tabs, next-point card, ticked roadmap, points bar, gold Apply) — inline · 162/162
-- [ ] T23 [S20] Rares mode in the Guide Center with sightings (seen log, drops, where, set waypoint) — inline
+- [x] T23 [S20] Rares mode in the Guide Center with sightings (seen log, drops, where, set waypoint) — inline · 163/163
 - [ ] T24 [S20] Characters mode (alts: level, guide, step, gold, place) — inline
 - [ ] T25 [S20] Options/appearance mode (accent colour, background opacity, scale, toggles) — inline
 

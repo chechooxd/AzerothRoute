@@ -250,3 +250,49 @@ T:Describe("Quest-starting loot", function()
         MockWoW.player.bagSlots[0] = nil
     end)
 end)
+
+T:Describe("Rares mode", function()
+    T:It("logs rare sightings, lists them and shows drops and the last sighting", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        AR.Storage:Initialize()
+        AR.db.global.rareSeen = {}
+        AR.Rares:Reset()
+        local saved = { _G.UnitGUID, _G.UnitName, _G.UnitIsDead, AR.Coords.GetPlayerPosition, AR.Print }
+        local printed = {}
+        _G.UnitGUID = function() return "Creature-0-1-0-1-61-0000AB" end
+        _G.UnitName = function() return "Thuros Lightfingers" end
+        _G.UnitIsDead = function() return false end
+        AR.Coords.GetPlayerPosition = function() return 1429, 0.5, 0.83 end
+        AR.Print = function(_, msg) printed[#printed + 1] = msg end
+        local ok, err = pcall(function()
+            local rec = AR.Rares:OnUnitSeen("nameplate1")
+            T:AssertEqual(rec.count, 1, "First sighting")
+            T:AssertEqual(#printed, 1, "Announced")
+            AR.Rares:OnUnitSeen("target")
+            T:AssertEqual(#printed, 1, "Not announced twice in a row")
+            T:AssertEqual(AR.db.global.rareSeen[61].count, 1, "Same encounter, one sighting")
+            _G.UnitGUID = function() return "Creature-0-1-0-1-3615-0000AC" end
+            T:AssertEqual(AR.Rares:OnUnitSeen("target"), nil, "Ordinary NPCs are ignored")
+
+            AR.GuideMenu:Reset()
+            AR.GuideMenu:Show("rares")
+            local panel = AR.Rares.panel
+            T:AssertTrue(panel.main:IsShown(), "Rares tab open")
+            T:AssertTrue(AR.Rares:CountCategory("all") > 300, "Every rare listed")
+            T:AssertTrue(AR.Rares:CountCategory("zone") >= 1, "Rares of the current zone")
+            panel:SelectCategory("seen")
+            T:AssertEqual(#panel.lastRows, 1, "One rare seen")
+            T:AssertEqual(panel.main.title:GetText(), "Thuros Lightfingers")
+            local seenLine = false
+            for _, r in ipairs(panel.info) do if r.key:GetText() == AR.L:Get("UI_RARES_SEEN") then seenLine = true end end
+            T:AssertTrue(seenLine, "Last sighting shown")
+            panel.primary:Click("LeftButton")
+            T:AssertEqual(AR.Pointer.manualTarget and AR.Pointer.manualTarget.map or AR.Pointer.activeTarget.map, 1429, "Waypoint to the spawn")
+        end)
+        _G.UnitGUID, _G.UnitName, _G.UnitIsDead, AR.Coords.GetPlayerPosition, AR.Print = saved[1], saved[2], saved[3], saved[4], saved[5]
+        AR.Pointer:Reset()
+        AR.GuideMenu:Reset()
+        if not ok then error(err, 0) end
+    end)
+end)

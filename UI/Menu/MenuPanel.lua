@@ -79,8 +79,8 @@ function MenuPanel:Attach(f, prefix)
     local level = (f.GetFrameLevel and f:GetFrameLevel() or 1) + 20
 
     local side = AR.UI:Create("Frame", f, prefix .. "Side")
-    side:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -104)
-    side:SetSize(151, H - 105)
+    side:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -128)
+    side:SetSize(151, H - 129)
     if side.SetFrameLevel then side:SetFrameLevel(level) end
     if side.EnableMouse then side:EnableMouse(true) end
     side.bg = side:CreateTexture(nil, "BACKGROUND")

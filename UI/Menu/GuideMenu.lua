@@ -9,6 +9,9 @@ local GuideMenu = {
         { id = "guides", labelKey = "UI_GUIDES" },
         { id = "lookup", labelKey = "UI_LOOKUP" },
         { id = "dungeons", labelKey = "UI_DUNGEONS" },
+        { id = "rares", labelKey = "UI_LK_RARES" },
+        { id = "characters", labelKey = "UI_CHARACTERS" },
+        { id = "options", labelKey = "UI_MENU_OPTIONS" },
     },
     mode = "guides",
     CATEGORIES = {
@@ -331,7 +334,8 @@ function GuideMenu:InitializeFrame()
     self.modeButtons = {}
     for idx, mode in ipairs(self.MODES) do
         local b = createMenuButton(f, "AzerothRouteModeBtn" .. idx, LGet(mode.labelKey), 50, 24, true, "list")
-        b:SetPoint("TOPLEFT", f, "TOPLEFT", 1 + (idx - 1) * 50, -50)
+        -- Two rows of three tabs.
+        b:SetPoint("TOPLEFT", f, "TOPLEFT", 1 + ((idx - 1) % 3) * 50, -50 - math.floor((idx - 1) / 3) * 25)
         b._mode = mode.id
         b._labelKey = mode.labelKey
         b:SetScript("OnClick", function() self:SetMode(mode.id) end)
@@ -342,7 +346,7 @@ function GuideMenu:InitializeFrame()
     -- in Lookup and Dungeons it feeds their search instead.
     local box = _G.CreateFrame("EditBox", "AzerothRouteGuideSearch", f)
     box:SetSize(128, 22)
-    box:SetPoint("TOPLEFT", f, "TOPLEFT", 12, -78)
+    box:SetPoint("TOPLEFT", f, "TOPLEFT", 12, -103)
     if box.SetAutoFocus then box:SetAutoFocus(false) end
     if box.SetFontObject then box:SetFontObject("GameFontHighlightSmall") end
     if box.SetTextInsets then box:SetTextInsets(8, 8, 0, 0) end
@@ -376,7 +380,7 @@ function GuideMenu:InitializeFrame()
     self.categoryButtons = {}
     for idx, cat in ipairs(self.CATEGORIES) do
         local cBtn = createMenuButton(f, "AzerothRouteCatBtn" .. idx, LGet(cat.labelKey), 151, 28, false)
-        cBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -108 - (idx - 1) * 30)
+        cBtn:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -132 - (idx - 1) * 30)
         if cBtn.CreateFontString then
             cBtn.count = cBtn:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
             cBtn.count:SetPoint("RIGHT", cBtn, "RIGHT", -12, 0)
@@ -626,7 +630,7 @@ function GuideMenu:GetVisibleGuides()
     return self:GetGuidesForCategory(self.activeCategory)
 end
 
-local MODE_MODULES = { lookup = "Lookup", dungeons = "Dungeons" }
+local MODE_MODULES = { lookup = "Lookup", dungeons = "Dungeons", rares = "Rares", characters = "Characters", options = "OptionsPanel" }
 
 function GuideMenu:ModeModule(mode)
     local name = MODE_MODULES[mode or self.mode]
