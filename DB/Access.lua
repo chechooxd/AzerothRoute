@@ -56,7 +56,7 @@ function DB:GetObject(id)
     if not raw then return nil end
     local f = split(raw)
     return { kind = "object", id = id, name = self:LocalName("objects", id, f[1]),
-        map = tonumber(f[2]) or 0, x = tonumber(f[3]) or 0, y = tonumber(f[4]) or 0 }
+        map = tonumber(f[2]) or 0, x = tonumber(f[3]) or 0, y = tonumber(f[4]) or 0, flags = f[5] or "" }
 end
 
 function DB:GetItem(id)

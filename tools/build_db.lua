@@ -10,7 +10,7 @@
 --                 side: A, H or B; starts/ends: "U123,O45,I678" (unit/object/item ids)
 --   QuestNames[id] = title
 --   Units[id]   = "name^level^side^map^x^y^flags"   (map = uiMapID, 0 when unknown; flags: v r i f b a s)
---   Objects[id] = "name^map^x^y"
+--   Objects[id] = "name^map^x^y^flags"          (flags: m = mailbox)
 --   Items[id]   = "name^drops^vendors^objects^kind"  (top sources; kind: R recipe, M mount, Q quest item, '')
 --   Dungeons    = hand-written facts in DB/Dungeons.lua plus generated DungeonQuests / DungeonUnits.
 
@@ -151,13 +151,16 @@ for id, d in pairs(pfDB.units.data) do
 end
 
 -- Objects -------------------------------------------------------------------------------------
+-- Mailboxes are listed in pfQuest meta under negative object ids.
+local mailbox = {}
+for id in pairs(pfDB.meta.mailbox or {}) do mailbox[math.abs(id)] = true end
 local objects, objectArea = {}, {}
 for id, d in pairs(pfDB.objects.data) do
     local name = pfDB.objects.enUS[id]
     if name and name ~= "" and type(d.coords) == "table" and #d.coords > 0 then
         local map, x, y, area = bestCoord(d.coords)
         objectArea[id] = area
-        objects[id] = table.concat({ clean(name), map, x, y }, "^")
+        objects[id] = table.concat({ clean(name), map, x, y, mailbox[id] and "m" or "" }, "^")
     end
 end
 

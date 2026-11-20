@@ -8,6 +8,7 @@ local function withArrow(dist, fn)
     local saved = {
         dist = AR.Coords.GetDistanceTo, bearing = AR.Coords.GetBearingTo,
         flying = _G.IsFlying, speed = _G.GetUnitSpeed, taxi = _G.UnitOnTaxi,
+        steer = AR.Journey.GetSteering,
     }
     local current = { dist = dist }
     AR.Coords.GetDistanceTo = function() return current.dist end
@@ -15,12 +16,14 @@ local function withArrow(dist, fn)
     _G.IsFlying = function() return false end
     _G.GetUnitSpeed = function() return 0 end
     _G.UnitOnTaxi = function() return false end
+    AR.Journey.GetSteering = function() return nil end -- direct target: no multi-leg journey
     AR.Pointer:Reset()
     AR.Pointer:InitializeFrames()
     AR.Pointer.activeTarget = { map = 1413, x = 0.5, y = 0.5, title = "Devrak" }
     local ok, err = pcall(fn, AR, current)
     AR.Coords.GetDistanceTo, AR.Coords.GetBearingTo = saved.dist, saved.bearing
     _G.IsFlying, _G.GetUnitSpeed, _G.UnitOnTaxi = saved.flying, saved.speed, saved.taxi
+    AR.Journey.GetSteering = saved.steer
     AR.Pointer:Reset()
     if not ok then error(err, 0) end
 end
@@ -97,6 +100,7 @@ T:Describe("Package 2: arrow", function()
             AR.Progression.currentStep:CheckVisitedGotos()
             T:AssertTrue(not g:GetStep(1).goals[1].visited, "Flying over the point does not count")
             _G.UnitOnTaxi = function() return false end
+    AR.Journey.GetSteering = function() return nil end -- direct target: no multi-leg journey
             AR.Progression.currentStep:CheckVisitedGotos()
             T:AssertEqual(g:GetStep(1).goals[1].visited, true, "Counts once on the ground")
         end)

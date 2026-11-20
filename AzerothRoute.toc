@@ -51,6 +51,9 @@ Spatial\Pathfinder.lua
 Spatial\Pointer.lua
 Spatial\Foglight.lua
 Spatial\Poi.lua
+Spatial\Nearby.lua
+Spatial\TravelData.lua
+Spatial\Journey.lua
 
 # SPEC-06: Talent Advisor Engine
 Modules\TalentAdvisor\TalentData.lua

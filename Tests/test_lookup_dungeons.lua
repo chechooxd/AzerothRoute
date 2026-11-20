@@ -103,11 +103,14 @@ T:Describe("Lookup panel", function()
         AR.Pointer:Reset()
         local origDist = AR.Coords.GetDistanceTo
         AR.Coords.GetDistanceTo = function() return 3 end
+        local origSteer = AR.Journey.GetSteering
+        AR.Journey.GetSteering = function() return nil end
         local ok, err = pcall(function()
             AR.Pointer:SetManualTarget(1436, 0.5, 0.5, "Here")
             T:AssertEqual(AR.Pointer.manualTarget, nil, "Arrival clears the manual target")
         end)
         AR.Coords.GetDistanceTo = origDist
+        AR.Journey.GetSteering = origSteer
         AR.Pointer:Reset()
         if not ok then error(err, 0) end
     end)

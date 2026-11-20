@@ -256,7 +256,7 @@ function ViewerFrame:BuildHeader(f)
         self.mapButton.icon:SetPoint("CENTER", self.mapButton, "CENTER", 0, 0)
         self.mapButton.icon:SetTexture(Skins:GetActionIcon("goto"))
     end
-    self.mapButton:SetScript("OnClick", function() self:ShowWaypointOnMap() end)
+    self.mapButton:SetScript("OnClick", function(b) self:ShowMapMenu(b) end)
     attachHintTooltip(self.mapButton, "UI_MAP_HINT")
 
     self.skipButton = createFlatButton(f, "AzerothRouteSkipButton", L("UI_SKIP", "Skip"), 40, 20)
@@ -526,6 +526,29 @@ function ViewerFrame:ShowWaypointOnMap()
     return true
 end
 
+-- Map button menu: the waypoint on the world map, then the nearest of each service with its distance.
+function ViewerFrame:BuildMapMenuItems()
+    local items = {
+        { text = L("UI_MAP_MENU_WAYPOINT", "Show the waypoint on the map"), onClick = function() self:ShowWaypointOnMap() end },
+        { separator = true },
+    }
+    for _, s in ipairs((AR.Nearby and AR.Nearby:List()) or {}) do
+        if s.record then
+            items[#items + 1] = {
+                text = string.format("%s · %d yd", s.label, math.floor(s.distance + 0.5)),
+                onClick = function() AR.Nearby:GoTo(s.flag) end,
+            }
+        else
+            items[#items + 1] = { text = s.label .. " · " .. L("UI_NEARBY_NONE"), disabled = true }
+        end
+    end
+    return items
+end
+
+function ViewerFrame:ShowMapMenu(anchor)
+    return AR.UI:ShowMenu(anchor or self.mapButton, self:BuildMapMenuItems())
+end
+
 function ViewerFrame:BuildMoreMenuItems()
     local items = {
         { text = L("UI_MENU_STEPS", "All steps"), onClick = function() if AR.StepBrowser then AR.StepBrowser:Show() end end },
@@ -611,7 +634,13 @@ function ViewerFrame:OnTick(elapsed)
     self:SampleXP()
     local line = self:FormatXPLine()
     local shown = self.xpText and self.xpText:IsShown()
-    if (line ~= nil) ~= (shown == true) then
+    -- The journey replans on its own clock; relayout when its legs change.
+    local target = AR.Pointer and AR.Pointer.activeTarget
+    local plan = AR.Journey and target and AR.Journey:GetPlan(target)
+    local legs = (plan and #plan.legs >= 2) and #plan.legs or 0
+    if legs ~= (self._journeyLegs or 0) then
+        self:RefreshVisuals()
+    elseif (line ~= nil) ~= (shown == true) then
         self:RefreshVisuals()
     elseif line and self.xpText then
         self.xpText:SetText("» " .. line)
@@ -817,7 +846,16 @@ function ViewerFrame:RenderCurrentStep()
     local notice = AR.Progression and AR.Progression:GetStepNotice(step)
     local previewLines = self:BuildPreviewLines(step)
 
+    local journey
+    local target = AR.Pointer and AR.Pointer.activeTarget
+    if AR.Journey and target and target.type ~= "corpse"
+        and not (AR.db and AR.db.profile and AR.db.profile.journey == false) then
+        local plan = AR.Journey:GetPlan(target)
+        if plan and #plan.legs >= 2 then journey = plan end
+    end
+
     return {
+        journey = journey,
         heading = self:BuildHeading(step),
         note = self:FindStepNote(step),
         thenLine = (#previewLines == 0) and self:BuildThenLine(step) or nil,
@@ -1160,6 +1198,49 @@ function ViewerFrame:RefreshVisuals()
             placeRow(self, row, y)
             if row.flash then row.flash:Hide() end
             y = y + ROW_H
+        end
+    end
+
+    -- Journey: total time and yards, the destination, then each leg with its time.
+    self._journeyLegs = vm.journey and #vm.journey.legs or 0
+    if vm.journey then
+        local J = AR.Journey
+        local yards = vm.journey.yards >= 1000 and string.format("%.1fk yd", vm.journey.yards / 1000)
+            or string.format("%d yd", math.floor(vm.journey.yards + 0.5))
+        local header = nextRow()
+        if header then
+            y = y + 4
+            paintRow(header, { isHeader = true, text = L("UI_JOURNEY", "Journey") }, "header")
+            placeRow(self, header, y)
+            if header.flash then header.flash:Hide() end
+            header.dist:SetText(J:FormatDuration(vm.journey.seconds) .. " · " .. yards)
+            header.dist:Show()
+            y = y + ROW_H
+        end
+        local to = nextRow()
+        if to then
+            local title = (vm.journey.target and vm.journey.target.title) or ""
+            paintRow(to, { isHeader = true, text = string.format(L("UI_JOURNEY_TO", "To %s"), title) }, "header")
+            placeRow(self, to, y)
+            if to.flash then to.flash:Hide() end
+            y = y + ROW_H
+        end
+        for i, leg in ipairs(vm.journey.legs) do
+            if i > 5 then break end
+            local row = nextRow()
+            if row then
+                local icon = Skins:GetActionIcon(({ walk = "goto", fly = "fly" })[leg.mode] or "goto")
+                if leg.mode == "boat" or leg.mode == "zeppelin" or leg.mode == "tram" then
+                    icon = "Interface\\Icons\\Ability_Hunter_Pathfinding"
+                end
+                paintRow(row, { text = i .. ". " .. leg.label, icon = icon, status = "incomplete" }, i == 1 and "current" or "normal")
+                placeRow(self, row, y)
+                if row.flash then row.flash:Hide() end
+                row.dist:SetText(J:FormatDuration(leg.seconds))
+                row.dist:Show()
+                if row.label.SetWidth then row.label:SetWidth(self.WIDTH - PAD * 2 - 28 - 48) end
+                y = y + ROW_H
+            end
         end
     end
 

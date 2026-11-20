@@ -106,6 +106,7 @@ T:Describe("Polestar parity: toolbar and footer", function()
         AR.Pointer.activeTarget = { type = "waypoint", map = 1413, x = 0.5, y = 0.5 }
         _G.WorldMapFrame._mapID = nil
         AR.ViewerFrame.mapButton:Click("LeftButton")
+        AR.UI:FindMenuItem(AR.L:Get("UI_MAP_MENU_WAYPOINT")):Click("LeftButton")
         T:AssertEqual(_G.WorldMapFrame:GetMapID(), 1413, "World map on the waypoint zone")
     end)
 

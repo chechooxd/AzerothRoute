@@ -81,6 +81,9 @@ function T:BootstrapAddon()
         "Spatial/Pointer.lua",
         "Spatial/Foglight.lua",
         "Spatial/Poi.lua",
+        "Spatial/Nearby.lua",
+        "Spatial/TravelData.lua",
+        "Spatial/Journey.lua",
         "Modules/TalentAdvisor/TalentData.lua",
         "Modules/TalentAdvisor/TalentAdvisor.lua",
         "Modules/Professions/Profession.lua",
@@ -170,6 +173,7 @@ function T:RunAll()
         "Tests/test_viewer_ux.lua",
         "Tests/test_polestar_parity.lua",
         "Tests/test_lookup_dungeons.lua",
+        "Tests/test_nearby_journey.lua",
         "Tests/test_racial_flightpaths.lua",
         "Tests/test_live_ux_gaps.lua",
     }

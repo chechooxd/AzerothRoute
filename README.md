@@ -84,7 +84,7 @@ bearing, and minimap radar offsets never mix coordinate spaces.
 
 ## Verification
 
-Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 142 passed, 0 failed` across 35 test suites). Client verification is pending:
+Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 146 passed, 0 failed` across 36 test suites). Client verification is pending:
 
 - Check the minimap button, its clicks and tooltip; move it, `/reload`, and check that it keeps its position.
 - `/ar config`: change a toggle, `/reload`, check it stuck; create a second profile, switch, check the toggle follows the profile.
@@ -118,6 +118,9 @@ Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 142 passed,
 - Lookup on an esES/esMX client: quest, NPC and item names come out in Spanish.
 - Dungeons: "For your level" matches your level; a dungeon lists only your faction's quests; clicking one points the arrow at the giver. Check a few lists against your own knowledge (the quest attachment is heuristic).
 - `/reload` with Lookup open and check memory with the addon list (the database adds about 2.5 MB of text).
+- Map pin button: first item shows the waypoint on the map; below it the nearest vendor, repair, innkeeper, flight master, bank, auction house, stable master and mailbox with yards; clicking one points the arrow there.
+- Journey: set a far destination (e.g. Lookup a quest giver in another zone). With known flight paths the arrow says "Walk to <flight path>", shows "m:ss total", and the guide window lists numbered legs with times; check a boat/zeppelin crossing too. Options: `journey` can be turned off in the profile.
+- On a Spanish client, check whether flight paths you know are used (names outside the built-in translation list may not be recognised).
 
 The mock suite cannot establish live-client protected-action compatibility,
 minimap positioning, talent texture availability, or leveling-route completeness.
@@ -146,3 +149,12 @@ luajit tools/build_db.lua <path-to-pfQuest>/db
 Limits: pfQuest stores no positions for creatures inside instances, so each dungeon's quest list is
 attached from the quest texts and may miss or misplace a few quests. Forever-only dungeons are not in
 pfQuest and are not listed. Dungeon entrances have no coordinates; "Show on map" opens the zone.
+
+## Nearby services and journeys
+
+Services come from the database flags (pfQuest meta: vendor, repair, innkeeper, flight master,
+banker, auctioneer, stable master, mailbox). Journeys are planned by `Spatial/Journey.lua` over
+`Spatial/TravelData.lua`: Classic flight-path nodes (snapped to the nearest flight master in the
+database) and hand-written boat, zeppelin and tram docks with approximate positions and crossing
+times. Only flight paths the character knows are used. Times are estimates (run speed or your
+measured speed on foot, a fixed effective flight speed). The hearthstone is not planned yet.

@@ -519,7 +519,15 @@ function Pointer:UpdateArrow(elapsed)
     if not self.arrowFrame then
         self:InitializeFrames()
     end
-    local angle = AR.Coords:GetBearingTo(self.activeTarget.map, self.activeTarget.x, self.activeTarget.y)
+    local target = self.activeTarget
+    -- A multi-leg journey steers the arrow to the end of its first leg (flight master, dock).
+    local steer = (target.type ~= "corpse") and AR.Journey and AR.Journey.GetSteering
+        and not (AR.db and AR.db.profile and AR.db.profile.journey == false)
+        and AR.Journey:GetSteering(target) or nil
+    self.steering = steer
+    local aim = steer or target
+
+    local angle = AR.Coords:GetBearingTo(aim.map, aim.x, aim.y)
     local facing = (_G.GetPlayerFacing and _G.GetPlayerFacing()) or 0
     -- GetBearingTo is clockwise from north; GetPlayerFacing and SetRotation are counter-clockwise.
     self.arrowBearing = -(angle or 0) - facing
@@ -529,13 +537,24 @@ function Pointer:UpdateArrow(elapsed)
     af:Show()
     self:SampleSpeed(elapsed or 0)
 
-    local target = self.activeTarget
-    local dist = AR.Coords:GetDistanceTo(target.map, target.x, target.y)
-    if dist and not target.initialDist then target.initialDist = dist end
+    local dist = AR.Coords:GetDistanceTo(aim.map, aim.x, aim.y)
+    if not steer and dist and not target.initialDist then target.initialDist = dist end
     local onTaxi = _G.UnitOnTaxi and _G.UnitOnTaxi("player")
-    local arrived = dist and not onTaxi and dist <= self:GetArrivalRadius()
+    local arrived = not steer and dist and not onTaxi and dist <= self:GetArrivalRadius()
 
-    if af.label then af.label:SetText(target.title or "Waypoint") end
+    if af.label then af.label:SetText(aim.title or "Waypoint") end
+    if steer then
+        if af.icon then self:ShowPointing() end
+        if af.sublabel then
+            af.sublabel:SetText(self:FormatSubLabel(dist, false))
+            if af.sublabel.SetTextColor then af.sublabel:SetTextColor(1, 1, 1) end
+        end
+        if af.etaLabel and AR.Journey then
+            af.etaLabel:SetText(string.format((AR.L and AR.L:Get("UI_JOURNEY_TOTAL_FMT")) or "%s total",
+                AR.Journey:FormatDuration(steer.plan.seconds)))
+        end
+        return
+    end
     if arrived and target.type == "manual" then
         -- Reached a chosen place: hand the arrow back to the guide's own waypoints.
         self.manualTarget = nil
