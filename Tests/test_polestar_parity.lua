@@ -779,7 +779,10 @@ T:Describe("Polestar parity: report a problem", function()
         local AR = _G.AzerothRoute
         AR.Storage:Initialize()
         AR.Report:Reset()
-        AR.Report.errors = { "Interface/AddOns/AzerothRoute/UI/Foo.lua:12: boom" }
+        AR.Report.errors = {}
+        AR.Report:Record("Interface/AddOns/AzerothRoute/UI/Foo.lua:12: boom", "Interface/AddOns/AzerothRoute/UI/Foo.lua:12: in function x")
+        AR.Report:Record("Interface/AddOns/AzerothRoute/UI/Foo.lua:12: boom", "")
+        AR.Report:Record("Interface/FrameXML/Blizz.lua:40: bad argument", "Interface/AddOns/AzerothRoute/Spatial/Journey.lua:99: in function Plan")
         AR.db.profile.autoaccept = false
         local g = AR.Parser:ParseGuide("ReportGuide", 'step One\n    talk Devrak##3615\n    accept Wanted: "Hogger"##176\n    goto 1413 50.0,40.0\n')
         AR.Progression:LoadGuide(g, 1)
@@ -790,7 +793,8 @@ T:Describe("Polestar parity: report a problem", function()
         T:AssertTrue(text:find("accept", 1, true) ~= nil and text:find("q176", 1, true) ~= nil, "Each goal with its ids")
         T:AssertTrue(text:find("Arrow: Somewhere", 1, true) ~= nil, "The arrow")
         T:AssertTrue(text:find("autoaccept=false", 1, true) ~= nil, "Changed settings")
-        T:AssertTrue(text:find("boom", 1, true) ~= nil, "Caught errors")
+        T:AssertTrue(text:find("[x2] (AzerothRoute)", 1, true) ~= nil and text:find("boom", 1, true) ~= nil, "Repeated error counted once with its count")
+        T:AssertTrue(text:find("bad argument", 1, true) ~= nil and text:find("Journey.lua:99", 1, true) ~= nil, "Errors in Blizzard code kept with the stack that led there")
         AR.ViewerFrame:RefreshVisuals()
         AR.ViewerFrame:ShowMoreMenu()
         AR.UI:FindMenuItem(AR.L:Get("UI_REPORT_TITLE")):Click("LeftButton")

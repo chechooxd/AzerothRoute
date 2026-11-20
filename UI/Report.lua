@@ -22,17 +22,36 @@ function Report:Reset()
     self.frame, self.lastText = nil, nil
 end
 
--- Keeps AzerothRoute's own Lua errors (chaining the game's handler, which still shows them).
+-- Keeps every Lua error of the session (chaining the game's handler, which still shows them):
+-- the message, how many times it happened, and the first lines of its stack, so an error raised
+-- inside Blizzard code by one of our calls still shows which AzerothRoute file led there.
+function Report:Record(msg, stack)
+    local text = tostring(msg)
+    for _, e in ipairs(self.errors) do
+        if type(e) == "table" and e.msg == text then
+            e.count = e.count + 1
+            return e
+        end
+    end
+    local lines = {}
+    for line in tostring(stack or ""):gmatch("[^\n]+") do
+        if #lines < 6 then lines[#lines + 1] = line end
+    end
+    local e = { msg = text, count = 1, stack = lines, ours = text:find("AzerothRoute", 1, true) ~= nil
+        or tostring(stack or ""):find("AzerothRoute", 1, true) ~= nil }
+    table.insert(self.errors, e)
+    while #self.errors > self.MAX_ERRORS do table.remove(self.errors, 1) end
+    return e
+end
+
 function Report:CaptureErrors()
     if self._capturing or not _G.geterrorhandler or not _G.seterrorhandler then return false end
     self._capturing = true
     local previous = _G.geterrorhandler()
     _G.seterrorhandler(function(msg, ...)
-        local text = tostring(msg)
-        if text:find("AzerothRoute", 1, true) then
-            table.insert(self.errors, text)
-            while #self.errors > self.MAX_ERRORS do table.remove(self.errors, 1) end
-        end
+        pcall(function()
+            self:Record(msg, _G.debugstack and _G.debugstack(3, 8, 0) or nil)
+        end)
         if previous then return previous(msg, ...) end
     end)
     return true
@@ -123,7 +142,11 @@ function Report:Build(what)
     add("Other addons: " .. (#addons > 0 and table.concat(addons, ", ") or "none"))
     if #self.errors > 0 then
         add("Errors this session:")
-        for _, e in ipairs(self.errors) do add("  " .. e:gsub("\n", " | ")) end
+        for _, e in ipairs(self.errors) do
+            if type(e) == "string" then e = { msg = e, count = 1, stack = {} } end
+            add(string.format("  [x%d]%s %s", e.count, e.ours and " (AzerothRoute)" or "", (e.msg:gsub("\n", " | "))))
+            for _, s in ipairs(e.stack or {}) do add("      " .. s) end
+        end
     else
         add("Errors this session: none")
     end
