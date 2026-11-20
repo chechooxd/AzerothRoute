@@ -114,12 +114,11 @@ T:Describe("Package 3: viewer", function()
         MockWoW:Reset()
         local AR = _G.AzerothRoute
         AR.Storage:Initialize()
-        local opts = AR.Config:BuildOptions()
-        local node = opts.args.interface.args.previewsteps
-        T:AssertEqual(node.type, "range", "Slider")
-        T:AssertEqual(node.min, 0)
-        T:AssertEqual(node.max, 4)
-        node.set({ "interface", "previewsteps" }, 3)
+        local s = AR.OptionsPanel:Find("previewsteps")
+        T:AssertEqual(s.kind, "range", "Slider")
+        T:AssertEqual(s.min, 0)
+        T:AssertEqual(s.max, 4)
+        AR.OptionsPanel:Set(s, 3)
         T:AssertEqual(AR.db.profile.previewsteps, 3)
         AR.db.profile.previewsteps = 0
     end)

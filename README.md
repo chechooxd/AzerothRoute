@@ -34,7 +34,7 @@ Without that library the addon falls back to its own pin placement.
 - On login the addon resumes the guide and step you were on (chat: "Resumed guide").
 - When the last step is done it loads the guide named by the `next` header and says so in
   chat; without one it shows "Guide complete!" and points you to `/ar menu`.
-- Finishing a step plays a map ping (Options > Interface > Step complete sound) and flashes
+- Finishing a step plays a map ping (Options > Guide > Step complete sound) and flashes
   the guide window; steps you had already done are skipped silently.
 - `>`: next step. Right-click: next unfinished step. Shift-click: 10 steps.
   `<`: previous step. Ctrl-click: first step.
@@ -43,7 +43,7 @@ Without that library the addon falls back to its own pin placement.
 
 Each line starts with an icon for its action (accept, turn in, kill, collect, talk, fly,
 hearth...) that turns into a check when done, and the text switches to past tense
-("Accepted X", "Aceptada X"). Options > Interface > "Upcoming steps shown" (0-4) previews
+("Accepted X", "Aceptada X"). Options > Guide > "Upcoming steps shown" (0-4 slider) previews
 the next steps dimmed under the current one; the window grows to fit its lines.
 
 ## Waypoint arrow
@@ -56,12 +56,18 @@ the target map name. "Go to" goals never complete while you are on a flight path
 
 ## Options & profiles
 
-`/ar config` (also `/ar opciones`, or Shift-click on the minimap button) opens the options
-panel, which is also listed in the Blizzard Interface Options. Tabs: Quests, Navigation,
-Merchants, Targeting, Interface and Profiles. Settings belong to an AceDB-3.0 profile; every
-character starts on the shared "Default" profile and can switch, copy, reset or delete
-profiles in the Profiles tab. Settings saved by older versions are moved into the profile
-the first time this version loads.
+There is one settings page: the Guide Center's Options tab. `/ar config` (also `/ar opciones`),
+the minimap button menu, the guide window menu and the button in the Blizzard AddOns options
+all open it. Groups: Appearance, Guide, Navigation, Quests, Merchants, Targeting and Profiles.
+Each setting has its own control: check boxes for switches (clicking the row toggles too),
+colour swatches for the accent, drop-down lists for schemes, styles and profiles, and sliders
+(with the mouse wheel) for opacity, size and upcoming steps. Changes apply at once; right-click
+a setting to reset it, or "Reset group" for the whole group.
+
+Settings belong to an AceDB-3.0 profile; every character starts on the shared "Default" profile
+and can switch or reset it under Options > Profiles (copy and delete stay in the Blizzard AddOns
+entry's Profiles tab). Settings saved by older versions are moved into the profile the first
+time this version loads.
 
 ## Target button
 
@@ -89,7 +95,7 @@ bearing, and minimap radar offsets never mix coordinate spaces.
 Run `luajit Tests/run_tests.lua` from the repository root (`Summary: 183 passed, 0 failed` across 36 test suites). Client verification is pending:
 
 - Check the minimap button, its clicks and tooltip; move it, `/reload`, and check that it keeps its position.
-- `/ar config`: change a toggle, `/reload`, check it stuck; create a second profile, switch, check the toggle follows the profile.
+- `/ar config` and the minimap "Options" open the Guide Center Options tab (no separate window): tick a check box, `/reload`, check it stuck; pick an accent swatch, drag the opacity slider, choose a scheme from its list; right-click a row to reset it; switch profile under Profiles and check the settings follow it.
 - After updating from an older version, check that your previous settings (auto-accept, bar positions) were kept.
 - `/reload` mid-guide: the same guide and step come back. Finish a guide with a `next` header: the next one loads; hear the ping on each finished step.
 - Change a setting, `/reload`, and check that it persists (SavedVariables now rebind on `ADDON_LOADED`).

@@ -341,39 +341,73 @@ T:Describe("Characters mode", function()
 end)
 
 T:Describe("Options mode", function()
-    T:It("changes settings from the Guide Center and repaints the guide window", function()
+    T:It("sets every kind of control in place and repaints the guide window", function()
         MockWoW:Reset()
         local AR = _G.AzerothRoute
         AR.Storage:Initialize()
-        AR.db.profile.accent, AR.db.profile.bgalpha, AR.db.profile.viewerscale = nil, nil, nil
+        AR.db.profile.accent, AR.db.profile.bgalpha, AR.db.profile.viewerscale, AR.db.profile.scheme = nil, nil, nil, nil
         AR.ViewerFrame:RefreshVisuals()
         AR.GuideMenu:Reset()
         AR.GuideMenu:Show("options")
         local panel = AR.OptionsPanel.panel
         T:AssertTrue(panel.main:IsShown(), "Options tab open")
-        T:AssertEqual(#panel.lastRows, 4, "Four appearance settings")
-        T:AssertEqual(panel.main.title:GetText(), AR.L:Get("OPT_ACCENT"))
-        T:AssertEqual(panel.lastRows[1].tag, AR.L:Get("OPT_ACCENT_GOLD"), "Gold by default")
-        panel.primary:Click("LeftButton")
-        T:AssertEqual(AR.db.profile.accent, "sky", "Next accent")
+        T:AssertEqual(#panel.lastRows, 5, "Five appearance settings")
+
+        -- Accent: colour swatches, the chosen one ringed.
+        local accent = panel:RowFor("accent")
+        T:AssertTrue(accent.swatches[1]:IsShown() and accent.swatches[5]:IsShown(), "One swatch per colour")
+        T:AssertTrue(not accent.dropdown:IsShown() and not accent.check:IsShown(), "Only its own control")
+        T:AssertEqual(accent.value:GetText(), AR.L:Get("OPT_ACCENT_GOLD"), "Gold by default")
+        accent.swatches[2]:Click("LeftButton")
+        T:AssertEqual(AR.db.profile.accent, "sky", "Picked by clicking its swatch")
         local c = AR.Skins:GetProp("accent")
         T:AssertEqual(c.b, AR.OptionsPanel.ACCENTS.sky.b, "Skins use the chosen accent")
         T:AssertEqual(AR.ViewerFrame.frame.tabUnderline:GetColorTexture().b, c.b, "Guide window repainted")
-        panel:SelectRow(panel.lastRows[3])
-        panel.primary:Click("LeftButton")
-        T:AssertEqual(AR.db.profile.bgalpha, 0.85)
-        T:AssertEqual(AR.ViewerFrame.frame.bg:GetColorTexture().a, 0.85, "Background opacity applied")
+        T:AssertTrue(panel:RowFor("accent").swatches[2]._selected, "Chosen swatch marked")
+
+        -- Scheme: a drop-down list with every scheme, the current one checked.
+        local scheme = panel:RowFor("scheme")
+        T:AssertTrue(scheme.dropdown:IsShown(), "Drop-down")
+        scheme.dropdown:Click("LeftButton")
+        T:AssertTrue(AR.UI.menu:IsShown(), "List opened")
+        T:AssertTrue(AR.UI:FindMenuItem(AR.L:Get("OPT_SCHEME_DUSK"))._item.checked, "Current scheme checked")
+        AR.UI:FindMenuItem(AR.L:Get("OPT_SCHEME_SLATE")):Click("LeftButton")
+        T:AssertEqual(AR.db.profile.scheme, "slate", "Picked from the list")
+        T:AssertEqual(panel:RowFor("scheme").dropdown.label:GetText(), AR.L:Get("OPT_SCHEME_SLATE"))
+
+        -- Opacity: a slider, snapped to its step and clamped.
+        local alpha = panel:RowFor("bgalpha")
+        T:AssertTrue(alpha.slider:IsShown(), "Slider")
+        alpha.slider._scripts.OnValueChanged(alpha.slider, 0.7123, true)
+        T:AssertEqual(AR.db.profile.bgalpha, 0.7, "Snapped to 5%")
+        T:AssertEqual(AR.ViewerFrame.frame.bg:GetColorTexture().a, 0.7, "Background opacity applied")
+        T:AssertEqual(panel:RowFor("bgalpha").value:GetText(), "70%")
+        alpha.slider._scripts.OnValueChanged(alpha.slider, 0.05, true)
+        T:AssertEqual(AR.db.profile.bgalpha, 0.3, "Never below 30%")
+        alpha.slider._scripts.OnMouseWheel(alpha.slider, 1)
+        T:AssertEqual(AR.db.profile.bgalpha, 0.35, "Mouse wheel steps it")
+
+        -- Right-click resets a setting to its default.
+        panel:RowFor("bgalpha"):Click("RightButton")
+        T:AssertEqual(AR.db.profile.bgalpha, 0.96, "Reset by right-click")
+
+        -- Switches: a check box, and the row toggles it too.
         panel:SelectCategory("travel")
-        local journeyRow
-        for _, r in ipairs(panel.lastRows) do if r.data.key == "journey" then journeyRow = r end end
-        panel:SelectRow(journeyRow)
+        local journey = panel:RowFor("journey")
+        T:AssertTrue(journey.check:IsShown() and journey.check._on, "Checked")
+        journey.check:Click("LeftButton")
+        T:AssertEqual(AR.db.profile.journey, false, "Unchecked")
+        T:AssertTrue(not panel:RowFor("journey").check._on)
+        panel:RowFor("journey"):Click("LeftButton")
+        T:AssertEqual(AR.db.profile.journey, true, "Row click toggles back")
+        AR.db.profile.journey = false
         panel.primary:Click("LeftButton")
-        T:AssertEqual(AR.db.profile.journey, false, "Switch toggled")
-        panel.secondary:Click("LeftButton")
-        T:AssertEqual(AR.db.profile.journey, true, "Reset to default")
+        T:AssertEqual(AR.db.profile.journey, true, "Reset group")
+
         AR.GuideMenu:SetSearch("opac")
         T:AssertEqual(#panel.lastRows, 1, "Search finds settings by name")
-        AR.db.profile.accent, AR.db.profile.bgalpha = nil, nil
+        AR.db.profile.accent, AR.db.profile.bgalpha, AR.db.profile.scheme = nil, nil, nil
+        AR.UI:HideMenu()
         AR.GuideMenu:Reset()
         AR.ViewerFrame:RefreshVisuals()
     end)
