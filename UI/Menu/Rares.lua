@@ -90,7 +90,8 @@ function Rares:OnUnitSeen(unit)
     if not _G.UnitGUID or not AR.Trainers then return nil end
     local id = AR.Trainers:NpcIdFromGUID(_G.UnitGUID(unit))
     if not id or not self:IsRare(id) then return nil end
-    if _G.UnitIsDead and _G.UnitIsDead(unit) then return nil end
+    local dead = _G.UnitIsDead and _G.UnitIsDead(unit)
+    if dead ~= nil and not AR.Compat:IsSecret(dead) and dead then return nil end
     local store = seenStore()
     local rec = store[id] or { count = 0 }
     local t = now()
@@ -103,7 +104,7 @@ function Rares:OnUnitSeen(unit)
     store[id] = rec
     if not self._alerted[id] or t - self._alerted[id] > self.ALERT_COOLDOWN then
         self._alerted[id] = t
-        local name = (_G.UnitName and _G.UnitName(unit)) or (AR.DB:GetUnit(id) or {}).name or "?"
+        local name = (_G.UnitName and AR.Compat:String(_G.UnitName(unit))) or (AR.DB:GetUnit(id) or {}).name or "?"
         if AR.Print then AR:Print(string.format(L("UI_RARE_ALERT_FMT", "Rare nearby: %s"), name)) end
         if _G.PlaySound and _G.SOUNDKIT and _G.SOUNDKIT.RAID_WARNING then pcall(_G.PlaySound, _G.SOUNDKIT.RAID_WARNING) end
     end

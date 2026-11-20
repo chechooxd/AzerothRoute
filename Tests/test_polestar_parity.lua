@@ -896,3 +896,61 @@ T:Describe("Polestar parity: gamepad", function()
         if not ok then error(err, 0) end
     end)
 end)
+
+T:Describe("Live client safety (Forever)", function()
+    T:It("ignores secret speed values in the arrow ETA and journey speed", function()
+        MockWoW:Reset()
+        local AR = _G.AzerothRoute
+        local SECRET = setmetatable({}, { __add = function() error("secret arithmetic") end })
+        local saved = { _G.issecretvalue, _G.GetUnitSpeed }
+        _G.issecretvalue = function(v) return v == SECRET end
+        _G.GetUnitSpeed = function() return SECRET end
+        local ok, err = pcall(function()
+            AR.Pointer:Reset()
+            AR.Pointer.speedSamples = { 7, 7 }
+            AR.Pointer:SampleSpeed(1)
+            T:AssertEqual(#AR.Pointer.speedSamples, 2, "Secret speed not stored")
+            table.insert(AR.Pointer.speedSamples, SECRET)
+            T:AssertEqual(AR.Pointer:GetETA(70), 10, "ETA from the readable samples only")
+            T:AssertEqual(AR.Journey:WalkSpeed(), 7, "Journey speed from the readable samples only")
+            T:AssertEqual(AR.Trainers:NpcIdFromGUID(SECRET), nil, "Secret GUIDs are ignored")
+        end)
+        _G.issecretvalue, _G.GetUnitSpeed = saved[1], saved[2]
+        AR.Pointer:Reset()
+        if not ok then error(err, 0) end
+    end)
+
+    T:It("hooks tooltips through TooltipDataProcessor when the client has it", function()
+        local AR = _G.AzerothRoute
+        local calls = {}
+        local saved = { _G.TooltipDataProcessor, _G.Enum }
+        _G.TooltipDataProcessor = { AddTooltipPostCall = function(kind, fn) calls[#calls + 1] = { kind, fn } end }
+        _G.Enum = { TooltipDataType = { Unit = 2, Item = 0 } }
+        local ok, err = pcall(function()
+            T:AssertTrue(AR.UI:OnTooltip("Unit", function() error("inside") end), "Hooked")
+            T:AssertEqual(calls[1][1], 2, "Unit tooltips")
+            calls[1][2](_G.GameTooltip) -- an error inside the callback stays inside
+        end)
+        _G.TooltipDataProcessor, _G.Enum = saved[1], saved[2]
+        if not ok then error(err, 0) end
+        local tip = { HookScript = function() error("must not be called") end, HasScript = function() return false end }
+        local savedTip = _G.GameTooltip
+        _G.GameTooltip = tip
+        local ok2, res = pcall(AR.UI.OnTooltip, AR.UI, "Unit", function() end)
+        _G.GameTooltip = savedTip
+        T:AssertTrue(ok2 and res == false, "A client without the script is not hooked (no error)")
+    end)
+
+    T:It("starts every optional module even when one of them fails", function()
+        local AR = _G.AzerothRoute
+        local savedExtras = AR.EXTRAS
+        local started = {}
+        AR.TestBroken = { Go = function() error("this client lacks something") end }
+        AR.TestFine = { Go = function() started.fine = true end }
+        AR.EXTRAS = { { "TestBroken", "Go" }, { "TestFine", "Go" } }
+        local failed = AR:StartExtras()
+        AR.EXTRAS, AR.TestBroken, AR.TestFine = savedExtras, nil, nil
+        T:AssertEqual(failed[1], "TestBroken", "Failure reported")
+        T:AssertTrue(started.fine, "The next module still started")
+    end)
+end)

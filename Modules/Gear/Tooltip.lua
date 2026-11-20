@@ -22,6 +22,7 @@ end
 function GearTooltip:OnTooltipSetItem(tooltip)
     if not tooltip or not tooltip.GetItem then return nil end
     local _, link = tooltip:GetItem()
+    if AR.Compat then link = AR.Compat:String(link) end
     local line = self:LineFor(link)
     if line and tooltip.AddLine then
         tooltip:AddLine(line, 0.40, 0.82, 0.48)
@@ -31,14 +32,8 @@ function GearTooltip:OnTooltipSetItem(tooltip)
 end
 
 function GearTooltip:Hook()
-    if self._hooked then return end
-    for _, name in ipairs({ "GameTooltip", "ItemRefTooltip" }) do
-        local tip = _G[name]
-        if tip and tip.HookScript and tip.GetItem then
-            tip:HookScript("OnTooltipSetItem", function(t) self:OnTooltipSetItem(t) end)
-            self._hooked = true
-        end
-    end
+    if self._hooked or not AR.UI or not AR.UI.OnTooltip then return end
+    self._hooked = AR.UI:OnTooltip("Item", function(tooltip) self:OnTooltipSetItem(tooltip) end)
 end
 
 return GearTooltip

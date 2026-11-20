@@ -168,4 +168,24 @@ function UI:FindMenuItem(text)
     return nil
 end
 
+-- Runs fn(tooltip) after a tooltip shows a unit (`kind` "Unit") or an item ("Item").
+-- Returns true when hooked.
+function UI:OnTooltip(kind, fn)
+    local TDP, E = _G.TooltipDataProcessor, _G.Enum and _G.Enum.TooltipDataType
+    if TDP and TDP.AddTooltipPostCall and E and E[kind] ~= nil then
+        TDP.AddTooltipPostCall(E[kind], function(tooltip) pcall(fn, tooltip) end)
+        return true
+    end
+    local script = "OnTooltipSet" .. kind
+    local hooked = false
+    for _, name in ipairs({ "GameTooltip", "ItemRefTooltip" }) do
+        local tip = _G[name]
+        if tip and tip.HookScript and tip.HasScript and tip:HasScript(script) then
+            tip:HookScript(script, function(t) pcall(fn, t) end)
+            hooked = true
+        end
+    end
+    return hooked
+end
+
 return UI

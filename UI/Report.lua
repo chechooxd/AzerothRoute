@@ -262,4 +262,7 @@ function Report:Show()
     return f
 end
 
+-- Capture from load time, so errors during login are in the report too.
+Report:CaptureErrors()
+
 return Report

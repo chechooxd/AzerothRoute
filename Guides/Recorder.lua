@@ -80,7 +80,7 @@ end
 
 -- The NPC the player is talking to, as "Name##id" (or nil).
 local function talkingTo()
-    local name = _G.UnitName and _G.UnitName("npc")
+    local name = _G.UnitName and AR.Compat:String(_G.UnitName("npc"))
     local id = AR.Trainers and _G.UnitGUID and AR.Trainers:NpcIdFromGUID(_G.UnitGUID("npc"))
     if not name then return nil end
     return id and (name .. "##" .. id) or name

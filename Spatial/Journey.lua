@@ -126,9 +126,11 @@ function Journey:WalkSpeed()
     local P = AR.Pointer
     local samples = P and P.speedSamples or {}
     if #samples > 0 then
-        local sum = 0
-        for _, s in ipairs(samples) do sum = sum + s end
-        return math.max(self.RUN_SPEED, sum / #samples)
+        local sum, n = 0, 0
+        for _, s in ipairs(samples) do
+            if AR.Compat:Number(s) then sum, n = sum + s, n + 1 end
+        end
+        if n > 0 then return math.max(self.RUN_SPEED, sum / n) end
     end
     return self.RUN_SPEED
 end

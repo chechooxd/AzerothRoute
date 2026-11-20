@@ -34,6 +34,23 @@ function AR:GetClassName(obj)
 end
 
 -- Unified wrappers for Forever / Classic / Retail client APIs
+-- True when `v` is a Blizzard secret value (unreadable by addon code).
+function Compat:IsSecret(v)
+    return _G.issecretvalue ~= nil and _G.issecretvalue(v) == true
+end
+
+-- `v` when it is a plain number, else nil.
+function Compat:Number(v)
+    if type(v) ~= "number" or self:IsSecret(v) then return nil end
+    return v
+end
+
+-- `v` when it is a plain, non-empty string, else nil.
+function Compat:String(v)
+    if type(v) ~= "string" or v == "" or self:IsSecret(v) then return nil end
+    return v
+end
+
 function Compat:GetSpellInfo(spellID)
     if _G.C_Spell and _G.C_Spell.GetSpellInfo then
         return _G.C_Spell.GetSpellInfo(spellID)

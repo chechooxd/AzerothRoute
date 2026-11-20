@@ -88,6 +88,34 @@ function AR:OnActionBlocked(event, addonName, funcName)
     self:Print(string.format(fmt, tostring(event), key))
 end
 
+-- Optional modules started after the core at each login, one at a time: a module that fails
+-- (an API this client lacks, a changed event) is reported and skipped, never stopping the rest.
+AR.EXTRAS = {
+    { "Trainers", "RegisterLiveEvents" }, { "QuestLoot", "RegisterLiveEvents" },
+    { "GroupQuests", "RegisterLiveEvents" }, { "QuestRewards", "RegisterLiveEvents" },
+    { "Rares", "RegisterLiveEvents" }, { "Characters", "RegisterLiveEvents" },
+    { "GearTooltip", "Hook" }, { "QuestXP", "RegisterLiveEvents" },
+    { "Recorder", "RegisterLiveEvents" }, { "Gamepad", "Start" },
+    { "ClassSpells", "RegisterLiveEvents" }, { "WhatsNew", "ShowIfNew" },
+}
+
+function AR:StartExtras()
+    local failed = {}
+    for _, e in ipairs(self.EXTRAS) do
+        local mod = self[e[1]]
+        if mod and mod[e[2]] then
+            local ok, err = pcall(mod[e[2]], mod)
+            if not ok then
+                failed[#failed + 1] = e[1]
+                if self.Report and self.Report.Record then
+                    self.Report:Record(err, _G.debugstack and _G.debugstack(2, 6, 0) or nil)
+                end
+            end
+        end
+    end
+    return failed
+end
+
 function AR:Initialize()
     self.Storage:Initialize()
     self.Events:EnsureFrame()
@@ -152,45 +180,6 @@ function AR:Initialize()
             self.TaxiTracker:RegisterLiveEvents()
             self.TaxiTracker:SeedRacialStarters()
         end
-        if self.Trainers and self.Trainers.RegisterLiveEvents then
-            self.Trainers:RegisterLiveEvents()
-        end
-        if self.QuestLoot and self.QuestLoot.RegisterLiveEvents then
-            self.QuestLoot:RegisterLiveEvents()
-        end
-        if self.GroupQuests and self.GroupQuests.RegisterLiveEvents then
-            self.GroupQuests:RegisterLiveEvents()
-        end
-        if self.QuestRewards and self.QuestRewards.RegisterLiveEvents then
-            self.QuestRewards:RegisterLiveEvents()
-        end
-        if self.Rares and self.Rares.RegisterLiveEvents then
-            self.Rares:RegisterLiveEvents()
-        end
-        if self.Characters and self.Characters.RegisterLiveEvents then
-            self.Characters:RegisterLiveEvents()
-        end
-        if self.GearTooltip and self.GearTooltip.Hook then
-            self.GearTooltip:Hook()
-        end
-        if self.WhatsNew and self.WhatsNew.ShowIfNew then
-            self.WhatsNew:ShowIfNew()
-        end
-        if self.QuestXP and self.QuestXP.RegisterLiveEvents then
-            self.QuestXP:RegisterLiveEvents()
-        end
-        if self.Report and self.Report.CaptureErrors then
-            self.Report:CaptureErrors()
-        end
-        if self.Recorder and self.Recorder.RegisterLiveEvents then
-            self.Recorder:RegisterLiveEvents()
-        end
-        if self.Gamepad and self.Gamepad.Start then
-            self.Gamepad:Start()
-        end
-        if self.ClassSpells and self.ClassSpells.RegisterLiveEvents then
-            self.ClassSpells:RegisterLiveEvents()
-        end
         if self.ActionBar then
             self.ActionBar:Initialize()
             self.ActionBar:RegisterLiveEvents()
@@ -224,6 +213,7 @@ function AR:Initialize()
             end
             self.ViewerFrame:RefreshVisuals()
         end
+        self:StartExtras()
     end)
 
     return true

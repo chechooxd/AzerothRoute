@@ -634,7 +634,9 @@ function Pointer:SampleSpeed(elapsed)
     self.speedSampleTimer = (self.speedSampleTimer or 0) + (elapsed or 0)
     if self.speedSampleTimer < self.SPEED_SAMPLE_INTERVAL then return end
     self.speedSampleTimer = 0
-    local speed = (_G.GetUnitSpeed and _G.GetUnitSpeed("player")) or 0
+    -- GetUnitSpeed can be a secret value on Forever: such samples are skipped.
+    local speed = _G.GetUnitSpeed and AR.Compat:Number(_G.GetUnitSpeed("player"))
+    if not speed then return end
     table.insert(self.speedSamples, speed)
     if #self.speedSamples > self.SPEED_SAMPLES_MAX then table.remove(self.speedSamples, 1) end
 end
@@ -642,8 +644,12 @@ end
 function Pointer:GetETA(dist)
     if not dist or #self.speedSamples == 0 then return nil end
     local sum = 0
-    for _, s in ipairs(self.speedSamples) do sum = sum + s end
-    local avg = sum / #self.speedSamples
+    local n = 0
+    for _, s in ipairs(self.speedSamples) do
+        if AR.Compat:Number(s) then sum, n = sum + s, n + 1 end
+    end
+    if n == 0 then return nil end
+    local avg = sum / n
     if avg <= 0.1 then return nil end
     local eta = dist / avg
     if eta >= self.ETA_MAX_SECONDS then return nil end

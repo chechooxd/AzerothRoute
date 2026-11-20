@@ -54,7 +54,8 @@ end
 
 -- NPC id from a creature GUID ("Creature-0-xxxx-xxxx-xxxx-<id>-xxxx").
 function Trainers:NpcIdFromGUID(guid)
-    if type(guid) ~= "string" then return nil end
+    guid = AR.Compat and AR.Compat:String(guid) or (type(guid) == "string" and guid or nil)
+    if not guid then return nil end
     local kind, id = guid:match("^(%a+)%-%d+%-%d+%-%d+%-%d+%-(%d+)%-")
     if kind ~= "Creature" then return nil end
     return tonumber(id)
@@ -78,7 +79,7 @@ function Trainers:Record(unit, title, kindOverride, classOverride)
     if not map or not x then return nil end
     local prev = db[id] or {}
     db[id] = {
-        name = (_G.UnitName and _G.UnitName(unit)) or prev.name or "?",
+        name = (_G.UnitName and AR.Compat:String(_G.UnitName(unit))) or prev.name or "?",
         title = title or prev.title,
         kind = kind, class = class or prev.class,
         side = sideOf(unit), map = map, x = x, y = y,
@@ -90,8 +91,9 @@ end
 function Trainers:TooltipTitle()
     local line = _G.GameTooltipTextLeft2
     local text = line and line.GetText and line:GetText()
-    if type(text) ~= "string" or text == "" then return nil end
-    local level = _G.UnitLevel and _G.UnitLevel("mouseover")
+    text = AR.Compat and AR.Compat:String(text) or nil
+    if not text then return nil end
+    local level = _G.UnitLevel and AR.Compat:Number(_G.UnitLevel("mouseover"))
     if level and text:find(tostring(level), 1, true) then return nil end -- "Level 30 Humanoid"
     return text
 end
@@ -123,10 +125,12 @@ function Trainers:RegisterLiveEvents()
     if self._registered or not AR.Events then return end
     self._registered = true
     -- Read the title once the tooltip is filled; fall back to the mouse-over event without the hook.
-    local tip = _G.GameTooltip
-    if tip and tip.HookScript and tip.GetUnit then
-        tip:HookScript("OnTooltipSetUnit", function() self:OnMouseover() end)
-    else
+    -- After the unit tooltip is filled (its title line is then readable); the mouse-over event
+    -- stands in on clients without any tooltip hook.
+    local hooked = AR.UI and AR.UI.OnTooltip and AR.UI:OnTooltip("Unit", function(tooltip)
+        if tooltip == _G.GameTooltip then self:OnMouseover() end
+    end)
+    if not hooked then
         AR.Events:RegisterEvent("UPDATE_MOUSEOVER_UNIT", function() self:OnMouseover() end)
     end
     AR.Events:RegisterEvent("TRAINER_SHOW", function() self:OnTrainerShow() end)
