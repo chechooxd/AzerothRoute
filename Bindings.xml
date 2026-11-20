@@ -17,4 +17,5 @@
 	<Binding name="AZEROTHROUTE_GUIDES" category="AzerothRoute">
 		AzerothRoute.Bindings:Run("guides")
 	</Binding>
+	<Binding name="CLICK AzerothRouteTargetButton:LeftButton" category="AzerothRoute"/>
 </Bindings>

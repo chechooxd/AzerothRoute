@@ -35,9 +35,9 @@ function AR:RegisterSlashCommands()
         elseif msg == "config" or msg == "opciones" or msg == "options" then
             if AR.Config then AR.Config:Open() end
         elseif msg == "macro" then
-            if AR.TargetMacro then AR.TargetMacro:Update() end
-            if _G.ShowMacroFrame and not (_G.InCombatLockdown and _G.InCombatLockdown()) then
-                _G.ShowMacroFrame()
+            if AR.TargetMacro then
+                AR.TargetMacro:Update()
+                AR:Print((AR.L and AR.L:Get("UI_TARGET_BUTTON_SHOWN")) or "UI_TARGET_BUTTON_SHOWN")
             end
         else
             AR:ToggleViewer()

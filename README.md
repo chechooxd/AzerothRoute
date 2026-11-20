@@ -63,14 +63,16 @@ character starts on the shared "Default" profile and can switch, copy, reset or 
 profiles in the Profiles tab. Settings saved by older versions are moved into the profile
 the first time this version loads.
 
-## Target macro
+## Target button
 
-Like RXPGuides, the addon keeps an account macro named `ARTargeting` up to date with the
-current step: `/targetexact` for each NPC and enemy (enemies last, so they win), then
-`/tm [harm,nodead] !8` (skull) or `/tm [help,nodead] 1` (star). Drag it to an action bar and
-bind a key; `/ar macro` refreshes it and opens the macro window. It is rewritten only out of
-combat and never created when the 120 account macro slots are full. Set
-`AzerothRouteSavedDB.global.targetmacro = false` to stop managing it.
+The Target button (`AzerothRouteTargetButton`) is a secure action button of the addon's own: a
+click, or its key binding (Key Bindings > AzerothRoute), targets the current step's enemies first
+and then its NPCs (`/targetexact`, the first living match wins; out of combat it starts from no
+target, a corpse is dropped), then marks it (`/tm` skull or star). It shows only while the step
+has something to target; shift-drag it to move it. The addon only sets the button's own
+attributes and waits out combat to change them: it no longer edits account macros. The old
+`ARTargeting` macro is rewritten once to a note pointing at the button. `/ar macro` refreshes the
+button; turn it off with the `targetmacro` profile setting.
 
 ## Map coordinates & upstream libraries
 

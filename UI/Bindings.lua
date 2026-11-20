@@ -38,6 +38,7 @@ function Bindings:PublishLabels()
     for suffix, key in pairs(NAMES) do
         _G["BINDING_NAME_AZEROTHROUTE_" .. suffix] = (AR.L and AR.L:Get(key)) or key
     end
+    _G["BINDING_NAME_CLICK AzerothRouteTargetButton:LeftButton"] = (AR.L and AR.L:Get("BIND_TARGET")) or "BIND_TARGET"
 end
 
 Bindings:PublishLabels()
