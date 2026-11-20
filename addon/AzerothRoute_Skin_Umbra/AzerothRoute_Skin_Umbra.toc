@@ -19,7 +19,7 @@
 ## Notes-zhCN: AzerothRoute 的深色模式：沉在柔和暗角中的炭灰窗口，边缘钢色微光，深邃阴影；用于 AzerothRoute 的窗框或调暗的游戏自带美术。
 ## Title-zhTW: AzerothRoute 皮膚：Umbra
 ## Notes-zhTW: AzerothRoute 的深色模式：沉在柔和暗角中的炭灰視窗，邊緣鋼色微光，深邃陰影；用於 AzerothRoute 的窗框或調暗的遊戲自帶美術。
-## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## Author: AzerothRoute
 ## X-License: GPL-3.0-only
 ## X-Website: https://github.com/chechooxd/AzerothRoute
 ## Version: 0.4.1.1

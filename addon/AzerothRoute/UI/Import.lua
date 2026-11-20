@@ -407,7 +407,7 @@ local function layout()
 		place(parts.Docs, x + lw + 8, y)
 		parts.Docs:Show()
 	else
-		parts.DocsLabel:SetText(L["Read more: docs/GUIDE_PACKS.md in Polestar's source"])
+		parts.DocsLabel:SetText(L["Read more: docs/GUIDE_PACKS.md in AzerothRoute's source"])
 		parts.DocsLabel:SetWidth(width)
 		parts.Docs:Hide()
 	end

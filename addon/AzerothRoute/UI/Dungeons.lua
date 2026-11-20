@@ -2347,7 +2347,7 @@ end
 
 local REASON = {
 	nodata = L["The AzerothRoute_Codex addon is older than this AzerothRoute: reinstall AzerothRoute, then /reload."],
-	missing = L["The Polestar_Codex addon is not installed. Get Polestar from CurseForge or the GitHub Releases page (the Polestar zip under Assets, not \"Source code\"), install it and restart the game."],
+	missing = L["The AzerothRoute_Codex addon is not installed. Get AzerothRoute from CurseForge or the GitHub Releases page (the AzerothRoute zip under Assets, not \"Source code\"), install it and restart the game."],
 	disabled = L["The AzerothRoute_Codex addon is turned off: enable it in the AddOns list, then /reload."],
 }
 

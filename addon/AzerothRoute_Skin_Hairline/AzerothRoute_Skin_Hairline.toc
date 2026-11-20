@@ -19,7 +19,7 @@
 ## Notes-zhCN: AzerothRoute 最轻盈的皮肤：单根细线的边框，仅描边的按钮，疏朗的细窄字体，以职业颜色为强调色。
 ## Title-zhTW: AzerothRoute 皮膚：Hairline
 ## Notes-zhTW: AzerothRoute 最輕盈的皮膚：單根細線的邊框，僅描邊的按鈕，疏朗的細窄字體，以職業顏色為強調色。
-## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## Author: AzerothRoute
 ## X-License: GPL-3.0-only
 ## X-Website: https://github.com/chechooxd/AzerothRoute
 ## Version: 0.4.1.1

@@ -548,10 +548,10 @@ function P.Build(view)
 	about:SetJustifyH("LEFT")
 	about:SetJustifyV("TOP")
 	about:SetText(table.concat({
-		L["A community addon is a separate addon with someone else's guides for Polestar. It is not part of Polestar, and its guides are not Polestar's own routes."],
+		L["A community addon is a separate addon with someone else's guides for AzerothRoute. It is not part of AzerothRoute, and its guides are not AzerothRoute's own routes."],
 		L["Get a community addon from wherever its author publishes it and install it like any addon, then restart the game. Its guides appear in the guide menu under Community guides, with the author's name. The switch on its row above turns it on or off."],
-		L["Each community addon is made and supported by its author: report its problems to them, not to Polestar. It is an addon like any other, so install community addons from authors you trust."],
-		L["Anyone can make a community addon with Polestar's own tools."],
+		L["Each community addon is made and supported by its author: report its problems to them, not to AzerothRoute. It is an addon like any other, so install community addons from authors you trust."],
+		L["Anyone can make a community addon with AzerothRoute's own tools."],
 	}, "\n\n"))
 	local docsLabel = oneLine(W.Text(view, "note", "text"))
 	-- The page on guide packs: a link opening the copy window.
@@ -621,7 +621,7 @@ function P.Build(view)
 			docs:SetPoint("TOPLEFT", view, "TOPLEFT", SH.pad + lw + 8, -y)
 			docs:Show()
 		else
-			docsLabel:SetText(L["Read more: docs/GUIDE_PACKS.md in Polestar's source"])
+			docsLabel:SetText(L["Read more: docs/GUIDE_PACKS.md in AzerothRoute's source"])
 			docsLabel:SetWidth(width)
 			docs:Hide()
 		end

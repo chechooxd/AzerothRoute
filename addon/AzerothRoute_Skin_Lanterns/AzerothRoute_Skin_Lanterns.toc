@@ -19,7 +19,7 @@
 ## Notes-zhCN: AzerothRoute 的十种氛围配色，每种一对颜色：圆角窗口，胶囊形标签与按钮，染色底面和对角两盏柔光。
 ## Title-zhTW: AzerothRoute 皮膚：Lanterns
 ## Notes-zhTW: AzerothRoute 的十種氛圍配色，每種一對顏色：圓角視窗，膠囊形標籤與按鈕，染色底面和對角兩盞柔光。
-## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## Author: AzerothRoute
 ## X-License: GPL-3.0-only
 ## X-Website: https://github.com/chechooxd/AzerothRoute
 ## Version: 0.4.1.1

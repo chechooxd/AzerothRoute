@@ -19,7 +19,7 @@
 ## Notes-zhCN: AzerothRoute 的指南文本和游戏名称（任务、NPC、物体、物品、副本等）。语言：法语。仅在该语言的客户端中按需加载。
 ## Title-zhTW: AzerothRoute - 法語
 ## Notes-zhTW: AzerothRoute 的指南文字與遊戲名稱（任務、NPC、物件、物品、副本等）。語言：法語。僅在該語言的用戶端中按需載入。
-## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## Author: AzerothRoute
 ## Version: 0.4.1.1
 ## Category: AzerothRoute
 ## Group: AzerothRoute

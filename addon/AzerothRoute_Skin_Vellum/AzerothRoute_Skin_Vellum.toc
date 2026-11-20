@@ -19,7 +19,7 @@
 ## Notes-zhCN: AzerothRoute 的羊皮纸皮肤：指南如同任务日志的一页，纸上深色墨迹。
 ## Title-zhTW: AzerothRoute 皮膚：Vellum
 ## Notes-zhTW: AzerothRoute 的羊皮紙皮膚：指南如同任務日誌的一頁，紙上深色墨跡。
-## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## Author: AzerothRoute
 ## X-License: GPL-3.0-only
 ## X-Website: https://github.com/chechooxd/AzerothRoute
 ## Version: 0.4.1.1

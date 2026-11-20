@@ -17,6 +17,8 @@ local OUT = arg[2] or "addon"
 local ROOT = (arg[0]:gsub("[/\\]?tools[/\\]fork_polestar%.lua$", ""))
 if ROOT == "" then ROOT = "." end
 
+local SITE = "https://github.com/chechooxd/AzerothRoute"
+
 -- Folders AzerothRoute leaves out (see THIRD_PARTY.md and odd/tasks/azerothroute-2-polestar-base.md).
 local EXCLUDE = {
     Polestar_Arcade = "Doom mini-game",
@@ -40,17 +42,16 @@ for _, a in ipairs(arg) do
     end
 end
 
-local SITE = "https://github.com/chechooxd/AzerothRoute"
 
 -- Polestar files AzerothRoute replaces with its own (tools/fork/patches.lua creates them).
 local SKIP_FILES = { ["Polestar/README.txt"] = true }
 
--- Text the rename never touches: Polestar as a project, its people and its channels.
-local PROTECT = {
-    "Discord", "Recorder", "founder", "GitHub", "Fitz", "XrayAlpha",
-    "Polestar's words", "Polestar's source", "Polestar's own tools", "not part of Polestar",
-    "not Polestar's", "not to Polestar", "Polestar's author", "Polestar authors",
-}
+-- Text the rename never touches. Empty since 2026-11-20: the user asked for no trace of Polestar in
+-- the game, so Polestar's community features (its Discord, Recorder, founder alert, thanks line,
+-- GitHub issues) are turned off by tools/fork/patches.lua instead of keeping their wording.
+-- URLs stay whole (renameText). The legal notices live in the LICENSE, NOTICE and CREDITS files,
+-- which are copied unchanged, and in one line of the Options page (patches).
+local PROTECT = {}
 
 local function protected(s)
     for _, p in ipairs(PROTECT) do
@@ -76,7 +77,19 @@ local function renameText(s)
     s = s:gsub("POLESTAR", "AZEROTHROUTE")
     s = s:gsub("/polestar", "/ar")
     s = s:gsub("/pole%f[^%w]", "/ar")
-    s = s:gsub("\1(%d+)\2", function(i) return urls[tonumber(i)] end)
+    -- Search words ("open polestar", "polestar client"): lower case between spaces or commas only,
+    -- so internal ids ("polestar", "polestar-experimental") keep matching saved data.
+    s = s:gsub("([%s,])polestar([%s,\"'])", "%1azerothroute%2")
+    -- Reports go to AzerothRoute's developer, not to Polestar's channels (guide notes, setup).
+    s = s:gsub("tell us on AzerothRoute's Discord or GitHub", "send a report with /ar report")
+    s = s:gsub("avísanos en el Discord o GitHub de AzerothRoute", "envía un informe con /ar report")
+    s = s:gsub("\1(%d+)\2", function(i)
+        -- Polestar's repository links point at AzerothRoute's.
+        local u = urls[tonumber(i)]
+        -- Packed data (the walking maps) can hold these bytes itself: leave it as it was.
+        if not u then return nil end
+        return (u:gsub("^https://github%.com/fitzforge/polestar", SITE))
+    end)
     return s
 end
 
@@ -178,7 +191,7 @@ local function renameToc(src)
     local lines = {}
     for line in (src:gsub("\r\n", "\n") .. "\n"):gmatch("(.-)\n") do
         if line:match("^## Author:") then
-            line = "## Author: AzerothRoute (modified from Polestar by The Polestar authors)"
+            line = "## Author: AzerothRoute"
         elseif line:match("^## X%-Website:") then
             line = "## X-Website: " .. SITE
         elseif line:match("^## Title:") and not line:match("_") then

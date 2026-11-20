@@ -435,7 +435,7 @@ local function readVariants(spec)
 		local rec = { id = v.id, name = v.name, desc = v.desc }
 		if v.base ~= nil then
 			if not (SKINS[v.base] and SKINS[v.base].builtin) then
-				return false, what .. ".base must be one of AzerothRoute's skins: polestar, halo, hearth, forever, blizzard, classic"
+				return false, what .. ".base must be one of AzerothRoute's skins: azerothroute, halo, hearth, forever, blizzard, classic"
 			end
 			rec.base = v.base
 		end
@@ -493,7 +493,7 @@ local function registerSkin(id, spec)
 	if not ok then return false, why end
 	local base = spec.base or "polestar"
 	if not (SKINS[base] and SKINS[base].builtin) then
-		return false, "base must be one of AzerothRoute's skins: polestar, halo, hearth, forever, blizzard, classic"
+		return false, "base must be one of AzerothRoute's skins: azerothroute, halo, hearth, forever, blizzard, classic"
 	end
 	if spec.scheme ~= nil then
 		if base ~= "polestar" then return false, "scheme goes with base \"polestar\" (the other looks bring their own grounds)" end

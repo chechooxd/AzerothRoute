@@ -19,7 +19,7 @@
 ## Notes-zhCN: AzerothRoute 的高对比度皮肤：黑色底面，更大的白色文字，黄色强调色，清晰边框，更大的标记和箭头。
 ## Title-zhTW: AzerothRoute 皮膚：Beacon
 ## Notes-zhTW: AzerothRoute 的高對比皮膚：黑色底面，更大的白色文字，黃色強調色，清晰邊框，更大的標記與箭頭。
-## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## Author: AzerothRoute
 ## X-License: GPL-3.0-only
 ## X-Website: https://github.com/chechooxd/AzerothRoute
 ## Version: 0.4.1.1

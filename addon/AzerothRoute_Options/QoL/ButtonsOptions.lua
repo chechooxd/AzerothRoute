@@ -611,7 +611,7 @@ local SPECS = {
 			search = "launcher size, floating button size, bigger, smaller, huge, tiny",
 			extras = { { kind = "toggle", key = "ui.launcher", label = L["Floating button"],
 				help = L["A small AzerothRoute button you can put anywhere on the screen. Click to hide or show AzerothRoute, right-click for a menu, drag to move it. It hides with the window in combat and in dungeons when those are set to Hide."],
-				search = "launcher, floating icon, floating button, show, hide, toggle, open polestar, quick" } } },
+				search = "launcher, floating icon, floating button, show, hide, toggle, open azerothroute, quick" } } },
 		{ kind = "slider", key = "ui.launcherAlpha", label = L["Opacity"], min = 0.1, max = 1, step = 0.05, format = percent, new = NEW,
 			help = L["How solid the floating button is."],
 			search = "launcher opacity, transparency, alpha, fade, faint" },

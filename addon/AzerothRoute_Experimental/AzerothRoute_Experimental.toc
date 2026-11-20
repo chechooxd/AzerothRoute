@@ -19,7 +19,7 @@
 ## Notes-zhCN: AzerothRoute 的组成部分：Forever 新区域的实验性指南（Alpha 版），与 AzerothRoute 的指南一同列出。
 ## Title-zhTW: AzerothRoute 實驗指南
 ## Notes-zhTW: AzerothRoute 的一部分：Forever 新區域的實驗性指南（Alpha 版），與 AzerothRoute 的指南一同列出。
-## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## Author: AzerothRoute
 ## Version: 0.4.1.1
 ## Category: AzerothRoute
 ## Group: AzerothRoute

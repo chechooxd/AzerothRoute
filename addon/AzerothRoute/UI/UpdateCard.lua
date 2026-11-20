@@ -58,7 +58,7 @@ local loginDone = false -- DELAY seconds after login have passed
 -- How to update: Polestar Client, when it is installed, does it.
 local function howTo()
 	if U().HasClient() then return L["AzerothRoute Client can update it for you: open it, press Update, then restart the game or /reload."] end
-	return L["Update it with the CurseForge app or Polestar Client (or the zip from GitHub), then restart the game or /reload."]
+	return L["Update it with the CurseForge app or AzerothRoute Client (or the zip from GitHub), then restart the game or /reload."]
 end
 
 -- The card for notice n (Update.Notice).

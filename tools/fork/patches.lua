@@ -167,4 +167,131 @@ return {
         replace = '\t<Script file="MigrateV1.lua"/>\n\t<Script file="Identity.lua"/>\n',
         why = "loads Identity.lua",
     },
+    -- No trace of Polestar's channels (2026-11-20, user: "elimina todo rastro de polestar").
+    {
+        file = "AzerothRoute/Core/Commands.lua",
+        find = [=[ns.RegisterCommand("discord", function() ns.Fire("SHOW_DISCORD") end, L["The invite to the AzerothRoute Discord"])
+]=],
+        replace = [=[]=],
+        why = "no /ar discord: Polestar's community channel",
+    },
+    {
+        file = "AzerothRoute/UI/Report.lua",
+        find = [=[	F.DiscordTitle:SetText(L["Report it on Discord"])]=],
+        replace = [=[	F.DiscordTitle:SetText(L["Send it to the developer"])]=],
+        why = "report window: no Discord",
+    },
+    {
+        file = "AzerothRoute/UI/Report.lua",
+        find = [=[	F.DiscordNote:SetText(L["1. Press Copy report, then Ctrl+C (Cmd+C on a Mac).\n2. In the AzerothRoute Discord, open #bugs and press New Post. Not in it yet? Get the invite.\n3. Paste the report, give it a short title and post it. A bot files it for the developers and tells you in your thread when it's fixed."])]=],
+        replace = [=[	F.DiscordNote:SetText(L["1. Press Copy report, then Ctrl+C (Cmd+C on a Mac).\n2. Paste it where you talk with the AzerothRoute developer, with a short line about what went wrong."])]=],
+        why = "report window: no Discord",
+    },
+    {
+        file = "AzerothRoute/UI/Report.lua",
+        find = [=[	F.Invite = W.Button(F, L["Get the invite"], function() UI.ShowDiscord() end)]=],
+        replace = [=[	F.Invite = W.Button(F, L["Get the invite"], function() UI.ShowDiscord() end)
+	for _, w in ipairs({ F.Invite, F.Logo }) do w:Hide() w.Show = w.Hide w.SetShown = w.Hide end -- AzerothRoute: no Polestar channel]=],
+        why = "report window: no Discord invite",
+    },
+    {
+        file = "AzerothRoute/UI/Report.lua",
+        find = [=[	F.GitHub = W.Button(F, L["Open on GitHub"], openGitHub)]=],
+        replace = [=[	F.GitHub = W.Button(F, L["Open on GitHub"], openGitHub)
+	for _, w in ipairs({ F.GitHub, F.GitHubNote, F.GitHubRule }) do w:Hide() w.Show = w.Hide w.SetShown = w.Hide end -- AzerothRoute: no Polestar channel]=],
+        why = "report window: no Polestar GitHub issues",
+    },
+    {
+        file = "AzerothRoute/UI/Report.lua",
+        find = [=[function UI.ShowDiscord()]=],
+        replace = [=[function UI.ShowDiscord()
+	do return end -- AzerothRoute: no Polestar Discord]=],
+        why = "no Discord invite window",
+    },
+    {
+        file = "AzerothRoute/UI/Report.lua",
+        find = [=[	if rawget(f, "Discord") or not rawget(f, "Sidebar") then return end]=],
+        replace = [=[	do return end -- AzerothRoute: no Discord mark in the sidebar
+	if rawget(f, "Discord") or not rawget(f, "Sidebar") then return end]=],
+        why = "no Discord mark in the hub and options sidebar",
+    },
+    {
+        file = "AzerothRoute/UI/Welcome.lua",
+        find = [=[		p.Beta.Text:SetText((L["Played to the end in tests, but not yet by players. If a step is wrong, press %s in the guide window and tell us on Discord."]):format(cmd(L["Skip"])))]=],
+        replace = [=[		p.Beta.Text:SetText((L["Played to the end in tests, but not yet by players. If a step is wrong, press %s in the guide window and send a report with /ar report."]):format(cmd(L["Skip"])))]=],
+        why = "setup: no Discord",
+    },
+    {
+        file = "AzerothRoute/UI/Welcome.lua",
+        find = [=[		y = layNote(p, p.Recorder, y, true)]=],
+        replace = [=[		y = layNote(p, p.Recorder, y, false) -- AzerothRoute: no Polestar Recorder]=],
+        why = "setup: no Polestar Recorder row",
+    },
+    {
+        file = "AzerothRoute/UI/Welcome.lua",
+        find = [=[		y = layNote(p, p.Discord, y, true)]=],
+        replace = [=[		y = layNote(p, p.Discord, y, false) -- AzerothRoute: no Discord]=],
+        why = "setup: no Discord row",
+    },
+    {
+        file = "AzerothRoute/UI/GuideFrame.lua",
+        find = [=[		nav.Report.psTipLines = { L["Write what went wrong, copy the report and paste it on the AzerothRoute Discord."] }]=],
+        replace = [=[		nav.Report.psTipLines = { L["Write what went wrong and copy the report for the AzerothRoute developer."] }]=],
+        why = "guide window: no Discord",
+    },
+    {
+        file = "AzerothRoute/Rares/Rares.lua",
+        find = [=[	founder = true, -- say when the founder is nearby (Rares.FOUNDER)]=],
+        replace = [=[	founder = false, -- AzerothRoute: no founder alert (Polestar's founder)]=],
+        why = "no Polestar founder alert",
+    },
+    {
+        file = "AzerothRoute_Options/Rares/Options.lua",
+        find = [=[		{ kind = "toggle", key = "rares.founder", label = L["Say when AzerothRoute's founder is nearby"], disabled = off,
+			search = "founder, fitz, wave, hello, say hi",
+			help = string.format(L["When %s comes into sight, a card says so and the rare button targets him and waves. At most once a day, never in combat or instances."], Rares.FOUNDER) },
+]=],
+        replace = [=[]=],
+        why = "no founder alert setting",
+    },
+    {
+        file = "AzerothRoute_Options/UI/Options.lua",
+        find = [=[	aiNote:SetText(L["This translation was made with AI. Help improve it on Discord."])]=],
+        replace = [=[	aiNote:SetText(L["This translation was made with AI."])]=],
+        why = "options: no Discord",
+    },
+    {
+        file = "AzerothRoute_Options/UI/Options.lua",
+        find = [=[	local aiLink = W.Link(view, (ns.DiscordURL:gsub("^%a+://", "")), function() UI.ShowDiscord() end)]=],
+        replace = [=[	local aiLink = W.Link(view, (ns.DiscordURL:gsub("^%a+://", "")), function() UI.ShowDiscord() end)
+	for _, w in ipairs({ aiLink }) do w:Hide() w.Show = w.Hide w.SetShown = w.Hide end -- AzerothRoute: no Polestar channel]=],
+        why = "options: no Discord link",
+    },
+    {
+        file = "AzerothRoute_Options/UI/Options.lua",
+        find = [=[		.. hex .. "/ar report|r   " .. L["report a problem with a step on the AzerothRoute Discord"] .. "\n"]=],
+        replace = [=[		.. hex .. "/ar report|r   " .. L["report a problem with a step"] .. "\n"]=],
+        why = "options: no Discord",
+    },
+    {
+        file = "AzerothRoute_Options/UI/Options.lua",
+        find = [=[		.. hex .. "/ar arcade|r   " .. L["play Freedoom Arcade by petllama"] .. "\n"
+]=],
+        replace = [=[]=],
+        why = "options: no arcade command (Arcade not shipped)",
+    },
+    {
+        file = "AzerothRoute_Options/UI/Options.lua",
+        find = [=[		.. L["Freedoom Arcade by petllama (GPL-2.0 or later) plays three levels of Freedoom by the Freedoom project (BSD License), from the AzerothRoute_Arcade folder."] .. "\n"
+		.. L["Discord and its logo are trademarks of Discord Inc.; the logo marks the link to the AzerothRoute Discord."] .. "\n"]=],
+        replace = [=[		.. L["Based on Polestar by The Polestar authors"] .. " (GPL-3.0-only)." .. "\n"]=],
+        why = "options credits: the legal notice in place of the arcade and Discord lines",
+    },
+    {
+        file = "AzerothRoute_Options/UI/Options.lua",
+        find = [=[add({ page = REC, key = "recorder", icon = "record", order = 90, subtitle = L["The data recorder for guide authors."], custom = buildRecorder }, true)
+]=],
+        replace = [=[]=],
+        why = "options: no Polestar Recorder page",
+    },
 }

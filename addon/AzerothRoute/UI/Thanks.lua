@@ -29,7 +29,7 @@ local T = {}
 UI.Thanks = T
 
 -- Only the repository: Blizzard's add-on policy keeps donation links out of the game.
-ns.RepoURL = "https://github.com/fitzforge/polestar"
+ns.RepoURL = "https://github.com/chechooxd/AzerothRoute"
 
 local function credits() return ns.Credits or { supporters = {}, contributors = {}, bugReporters = {}, translators = {}, ideas = {} } end
 

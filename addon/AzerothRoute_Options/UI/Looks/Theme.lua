@@ -703,7 +703,7 @@ local SPECS = {
 			help = L["The lit accent line along the top edge of AzerothRoute's windows, and the light it throws."] },
 		{ kind = "toggle", key = "ui.gameMenuButton", label = L["Game menu button"],
 			help = L["A AzerothRoute button in the game menu (Esc) that opens the guide menu."],
-			search = "game menu, escape, esc, main menu, button, open polestar" },
+			search = "game menu, escape, esc, main menu, button, open azerothroute" },
 		{ kind = "toggle", key = "ui.reduceMotion", label = L["Reduce motion"], help = L["No sliding or popping; fades stay short."],
 			search = "animations, motion sickness, fps, frame rate, performance, lag, stutter, cpu, slow" },
 		{ kind = "slider", key = "ui.animSpeed", label = L["Speed"], min = 0.5, max = 2, step = 0.1, format = times, new = NEW,

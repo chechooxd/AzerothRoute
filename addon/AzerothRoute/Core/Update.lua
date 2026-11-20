@@ -311,7 +311,7 @@ end
 
 -- The release notes' page for version v (nil: the newest release's).
 function U.ReleaseURL(v)
-	local base = "https://github.com/fitzforge/polestar/releases"
+	local base = "https://github.com/chechooxd/AzerothRoute/releases"
 	return v and (base .. "/tag/v" .. v) or (base .. "/latest")
 end
 

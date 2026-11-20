@@ -365,7 +365,7 @@ function TV.Render()
 	table.sort(lvs)
 	for _, lv in ipairs(lvs) do w.note(format(L["Around level %d: %s"], lv, build.notes[lv]), "text") end
 	w.head(L["Source"])
-	w.note(format(L["Picks from %s (%s), checked against the game's talent tree; notes in Polestar's words."], data.source, data.url))
+	w.note(format(L["Picks from %s (%s), checked against the game's talent tree; notes in AzerothRoute's words."], data.source, data.url))
 	local choice = T.Choice()
 	actions(not mine or choice == "auto", choice ~= "auto")
 	local canApply = mine and c and c.staged and c.staged.status == "behind" and (c.staged.unspent or 0) > 0 or false

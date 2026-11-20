@@ -56,7 +56,7 @@ ns.RegisterDefaults("rares", {
 	mouseover = true,
 	-- Alerts.
 	alerts = true,
-	founder = true, -- say when the founder is nearby (Rares.FOUNDER)
+	founder = false, -- AzerothRoute: no founder alert (Polestar's founder)
 	treasureAlerts = true,
 	sound = true,
 	soundKit = "raid",
@@ -78,7 +78,7 @@ ns.RegisterDefaults("rares", {
 -- names carry a surname, so this is the full name as Compat.UnitFullName
 -- gives it. When he comes into sight, one alert says so and the rare button
 -- offers to target him and wave (QoL/Buttons.lua, Buttons.FounderMacro).
-Rares.FOUNDER = "Fitz Polestar"
+Rares.FOUNDER = "Fitz AzerothRoute"
 
 local HISTORY_MAX = 400
 local CLASS_RARE = { rare = true, rareelite = true }

@@ -45,7 +45,7 @@ end
 -- The Polestar Discord's invite: where players report problems (UI/Report.lua).
 ns.DiscordURL = "https://discord.gg/polestar"
 -- A new issue on Polestar's GitHub: the report window fills one in (UI/Report.lua).
-ns.IssueURL = "https://github.com/fitzforge/polestar/issues/new"
+ns.IssueURL = "https://github.com/chechooxd/AzerothRoute/issues/new"
 
 local pcall, type, pairs, select, tostring = pcall, type, pairs, select, tostring
 

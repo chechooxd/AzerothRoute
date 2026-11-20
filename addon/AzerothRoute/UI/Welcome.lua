@@ -2882,13 +2882,13 @@ PAGES[#PAGES + 1] = {
 		y = layNote(p, p.Later, y, true)
 
 		local beta = ns.routesBeta and true or false
-		p.Beta.Text:SetText((L["Played to the end in tests, but not yet by players. If a step is wrong, press %s in the guide window and tell us on Discord."]):format(cmd(L["Skip"])))
+		p.Beta.Text:SetText((L["Played to the end in tests, but not yet by players. If a step is wrong, press %s in the guide window and send a report with /ar report."]):format(cmd(L["Skip"])))
 		y = layNote(p, p.Beta, y, beta)
 		if beta then W.SetChip(p.Beta.Chip, ns.Upper(L["Beta"]), "warning") else p.Beta.Chip:Hide() end
-		p.Recorder.Text:SetText(L["The Polestar Recorder, an optional addon of its own, records your play without names so the routes get better. Its page in Settings says how it works."])
-		y = layNote(p, p.Recorder, y, true)
+		p.Recorder.Text:SetText(L["The AzerothRoute Recorder, an optional addon of its own, records your play without names so the routes get better. Its page in Settings says how it works."])
+		y = layNote(p, p.Recorder, y, false) -- AzerothRoute: no Polestar Recorder
 		p.Discord.Text:SetText(L["Feedback, bug reports and news."])
-		y = layNote(p, p.Discord, y, true)
+		y = layNote(p, p.Discord, y, false) -- AzerothRoute: no Discord
 		p.Packs.Text:SetText(L["Guides by other players, installed like any addon. They show under Community guides in the guide list."])
 		y = layNote(p, p.Packs, y, true)
 		setChevronText(F.Start, g and L["Start guide"] or L["Choose a guide"])

@@ -19,7 +19,7 @@
 ## Notes-zhCN: 随你升级所在之地变化的 AzerothRoute 皮肤：深色海图纸，罗盘玫瑰与虚线航线，标题后方是大陆的载入画面，强调色取其颜色，罗盘指针箭头。
 ## Title-zhTW: AzerothRoute 皮膚：Waymark
 ## Notes-zhTW: 隨你升級所在之地變化的 AzerothRoute 皮膚：深色海圖紙，羅盤玫瑰與虛線航線，標題後方是大陸的載入畫面，強調色取其顏色，羅盤指針箭頭。
-## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## Author: AzerothRoute
 ## X-License: GPL-3.0-only
 ## X-Website: https://github.com/chechooxd/AzerothRoute
 ## Version: 0.4.1.1

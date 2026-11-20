@@ -1578,17 +1578,18 @@ local function build()
 	F.Logo = W.Tex(F, "ARTWORK", "discord", "discord")
 	F.Logo:SetSize(LOGO, LOGO)
 	F.DiscordTitle = W.Text(F, "heading", "text")
-	F.DiscordTitle:SetText(L["Report it on Discord"])
+	F.DiscordTitle:SetText(L["Send it to the developer"])
 	F.DiscordNote = W.Text(F, "note", "textDim")
 	F.DiscordNote:SetWidth(WIDTH - TEXT_X - PAD)
 	F.DiscordNote:SetJustifyH("LEFT")
 	F.DiscordNote:SetWordWrap(true)
-	F.DiscordNote:SetText(L["1. Press Copy report, then Ctrl+C (Cmd+C on a Mac).\n2. In the Polestar Discord, open #bugs and press New Post. Not in it yet? Get the invite.\n3. Paste the report, give it a short title and post it. A bot files it for the developers and tells you in your thread when it's fixed."])
+	F.DiscordNote:SetText(L["1. Press Copy report, then Ctrl+C (Cmd+C on a Mac).\n2. Paste it where you talk with the AzerothRoute developer, with a short line about what went wrong."])
 	F.Copy = W.Button(F, L["Copy report"], copyReport, { primary = true })
 	-- The game opens no links, so the invite is one more copy: only for a
 	-- player who has not joined yet, in the copy window, never here beside
 	-- the report.
 	F.Invite = W.Button(F, L["Get the invite"], function() UI.ShowDiscord() end)
+	for _, w in ipairs({ F.Invite, F.Logo }) do w:Hide() w.Show = w.Hide w.SetShown = w.Hide end -- AzerothRoute: no Polestar channel
 
 	-- GitHub, for a player who has an account: the same report in a filled-in
 	-- issue (R.IssueURL).
@@ -1599,6 +1600,7 @@ local function build()
 	F.GitHubNote:SetWordWrap(true)
 	F.GitHubNote:SetText(L["Have a GitHub account? Open the issue there with everything filled in."])
 	F.GitHub = W.Button(F, L["Open on GitHub"], openGitHub)
+	for _, w in ipairs({ F.GitHub, F.GitHubNote, F.GitHubRule }) do w:Hide() w.Show = w.Hide w.SetShown = w.Hide end -- AzerothRoute: no Polestar channel
 	-- Their tooltip says why they wait, so it shows while they are disabled.
 	for _, b in ipairs({ F.Copy, F.GitHub }) do
 		if b.SetMotionScriptsWhileDisabled then b:SetMotionScriptsWhileDisabled(true) end
@@ -1653,7 +1655,8 @@ end
 
 -- The Polestar Discord's invite, in the copy window with Discord's mark.
 function UI.ShowDiscord()
-	UI.ShowCopy(L["Polestar on Discord"], ns.DiscordURL, {
+	do return end -- AzerothRoute: no Polestar Discord
+	UI.ShowCopy(L["AzerothRoute on Discord"], ns.DiscordURL, {
 		icon = "discord", iconColor = "discord",
 		hint = L["Report problems, ask for help and hear about new guides first. The invite is selected for you: copy it with Ctrl+C (Cmd+C on a Mac) and open it in your browser."],
 	})
@@ -1663,11 +1666,12 @@ end
 -- options window): Discord's mark in its own colour at the end of the
 -- version line, the invite on a click. Built once per shell.
 function R.SidebarLink(f)
+	do return end -- AzerothRoute: no Discord mark in the sidebar
 	if rawget(f, "Discord") or not rawget(f, "Sidebar") then return end
 	local b = W.IconButton(f.Sidebar, "discord", 28, nil, function() UI.ShowDiscord() end, 20)
 	W.Color(b.Icon, "discord")
 	b:SetScript("OnEnter", function(self)
-		W.Tooltip(self, "ANCHOR_RIGHT", L["Polestar on Discord"], { L["Report problems, ask for help and hear about new guides first."] })
+		W.Tooltip(self, "ANCHOR_RIGHT", L["AzerothRoute on Discord"], { L["Report problems, ask for help and hear about new guides first."] })
 	end)
 	b:SetScript("OnLeave", function(self) W.HideTooltip(self) end)
 	-- The mark's ink on the sidebar's 24 edge, centred on the version line.

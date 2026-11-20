@@ -248,6 +248,6 @@ ns.OnLogin(function()
 	local list = { "AzerothRoute " .. tostring(ns.version) }
 	for _, v in ipairs(stale) do list[#list + 1] = v end
 	if #missing > 0 then list[#list + 1] = string.format(ns.L["%s not installed"], table.concat(missing, ", ")) end
-	ns.Print(string.format(ns.L["Your install is mixed or incomplete (%s). Close the game, delete every Polestar folder in Interface/AddOns and install Polestar again: with the Polestar Client, the CurseForge app, or the latest zip from GitHub Releases (not \"Source code\")."],
+	ns.Print(string.format(ns.L["Your install is mixed or incomplete (%s). Close the game, delete every AzerothRoute folder in Interface/AddOns and install AzerothRoute again: with the AzerothRoute Client, the CurseForge app, or the latest zip from GitHub Releases (not \"Source code\")."],
 		table.concat(list, ", ")))
 end)

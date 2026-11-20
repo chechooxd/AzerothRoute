@@ -19,7 +19,7 @@
 ## Notes-zhCN: AzerothRoute 的练级、专业、声望和收藏指南。
 ## Title-zhTW: AzerothRoute 指南
 ## Notes-zhTW: AzerothRoute 的升級、專業、聲望與收藏指南。
-## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## Author: AzerothRoute
 ## Version: 0.4.1.1
 ## Category: AzerothRoute
 ## Group: AzerothRoute

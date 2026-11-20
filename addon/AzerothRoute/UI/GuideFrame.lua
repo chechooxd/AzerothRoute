@@ -2986,7 +2986,7 @@ GF.Part(function(GF)
 		-- Report a problem with the step on screen (UI/Report.lua): the bug, left
 		-- of Lookup.
 		nav.Report = W.IconButton(nav, "bug", 24, L["Report a problem"], function() UI.ShowReport() end)
-		nav.Report.psTipLines = { L["Write what went wrong, copy the report and paste it on the Polestar Discord."] }
+		nav.Report.psTipLines = { L["Write what went wrong and copy the report for the AzerothRoute developer."] }
 		nav.Report:SetPoint("RIGHT", nav.Lookup, "LEFT", 0, 0)
 		nav.Report:Hide()
 		-- Nearby services: left of the bug, right of Skip.

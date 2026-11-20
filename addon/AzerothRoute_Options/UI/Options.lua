@@ -287,7 +287,7 @@ local BUILTIN = {
 		-- Core/Update.lua's notices (0.3.7): shown once the setting is registered.
 		{ kind = "toggle", key = "update.card", label = L["Tell me when a newer AzerothRoute is out"],
 			help = L["At login, a card on the guide window says a newer AzerothRoute is out and how to update; Got it keeps it away for a day. A line in the guide window stays until you update. Two or more updates behind, both show even with this off (the card at most once a day)."],
-			search = "update, new version, outdated, old version, release, curseforge, polestar client, upgrade" },
+			search = "update, new version, outdated, old version, release, curseforge, azerothroute client, upgrade" },
 	} },
 	-- Core/Engine.lua, Dynamic Questing (Own.hereBuild): quick objectives of later steps close by, in the guide
 	-- window's "While you're here" panel. The setting keys keep their behavior.whileHere* names.
@@ -363,13 +363,13 @@ local BUILTIN = {
 			choices = { { value = "show", label = L["Keep visible"] }, { value = "hide", label = L["Hide"] } } },
 		{ kind = "toggle", key = "ui.launcher", label = L["Floating button"], move = "launcher",
 			help = L["A small AzerothRoute button you can put anywhere on the screen. Click to hide or show AzerothRoute, right-click for a menu, drag to move it. It hides with the window in combat and in dungeons when those are set to Hide."],
-			search = "launcher, floating icon, floating button, show, hide, toggle, open polestar, quick" },
+			search = "launcher, floating icon, floating button, show, hide, toggle, open azerothroute, quick" },
 		{ kind = "toggle", key = "maps.minimapButton", label = L["Minimap button"],
 			help = L["A AzerothRoute button on the edge of the minimap. Click to hide or show AzerothRoute, right-click for a menu, drag to move it."],
 			search = "minimap icon, minimap button, hide button, launcher" },
 		{ kind = "toggle", label = L["Keep the arrow when hidden"],
 			help = L["Hiding AzerothRoute leaves the arrow, its travel button and its arrival sound. This character only."],
-			search = "hide polestar, hidden, arrow only, keep arrow, minimap button, hide all",
+			search = "hide azerothroute, hidden, arrow only, keep arrow, minimap button, hide all",
 			needs = function() return ns.SetHideKeepsArrow ~= nil end,
 			get = function() return ns.HideKeepsArrow() end, set = function(on) ns.SetHideKeepsArrow(on) end },
 	} },
@@ -449,7 +449,7 @@ local BUILTIN = {
 		H({ kind = "toggle", key = "nav.useTomTomArrow", label = L["Use TomTom's arrow"], help = L["Hides AzerothRoute's arrow in favour of TomTom's, except on the way to another continent, where TomTom's arrow cannot point."],
 			child = true, disabled = function() return not ns.Get("nav.tomtom") end }),
 		H({ kind = "toggle", key = "nav.arrowToFollower", label = L["Let a following addon show the way"], help = L["Hides AzerothRoute's arrow while another addon shows AzerothRoute's target itself, as Naowh Forever's Waypoint Pin does with Follow AzerothRoute on. That addon also sets the game's map pin then."],
-			search = "naowh, waypoint pin, navigator bar, hide arrow, follow polestar" }),
+			search = "naowh, waypoint pin, navigator bar, hide arrow, follow azerothroute" }),
 	} },
 	{ page = GUIDE, tab = L["Automation"], section = L["Quests"], controls = {
 		{ kind = "toggle", key = "behavior.closeSkipped", label = L["Close offers the guide skips"], help = L["After AzerothRoute accepts or turns in a quest, closes the quest window the NPC opens next when the guide skips its quests. Hold Shift to keep it open."],
@@ -489,7 +489,7 @@ local BUILTIN = {
 		-- Mount Hyjal is the one left there: the Riverglades and Shen'dralas are in the leveling route since 0.4.0.
 		{ kind = "toggle", key = "behavior.experimentalGuides", label = L["Show experimental guides"], new = "0.4.0",
 			help = L["AzerothRoute's guides for Forever's new zones, still being tested: listed in the guide menu under Leveling with an Experimental chip. They are never picked for you; a route choice offers their zone where it fits either way."],
-			search = "experimental, alpha, new zones, mount hyjal, polestar experimental" },
+			search = "experimental, alpha, new zones, mount hyjal, azerothroute experimental" },
 		-- `die` steps (Core/Engine.lua, Own.deathskips): the player's choice, never in Hardcore.
 		{ kind = "toggle", key = "behavior.deathskips", label = L["Use deathskips"], search = "death skip, die on purpose, corpse run, spirit healer",
 			help = L["Where dying on purpose and taking the Spirit Healer's resurrection gets you there sooner, the guide shows a step for it. It costs durability and, from level 11, resurrection sickness. Always off on Hardcore characters."],
@@ -622,7 +622,7 @@ add({ page = L["Integrations"], section = "Spoken", controls = {
 -- The Recorder's state from its SavedVariables (schema 2, docs/RECORDING.md):
 -- the chunks waiting for the uploader, their size, the last one it confirmed.
 local function recorderState()
-	local loaded = C_AddOns and C_AddOns.IsAddOnLoaded and C_AddOns.IsAddOnLoaded("Polestar_Recorder")
+	local loaded = C_AddOns and C_AddOns.IsAddOnLoaded and C_AddOns.IsAddOnLoaded("AzerothRoute_Recorder")
 	local db = AzerothRouteRecorderDB
 	if not loaded then return { installed = false } end
 	local out = { installed = true, enabled = false, chunks = 0, bytes = 0, acked = 0 }
@@ -690,7 +690,7 @@ local function buildRecorder(view)
 		if not st.installed then
 			for _, r in pairs(rows) do r:Hide() end
 			actions:Hide(); toggle:Hide(); status:Hide(); window:Hide()
-			note:SetText(L["The Polestar Recorder addon is not loaded. Enable it in the AddOns list on the character screen to record your play for guide authoring."])
+			note:SetText(L["The AzerothRoute Recorder addon is not loaded. Enable it in the AddOns list on the character screen to record your play for guide authoring."])
 			note:SetWidth(win.BodyWidth)
 			note:ClearAllPoints()
 			note:SetPoint("TOPLEFT", view, "TOPLEFT", SH.pad, -y - 6)
@@ -768,8 +768,9 @@ local function buildAbout(view)
 	local aiNote = W.Text(view, "note", "textDim")
 	aiNote:SetWordWrap(true)
 	aiNote:SetJustifyH("LEFT")
-	aiNote:SetText(L["This translation was made with AI. Help improve it on Discord."])
+	aiNote:SetText(L["This translation was made with AI."])
 	local aiLink = W.Link(view, (ns.DiscordURL:gsub("^%a+://", "")), function() UI.ShowDiscord() end)
+	for _, w in ipairs({ aiLink }) do w:Hide() w.Show = w.Hide w.SetShown = w.Hide end -- AzerothRoute: no Polestar channel
 	view.AINote, view.AILink = aiNote, aiLink
 	local function block(title, text)
 		local h = W.SectionHeader(view)
@@ -808,8 +809,7 @@ local function buildAbout(view)
 		.. hex .. "/ar guides|r   " .. L["choose a guide"] .. "\n"
 		.. hex .. "/ar next, prev, skip|r   " .. L["move through steps"] .. "\n"
 		.. hex .. "/ar install|r   " .. L["set AzerothRoute up again, a page at a time"] .. "\n"
-		.. hex .. "/ar report|r   " .. L["report a problem with a step on the Polestar Discord"] .. "\n"
-		.. hex .. "/ar arcade|r   " .. L["play Freedoom Arcade by petllama"] .. "\n"
+		.. hex .. "/ar report|r   " .. L["report a problem with a step"] .. "\n"
 		.. hex .. "/ar help|r   " .. L["every command"])
 	-- Install (UI/Welcome.lua) and what's new, first under the hero: the
 	-- setup a new character gets, again whenever the player wants it.
@@ -825,8 +825,7 @@ local function buildAbout(view)
 	local credH, credText = block(L["Credits"], L["Inter typeface by The Inter Project Authors, SIL Open Font License 1.1."] .. "\n"
 		.. L["Wordmark set in Cinzel by The Cinzel Project Authors, SIL Open Font License 1.1."] .. "\n"
 		.. L["Quest and map data includes pfQuest by shagu (MIT License)."] .. "\n"
-		.. L["Freedoom Arcade by petllama (GPL-2.0 or later) plays three levels of Freedoom by the Freedoom project (BSD License), from the AzerothRoute_Arcade folder."] .. "\n"
-		.. L["Discord and its logo are trademarks of Discord Inc.; the logo marks the link to the Polestar Discord."] .. "\n"
+		.. L["Based on Polestar by The Polestar authors"] .. " (GPL-3.0-only)." .. "\n"
 		.. L["With EllesmereUI installed, AzerothRoute can follow its accent, font and panel colour through its public skinning API."] .. "\n"
 		.. L["Gear scores from Forever Leveling BiS by Timearc when it is installed, through its public API."])
 	local maintH = W.SectionHeader(view)
@@ -912,7 +911,6 @@ add({ page = L["Community guides"], key = "guidepacks", icon = "layers", order =
 	custom = UI.Packs.Build, dot = UI.Packs.HasProblems }, true)
 add({ page = L["Guiding Stars"], key = "thanks", icon = "star", order = 80, subtitle = L["Celebrating the supporters, contributors and bug reporters behind AzerothRoute."],
 	custom = UI.Thanks.Build }, true)
-add({ page = REC, key = "recorder", icon = "record", order = 90, subtitle = L["The data recorder for guide authors."], custom = buildRecorder }, true)
 add({ page = ABOUT, key = "about", icon = "info", order = 100, subtitle = L["Why AzerothRoute exists, its commands and its credits."], custom = buildAbout }, true)
 add({ page = ABOUT, section = L["Install"], controls = { INSTALL } }, true)
 

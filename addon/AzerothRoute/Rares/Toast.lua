@@ -337,7 +337,7 @@ function fill(c, a)
 	end
 	c.Ring:SetShown(not founder)
 	W.Color(c.Ring, Rares.ColorName(a.kind))
-	c.Name:SetText(founder and L["The Polestar founder is nearby!"] or a.name or "")
+	c.Name:SetText(founder and L["The AzerothRoute founder is nearby!"] or a.name or "")
 	c.Facts:SetText(T.Facts(a))
 	local dist = T.Distance(a)
 	c.Distance:SetText(dist or "")

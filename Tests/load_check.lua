@@ -210,6 +210,53 @@ do
     print("identity: checked")
 end
 
+-- 8. No trace of Polestar in what the game shows: every Lua string naming it (comments skipped)
+-- must be the one legal notice, "Based on Polestar by The Polestar authors" (and its Spanish).
+do
+    local ALLOWED = { ['"Based on Polestar by The Polestar authors"'] = true, ['"Basado en Polestar, de los autores de Polestar"'] = true }
+    local stray = {}
+    local hh = io.popen('find ' .. ROOT .. ' -name "*.lua"')
+    for path in hh:lines() do
+        local src = read(path)
+        if src and src:find("Polestar", 1, true) then
+            local pos, n = 1, #src
+            while pos <= n do
+                local st = src:find("[\"'%-%[]", pos)
+                if not st then break end
+                local c, e, kind = src:sub(st, st), nil, nil
+                if c == "-" then
+                    if src:sub(st + 1, st + 1) == "-" then
+                        local eq = src:match("^%[(=*)%[", st + 2)
+                        if eq then local _, ce = src:find("%]" .. eq .. "%]", st + 2) e = ce or n
+                        else local nl = src:find("\n", st + 2, true) e = nl and nl - 1 or n end
+                        kind = "comment"
+                    end
+                elseif c == "[" then
+                    local eq = src:match("^%[(=*)%[", st)
+                    if eq then local _, ce = src:find("%]" .. eq .. "%]", st + 2) e = ce or n kind = "string" end
+                else
+                    local i = st + 1
+                    while i <= n do
+                        local ch = src:sub(i, i)
+                        if ch == "\\" then i = i + 2 elseif ch == c or ch == "\n" then break else i = i + 1 end
+                    end
+                    e, kind = math.min(i, n), "string"
+                end
+                if not kind then pos = st + 1 else
+                    if kind == "string" then
+                        local lit = src:sub(st, e)
+                        if lit:find("Polestar", 1, true) and not ALLOWED[lit] then stray[#stray + 1] = path .. ": " .. lit:sub(1, 80) end
+                    end
+                    pos = e + 1
+                end
+            end
+        end
+    end
+    hh:close()
+    for i = 1, math.min(#stray, 10) do fail("Polestar shown: " .. stray[i]) end
+    print(string.format("brand: %d stray Polestar strings", #stray))
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end

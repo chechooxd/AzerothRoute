@@ -11523,7 +11523,7 @@ do
 				},
 				{
 					title = "Into the {area:16591}",
-					note = "New in Forever: this guide follows what players did in the {area:16591}. If a step is wrong, tell us on Polestar's Discord or GitHub and name the step.\nFrom {area:340}, ride south-east across the {area:3} to the zone's southern edge: the pass of {area:16685} leads down into the {area:16591}. {area:16743}, the Horde's fort, stands in the middle of the zone, east along the valley.",
+					note = "New in Forever: this guide follows what players did in the {area:16591}. If a step is wrong, send a report with /ar report and name the step.\nFrom {area:340}, ride south-east across the {area:3} to the zone's southern edge: the pass of {area:16685} leads down into the {area:16591}. {area:16743}, the Horde's fort, stands in the middle of the zone, east along the valley.",
 					when = { { k = "taxi", name = "Kargath", node = 21 }, { k = "zone", neg = true, name = "Riverglades", area = 16591 } },
 					goals = {
 						{ t = "goto", text = "Into the {area:16591}", map = 1418, x = 55, y = 93 },
@@ -11532,7 +11532,7 @@ do
 				},
 				{
 					title = "Fly to {area:484}",
-					note = "New in Forever: this guide follows what players did in the {zone:2548}. If a step is wrong, tell us on Polestar's Discord or GitHub and name the step.\nThe {zone:2548} lie across the sea from {zone:1446}: a goblin boat sails from {area:977}, north-east of {area:976}, to {area:16727}. Fly to {area:484} in {zone:1441} and head south-east through the {area:439} to {area:976}. (If you already know {area:340} in the {area:3}, the way in through {area:16685} works too.)",
+					note = "New in Forever: this guide follows what players did in the {zone:2548}. If a step is wrong, send a report with /ar report and name the step.\nThe {zone:2548} lie across the sea from {zone:1446}: a goblin boat sails from {area:977}, north-east of {area:976}, to {area:16727}. Fly to {area:484} in {zone:1441} and head south-east through the {area:439} to {area:976}. (If you already know {area:340} in the {area:3}, the way in through {area:16685} works too.)",
 					when = { { k = "taxi", neg = true, name = "Kargath", node = 21 }, { k = "zone", neg = true, name = "Riverglades", area = 16591 } },
 					goals = {
 						{ t = "fly", location = "Freewind Post", node = 30, area = 484 },
@@ -11556,7 +11556,7 @@ do
 				},
 				{
 					title = "{area:16727}",
-					note = "New in Forever: if a step is wrong, tell us on Polestar's Discord or GitHub and name the step.\n{npc:255897} keeps a stall at the west end of the docks. The port's other jobs are for later in this guide: this crate goes to the Horde's fort.",
+					note = "New in Forever: if a step is wrong, send a report with /ar report and name the step.\n{npc:255897} keeps a stall at the west end of the docks. The port's other jobs are for later in this guide: this crate goes to the Horde's fort.",
 					when = { { k = "taxi", neg = true, name = "Kargath", node = 21 } },
 					goals = {
 						{ t = "accept", quest = 95062, title = "Frazzlespark's Crate", npc = 255897, npcName = "Friz Frazzlespark", minLevel = 36, qlvl = 36, map = 2548, x = 77, y = 52.83, note = "{quest:95062}: for {npc:256418} in {area:16743}" },

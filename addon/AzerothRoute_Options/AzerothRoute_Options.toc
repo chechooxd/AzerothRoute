@@ -19,7 +19,7 @@
 ## Notes-zhCN: AzerothRoute 的组成部分：设置窗口、外观页面及其预览。打开设置时加载。
 ## Title-zhTW: AzerothRoute 設定
 ## Notes-zhTW: AzerothRoute 的一部分：設定視窗、外觀頁面及其預覽。開啟設定時載入。
-## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## Author: AzerothRoute
 ## Version: 0.4.1.1
 ## Category: AzerothRoute
 ## Group: AzerothRoute

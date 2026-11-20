@@ -19,7 +19,7 @@
 ## Notes-zhCN: AzerothRoute 箭头使用的东部王国步行地图，来自 Leffe 的导航地图。在该大陆上按需加载。
 ## Title-zhTW: AzerothRoute 導航（東部王國）
 ## Notes-zhTW: AzerothRoute 箭頭使用的東部王國步行地圖，來自 Leffe 的導航地圖。在該大陸上按需載入。
-## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## Author: AzerothRoute
 ## Version: 0.4.1.1
 ## Category: AzerothRoute
 ## Group: AzerothRoute

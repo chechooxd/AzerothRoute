@@ -501,7 +501,7 @@ C.Register("meta", {
 		},
 		{
 			licence = "Facts only (coordinates), each entry with its source",
-			name = "Curated instance entrances (data/codex/entrances.json): QuestieDB Forever dungeon table, warcraft.wiki.gg, the web quest database (Forever pages), Polestar Recorder sessions",
+			name = "Curated instance entrances (data/codex/entrances.json): QuestieDB Forever dungeon table, warcraft.wiki.gg, the web quest database (Forever pages), AzerothRoute Recorder sessions",
 			version = "33 entrances",
 		},
 		{
@@ -521,17 +521,17 @@ C.Register("meta", {
 		},
 		{
 			licence = "AzerothRoute's own recordings: CC BY 4.0; facts only, no player data",
-			name = "Polestar Recorder sessions (data/codex/recorded.json): loot, merchant and quest reward windows, and dungeon entry levels",
+			name = "AzerothRoute Recorder sessions (data/codex/recorded.json): loot, merchant and quest reward windows, and dungeon entry levels",
 			version = "8618 sessions of 315 counted players; 3265 NPCs, 711 objects, 994 vendors, 1099 quests, 24 dungeons",
 		},
 		{
 			licence = "Facts only (quest ids, levels, positions); counts of players, no player data",
-			name = "Polestar Recorder sessions (data/recorded/quests.json): Forever-new quests' prerequisites and objective spots",
+			name = "AzerothRoute Recorder sessions (data/recorded/quests.json): Forever-new quests' prerequisites and objective spots",
 			version = "1990 quests",
 		},
 		{
 			licence = "Facts only (quest ids and instances), each row with its source",
-			name = "Curated Dungeons journal quests (data/codex/journal-quests.json): the web quest database (Forever pages), Polestar Recorder sessions",
+			name = "Curated Dungeons journal quests (data/codex/journal-quests.json): the web quest database (Forever pages), AzerothRoute Recorder sessions",
 			version = "46 quests",
 		},
 		{

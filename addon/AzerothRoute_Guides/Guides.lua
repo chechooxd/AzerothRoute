@@ -24,7 +24,7 @@ do
 			steps = {
 				{
 					title = "North into {area:405}",
-					note = "New in Forever: this guide follows what players did in {zone:2652}. If a step is wrong, tell us on Polestar's Discord or GitHub and name the step.\n{zone:2652} lies south of {area:405}, through the {area:2657}, and has no flight path of its own. From {area:1099} ride north-west on the road past {area:2577} and on north into {area:405}: the road comes out on {area:405}'s southern edge.",
+					note = "New in Forever: this guide follows what players did in {zone:2652}. If a step is wrong, send a report with /ar report and name the step.\n{zone:2652} lies south of {area:405}, through the {area:2657}, and has no flight path of its own. From {area:1099} ride north-west on the road past {area:2577} and on north into {area:405}: the road comes out on {area:405}'s southern edge.",
 					only = { factions = { "Horde" } },
 					when = { { k = "zone", name = "Feralas", area = 357 } },
 					goals = {
@@ -33,7 +33,7 @@ do
 				},
 				{
 					title = "Fly to {area:2408}",
-					note = "New in Forever: this guide follows what players did in {zone:2652}. If a step is wrong, tell us on Polestar's Discord or GitHub and name the step.\n{zone:2652} lies south of {area:405}, through the {area:2657}, and has no flight path of its own. Its quests are for levels 41-45. Coming from the Eastern Kingdoms, take the zeppelin to {zone:1454} first (from {object:3202} or the {zone:1458}).",
+					note = "New in Forever: this guide follows what players did in {zone:2652}. If a step is wrong, send a report with /ar report and name the step.\n{zone:2652} lies south of {area:405}, through the {area:2657}, and has no flight path of its own. Its quests are for levels 41-45. Coming from the Eastern Kingdoms, take the zeppelin to {zone:1454} first (from {object:3202} or the {zone:1458}).",
 					only = { factions = { "Horde" } },
 					when = { { k = "zone", neg = true, name = "Shen'dralas", area = 16651 }, { k = "zone", neg = true, name = "Desolace", area = 405 }, { k = "zone", neg = true, name = "Feralas", area = 357 } },
 					goals = {
@@ -43,7 +43,7 @@ do
 				},
 				{
 					title = "Fly to {area:608}",
-					note = "New in Forever: this guide follows what players did in {zone:2652}. If a step is wrong, tell us on Polestar's Discord or GitHub and name the step.\n{zone:2652} lies south of {area:405}, through the {area:2657}, and has no flight path of its own. Its quests are for levels 41-45. Coming from the Eastern Kingdoms, take the boat from {area:150} to Theramore first.",
+					note = "New in Forever: this guide follows what players did in {zone:2652}. If a step is wrong, send a report with /ar report and name the step.\n{zone:2652} lies south of {area:405}, through the {area:2657}, and has no flight path of its own. Its quests are for levels 41-45. Coming from the Eastern Kingdoms, take the boat from {area:150} to Theramore first.",
 					only = { factions = { "Alliance" } },
 					when = { { k = "zone", neg = true, name = "Shen'dralas", area = 16651 }, { k = "zone", neg = true, name = "Desolace", area = 405 } },
 					goals = {
@@ -70,7 +70,7 @@ do
 				},
 				{
 					title = "The {area:2657}: a {quest:93644}",
-					note = "New in Forever: if a step is wrong, tell us on Polestar's Discord or GitHub and name the step.\nThe Outcast Necromancers and the Magram Necromancers of the valley drop a {quest:93644} whose writer lives in {zone:2652}: players got it within a few kills. The Magram centaurs leave you be until you attack; the Magram Necrokhans among them (level 45) are elites: leave them be.\nThe Gelkis and Magram centaurs have {area:2657} quest chains of their own, worth about 20,000 to 30,000 more experience, but each chain asks for Honored with its clan. The two clans are rivals, so work for one of them: the Gelkis and Magram Centaur Reputation guide, under Reputation, shows how.",
+					note = "New in Forever: if a step is wrong, send a report with /ar report and name the step.\nThe Outcast Necromancers and the Magram Necromancers of the valley drop a {quest:93644} whose writer lives in {zone:2652}: players got it within a few kills. The Magram centaurs leave you be until you attack; the Magram Necrokhans among them (level 45) are elites: leave them be.\nThe Gelkis and Magram centaurs have {area:2657} quest chains of their own, worth about 20,000 to 30,000 more experience, but each chain asks for Honored with its clan. The two clans are rivals, so work for one of them: the Gelkis and Magram Centaur Reputation guide, under Reputation, shows how.",
 					goals = {
 						{ t = "collect", item = 260347, itemName = "Tattered Journal", map = 2652, x = 31.21, y = 5.08, spotsPacked = "33.8,8.2,,69,42;35.5,30.3,,63,42;23.7,24.6,63.4,52,24;46.5,42.2,,66,41;41.8,54.6,,40,6;37.4,65.2,,40,1,,40;31.1,70.9,,40,2,,40;62.3,74.9,,40,2;60.5,53.2,,40,4;60.3,37,,68,10;64.1,23.5,,43,4;49.7,26.4,,63,34;34.8,13.8,,53,32,1;34.1,19.5,,67,76,1;31.6,26.9,,64,148,1;35.7,25.9,,75,50,1;26.9,26.5,,50,56,1;41.5,30.5,,52,32,1;46.2,33.3,,63,47,1;49.3,33,,41,17,1;55.6,23.1,,67,39,1;58.8,27.5,,68,19,1;60.5,24,,73,28,1;51.4,47.8,,52,13,1;33.6,63.7,,40,2,1,40;58,49,,60,20,1;56.1,54.9,,79,35,1;59.8,57.2,,55,19,1;36,72.3,,44,3,1,40;58.7,67.3,,54,8,1;57.1,72.3,,50,13,1", spread = true, lvl = 43, from = "Outcast Necromancer", fromKind = "npc", fromAlso = "Magram Necromancer", fromId = 11559, fromAlsoId = 253272, fromNpcs = { { npc = 253272, npcName = "Magram Necromancer" }, { npc = 11559, npcName = "Outcast Necromancer" } } },
 						{ t = "accept", quest = 93644, title = "Tattered Journal", item = 260347, itemName = "Tattered Journal", qlvl = 45 },

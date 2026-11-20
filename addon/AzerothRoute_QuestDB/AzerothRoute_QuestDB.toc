@@ -19,7 +19,7 @@
 ## Notes-zhCN: AzerothRoute 任务标记和鼠标提示所用的任务、NPC、物体和物品数据。按需加载。
 ## Title-zhTW: AzerothRoute 任務資料庫
 ## Notes-zhTW: AzerothRoute 任務標記與滑鼠提示所用的任務、NPC、物件與物品資料。按需載入。
-## Author: AzerothRoute (modified from Polestar by The Polestar authors)
+## Author: AzerothRoute
 ## Version: 0.4.1.1
 ## Category: AzerothRoute
 ## Group: AzerothRoute

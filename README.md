@@ -32,6 +32,11 @@ minimap button settings carry over on the first login.
 - `tools/fork/patches.lua` lists AzerothRoute's changes: text replacements in Polestar's files and whole
   files of its own (`tools/fork/files/`). A patch that no longer applies fails the run, which is how a
   new Polestar release shows what needs a look.
+- Nothing in the game names Polestar except one legal line on the Options page ("Based on Polestar by
+  The Polestar authors (GPL-3.0-only)"): Polestar's community features (Discord, Recorder, founder alert,
+  thanks line, GitHub issues) are turned off, reports go to AzerothRoute's developer with `/ar report`, and
+  `Tests/load_check.lua` fails on any other string naming Polestar. Comments and the LICENSE, NOTICE and
+  CREDITS files keep Polestar's copyright, as the GPL requires.
 - `tools/fork/assets/` holds AzerothRoute's own art (emblem, logo, wordmark, watermark, header band),
   drawn by `luajit tools/fork/make_art.lua` and copied over Polestar's. AzerothRoute's look: deep
   Forever-blue grounds, Forever azure accent, gold for the route and names, jade for what is done

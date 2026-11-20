@@ -259,5 +259,6 @@ local function wordmark(name, text, gw, gh, gap, w)
     writeTGA(cv, name)
 end
 
-wordmark("wordmark", "AZEROTHROUTE", 14, 16, 5, 2.2)
-wordmark("wordmark-small", "AZEROTHROUTE", 13, 14, 4.5, 2)
+-- Ink widths match Polestar's (181 and 125 px): the menus size their columns to them.
+wordmark("wordmark", "AZEROTHROUTE", 11, 17, 4.1, 2.1)
+wordmark("wordmark-small", "AZEROTHROUTE", 7.4, 12, 3, 1.6)
