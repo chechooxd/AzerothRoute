@@ -206,3 +206,10 @@ shared SavedVariables and appear in the list like any other guide.
 `luajit tools/audit_guides.lua` checks every accept, turn-in and talk line of the built-in guides
 against the NPC positions in the database (for every race and class) and lists the ones more than 1%
 of the map away; `--fix` rewrites them to the NPC's position.
+
+## License
+
+AzerothRoute is free software under the GNU General Public License, version 3 only (LICENSE).
+It includes guides converted from Polestar (https://github.com/fitzforge/polestar, GPL-3.0-only,
+Copyright (c) 2026 The Polestar authors); THIRD_PARTY.md lists every third-party component and
+data source with its licence.

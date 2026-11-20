@@ -3,6 +3,7 @@
 ## Notes: Next-generation reactive leveling, talent, profession, gear, and gold guide engine.
 ## Author: AzerothRoute Team
 ## Version: 1.0.0
+## X-License: GPL-3.0-only
 ## DefaultState: enabled
 ## LoadOnDemand: 0
 ## SavedVariables: AzerothRouteSavedDB
