@@ -133,6 +133,7 @@ Run `luajit Tests/run_tests.lua` from the repository root (`` across 36 test sui
 - Rares tab: target or see a rare's nameplate: chat says "Rare nearby" once; the Rares tab lists it under Seen with when and how often; "Set waypoint" points the arrow.
 - Characters tab: log in two characters; each shows level, class, gold, zone, guide and step, rested XP; the total gold is in the header; "Forget this character" removes an alt.
 - Options tab: change the accent colour, guide-window opacity and size and see the guide window repaint; Reload UI applies the accent everywhere.
+- Import: in the Guide Center click "+ Import", paste a guide (first line `guide My Loop`, then `step` blocks), Import: it opens selected in the list; `/reload` keeps it; "Delete imported guide" removes it. Try text without steps to see the error.
 
 The mock suite cannot establish live-client protected-action compatibility,
 minimap positioning, talent texture availability, or leveling-route completeness.
@@ -173,3 +174,10 @@ database) and hand-written boat, zeppelin and tram docks with approximate positi
 times. Only flight paths the character knows are used. Times are estimates (run speed or your
 measured speed on foot, a fixed effective flight speed). The hearthstone is planned when it is in your bags: it lands where you last set it (recorded when the
 stone is bound, or a flight path of the same name), and its remaining cooldown counts as waiting.
+
+## Importing guides
+
+The Guide Center's "+ Import" takes text in the same guide language as `Guides/Autoload.lua`
+(header lines such as `type`, `startlevel`, `endlevel`, `description`, then `step` blocks). An optional
+first line `guide <Name>` names it; otherwise the name field is used. Imported guides are saved in the
+shared SavedVariables and appear in the list like any other guide.
