@@ -57,7 +57,7 @@ Branch: claude/addon-polestar-interface-71be44 → master · Delivery: commit pe
 - [x] T27 [S22] Guide Center Home: Continue + Suggested for you — inline · 168/168
 - [x] T28 [S22] Dungeon quest objectives and a pick-up route guide (DB/QuestObjectives.lua, Guides/DungeonRoute.lua) — inline · 169/169
 - [x] T29 [S22] Upgrade line in item tooltips (Modules/Gear/Tooltip.lua) + fix: Upgrades compared against nothing outside tests, now reads the equipped item (weaker of ring/trinket pairs) — inline · 170/170
-- [ ] T30 [S22] Colour schemes in Options — inline
+- [x] T30 [S22] Colour schemes in Options (Dusk, Midnight, Slate, Forest) — inline · 171/171
 - [ ] T31 [S22] Bag space notice and What's new card — inline
 
 ## Log

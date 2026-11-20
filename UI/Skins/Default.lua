@@ -92,6 +92,9 @@ function Skins:GetProp(key)
     if key == "accent" and profile and profile.accent and AR.OptionsPanel and AR.OptionsPanel.ACCENTS[profile.accent] then
         return AR.OptionsPanel.ACCENTS[profile.accent]
     end
+    -- Colour scheme chosen in Options (Dusk is the built-in navy).
+    local scheme = profile and profile.scheme and AR.OptionsPanel and AR.OptionsPanel.SCHEMES[profile.scheme]
+    if scheme and scheme[key] then return scheme[key] end
     local styleName = (profile and profile.style) or "default"
     local style = self.styles[styleName] or self.styles.default
     if style[key] ~= nil then return style[key] end

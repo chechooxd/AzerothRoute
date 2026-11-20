@@ -24,10 +24,32 @@ OptionsPanel.ACCENTS = {
     violet = { r = 0.72, g = 0.60, b = 0.98 },
 }
 
+-- Colour schemes: panel, raised panel, guide-window background and the lines between them.
+OptionsPanel.SCHEMES = {
+    dusk = {},
+    midnight = {
+        panel = { r = 0.035, g = 0.04, b = 0.06, a = 0.97 }, panelRaised = { r = 0.07, g = 0.075, b = 0.10, a = 0.98 },
+        bg = { r = 0.035, g = 0.04, b = 0.06, a = 0.96 }, divider = { r = 0.14, g = 0.15, b = 0.19, a = 1 },
+        border = { r = 0.16, g = 0.17, b = 0.22, a = 1 }, selected = { r = 0.12, g = 0.13, b = 0.17, a = 1 },
+    },
+    slate = {
+        panel = { r = 0.11, g = 0.12, b = 0.14, a = 0.96 }, panelRaised = { r = 0.15, g = 0.16, b = 0.19, a = 0.98 },
+        bg = { r = 0.11, g = 0.12, b = 0.14, a = 0.96 }, divider = { r = 0.24, g = 0.25, b = 0.29, a = 1 },
+        border = { r = 0.27, g = 0.28, b = 0.33, a = 1 }, selected = { r = 0.20, g = 0.21, b = 0.25, a = 1 },
+    },
+    forest = {
+        panel = { r = 0.055, g = 0.10, b = 0.08, a = 0.96 }, panelRaised = { r = 0.08, g = 0.14, b = 0.11, a = 0.98 },
+        bg = { r = 0.055, g = 0.10, b = 0.08, a = 0.96 }, divider = { r = 0.15, g = 0.24, b = 0.19, a = 1 },
+        border = { r = 0.17, g = 0.28, b = 0.22, a = 1 }, selected = { r = 0.12, g = 0.20, b = 0.16, a = 1 },
+    },
+}
+
 -- Setting definitions: profile key, group, kind ("bool" | "cycle"), values for cycles, default.
 OptionsPanel.SETTINGS = {
     { key = "accent", group = "appearance", kind = "cycle", values = { "gold", "sky", "emerald", "rose", "violet" }, default = "gold",
         label = "OPT_ACCENT", desc = "OPT_ACCENT_DESC", valueKey = "OPT_ACCENT_" },
+    { key = "scheme", group = "appearance", kind = "cycle", values = { "dusk", "midnight", "slate", "forest" }, default = "dusk",
+        label = "OPT_SCHEME", desc = "OPT_SCHEME_DESC", valueKey = "OPT_SCHEME_" },
     { key = "bgalpha", group = "appearance", kind = "cycle", values = { 0.96, 0.85, 0.7, 0.5 }, default = 0.96,
         label = "OPT_BGALPHA", desc = "OPT_BGALPHA_DESC", percent = true },
     { key = "viewerscale", group = "appearance", kind = "cycle", values = { 1.0, 1.1, 1.2, 0.9 }, default = 1.0,
