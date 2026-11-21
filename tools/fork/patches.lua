@@ -105,11 +105,12 @@ end]=],
         file = "AzerothRoute/Talents/View.lua", overwrite = true, replace = read("Talents/View.lua"),
         why = "AzerothRoute's Talents view",
     },
-    -- Identity: "the route" (2026-11-20). Deep sapphire grounds, pearl white text, ember orange
-    -- accent, a lighter ember for the route and names, jade for what is done; own art in tools/fork/assets.
+    -- Identity: "the route" (2026-11-21). WoW Forever's blue and gold: night blue #0A1A33 grounds,
+    -- gold #F2C14E accent, Forever blue #4DB4FF for quests and the route, warm white #F5EFE0 text,
+    -- jade for what is done; own art in tools/fork/assets.
     {
         file = "AzerothRoute/Theme/House.lua", find = "local DEFAULT_ACCENT = { 0.9, 0.73, 0.4 }",
-        replace = "local DEFAULT_ACCENT = { 1, 0.353, 0.071 } -- AzerothRoute: ember orange #FF5A12",
+        replace = "local DEFAULT_ACCENT = { 0.949, 0.757, 0.306 } -- AzerothRoute: Forever gold #F2C14E",
         why = "AzerothRoute's accent",
     },
     {
@@ -119,8 +120,8 @@ end]=],
     },
     {
         file = "AzerothRoute/Theme/House.lua", find = "\tquest = { 1, 0.84, 0.45, 1 },",
-        replace = "\tquest = { 1, 0.62, 0.42, 1 }, -- AzerothRoute: ember glow",
-        why = "AzerothRoute's ember glow for quests and the route",
+        replace = "\tquest = { 0.302, 0.706, 1, 1 }, -- AzerothRoute: Forever blue #4DB4FF",
+        why = "AzerothRoute's Forever blue for quests and the route",
     },
     {
         file = "AzerothRoute/Theme/House.lua",
@@ -141,23 +142,23 @@ end]=],
 		onAccent = { 0.04, 0.05, 0.08, 1 },
 		shadow = { 0, 0, 0.02, 0.6 },
 	},]],
-        replace = [[	-- AzerothRoute: the default scheme, "Azeroth": sapphire #13285A grounds, pearl white #ECE6DC text.
+        replace = [[	-- AzerothRoute: the default scheme, "Azeroth": WoW Forever's night blue #0A1A33 grounds, warm white #F5EFE0 text.
 	dusk = {
-		bg = { 0.075, 0.157, 0.353, 0.97 },
-		panel = { 0.09, 0.184, 0.4, 0.98 },
-		panelAlt = { 0.11, 0.22, 0.46, 1 },
-		sidebar = { 0.055, 0.118, 0.275, 1 },
-		footer = { 0.063, 0.133, 0.302, 1 },
-		sky = { 0.133, 0.263, 0.537, 1 },
-		text = { 0.925, 0.902, 0.863, 1 },
-		textDim = { 0.812, 0.792, 0.757, 1 },
-		textMuted = { 0.635, 0.651, 0.71, 1 },
-		ink = { 0.925, 0.902, 0.863, 1 },
-		star = { 0.925, 0.902, 0.863, 1 },
-		shade = { 0, 0.008, 0.03, 1 },
-		scrim = { 0.03, 0.063, 0.141, 1 },
-		onAccent = { 0.055, 0.118, 0.275, 1 },
-		shadow = { 0, 0.008, 0.03, 0.6 },
+		bg = { 0.039, 0.102, 0.2, 0.97 },
+		panel = { 0.059, 0.141, 0.278, 0.98 },
+		panelAlt = { 0.086, 0.2, 0.384, 1 },
+		sidebar = { 0.031, 0.078, 0.165, 1 },
+		footer = { 0.035, 0.09, 0.188, 1 },
+		sky = { 0.102, 0.231, 0.439, 1 },
+		text = { 0.961, 0.937, 0.878, 1 },
+		textDim = { 0.824, 0.784, 0.69, 1 },
+		textMuted = { 0.561, 0.651, 0.776, 1 },
+		ink = { 0.961, 0.937, 0.878, 1 },
+		star = { 0.949, 0.757, 0.306, 1 },
+		shade = { 0, 0.01, 0.03, 1 },
+		scrim = { 0.01, 0.04, 0.09, 1 },
+		onAccent = { 0.039, 0.102, 0.2, 1 },
+		shadow = { 0, 0.01, 0.03, 0.6 },
 	},]],
         why = "AzerothRoute's default colour scheme",
     },
@@ -479,6 +480,14 @@ end]=],
 local NOTES = {
 	{
 		version = "@VERSION@",
+		notes = {
+			{ glyph = "palette", color = "accent", head = L["WoW Forever's blue and gold"], text = function()
+				return L["The Azeroth colours now match WoW Forever: night blue grounds, gold, and Forever blue for quests and the route."]
+			end },
+		},
+	},
+	{
+		version = "0.5.0",
 		notes = {
 			{ glyph = "hourglass", color = "accent", head = L["Leveling pace"], text = function()
 				return L["A new page in the menu: your XP per hour, the time to your next level and to 60 at your pace, and every level you played as a bar."]

@@ -7,9 +7,11 @@
 
 local OUT = "tools/fork/assets/AzerothRoute/Media/UI/"
 
-local EMBER = { 1, 0.353, 0.071 } -- #FF5A12
-local PEARL = { 0.925, 0.902, 0.863 } -- #ECE6DC
-local SAPPHIRE = { 0.075, 0.157, 0.353 } -- #13285A
+-- WoW Forever's blue and gold.
+local GOLD = { 0.949, 0.757, 0.306 } -- #F2C14E
+local BLUE = { 0.302, 0.706, 1 } -- #4DB4FF
+local WARM = { 0.961, 0.937, 0.878 } -- #F5EFE0
+local NIGHT = { 0.039, 0.102, 0.2 } -- #0A1A33
 local WHITE = { 1, 1, 1 }
 
 local sqrt, max, min, abs, floor = math.sqrt, math.max, math.min, math.abs, math.floor
@@ -170,12 +172,13 @@ end
 
 -- Textures -------------------------------------------------------------------------------------
 
--- logo: in colour on a sapphire disc (minimap button, launcher, update card).
+-- logo: in colour on a night blue disc with a gold rim (minimap button, launcher, update card).
 do
     local cv = canvas(64, 64)
     local s = 64 / 120
-    shape(cv, s, disc(60, 60, 58), SAPPHIRE)
-    mark(cv, 64, { ring = PEARL, route = EMBER, dot = PEARL, pin = EMBER }, 0.92)
+    shape(cv, s, disc(60, 60, 58), NIGHT)
+    shape(cv, s, ring(60, 60, 57, 2), GOLD)
+    mark(cv, 64, { ring = GOLD, route = BLUE, dot = WARM, pin = GOLD }, 0.92)
     writeTGA(cv, "logo")
 end
 

@@ -12,7 +12,7 @@ local House = {}
 ns.House = House
 
 -- Polestar gold: the accent of every scheme.
-local DEFAULT_ACCENT = { 1, 0.353, 0.071 } -- AzerothRoute: ember orange #FF5A12
+local DEFAULT_ACCENT = { 0.949, 0.757, 0.306 } -- AzerothRoute: Forever gold #F2C14E
 
 -- Status and subject colours: one set for every scheme (all schemes are
 -- night grounds), so a quest is the same gold everywhere.
@@ -20,7 +20,7 @@ local SHARED = {
 	success = { 0.361, 0.769, 0.604, 1 }, -- AzerothRoute: jade
 	warning = { 0.98, 0.75, 0.3, 1 },
 	danger = { 0.96, 0.45, 0.45, 1 },
-	quest = { 1, 0.62, 0.42, 1 }, -- AzerothRoute: ember glow
+	quest = { 0.302, 0.706, 1, 1 }, -- AzerothRoute: Forever blue #4DB4FF
 	npc = { 0.58, 0.79, 1, 1 },
 	item = { 0.78, 0.68, 1, 1 },
 	place = { 0.96, 0.68, 0.52, 1 },
@@ -49,23 +49,23 @@ House.EXPERIMENTAL = { 0.78, 0.49, 1, 1 }
 -- (text and glyphs on an accent fill) and shadow (window drop shadow).
 local SCHEMES = {
 	-- The default: Night lifted to dusk, still navy, clearly lighter.
-	-- AzerothRoute: the default scheme, "Azeroth": sapphire #13285A grounds, pearl white #ECE6DC text.
+	-- AzerothRoute: the default scheme, "Azeroth": WoW Forever's night blue #0A1A33 grounds, warm white #F5EFE0 text.
 	dusk = {
-		bg = { 0.075, 0.157, 0.353, 0.97 },
-		panel = { 0.09, 0.184, 0.4, 0.98 },
-		panelAlt = { 0.11, 0.22, 0.46, 1 },
-		sidebar = { 0.055, 0.118, 0.275, 1 },
-		footer = { 0.063, 0.133, 0.302, 1 },
-		sky = { 0.133, 0.263, 0.537, 1 },
-		text = { 0.925, 0.902, 0.863, 1 },
-		textDim = { 0.812, 0.792, 0.757, 1 },
-		textMuted = { 0.635, 0.651, 0.71, 1 },
-		ink = { 0.925, 0.902, 0.863, 1 },
-		star = { 0.925, 0.902, 0.863, 1 },
-		shade = { 0, 0.008, 0.03, 1 },
-		scrim = { 0.03, 0.063, 0.141, 1 },
-		onAccent = { 0.055, 0.118, 0.275, 1 },
-		shadow = { 0, 0.008, 0.03, 0.6 },
+		bg = { 0.039, 0.102, 0.2, 0.97 },
+		panel = { 0.059, 0.141, 0.278, 0.98 },
+		panelAlt = { 0.086, 0.2, 0.384, 1 },
+		sidebar = { 0.031, 0.078, 0.165, 1 },
+		footer = { 0.035, 0.09, 0.188, 1 },
+		sky = { 0.102, 0.231, 0.439, 1 },
+		text = { 0.961, 0.937, 0.878, 1 },
+		textDim = { 0.824, 0.784, 0.69, 1 },
+		textMuted = { 0.561, 0.651, 0.776, 1 },
+		ink = { 0.961, 0.937, 0.878, 1 },
+		star = { 0.949, 0.757, 0.306, 1 },
+		shade = { 0, 0.01, 0.03, 1 },
+		scrim = { 0.01, 0.04, 0.09, 1 },
+		onAccent = { 0.039, 0.102, 0.2, 1 },
+		shadow = { 0, 0.01, 0.03, 0.6 },
 	},
 	-- The original deep night navy-black, unchanged.
 	night = {

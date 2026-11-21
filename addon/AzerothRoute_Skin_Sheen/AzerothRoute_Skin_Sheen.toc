@@ -22,7 +22,7 @@
 ## Author: AzerothRoute
 ## X-License: GPL-3.0-only
 ## X-Website: https://github.com/chechooxd/AzerothRoute
-## Version: 0.5.0
+## Version: 0.5.1
 ## Category: AzerothRoute
 ## Group: AzerothRoute
 ## Dependencies: AzerothRoute

@@ -20,7 +20,7 @@
 ## Title-zhTW: AzerothRoute - 西班牙語（拉丁美洲）
 ## Notes-zhTW: AzerothRoute 的指南文字與遊戲名稱（任務、NPC、物件、物品、副本等）。語言：西班牙語（拉丁美洲）。僅在該語言的用戶端中按需載入。
 ## Author: AzerothRoute
-## Version: 0.5.0
+## Version: 0.5.1
 ## Category: AzerothRoute
 ## Group: AzerothRoute
 ## LoadOnDemand: 1

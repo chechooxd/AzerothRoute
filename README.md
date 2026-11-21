@@ -43,9 +43,9 @@ minimap button settings carry over on the first login.
   `Tests/load_check.lua` fails on any other string naming Polestar. Comments and the LICENSE, NOTICE and
   CREDITS files keep Polestar's copyright, as the GPL requires.
 - `tools/fork/assets/` holds AzerothRoute's own art (emblem, logo, wordmark, watermark, header band),
-  drawn by `luajit tools/fork/make_art.lua` and copied over Polestar's. AzerothRoute's look: sapphire
-  #13285A grounds, pearl white #ECE6DC text, ember orange #FF5A12 accent, a lighter ember for the route
-  and names, jade for what is done (the "Azeroth" scheme, the default).
+  drawn by `luajit tools/fork/make_art.lua` and copied over Polestar's. AzerothRoute's look is WoW
+  Forever's blue and gold: night blue #0A1A33 grounds, gold #F2C14E accent, Forever blue #4DB4FF for
+  quests and the route, warm white #F5EFE0 text, jade for what is done (the "Azeroth" scheme, the default).
 - Talent plans come from Icy Veins' WoW Forever leveling guides. `tools/fork/icyveins/leveling.txt`
   holds each spec's point for every level from 10 to 60 and `tools/fork/icyveins/trees.txt` each
   class's current tree, both read from the guides' level slider and calculator.

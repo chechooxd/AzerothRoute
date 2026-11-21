@@ -256,11 +256,14 @@ end
 do
     local Th = ns.Theme
     local r, g, b = Th.Accent()
-    -- #FF5A12 ember, #13285A sapphire, #ECE6DC pearl.
-    if not (r and math.abs(r - 1) < 1e-3 and math.abs(g - 0.353) < 1e-3 and math.abs(b - 0.071) < 1e-3) then fail("accent is not ember orange #FF5A12: " .. tostring(r) .. "," .. tostring(g) .. "," .. tostring(b)) end
+    -- WoW Forever's blue and gold: gold #F2C14E accent, night blue #0A1A33 grounds, warm white
+    -- #F5EFE0 text, Forever blue #4DB4FF for quests and the route.
+    if not (r and math.abs(r - 0.949) < 1e-3 and math.abs(g - 0.757) < 1e-3 and math.abs(b - 0.306) < 1e-3) then fail("accent is not Forever gold #F2C14E: " .. tostring(r) .. "," .. tostring(g) .. "," .. tostring(b)) end
     local dusk = Th.SCHEMES and Th.SCHEMES.dusk
-    if not (dusk and math.abs(dusk.bg[1] - 0.075) < 1e-6 and math.abs(dusk.bg[2] - 0.157) < 1e-6 and math.abs(dusk.bg[3] - 0.353) < 1e-6) then fail("default scheme ground is not sapphire #13285A") end
-    if not (dusk and math.abs(dusk.text[1] - 0.925) < 1e-6 and math.abs(dusk.text[2] - 0.902) < 1e-6 and math.abs(dusk.text[3] - 0.863) < 1e-6) then fail("default scheme text is not pearl white #ECE6DC") end
+    if not (dusk and math.abs(dusk.bg[1] - 0.039) < 1e-6 and math.abs(dusk.bg[2] - 0.102) < 1e-6 and math.abs(dusk.bg[3] - 0.2) < 1e-6) then fail("default scheme ground is not Forever night blue #0A1A33") end
+    if not (dusk and math.abs(dusk.text[1] - 0.961) < 1e-6 and math.abs(dusk.text[2] - 0.937) < 1e-6 and math.abs(dusk.text[3] - 0.878) < 1e-6) then fail("default scheme text is not warm white #F5EFE0") end
+    local houseSrc = read(ROOT .. "/AzerothRoute/Theme/House.lua") or ""
+    if not houseSrc:find("quest = { 0.302, 0.706, 1, 1 }", 1, true) then fail("quests and the route are not Forever blue #4DB4FF") end
     for _, name in ipairs({ "emblem", "logo", "wordmark", "wordmark-small", "watermark", "band-stars", "emblem-hot" }) do
         local mine = read("tools/fork/assets/AzerothRoute/Media/UI/" .. name .. ".tga")
         local shipped = read(ROOT .. "/AzerothRoute/Media/UI/" .. name .. ".tga")

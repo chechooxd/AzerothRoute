@@ -20,7 +20,7 @@
 ## Title-zhTW: AzerothRoute 指南（聯盟）
 ## Notes-zhTW: AzerothRoute 的聯盟角色指南。按需載入。
 ## Author: AzerothRoute
-## Version: 0.5.0
+## Version: 0.5.1
 ## Category: AzerothRoute
 ## Group: AzerothRoute
 ## LoadOnDemand: 1

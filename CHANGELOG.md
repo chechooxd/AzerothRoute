@@ -10,6 +10,12 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 - MINOR (0.x.0): new features or guides.
 - MAJOR: reserved for 1.0.0, the first stable release.
 
+## [0.5.1] - 2026-11-21
+
+### Changed
+- The Azeroth colours are WoW Forever's blue and gold: night blue #0A1A33 grounds, gold #F2C14E
+  accent, Forever blue #4DB4FF for quests and the route, warm white #F5EFE0 text; the logo too.
+
 ## [0.5.0] - 2026-11-21
 
 ### Added

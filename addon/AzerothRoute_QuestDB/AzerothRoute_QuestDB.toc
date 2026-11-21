@@ -20,7 +20,7 @@
 ## Title-zhTW: AzerothRoute 任務資料庫
 ## Notes-zhTW: AzerothRoute 任務標記與滑鼠提示所用的任務、NPC、物件與物品資料。按需載入。
 ## Author: AzerothRoute
-## Version: 0.5.0
+## Version: 0.5.1
 ## Category: AzerothRoute
 ## Group: AzerothRoute
 ## LoadOnDemand: 1

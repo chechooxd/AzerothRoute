@@ -1,5 +1,5 @@
 -- AzerothRoute: the words of AzerothRoute's own identity ("the route") in the client's language.
--- The theme (Theme/House.lua, patched: deep sapphire grounds, pearl white text, ember orange accent) and the art
+-- The theme (Theme/House.lua, patched: WoW Forever night blue grounds, gold accent, Forever blue route) and the art
 -- (Media/UI: emblem, logo, wordmark, watermark, band) come from tools/fork. Original AzerothRoute
 -- code (GPL-3.0-only).
 
@@ -27,6 +27,9 @@ local ES = {
 		"Es joven: puede haber algún paso o punto equivocado. Envía un informe con /ar report y se corrige.",
 	["A new page in the menu: your XP per hour, the time to your next level and to 60 at your pace, and every level you played as a bar."] =
 		"Una página nueva en el menú: tu XP por hora, el tiempo para tu siguiente nivel y para el 60 a tu ritmo, y cada nivel que jugaste como una barra.",
+	["WoW Forever's blue and gold"] = "El azul y dorado de WoW Forever",
+	["The Azeroth colours now match WoW Forever: night blue grounds, gold, and Forever blue for quests and the route."] =
+		"Los colores Azeroth ahora son los de WoW Forever: fondos azul noche, dorado y el azul de Forever para misiones y la ruta.",
 	["Talent points, one click"] = "Puntos de talento, en un clic",
 	["After a level-up a card names your plan's next talent: Apply talents spends the point without opening anything."] =
 		"Al subir de nivel, una tarjeta muestra el siguiente talento de tu plan: Aplicar talentos gasta el punto sin abrir nada.",
