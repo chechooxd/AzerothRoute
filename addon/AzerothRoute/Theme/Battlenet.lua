@@ -92,11 +92,170 @@ if GetLocale and (GetLocale() == "esMX" or GetLocale() == "esES") then
 	L["Continue guide"] = "Continuar guía"
 end
 
+---------------------------------------------------------------------------
+-- The top bar (a hub's rail across the top) and the short header
+---------------------------------------------------------------------------
+
+B.TOP = 52      -- the top bar's height
+B.HEADER = 80   -- the header under it (the house's is 112)
+local TAB_GAP, TAB_PAD, ICON = 4, 12, 16
+
+local metric = Theme.Metric
+function Theme.Metric(key, house)
+	local v = metric(key, house)
+	if key == "shellHeader" and v == house then return B.HEADER end
+	return v
+end
+
+-- The header's title and subtitle, placed for the short header.
+local function placeTitle(f)
+	local SH = W.SHELL
+	if not rawget(f, "Title") then return end
+	f.Title:SetPoint("TOPLEFT", f.Header, "TOPLEFT", SH.pad, -18)
+	f.Subtitle:SetPoint("TOPLEFT", f.Title, "BOTTOMLEFT", 0, -4)
+end
+
+-- The rail becomes a bar across the window's top: the emblem and the name at its left, the sections
+-- as tabs (W.ShellRail), the foot items and the search at its right. The window loses the rail's
+-- width and gains the bar's height, so every pane keeps its size; the side column starts at the top.
+local function topBar(f)
+	local SH = W.SHELL
+	local RAIL, TOP = f.psRail or 0, B.TOP
+	local bar = f.Rail
+	f.psTopBar = TOP
+	f:SetWidth(f:GetWidth() - RAIL)
+	f:SetHeight(f:GetHeight() + TOP)
+	f.psRail = 0
+	-- The bar: its own ground, no hairlines of the rail.
+	if bar.GetRegions then
+		for _, r in ipairs({ bar:GetRegions() }) do if r ~= (bar.psSkin and bar.psSkin.bg) then r:Hide() end end
+	end
+	bar:ClearAllPoints()
+	bar:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -1)
+	bar:SetPoint("TOPRIGHT", f, "TOPRIGHT", -1, -1)
+	bar:SetHeight(TOP)
+	-- The side column under it, its list from the top (no brand, no search in it).
+	f.Sidebar:ClearAllPoints()
+	f.Sidebar:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -1 - TOP)
+	f.Sidebar:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 1, 1)
+	f.psNavTop = 12
+	f.NavScroll:ClearAllPoints()
+	f.NavScroll:SetPoint("TOPLEFT", f.Sidebar, "TOPLEFT", 0, -f.psNavTop)
+	f.NavScroll:SetPoint("BOTTOMRIGHT", f.Sidebar, "BOTTOMRIGHT", -1, SH.footer)
+	-- The emblem and the name in the bar.
+	f.Emblem:ClearAllPoints()
+	f.Emblem:SetSize(32, 32)
+	f.Emblem:SetPoint("LEFT", bar, "LEFT", 10, 0)
+	if f.Emblem.Glow then f.Emblem.Glow:SetAlpha(0) end
+	f.Wordmark:SetParent(bar)
+	f.Wordmark:ClearAllPoints()
+	f.Wordmark:SetPoint("LEFT", f.Emblem, "RIGHT", 4, -1)
+	if rawget(f, "Tagline") then f.Tagline:SetAlpha(0) end
+	-- The search at the bar's right.
+	if rawget(f, "Search") then
+		f.Search:SetParent(bar)
+		f.Search:ClearAllPoints()
+		f.Search:SetPoint("RIGHT", bar, "RIGHT", -12, 0)
+		f.Search:SetWidth(220)
+	end
+	if W.LayoutRim then W.LayoutRim(f) end
+	if W.ShellLayout then W.ShellLayout(f) end
+end
+B.TopBar = topBar
+
+local function tab(f, i)
+	local b = f.railButtons[i]
+	if b and b.psTop then return b end
+	b = CreateFrame("Button", nil, f.Rail)
+	b.psTop = true
+	b:SetHeight(B.TOP - 12)
+	b.Icon = b:CreateTexture(nil, "ARTWORK")
+	b.Icon:SetSize(ICON, ICON)
+	b.Label = W.Text(b, "label", "textDim")
+	b.Under = b:CreateTexture(nil, "OVERLAY")
+	b.Under:SetTexture(Theme.Media("white"))
+	b.Under:SetHeight(2)
+	b.Under:SetPoint("BOTTOMLEFT", b, "BOTTOMLEFT", 6, 0)
+	b.Under:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -6, 0)
+	b.Under:SetVertexColor(B.PRIMARY[1], B.PRIMARY[2], B.PRIMARY[3], 1)
+	local hl = b:CreateTexture(nil, "HIGHLIGHT")
+	slice(hl, FILL, MARGIN)
+	hl:SetAllPoints(b)
+	hl:SetVertexColor(Theme.Wash("hover"))
+	b:SetScript("OnClick", function(self) if self.psOnClick then self.psOnClick(self.psKey) end end)
+	f.railButtons[i] = b
+	return b
+end
+
+-- The sections as tabs from the name's right; the foot items as icons left of the search. Labels show
+-- while every tab fits, else icons alone (each with its tip). -> the number of sections shown.
+local function topRail(f, items, bottom, active, onSelect)
+	local bar = f.Rail
+	local i = 0
+	local function setup(item, labelled)
+		i = i + 1
+		local b = tab(f, i)
+		b.psKey, b.psOnClick = item.key, item.onClick or onSelect
+		b.psTip = item.tip or item.label
+		b.Icon:SetTexture(Theme.Media(item.icon or "compact"))
+		b.Label:SetText(labelled and item.label or "")
+		b.Label:SetShown(labelled)
+		b.Icon:ClearAllPoints()
+		b.Label:ClearAllPoints()
+		local on = item.key == active
+		W.Color(b.Icon, on and "text" or "textDim")
+		W.Color(b.Label, on and "text" or "textDim")
+		b.Under:SetShown(on)
+		local w
+		if labelled then
+			b.Icon:SetPoint("LEFT", b, "LEFT", TAB_PAD, 0)
+			b.Label:SetPoint("LEFT", b.Icon, "RIGHT", 6, 0)
+			w = TAB_PAD * 2 + ICON + 6 + math.ceil(b.Label:GetStringWidth() or 0)
+		else
+			b.Icon:SetPoint("CENTER", b, "CENTER", 0, 0)
+			w = ICON + TAB_PAD * 2
+		end
+		b:SetWidth(w)
+		b:ClearAllPoints()
+		b:Show()
+		return b, w
+	end
+	-- The room between the name and the search with the foot icons.
+	local left = 10 + 32 + 4 + 200
+	local footW = #(bottom or {}) * (ICON + TAB_PAD * 2 + TAB_GAP)
+	local room = (f:GetWidth() - 2) - left - footW - 220 - 24
+	local need = 0
+	for _, item in ipairs(items) do
+		local probe = f.psTabProbe or W.Text(bar, "label", "textDim")
+		f.psTabProbe = probe
+		probe:SetText(item.label or "")
+		probe:Hide()
+		need = need + TAB_PAD * 2 + ICON + 6 + math.ceil(probe:GetStringWidth() or 0) + TAB_GAP
+	end
+	local labelled = need <= room
+	local x = left
+	for _, item in ipairs(items) do
+		local b, w = setup(item, labelled)
+		b:SetPoint("LEFT", bar, "LEFT", x, 0)
+		x = x + w + TAB_GAP
+	end
+	local rx = 12 + 220 + 8
+	for k = #(bottom or {}), 1, -1 do
+		local b, w = setup(bottom[k], false)
+		b:SetPoint("RIGHT", bar, "RIGHT", -rx, 0)
+		rx = rx + w + TAB_GAP
+	end
+	for k = i + 1, #f.railButtons do f.railButtons[k]:Hide() end
+	return #items
+end
+
 local shell = W.Shell
 function W.Shell(name, opts)
 	local f = shell(name, opts)
 	flatten(f)
 	f:HookScript("OnShow", flatten)
+	placeTitle(f)
+	if opts and opts.rail and rawget(f, "Rail") then topBar(f) end
 	if opts and opts.rail and rawget(f, "Sidebar") then
 		local SH = W.SHELL
 		local c = W.Button(f.Sidebar, L["Continue guide"], function() B.Continue(f) end, { primary = true, height = 36, icon = "guides" })
@@ -165,6 +324,7 @@ end
 
 local rail = W.ShellRail
 function W.ShellRail(f, ...)
+	if rawget(f, "psTopBar") then return topRail(f, ...) end
 	local n = rail(f, ...)
 	for _, b in ipairs(f.railButtons or {}) do
 		block(b)

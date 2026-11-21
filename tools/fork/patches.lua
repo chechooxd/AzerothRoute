@@ -61,6 +61,13 @@ return {
         why = "the Battle.net look over the house style",
     },
     {
+        -- The body's view height leaves out the Battle.net look's top bar (Theme/Battlenet.lua).
+        file = "AzerothRoute/Theme/Widgets.lua",
+        find = "\tf.psViewH = f:GetHeight() - SHELL.header - (tabs and SHELL.tabs or 0) - (foot and SHELL.footer or 0) - ph\n",
+        replace = "\tf.psViewH = f:GetHeight() - (rawget(f, \"psTopBar\") or 0) - SHELL.header - (tabs and SHELL.tabs or 0) - (foot and SHELL.footer or 0) - ph\n",
+        why = "the body's height under a top bar",
+    },
+    {
         file = "AzerothRoute/Theme/Theme.xml",
         find = '\t<Script file="Widgets.lua"/>\n',
         replace = '\t<Script file="Widgets.lua"/>\n\t<Script file="Battlenet.lua"/>\n',

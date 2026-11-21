@@ -871,11 +871,7 @@ do
         local nb = hub.navButtons[1]
         if not (nb and isRound(nb.Selected)) then fail("side list selection is not a rounded block") end
         if nb and nb.Bar:GetAlpha() ~= 0 then fail("side list keeps the accent bar") end
-        -- A foot item (Options): the mock's windows are too short for top items to fit.
-        W.ShellRail(hub, {}, { { key = "g", label = "Guides", icon = "guides" } }, "g", function() end)
-        local rb = hub.railButtons[1]
-        if not (rb and isRound(rb.Selected)) then fail("rail selection is not a rounded block") end
-        if rb and rb.Bar:GetAlpha() ~= 0 then fail("rail keeps the accent bar") end
+        -- The hub's rail is a top bar of tabs now (section 22).
         local c = rawget(hub, "Continue")
         if not (c and c.psPrimary) then fail("no Continue guide button on the hub") else
             local shown = 0
@@ -912,6 +908,34 @@ do
             if src:find('or "danger"\n', 1, true) or src:find('"textDim" or "danger"))', 1, true) then fail("the target list still paints mobs red") end
         end
         print("battle.net hub: checked")
+    end
+end
+
+-- 22. The hub's top bar: the rail becomes a bar across the top with the logo, the sections as tabs and
+-- the search; the side column starts at the top with the list; the header is short.
+do
+    local Theme, W = ns.Theme, ns.Widgets
+    local B = Theme and Theme.Battlenet
+    if not (B and B.TOP) then fail("no top bar") else
+        local hub = W.Shell("AzerothRouteBnetTop", { rail = true, title = "Hub" })
+        if hub.psTopBar ~= B.TOP then fail("the hub has no top bar") end
+        if hub.psNavTop ~= 12 then fail("the side list does not start at the top: " .. tostring(hub.psNavTop)) end
+        if hub.Search:GetParent() ~= hub.Rail then fail("the search is not in the top bar") end
+        if hub.Wordmark:GetParent() ~= hub.Rail then fail("the name is not in the top bar") end
+        if Theme.Metric("shellHeader", 112) ~= B.HEADER or W.SHELL.header ~= B.HEADER then fail("the header is still tall") end
+        local picked
+        local items = { { key = "Guides", label = "Guides", icon = "guides" }, { key = "Talents", label = "Talents", icon = "icon-learn" } }
+        local foot = { { key = "Options", label = "Options", icon = "sliders" } }
+        local n = W.ShellRail(hub, items, foot, "Talents", function(k) picked = k end)
+        if n ~= 2 then fail("top bar shows " .. tostring(n) .. " of 2 sections") end
+        if #hub.railButtons < 3 then fail("top bar buttons missing") else
+            for _, b in ipairs(hub.railButtons) do if b:GetParent() ~= hub.Rail then fail("a section button is not in the top bar") break end end
+            hub.railButtons[1]:Click()
+            if picked ~= "Guides" then fail("a top bar tab does not open its section") end
+            if not hub.railButtons[2].Under:IsShown() or hub.railButtons[1].Under:IsShown() then fail("the active tab is not marked") end
+        end
+        local plain = W.Shell("AzerothRouteBnetTopPlain", { title = "Options" })
+        if rawget(plain, "psTopBar") then fail("a window without the rail got the top bar") end
     end
 end
 

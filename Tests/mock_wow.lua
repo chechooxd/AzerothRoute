@@ -48,6 +48,7 @@ end
 
 function Frame:GetName() return self._name end
 function Frame:GetParent() return self._parent end
+function Frame:SetParent(p) self._parent = p end
 function Frame:GetObjectType() return self._kind end
 function Frame:IsObjectType(t) return self._kind == t end
 function Frame:SetScript(k, fn) self._scripts[k] = fn end

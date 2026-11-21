@@ -3874,7 +3874,7 @@ local function layoutBody(f)
 		f.Scroll:SetPoint("TOPLEFT", f.Content, "TOPLEFT", 0, -(4 + ph))
 		f.Scroll:SetPoint("BOTTOMRIGHT", f.Content, "BOTTOMRIGHT", -4, 4)
 	end
-	f.psViewH = f:GetHeight() - SHELL.header - (tabs and SHELL.tabs or 0) - (foot and SHELL.footer or 0) - ph
+	f.psViewH = f:GetHeight() - (rawget(f, "psTopBar") or 0) - SHELL.header - (tabs and SHELL.tabs or 0) - (foot and SHELL.footer or 0) - ph
 end
 
 -- The pinned preview's slot, between the tab band and the scrolling body
