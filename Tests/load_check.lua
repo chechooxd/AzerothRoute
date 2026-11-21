@@ -899,6 +899,18 @@ do
         ns.Set("ui.skin", "halo")
         if Theme.SkinId() ~= "polestar" then fail("a saved Polestar look is still drawn: " .. tostring(Theme.SkinId())) end
         ns.Set("ui.skin", saved)
+        -- The target list: a common mob in the accent gold (not red), elites in quest blue, NPCs green.
+        local Bt = ns.QoL and ns.QoL.Buttons
+        if not (Bt and Bt.TargetLook) then fail("no target button looks") else
+            local _, mob = Bt.TargetLook("kill", "Bristleback Hunter")
+            local _, elite = Bt.TargetLook("kill", "Boss", nil, true)
+            local _, npc = Bt.TargetLook("talk", "Innkeeper")
+            if mob ~= "accent" then fail("a common mob is drawn in " .. tostring(mob) .. ", not the accent gold") end
+            if elite ~= "quest" then fail("an elite is drawn in " .. tostring(elite)) end
+            if npc ~= "success" then fail("an NPC is drawn in " .. tostring(npc)) end
+            local src = read(ROOT .. "/AzerothRoute/QoL/Buttons.lua") or ""
+            if src:find('or "danger"\n', 1, true) or src:find('"textDim" or "danger"))', 1, true) then fail("the target list still paints mobs red") end
+        end
         print("battle.net hub: checked")
     end
 end

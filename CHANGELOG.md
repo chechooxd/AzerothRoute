@@ -17,6 +17,8 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
   menus; flat headers without the night band, haze or gold rim; rounded selection blocks in the side list
   and the icon rail, with bigger rail icons; Battle.net blue primary buttons and switches with white text.
 - The hub has a big blue "Continue guide" button at the foot of its side column that opens the guide window.
+- The target button and its list draw common mobs in the accent gold instead of red; elites, rares and
+  bosses stay Forever blue, NPCs green, and an item out of range still turns red.
 - Only AzerothRoute's own design is offered and drawn: Polestar's other looks (Halo, Hearth, the game looks
   and skin addons) are hidden; a saved choice is kept.
 

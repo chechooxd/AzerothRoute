@@ -2020,7 +2020,7 @@ end
 function Buttons.TargetLook(verb, name, id, special)
 	if NPC_VERBS[verb] then return VERB_ICON[verb], "success", true end
 	if special or (name and seenSpecial[name]) or codexSpecial(id) then return "icon-elite", "quest", true end
-	return VERB_ICON[verb] or "icon-kill", "danger", false
+	return VERB_ICON[verb] or "icon-kill", "accent", false -- AzerothRoute: gold, not red
 end
 
 -- The face kept for name, or nil.
@@ -2061,7 +2061,7 @@ function paintTarget(b)
 	local shown = 0
 	if not (name and QoL.On("targetPlate")) then
 		b.Icon:SetTexture(media("qol-target"))
-		color(b.Icon, "danger")
+		color(b.Icon, "accent")
 		b.Icon:Show()
 		b.Badge:Hide()
 		font(b.Label, "small")
@@ -2148,10 +2148,10 @@ do
 	-- count in success once complete.
 	local function paintTones(r)
 		local look = r.looks and r.applied and r.looks[r.applied]
-		local tone = look and select(2, Buttons.TargetLook(look[1], r.applied, look[2], look[3])) or "danger"
+		local tone = look and select(2, Buttons.TargetLook(look[1], r.applied, look[2], look[3])) or "accent"
 		color(r.Name, tone)
 		color(r.Note, "textDim")
-		color(r.Mark, (r.closeUnit or r.psNear) and "success" or (tone == "success" and "textDim" or "danger"))
+		color(r.Mark, (r.closeUnit or r.psNear) and "success" or (tone == "success" and "textDim" or "accent"))
 		local p = r.info and r.info.progress
 		local cur, max = p and tonumber(p.cur), p and tonumber(p.max)
 		local done = cur and max and max > 0 and cur >= max or false

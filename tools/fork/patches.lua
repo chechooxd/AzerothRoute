@@ -89,6 +89,34 @@ return {
 			if Theme.SkinKey() == "polestar" and not self.psGhost and not Theme.Battlenet then]=],
         why = "primary buttons in Battle.net blue with white text",
     },
+    -- The target button and its list: common mobs in the accent gold, not red (user, 2026-11-21: "corrige esos
+    -- colores, son horribles y no pega con el azul"); elites stay quest blue, NPCs green, far items red.
+    {
+        file = "AzerothRoute/QoL/Buttons.lua",
+        find = '\treturn VERB_ICON[verb] or "icon-kill", "danger", false\n',
+        replace = '\treturn VERB_ICON[verb] or "icon-kill", "accent", false -- AzerothRoute: gold, not red\n',
+        why = "common mobs in the accent gold",
+    },
+    {
+        file = "AzerothRoute/QoL/Buttons.lua",
+        find = [=[		local tone = look and select(2, Buttons.TargetLook(look[1], r.applied, look[2], look[3])) or "danger"
+		color(r.Name, tone)
+		color(r.Note, "textDim")
+		color(r.Mark, (r.closeUnit or r.psNear) and "success" or (tone == "success" and "textDim" or "danger"))]=],
+        replace = [=[		local tone = look and select(2, Buttons.TargetLook(look[1], r.applied, look[2], look[3])) or "accent"
+		color(r.Name, tone)
+		color(r.Note, "textDim")
+		color(r.Mark, (r.closeUnit or r.psNear) and "success" or (tone == "success" and "textDim" or "accent"))]=],
+        why = "the target list's mob rows in the accent gold",
+    },
+    {
+        file = "AzerothRoute/QoL/Buttons.lua",
+        find = [=[		b.Icon:SetTexture(media("qol-target"))
+		color(b.Icon, "danger")]=],
+        replace = [=[		b.Icon:SetTexture(media("qol-target"))
+		color(b.Icon, "accent")]=],
+        why = "the target button's plain icon in the accent gold",
+    },
     -- Only AzerothRoute's own design (the Battle.net look): Polestar's other looks are neither drawn nor offered.
     {
         file = "AzerothRoute/Theme/Theme.lua",
