@@ -27,6 +27,9 @@ local ES = {
 		"Es joven: puede haber algún paso o punto equivocado. Envía un informe con /ar report y se corrige.",
 	["A new page in the menu: your XP per hour, the time to your next level and to 60 at your pace, and every level you played as a bar."] =
 		"Una página nueva en el menú: tu XP por hora, el tiempo para tu siguiente nivel y para el 60 a tu ritmo, y cada nivel que jugaste como una barra.",
+	["Race your best character"] = "Compite con tu mejor personaje",
+	["Leveling pace now compares every level with your fastest other character: a mark on the bar and how much faster or slower you were."] =
+		"Ritmo de subida ahora compara cada nivel con tu otro personaje más rápido: una marca en la barra y cuánto más rápido o lento fuiste.",
 	["Options window fix"] = "Arreglo de la ventana de Opciones",
 	["Resizing the Options window no longer shows an error."] = "Cambiar el tamaño de la ventana de Opciones ya no muestra un error.",
 	["WoW Forever's blue and gold"] = "El azul y dorado de WoW Forever",

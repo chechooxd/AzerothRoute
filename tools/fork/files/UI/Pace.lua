@@ -3,10 +3,15 @@
 -- (XP per hour, to the next level, to the level cap), then every finished level as a bar of its
 -- play time with its kills and quests. The time to the cap adds the XP left of this level to every
 -- later level's (Levels.LEVEL_XP) at the tracker's rate, or, before there is one, at the rate of the
--- levels already played. Original AzerothRoute code (GPL-3.0-only).
+-- levels already played. Racing your best: each character's level times are kept for the account
+-- (AzerothRouteDB.pace), and every fully measured level is compared with the fastest other
+-- character's: a tick on the bar where their time ends, "4m faster than Jaina", and the total.
+-- Original AzerothRoute code (GPL-3.0-only).
 --
 --   Pace.Estimate(stats, levelXP, maxLevel) -> { xp, seconds, rate, fromSplits, maxed } | nil (pure)
 --   Pace.Levels(splits) -> { { level, seconds, kills, quests, partial }... , total, longest } (pure)
+--   Pace.Compare(mySplits, store, myKey) -> { levels[level] = { best, delta, name, class }, n, delta } (pure)
+--   Pace.Record(stats) -> true when this character's times were kept; Pace.Store() -> the account store
 --   Pace.Build(parent, shell), Pace.Render(), Pace.Shown()
 
 local ADDON, ns = ...
@@ -37,6 +42,10 @@ if GetLocale and (GetLocale() == "esMX" or GetLocale() == "esES") then
 	L["Turn on the XP tracker"] = "Activar el medidor de XP"
 	L["You are at the level cap."] = "Estás en el nivel máximo."
 	L["Estimated from the levels you played."] = "Estimado con los niveles que jugaste."
+	L["Against your best characters: %s faster over %d levels."] = "Contra tus mejores personajes: %s más rápido en %d niveles."
+	L["Against your best characters: %s slower over %d levels."] = "Contra tus mejores personajes: %s más lento en %d niveles."
+	L["%s faster than %s"] = "%s más rápido que %s"
+	L["%s slower than %s"] = "%s más lento que %s"
 end
 
 ---------------------------------------------------------------------------
@@ -77,6 +86,62 @@ function Pace.Levels(splits)
 		end
 	end
 	table.sort(out, function(a, b) return a.level < b.level end)
+	return out
+end
+
+---------------------------------------------------------------------------
+-- Racing your best: every character's level times, for the account
+---------------------------------------------------------------------------
+
+-- AzerothRouteDB.pace.chars["Name-Realm"] = { name, class, splits = { [level] = { seconds, partial } } }
+function Pace.Store()
+	local db = ns.DB and ns.DB()
+	if not db then return nil end
+	if type(db.pace) ~= "table" then db.pace = {} end
+	if type(db.pace.chars) ~= "table" then db.pace.chars = {} end
+	return db.pace
+end
+
+local function myKey()
+	local Alts = ns.Alts
+	return Alts and Alts.Key and Alts.Key() or nil
+end
+
+-- Copies this character's level times into the account store -> true when kept.
+function Pace.Record(st)
+	local key, store = myKey(), Pace.Store()
+	if not (key and store and st and type(st.splits) == "table") then return false end
+	local splits = {}
+	for level, s in pairs(st.splits) do
+		if (s.seconds or 0) > 0 then splits[level] = { seconds = s.seconds, partial = s.partial and true or nil } end
+	end
+	local class
+	if UnitClass then class = select(2, UnitClass("player")) end
+	store.chars[key] = { name = (key:match("^(.-)%-[^%-]*$") or key), class = class, splits = splits }
+	return true
+end
+
+-- Each fully measured level of mine against the fastest other character's fully measured one:
+-- { levels = { [level] = { best, delta (mine - best: less is faster), name, class } }, n, delta }.
+function Pace.Compare(mine, store, key)
+	local out = { levels = {}, n = 0, delta = 0 }
+	for level, s in pairs(mine or {}) do
+		if (s.seconds or 0) > 0 and not s.partial then
+			local best
+			for other, c in pairs(store and store.chars or {}) do
+				local o = other ~= key and c.splits and c.splits[level]
+				if o and (o.seconds or 0) > 0 and not o.partial and (not best or o.seconds < best.best) then
+					best = { best = o.seconds, name = c.name or other, class = c.class }
+				end
+			end
+			if best then
+				best.delta = s.seconds - best.best
+				out.levels[level] = best
+				out.n = out.n + 1
+				out.delta = out.delta + best.delta
+			end
+		end
+	end
 	return out
 end
 
@@ -157,6 +222,12 @@ local function bar(i)
 	b.Fill:SetHeight(BAR_H - 8)
 	b.Time = W.Text(b, "number", "text")
 	b.Time:SetPoint("LEFT", b.Fill, "RIGHT", 8, 0)
+	-- Your best character's time on this level: a tick on the track and the difference.
+	b.Ghost = b:CreateTexture(nil, "OVERLAY")
+	b.Ghost:SetTexture(Theme.Media("white"))
+	b.Ghost:SetSize(2, BAR_H - 2)
+	b.Delta = W.Text(b, "small", "textMuted")
+	b.Delta:SetPoint("LEFT", b.Time, "RIGHT", 8, 0)
 	b.Info = W.Text(b, "small", "textMuted")
 	b.Info:SetJustifyH("RIGHT")
 	b.Info:SetPoint("RIGHT", b, "RIGHT", 0, 0)
@@ -250,29 +321,61 @@ function Pace.Render()
 	elseif est.fromSplits then w.note(L["Estimated from the levels you played."]) end
 	-- Every finished level as a bar of its play time.
 	local lv = Pace.Levels(st.splits)
+	Pace.Record(st)
+	local cmp = Pace.Compare(st.splits, Pace.Store(), myKey())
 	w.head(L["Levels played"], #lv > 0 and format(L["%s in %d levels"], duration(lv.total), #lv) or nil)
 	if #lv == 0 then w.note(L["No level finished yet with the tracker on. Each level you finish shows here."]) end
-	local track = max(40, w.width - LABEL_W - INFO_W - 70)
+	if cmp.n > 0 then
+		local key = cmp.delta <= 0 and L["Against your best characters: %s faster over %d levels."] or L["Against your best characters: %s slower over %d levels."]
+		w.note(format(key, duration(math.abs(cmp.delta)), cmp.n), cmp.delta <= 0 and "success" or "warning")
+		shown.versus = cmp.delta
+	end
+	-- The track holds the longest of my times and my best characters' on the same levels.
+	local longest = lv.longest
+	for _, c in pairs(cmp.levels) do longest = max(longest, c.best) end
+	local track = max(40, w.width - LABEL_W - INFO_W - 150)
+	local compared = 0
 	for i, l in ipairs(lv) do
 		local b = bar(i)
 		b:ClearAllPoints()
 		b:SetPoint("TOPLEFT", body, "TOPLEFT", PAD, w.y)
 		b:SetWidth(w.width)
 		b.Label:SetText(format(L["Level %d"], l.level))
-		b.Fill:SetWidth(max(2, floor(track * l.seconds / max(1, lv.longest))))
+		b.Fill:SetWidth(max(2, floor(track * l.seconds / max(1, longest))))
 		W.Color(b.Fill, l.partial and "textMuted" or "accent")
 		b.Time:SetText(duration(l.seconds))
+		local c = cmp.levels[l.level]
+		if c then
+			compared = compared + 1
+			b.Ghost:ClearAllPoints()
+			b.Ghost:SetPoint("LEFT", b, "LEFT", LABEL_W + max(1, floor(track * c.best / max(1, longest))) - 1, 0)
+			W.Color(b.Ghost, "text")
+			b.Ghost:Show()
+			local faster = c.delta <= 0
+			b.Delta:SetText(format(faster and L["%s faster than %s"] or L["%s slower than %s"], duration(math.abs(c.delta)), c.name))
+			W.Color(b.Delta, faster and "success" or "warning")
+			b.Delta:Show()
+		else
+			b.Ghost:Hide()
+			b.Delta:Hide()
+		end
 		b.Info:SetText(format(L["%d kills, %d quests"], l.kills, l.quests) .. (l.partial and ("  \194\183  " .. L["partly measured"]) or ""))
 		b:Show()
 		w.y = w.y - BAR_H - BAR_GAP
 	end
 	shown.bars = #lv
+	shown.compared = compared
 	W.SetScrollContent(scroll, -w.y + 24)
 end
 
 function Pace.Shown() return shown end
 
-ns.On("QOL_XP_UPDATED", function() if root and root:IsVisible() then Pace.Render() end end)
+-- Kept for the account as each level closes (and once at the first XP gain of a session).
+local recordedLevel
+ns.On("QOL_XP_UPDATED", function(st)
+	if st and st.level ~= recordedLevel and Pace.Record(st) then recordedLevel = st.level end
+	if root and root:IsVisible() then Pace.Render() end
+end)
 
 if UI.RegisterSection then
 	UI.RegisterSection({

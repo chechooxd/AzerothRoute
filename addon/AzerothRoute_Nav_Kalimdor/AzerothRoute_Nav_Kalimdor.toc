@@ -20,7 +20,7 @@
 ## Title-zhTW: AzerothRoute 導航（卡林多）
 ## Notes-zhTW: AzerothRoute 箭頭使用的卡林多步行地圖，來自 Leffe 的導航地圖。在該大陸上按需載入。
 ## Author: AzerothRoute
-## Version: 0.5.2
+## Version: 0.6.0
 ## Category: AzerothRoute
 ## Group: AzerothRoute
 ## LoadOnDemand: 1

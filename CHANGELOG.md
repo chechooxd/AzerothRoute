@@ -10,6 +10,13 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 - MINOR (0.x.0): new features or guides.
 - MAJOR: reserved for 1.0.0, the first stable release.
 
+## [0.6.0] - 2026-11-21
+
+### Added
+- Race your best character: every character's level times are kept for the account, and the Leveling
+  pace page compares each fully measured level with your fastest other character's (a mark on the bar,
+  "4m faster than Jaina") and sums it up ("12m faster over 8 levels"). Partly measured levels never count.
+
 ## [0.5.2] - 2026-11-21
 
 ### Fixed

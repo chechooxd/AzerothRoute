@@ -48,8 +48,16 @@ end
 -- theme's colours when shown), and the setting it is about when it has one
 -- (`setting`, a settings key: the note opens the settings on it).
 -- AzerothRoute: its own release notes (Polestar's history is not AzerothRoute's).
--- The newest release says 0.5.2 (from VERSION); older ones keep their number.
+-- The newest release says 0.6.0 (from VERSION); older ones keep their number.
 local NOTES = {
+	{
+		version = "0.6.0",
+		notes = {
+			{ glyph = "hourglass", color = "accent", head = L["Race your best character"], text = function()
+				return L["Leveling pace now compares every level with your fastest other character: a mark on the bar and how much faster or slower you were."]
+			end },
+		},
+	},
 	{
 		version = "0.5.2",
 		notes = {

@@ -493,6 +493,14 @@ local NOTES = {
 	{
 		version = "@VERSION@",
 		notes = {
+			{ glyph = "hourglass", color = "accent", head = L["Race your best character"], text = function()
+				return L["Leveling pace now compares every level with your fastest other character: a mark on the bar and how much faster or slower you were."]
+			end },
+		},
+	},
+	{
+		version = "0.5.2",
+		notes = {
 			{ glyph = "check", color = "success", head = L["Options window fix"], text = function()
 				return L["Resizing the Options window no longer shows an error."]
 			end },

@@ -603,6 +603,47 @@ do
     end
 end
 
+-- 15. Racing your best: every character's level times kept for the account, each level compared with
+-- the fastest other character's (partly measured levels never count), and the page showing it.
+do
+    local P = ns.UI and ns.UI.Pace
+    if not (P and P.Compare and P.Record) then fail("no comparison with your best character") else
+        local store = { chars = {
+            ["Thrall-Forever"] = { name = "Thrall", class = "SHAMAN", splits = { [10] = { seconds = 1200 }, [11] = { seconds = 1500 }, [12] = { seconds = 900, partial = true } } },
+            ["Jaina-Forever"] = { name = "Jaina", class = "MAGE", splits = { [10] = { seconds = 1000 }, [11] = { seconds = 1800 } } },
+            ["Me-Forever"] = { name = "Me", class = "PALADIN", splits = { [10] = { seconds = 1 } } },
+        } }
+        local mine = { [10] = { seconds = 1100 }, [11] = { seconds = 1400 }, [12] = { seconds = 1000 }, [13] = { seconds = 500, partial = true } }
+        local cmp = P.Compare(mine, store, "Me-Forever")
+        local b10, b11 = cmp.levels[10], cmp.levels[11]
+        if not (b10 and b10.name == "Jaina" and b10.best == 1000 and b10.delta == 100) then fail("level 10 not against Jaina's 1000 s") end
+        if not (b11 and b11.name == "Thrall" and b11.best == 1500 and b11.delta == -100) then fail("level 11 not against Thrall's 1500 s") end
+        if cmp.levels[12] then fail("a partly measured best counted") end
+        if cmp.levels[13] then fail("a partly measured level of mine counted") end
+        if not (cmp.n == 2 and cmp.delta == 0) then fail(string.format("total against the best: %s levels, %s s", tostring(cmp.n), tostring(cmp.delta))) end
+        if next(P.Compare(mine, { chars = {} }, "Me-Forever").levels) then fail("a comparison with no other character") end
+        -- Recording this character into the account store.
+        local db = ns.DB()
+        db.pace = nil
+        local Alts = ns.Alts
+        local key = Alts and Alts.Key and Alts.Key()
+        if not P.Record({ level = 14, splits = mine }) then fail("level times not recorded") end
+        local rec = db.pace and db.pace.chars and key and db.pace.chars[key]
+        if not (rec and rec.splits[10].seconds == 1100 and rec.splits[13].partial and rec.class) then fail("recorded entry wrong for " .. tostring(key)) end
+        -- The page marks levels against the best.
+        db.pace.chars["Jaina-Forever"] = store.chars["Jaina-Forever"]
+        local QoL = ns.QoL
+        local get = QoL.GetXPStats
+        QoL.GetXPStats = function() return { level = 14, xp = 0, xpMax = 1000, remaining = 1000, rate = 5000, maxed = false, timeToLevel = 720, rested = 0, splits = mine } end
+        P.Render()
+        local sh = P.Shown()
+        if not (sh.compared == 2 and sh.versus) then fail("pace page does not compare levels with your best: " .. tostring(sh.compared)) end
+        QoL.GetXPStats = get
+        db.pace = nil
+        print("pace vs best: checked")
+    end
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end

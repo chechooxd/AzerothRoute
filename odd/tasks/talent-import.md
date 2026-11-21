@@ -28,3 +28,5 @@ delivery: one feature commit, release 0.3.0; tests: `luajit Tests/load_check.lua
 - L3 (2026-11-21): View.lua now owned outright (patch `overwrite`); tabs keyed by plan key; checks in
   Tests/load_check.lua section 12 (decode order, 5 refusals, save/reload/follow/tab/remove, view page);
   mock gained CreateFont. All checks OK. Release 0.3.0.
+- L4 (2026-11-21): next big project, wanted by the user ("el 2 me gusto mucho !!"): an in-combat rotation
+  helper from Icy Veins' leveling rotations (next ability per spec); Polestar has no combat rotation code.
