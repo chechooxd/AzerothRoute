@@ -10,6 +10,18 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 - MINOR (0.x.0): new features or guides.
 - MAJOR: reserved for 1.0.0, the first stable release.
 
+## [0.3.0] - 2026-11-21
+
+### Added
+- Import a talent plan in the game: paste an Icy Veins WoW Forever talent calculator link under
+  Talents > Import a plan. The plan keeps the link's pick order, gets its own tab and name, works with
+  Follow this plan, Apply talents and the talent trees, is saved per character and can be removed.
+- Links for another class, with an unknown talent, more points than a talent has ranks or more than
+  51 points are refused with the reason; nothing is saved.
+
+### Changed
+- Talent tabs are one per plan instead of one per spec.
+
 ## [0.2.0] - 2026-11-21
 
 ### Changed

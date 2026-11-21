@@ -20,7 +20,7 @@
 ## Title-zhTW: AzerothRoute 皮膚
 ## Notes-zhTW: AzerothRoute 的一部分：WoW Forever、Blizzard、Classic 和 Hearth 皮膚。選擇其中一個時載入。
 ## Author: AzerothRoute
-## Version: 0.2.0
+## Version: 0.3.0
 ## Category: AzerothRoute
 ## Group: AzerothRoute
 ## LoadOnDemand: 1

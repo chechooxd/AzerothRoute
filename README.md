@@ -53,6 +53,11 @@ minimap button settings carry over on the first login.
   corrects snapshot talents whose ranks or name changed in Forever, adds the ones the snapshot lacks,
   and fails the run on a plan that skips a level, overspends a talent or names one outside the tree.
   To refresh, read the guides again into those two files and rerun the fork.
+- Players can import their own plan: Talents > Import a plan takes an Icy Veins talent calculator
+  link, whose `#tc-` part holds one letter per point in pick order. `tools/fork/icyveins/calculator.txt`
+  maps each class's letters to talents; `Talents/Import.lua` decodes a link and saves it per character.
+- `tools/fork/patches.lua` can also replace a whole file (`overwrite = true`): AzerothRoute owns
+  `Talents/View.lua` that way (`tools/fork/files/Talents/View.lua`).
 
 Left out of `addon/` (see THIRD_PARTY.md): Polestar's Doom arcade and the race guide parts (only
 `Legs.lua`, made with Leffe's navigation maps under a permission given to Polestar's author). The

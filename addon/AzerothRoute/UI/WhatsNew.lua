@@ -48,8 +48,16 @@ end
 -- theme's colours when shown), and the setting it is about when it has one
 -- (`setting`, a settings key: the note opens the settings on it).
 -- AzerothRoute: its own release notes (Polestar's history is not AzerothRoute's).
--- The newest release says 0.2.0 (from VERSION); older ones keep their number.
+-- The newest release says 0.3.0 (from VERSION); older ones keep their number.
 local NOTES = {
+	{
+		version = "0.3.0",
+		notes = {
+			{ glyph = "plus", color = "accent", head = L["Import your own talent plan"], text = function()
+				return L["Paste an Icy Veins talent calculator link under Talents > Import a plan: it becomes a plan you can follow and apply, in the order of its points."]
+			end },
+		},
+	},
 	{
 		version = "0.2.0",
 		notes = {

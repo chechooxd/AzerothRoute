@@ -52,37 +52,22 @@ return {
     {
         file = "AzerothRoute/Talents/Talents.xml",
         find = '\t<Script file="Builds.lua"/>\n',
-        replace = '\t<Script file="Builds.lua"/>\n\t<Script file="Sources.lua"/>\n\t<Script file="IcyVeins.lua"/>\n\t<Script file="Apply.lua"/>\n',
-        why = "loads the Icy Veins plans (Sources.lua, generated IcyVeins.lua) and Apply.lua",
+        replace = '\t<Script file="Builds.lua"/>\n\t<Script file="Sources.lua"/>\n\t<Script file="IcyVeins.lua"/>\n\t<Script file="Import.lua"/>\n\t<Script file="Apply.lua"/>\n',
+        why = "loads the Icy Veins plans (Sources.lua, generated IcyVeins.lua), imported plans and Apply.lua",
     },
     {
         file = "AzerothRoute/Talents/Sources.lua", create = true, replace = read("Talents/Sources.lua"),
         why = "T.UseSource: the talent plans from another source in place of the snapshot's",
     },
     {
-        file = "AzerothRoute/Talents/View.lua",
-        find = [[	d.Auto.psTip = L["Pick the plan for the spec AzerothRoute's gear advice uses."]
-]],
-        replace = [[	d.Auto.psTip = L["Pick the plan for the spec AzerothRoute's gear advice uses."]
-	-- AzerothRoute: Apply talents, on the followed plan while a point waits (Talents/Apply.lua).
-	d.Apply = W.Button(d.Foot, L["Apply talents"], function() if T.Apply then T.Apply.Run() end end, { height = 28 })
-	d.Apply:SetPoint("BOTTOMLEFT", d.Foot, "BOTTOMLEFT", FOOT_PAD, FOOT_PAD)
-	d.Apply.psTip = L["Spend your unspent points on this plan's next picks, in order."]
-	d.Apply:Hide()
-]],
-        why = "adds the Apply talents button to the plan page",
+        file = "AzerothRoute/Talents/Import.lua", create = true, replace = read("Talents/Import.lua"),
+        why = "talent plans imported from an Icy Veins calculator link pasted in the game",
     },
     {
-        file = "AzerothRoute/Talents/View.lua",
-        find = [[	actions(not mine or choice == "auto", choice ~= "auto")
-]],
-        replace = [[	actions(not mine or choice == "auto", choice ~= "auto")
-	local canApply = mine and c and c.staged and c.staged.status == "behind" and (c.staged.unspent or 0) > 0 or false
-	detail.Apply:SetShown(canApply)
-	if canApply then detail.Foot:Show() end
-	shown.apply = canApply
-]],
-        why = "shows Apply talents only when a point waits on the followed plan",
+        -- AzerothRoute owns the Talents view: Polestar's, with the Apply button, icons and tooltips,
+        -- the talent trees, the Icy Veins source line, tabs keyed by plan and the Import page.
+        file = "AzerothRoute/Talents/View.lua", overwrite = true, replace = read("Talents/View.lua"),
+        why = "AzerothRoute's Talents view",
     },
     -- Identity: "the route" (2026-11-20). Deep sapphire grounds, pearl white text, ember orange
     -- accent, a lighter ember for the route and names, jade for what is done; own art in tools/fork/assets.
@@ -459,6 +444,14 @@ local NOTES = {
 	{
 		version = "@VERSION@",
 		notes = {
+			{ glyph = "plus", color = "accent", head = L["Import your own talent plan"], text = function()
+				return L["Paste an Icy Veins talent calculator link under Talents > Import a plan: it becomes a plan you can follow and apply, in the order of its points."]
+			end },
+		},
+	},
+	{
+		version = "0.2.0",
+		notes = {
 			{ glyph = "icon-learn", color = "accent", head = L["Talent plans from Icy Veins"], text = function()
 				return L["Every spec's leveling build from Icy Veins' WoW Forever guides, one point a level from 10 to 60."]
 			end },
@@ -501,71 +494,6 @@ local NOTES = {
     },
     -- Talents: icons and tooltips on the plan's picks (2026-11-20).
     {
-        file = "AzerothRoute/Talents/View.lua",
-        find = [=[local function row(i)
-	local r = rows[i]
-	if r then return r end]=],
-        replace = [=[-- AzerothRoute: each pick shows its talent's icon, and the talent's tooltip on hover.
-local ICON = 18
-local function spellIcon(spell)
-	if not spell then return nil end
-	if C_Spell and C_Spell.GetSpellTexture then
-		local ok, t = pcall(C_Spell.GetSpellTexture, spell)
-		if ok and t then return t end
-	end
-	if GetSpellTexture then
-		local ok, t = pcall(GetSpellTexture, spell)
-		if ok and t then return t end
-	end
-	return table.concat({ "Interface", "Icons", "INV_Misc_QuestionMark" }, string.char(92))
-end
-TV.SpellIcon = spellIcon
-
-local function showPickTip(r)
-	local p, GT = r.psPick, GameTooltip
-	if not (p and GT) then return end
-	GT:SetOwner(r, "ANCHOR_RIGHT")
-	local ok = r.psSpell and GT.SetSpellByID and pcall(GT.SetSpellByID, GT, r.psSpell)
-	if not ok then GT:SetText(r.Title:GetText() or "") end
-	local n = r.psNode
-	GT:AddLine(" ")
-	GT:AddLine(format(L["Pick %d of the plan, rank %d of %d"], p.order, p.rank, n and n.max or p.rank), 0.6, 0.8, 1)
-	GT:Show()
-end
-
-local function row(i)
-	local r = rows[i]
-	if r then return r end]=],
-        why = "talent rows: icon helper and tooltip",
-    },
-    {
-        file = "AzerothRoute/Talents/View.lua",
-        find = [=[	r.Title = W.Text(r, "body", "text")
-	r.Title:SetPoint("LEFT", r, "LEFT", TEXT_X, 0)]=],
-        replace = [=[	r.Icon = r:CreateTexture(nil, "ARTWORK")
-	r.Icon:SetSize(ICON, ICON)
-	r.Icon:SetPoint("LEFT", r, "LEFT", TEXT_X, 0)
-	r.Icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-	r.Title = W.Text(r, "body", "text")
-	r.Title:SetPoint("LEFT", r.Icon, "RIGHT", 6, 0)
-	r:EnableMouse(true)
-	r:SetScript("OnEnter", showPickTip)
-	r:SetScript("OnLeave", function() if GameTooltip then GameTooltip:Hide() end end)]=],
-        why = "talent rows: the icon before the name, tooltip on hover",
-    },
-    {
-        file = "AzerothRoute/Talents/View.lua",
-        find = [=[		r.Title:SetWidth(max(40, min(LIST_W - ROW_X * 2 - TEXT_X - 50, floor(r.Title:GetStringWidth() + 1))))
-		r.psPick = p]=],
-        replace = [=[		r.Title:SetWidth(max(40, min(LIST_W - ROW_X * 2 - TEXT_X - 50 - ICON - 6, floor(r.Title:GetStringWidth() + 1))))
-		r.psPick = p
-		r.psNode, r.psSpell = n, n and n.spell
-		r.Icon:SetTexture(spellIcon(n and n.spell))
-		r.Icon:SetDesaturated(done and true or false)
-		r.Icon:SetAlpha(done and 0.6 or 1)]=],
-        why = "talent rows: each pick's icon, dimmed once learned",
-    },
-    {
         file = "AzerothRoute/UI/Thanks.lua",
         find = "function T.HeaderLink(f)\n",
         replace = "function T.HeaderLink(f)\n\tdo return end -- AzerothRoute: no special-thanks line (Polestar's supporters)\n",
@@ -584,52 +512,5 @@ local function row(i)
 	<Script file="Tree.lua"/>
 ]=],
         why = "loads Tree.lua after View.lua",
-    },
-    {
-        file = "AzerothRoute/Talents/View.lua",
-        find = [=[local function hideAll()
-	for _, t in ipairs({ rows, bands, heads, notes }) do
-		for _, r in ipairs(t) do r:Hide() end
-	end]=],
-        replace = [=[local function hideAll()
-	for _, t in ipairs({ rows, bands, heads, notes }) do
-		for _, r in ipairs(t) do r:Hide() end
-	end
-	if TV.HideTree then TV.HideTree() end]=],
-        why = "hides the tree with the rest",
-    },
-    {
-        file = "AzerothRoute/Talents/View.lua",
-        find = [=[	w.head(L["Notes"])
-	-- Keyed by the level the source plan reaches them at; shown as a rough
-	-- guide only, since points can come sooner.
-	local lvs = {}
-	for lv in pairs(build.notes) do lvs[#lvs + 1] = lv end
-	table.sort(lvs)
-	for _, lv in ipairs(lvs) do w.note(format(L["Around level %d: %s"], lv, build.notes[lv]), "text") end
-	w.head(L["Source"])
-	w.note(format(L["Picks from %s (%s), checked against the game's talent tree; notes in AzerothRoute's words."], data.source, data.url))
-]=],
-        replace = [=[	-- AzerothRoute: the plan as the class's talent trees, above the notes.
-	if TV.DrawTree then
-		w.head(L["Talent trees"])
-		local th = TV.DrawTree(detail.Body, DPAD, w.y - 8, w.width, build, c, mine)
-		w.y = w.y - 8 - th - 16
-	end
-	-- Keyed by the level the source plan reaches them at; shown as a rough
-	-- guide only, since points can come sooner. Plans without notes skip the heading.
-	local lvs = {}
-	for lv in pairs(build.notes or {}) do lvs[#lvs + 1] = lv end
-	table.sort(lvs)
-	if #lvs > 0 then w.head(L["Notes"]) end
-	for _, lv in ipairs(lvs) do w.note(format(L["Around level %d: %s"], lv, build.notes[lv]), "text") end
-	w.head(L["Source"])
-	if build.updated then
-		w.note(format(L["Picks from %s (%s, updated %s), one point a level, checked against the game's talent tree."], data.source, build.link or data.url, build.updated))
-	else
-		w.note(format(L["Picks from %s (%s), checked against the game's talent tree; notes in AzerothRoute's words."], data.source, data.url))
-	end
-]=],
-        why = "the talent trees in the plan page; the plan's own source link and date",
     },
 }

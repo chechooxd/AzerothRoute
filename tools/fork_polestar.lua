@@ -315,8 +315,17 @@ local function applyPatches(outDir)
         local s = f and f:read("*a")
         if f then f:close() end
         local i, j
-        if s then i, j = s:find(p.find, 1, true) end
-        if not s then
+        if s and p.find then i, j = s:find(p.find, 1, true) end
+        if p.overwrite then
+            -- A file AzerothRoute owns outright: replaced whole, as long as Polestar still has it.
+            if s then
+                write(path, p.replace)
+                applied = applied + 1
+            else
+                missed = missed + 1
+                print("patch missed (no file to replace): " .. p.file .. " - " .. (p.why or ""))
+            end
+        elseif not s then
             if p.create then
                 write(path, p.replace)
                 applied = applied + 1

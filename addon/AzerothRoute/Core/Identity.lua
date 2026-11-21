@@ -25,6 +25,9 @@ local ES = {
 	["It is free and open source under the GPL-3.0."] = "Es gratis y de código abierto bajo la GPL-3.0.",
 	["It is young, so expect the odd wrong step or waypoint. Send a report with /ar report and it gets fixed."] =
 		"Es joven: puede haber algún paso o punto equivocado. Envía un informe con /ar report y se corrige.",
+	["Import your own talent plan"] = "Importa tu propio plan de talentos",
+	["Paste an Icy Veins talent calculator link under Talents > Import a plan: it becomes a plan you can follow and apply, in the order of its points."] =
+		"Pega un enlace del calculador de talentos de Icy Veins en Talentos > Importar un plan: se vuelve un plan que puedes seguir y aplicar, en el orden de sus puntos.",
 	["Talent plans from Icy Veins"] = "Planes de talentos de Icy Veins",
 	["Every spec's leveling build from Icy Veins' WoW Forever guides, one point a level from 10 to 60."] =
 		"La build de subida de cada especialización de las guías de WoW Forever de Icy Veins, un punto por nivel del 10 al 60.",

@@ -422,6 +422,98 @@ do
     end
 end
 
+-- 12. Talent plans imported from an Icy Veins calculator link pasted in the game: the link's exact
+-- order, refusals that save nothing, saved per character, a tab of their own, removed again.
+do
+    local T = ns.Talents
+    local I = T and T.Import
+    local data = T and T.Data("PALADIN")
+    local UIT = ns.UI and ns.UI.TalentsSection
+    if not (I and data and data.calc) then fail("talent import missing") else
+        local holy = T.BuildByKey(data, "holy")
+        local letterOf = {}
+        for letter, id in pairs(data.calc) do letterOf[id] = letter end
+        local code = {}
+        for i, p in ipairs(holy.picks) do code[i] = letterOf[p.node] or "?" end
+        local link = "https://www.icy-veins.com/wow-forever/paladin-talent-calculator#tc-" .. table.concat(code) .. "~70755-d1899b7d"
+        -- S1: the link's order, pick by pick.
+        local plan, why = I.Decode(data, link)
+        if not plan then fail("decode refused the Holy plan's link: " .. tostring(why)) else
+            if #plan.picks ~= #holy.picks or plan.spec ~= holy.spec or plan.split ~= holy.split then fail("decoded plan differs from the Holy plan") end
+            for i, p in ipairs(plan.picks) do
+                if p.node ~= holy.picks[i].node or p.rank ~= holy.picks[i].rank or p.order ~= i then fail("decoded pick " .. i .. " out of order") break end
+            end
+        end
+        local partial = I.Decode(data, "tc-" .. table.concat(code, "", 1, 5))
+        if not (partial and #partial.picks == 5) then fail("a link with 5 points did not give 5 picks") end
+        -- S4: refusals, each with its reason and a sentence.
+        local unused
+        for c in ("ZYXWVUTSR"):gmatch(".") do if not data.calc[c] then unused = c break end end
+        local single
+        for letter, id in pairs(data.calc) do if data.nodes[id].max == 1 then single = letter break end end
+        local cases = {
+            { "", "empty" },
+            { "https://www.icy-veins.com/wow-forever/mage-talent-calculator#tc-00", "class" },
+            { "tc-" .. tostring(unused), "letter" },
+            { "tc-" .. single .. single, "rank" },
+            { "tc-" .. table.concat(code) .. code[#code], "points" },
+        }
+        for _, case in ipairs(cases) do
+            local p, reason, a, b = I.Decode(data, case[1])
+            if p or reason ~= case[2] then fail(string.format("decode %q: expected %s, got %s", case[1]:sub(1, 40), case[2], tostring(reason))) end
+            local text = I.Message(reason, a, b)
+            if type(text) ~= "string" or text == "" then fail("no message for " .. case[2]) end
+        end
+        if not I.Message("class", "MAGE", "PALADIN"):find("Paladin", 1, true) and not I.Message("class", "MAGE", "PALADIN"):find("PALADIN", 1, true) then fail("class refusal does not name the class") end
+        local before = #I.List()
+        if I.Add("tc-" .. single .. single, "x") then fail("a refused link was saved") end
+        if #I.List() ~= before then fail("a refused link changed the saved imports") end
+        -- S2: saved per character, named, kept across a reload of the plans.
+        local b = I.Add(link, "  My holy  ")
+        if not (b and b.imported and b.specName == "My holy" and #b.picks == 51) then fail("import did not add a named plan") else
+            local key = b.key
+            local saved = AzerothRouteCharData and AzerothRouteCharData.talents and AzerothRouteCharData.talents.imports
+            if not (saved and saved[#saved].link == link and saved[#saved].name == "My holy") then fail("import not saved on the character") end
+            if #data.builds ~= 4 then fail("imported plan not listed after the class's 3") end
+            -- An update reloads the class's plans: the import comes back at the next refresh.
+            local base = {}
+            for _, x in ipairs(data.builds) do if not x.imported then base[#base + 1] = x end end
+            data.builds = base
+            T.Refresh()
+            if not T.BuildByKey(data, key) then fail("imported plan lost after the plans reloaded") end
+            -- S3: followed like any plan, with its own tab.
+            T.Choose(key)
+            if T.ActiveBuild(data) ~= T.BuildByKey(data, key) then fail("imported plan cannot be followed") end
+            if UIT then
+                local nav = UIT.Nav()
+                local keys = {}
+                for _, n in ipairs(nav) do keys[n.key] = n.label end
+                if keys[key] ~= "My holy" then fail("imported plan has no tab") end
+                if not (keys.holy and keys.protection and keys.retribution) then fail("spec tabs not keyed by plan") end
+                if not keys.import then fail("no Import tab") end
+            end
+            -- The view: the Import tab shows the page, a bad link a reason, the plan's page Remove.
+            if UIT then
+                if not UIT.Shown then fail("no view state") end
+                UIT.Build(CreateFrame("Frame"), nil)
+                UIT.SetTab("import")
+                UIT.Render()
+                if UIT.Shown().page ~= "import" then fail("Import tab does not show the import page") end
+                local nb, reason = UIT.ImportFromBoxes("tc-" .. single .. single, "")
+                if nb or reason ~= "rank" or not UIT.Shown().importError then fail("view import did not show the refusal") end
+                UIT.SetTab(key)
+                UIT.Render()
+                if not (UIT.Shown().spec == "My holy" and UIT.Shown().removable) then fail("imported plan page has no Remove") end
+            end
+            -- Removed: gone from the list and the saved imports, back to following the spec.
+            if not I.Remove(key) then fail("remove did not find the plan") end
+            if T.BuildByKey(data, key) or #I.List() ~= before then fail("removed plan still there") end
+            if T.Choice() ~= "auto" then fail("removing the followed plan left it chosen") end
+        end
+        print("talent import: checked")
+    end
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end

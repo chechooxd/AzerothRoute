@@ -11,6 +11,10 @@
 -- on every tab, not only the followed plan's.
 --
 -- Registered with UI.RegisterSection; opened by SHOW_TALENTS.
+--
+-- AzerothRoute: tabs are keyed by plan, not spec, so plans imported from a talent calculator link
+-- (Talents/Import.lua) get tabs of their own beside the class's three, and a last tab, "Import a
+-- plan", holds the paste box. An imported plan's page names its link and can remove it.
 
 local ADDON, ns = ...
 local UI, Theme, W = ns.UI, ns.Theme, ns.Widgets
@@ -35,8 +39,9 @@ local BAND = 10 -- picks per list heading
 local TV = {}
 UI.TalentsSection = TV
 
-local tab -- the spec index shown; nil: the followed plan's
-local root, shellRef, list, detail, soon
+local tab -- the plan key shown, or IMPORT_TAB; nil: the followed plan's
+local IMPORT_TAB = "import"
+local root, shellRef, list, detail, soon, importer
 local rows, bands, heads, notes = {}, {}, {}, {}
 local shown = {}
 
@@ -155,6 +160,12 @@ function TV.Build(parent, shell)
 	d.Apply:SetPoint("BOTTOMLEFT", d.Foot, "BOTTOMLEFT", FOOT_PAD, FOOT_PAD)
 	d.Apply.psTip = L["Spend your unspent points on this plan's next picks, in order."]
 	d.Apply:Hide()
+	-- AzerothRoute: Remove, on an imported plan (a second click within three seconds confirms).
+	d.Remove = W.Button(d.Foot, L["Remove plan"], nil, { ghost = true, height = 28 })
+	d.Remove.psSetText = W.SetButtonText
+	W.Confirm(d.Remove, L["Remove plan"], function() TV.RemoveShown() end)
+	d.Remove:SetPoint("BOTTOMLEFT", d.Foot, "BOTTOMLEFT", FOOT_PAD, FOOT_PAD)
+	d.Remove:Hide()
 	d.Scroll = W.Scroll(d)
 	d.Scroll:SetPoint("TOPLEFT", d, "TOPLEFT", 0, -1)
 	d.Scroll:SetPoint("BOTTOMRIGHT", d.Foot, "TOPRIGHT", -4, 4)
@@ -253,6 +264,98 @@ local function hideAll()
 		for _, r in ipairs(t) do r:Hide() end
 	end
 	if TV.HideTree then TV.HideTree() end
+	if importer then importer:Hide() end
+	if detail then detail.Remove:Hide() end
+end
+
+---------------------------------------------------------------------------
+-- AzerothRoute: the Import a plan page
+---------------------------------------------------------------------------
+
+local function inputBox(parent, hint, onEnter)
+	local e = CreateFrame("EditBox", nil, parent)
+	e:SetAutoFocus(false)
+	e:SetMaxLetters(400)
+	Theme.Font(e, "label")
+	W.Color(e, "text")
+	e:SetHeight(30)
+	e:SetTextInsets(10, 10, 0, 0)
+	Theme.Skin(e, "editbox")
+	e.Hint = W.Text(e, "label", "textMuted")
+	e.Hint:SetWordWrap(false)
+	e.Hint:SetJustifyH("LEFT")
+	e.Hint:SetPoint("LEFT", e, "LEFT", 10, 0)
+	e.Hint:SetPoint("RIGHT", e, "RIGHT", -10, 0)
+	e.Hint:SetText(hint)
+	e:SetScript("OnEditFocusGained", function(self) Theme.SetFocused(self, true) end)
+	e:SetScript("OnEditFocusLost", function(self) Theme.SetFocused(self, false) end)
+	e:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
+	e:SetScript("OnEnterPressed", function(self) self:ClearFocus() onEnter() end)
+	e:SetScript("OnTextChanged", function(self) self.Hint:SetShown(self:GetText() == "") end)
+	return e
+end
+
+local lastImport -- { text, color }: the line under the boxes after the last try
+
+-- Imports what the boxes hold; on success shows the new plan's tab.
+function TV.ImportFromBoxes(link, name)
+	local I = T.Import
+	if not I then return end
+	if importer then
+		link = link or importer.Link:GetText()
+		name = name or importer.Name:GetText()
+	end
+	local b, reason, a, c = I.Add(link, name)
+	if not b then
+		lastImport = { I.Message(reason, a, c), "warning" }
+		TV.Render()
+		return nil, reason
+	end
+	lastImport = nil
+	if importer then
+		importer.Link:SetText("")
+		importer.Name:SetText("")
+	end
+	TV.SetTab(b.key)
+	return b
+end
+
+local function buildImporter()
+	if importer then return importer end
+	local f = CreateFrame("Frame", nil, detail.Body)
+	importer = f
+	f.Link = inputBox(f, L["Paste the calculator link here (Ctrl+V)"], function() TV.ImportFromBoxes() end)
+	f.Name = inputBox(f, L["A name for the plan (optional)"], function() TV.ImportFromBoxes() end)
+	f.Go = W.Button(f, L["Import plan"], function() TV.ImportFromBoxes() end, { primary = true, height = 28, icon = "plus" })
+	f:Hide()
+	return f
+end
+
+local function renderImport(w)
+	w.title(L["Import a plan"], L["From an Icy Veins talent calculator link"])
+	w.note(L["Build a plan in the Icy Veins WoW Forever talent calculator, or open a guide's \"Open in Calculator\", and copy the page's address. Its points keep the order you spent them in."])
+	local f = buildImporter()
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", detail.Body, "TOPLEFT", DPAD, w.y - 8)
+	local width = min(560, w.width)
+	f:SetSize(width, 30 + 10 + 30 + 12 + 28)
+	f.Link:SetPoint("TOPLEFT", f, "TOPLEFT", 0, 0)
+	f.Link:SetWidth(width)
+	f.Name:SetPoint("TOPLEFT", f.Link, "BOTTOMLEFT", 0, -10)
+	f.Name:SetWidth(width)
+	f.Go:SetPoint("TOPLEFT", f.Name, "BOTTOMLEFT", 0, -12)
+	f:Show()
+	w.y = w.y - 8 - f:GetHeight() - 12
+	if lastImport then
+		w.note(lastImport[1], lastImport[2])
+		shown.importError = lastImport[1]
+	end
+	local I = T.Import
+	local list = I and I.List() or {}
+	w.head(L["Imported plans"], #list)
+	if #list == 0 then w.note(L["None yet. Imported plans get a tab of their own above."]) end
+	for _, entry in ipairs(list) do w.note(entry.name, "text") end
+	shown.page = IMPORT_TAB
 end
 
 -- Where the player stands on the plan they follow.
@@ -371,9 +474,19 @@ function TV.Render()
 		return
 	end
 	local followed = c and c.build or T.ActiveBuild(data)
-	local spec = tab or followed.spec
-	local build = data.builds[1]
-	for _, b in ipairs(data.builds) do if b.spec == spec then build = b end end
+	-- AzerothRoute: the Import a plan tab.
+	if tab == IMPORT_TAB then
+		if shellRef then W.ShellTitle(shellRef, L["Talents"], L["Import a plan"]) end
+		renderList({ picks = {} }, nil)
+		list.Empty:SetText(L["Paste a link on the right; the plan shows here once imported."])
+		renderImport(w)
+		actions(false, false)
+		detail.Apply:Hide()
+		W.SetScrollContent(detail.Scroll, -w.y + 24)
+		return
+	end
+	-- Tabs are keyed by plan; a key that is gone (a removed import) shows the followed plan.
+	local build = (tab and T.BuildByKey(data, tab)) or followed
 	local mine = build == followed
 	if shellRef then
 		W.ShellTitle(shellRef, L["Talents"], format(L["%s plan for %s"], followed.specName, UnitClass("player") or "")
@@ -411,7 +524,9 @@ function TV.Render()
 	if #lvs > 0 then w.head(L["Notes"]) end
 	for _, lv in ipairs(lvs) do w.note(format(L["Around level %d: %s"], lv, build.notes[lv]), "text") end
 	w.head(L["Source"])
-	if build.updated then
+	if build.imported then
+		w.note(format(L["Imported from %s, in the order of its points."], build.link or "?"))
+	elseif build.updated then
 		w.note(format(L["Picks from %s (%s, updated %s), one point a level, checked against the game's talent tree."], data.source, build.link or data.url, build.updated))
 	else
 		w.note(format(L["Picks from %s (%s), checked against the game's talent tree; notes in AzerothRoute's words."], data.source, data.url))
@@ -422,6 +537,11 @@ function TV.Render()
 	detail.Apply:SetShown(canApply)
 	if canApply then detail.Foot:Show() end
 	shown.apply = canApply
+	-- AzerothRoute: an imported plan can be removed (where Apply would sit when it has no points).
+	detail.Remove:SetShown(build.imported and not canApply or false)
+	if build.imported then detail.Foot:Show() end
+	shown.removable = build.imported and true or false
+	TV.shownKey = build.key
 	if mine and choice == "auto" then W.SetButtonText(detail.Follow, L["Keep this plan"]) else W.SetButtonText(detail.Follow, L["Follow this plan"]) end
 	detail.Follow.psTip = L["Follow this plan whatever spec gear advice uses."]
 	shown.follow, shown.auto = detail.Follow:IsShown(), detail.Auto:IsShown()
@@ -434,13 +554,13 @@ local function repaint()
 end
 
 function TV.SetTab(key)
-	tab = tonumber(key)
+	tab = key and tostring(key) or nil
 	if list then W.ScrollTo(list.Scroll, 0) end
 	if detail then W.ScrollTo(detail.Scroll, 0) end
 	repaint()
 end
 
--- The sidebar index: one tab per spec plan.
+-- The sidebar index: one tab per plan (the class's, then imported ones), then Import a plan.
 function TV.Nav()
 	local data = T.Data()
 	if not data or T.SOON then return {}, nil end
@@ -448,19 +568,28 @@ function TV.Nav()
 	local followed = c and c.build or T.ActiveBuild(data)
 	local out = {}
 	for _, b in ipairs(data.builds) do
-		out[#out + 1] = { key = tostring(b.spec), label = b.specName, icon = b == followed and "icon-learn" or nil, count = b.split }
+		out[#out + 1] = { key = b.key, label = b.specName, icon = b == followed and "icon-learn" or nil, count = b.split }
 	end
-	return out, tostring(tab or followed.spec)
+	if T.Import then out[#out + 1] = { key = IMPORT_TAB, label = L["Import a plan"], icon = "plus" } end
+	local current = tab
+	if current ~= IMPORT_TAB and not (current and T.BuildByKey(data, current)) then current = followed.key end
+	return out, current
 end
 
 function TV.Follow()
 	local data = T.Data()
 	if not data then return end
 	local c = T.Current()
-	local spec = tab or (c and c.build and c.build.spec) or T.ActiveBuild(data).spec
-	for _, b in ipairs(data.builds) do
-		if b.spec == spec then return T.Choose(b.key) end
-	end
+	local b = (tab and T.BuildByKey(data, tab)) or (c and c.build) or T.ActiveBuild(data)
+	if b then return T.Choose(b.key) end
+end
+
+-- Removes the imported plan on show, then shows the followed plan.
+function TV.RemoveShown()
+	local key = TV.shownKey
+	if not (key and T.Import and T.Import.Remove(key)) then return end
+	tab = nil
+	repaint()
 end
 
 function TV.FollowSpec()

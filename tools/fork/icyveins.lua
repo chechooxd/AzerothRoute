@@ -5,6 +5,7 @@
 -- Every talent of a class's current tree is matched to the addon's talent snapshot (Talents/Builds.lua)
 -- by spell ID, else by name: a match whose rank count or name changed since the snapshot is corrected
 -- (so the game's tree still matches it), a talent the snapshot lacks becomes a node of its own.
+-- Calculator letters (tools/fork/icyveins/calculator.txt) go with each class, for Talents/Import.lua.
 -- Called by tools/fork_polestar.lua after the patches: dofile("tools/fork/icyveins.lua").run(outDir, repoRoot).
 -- Returns the number of plans, or nil and the errors when a plan breaks a rule: one point a level
 -- from 10 to 60, ranks in order and within the talent's maximum, every talent in the class's tree.
@@ -80,11 +81,27 @@ end
 
 local function q(s) return string.format("%q", s) end
 
--- The plans as IcyVeins.lua's text from the three files' texts: text, plan count; or nil, errors.
-local function build(plansText, treesText, buildsText)
+-- calculator.txt -> [class] = { [letter] = spell }
+local function parseCalc(text)
+    local out = {}
+    for line in (text or ""):gmatch("[^\r\n]+") do
+        local c, pairsText = line:match("^U (%a+) (.+)$")
+        if c then
+            local t = {}
+            out[CLASS[c]] = t
+            for letter, spell in pairsText:gmatch("(%w)=(%d+)") do t[letter] = tonumber(spell) end
+        end
+    end
+    return out
+end
+
+-- The plans as IcyVeins.lua's text from the files' texts: text, plan count; or nil, errors.
+-- calcText (calculator.txt) is optional: without it no calculator letters are written.
+local function build(plansText, treesText, buildsText, calcText)
     local plans = parsePlans(plansText)
     local trees = parseTrees(treesText)
     local snap = parseSnapshot(buildsText)
+    local calc = parseCalc(calcText)
     local errors = {}
     local function fail(fmt, ...) errors[#errors + 1] = string.format(fmt, ...) end
 
@@ -106,6 +123,12 @@ local function build(plansText, treesText, buildsText)
                 pc.extras[id] = { max = tal.max, spell = spell, spec = tal.tree, row = tal.row, col = tal.col, name = tal.name }
                 pc.node[spell] = { id = id, max = tal.max, spec = tal.tree, name = tal.name }
             end
+        end
+        -- Calculator letters on the same nodes, for links pasted in the game.
+        pc.letters = {}
+        for letter, spell in pairs(calc[cls] or {}) do
+            local n = pc.node[spell]
+            if n then pc.letters[letter] = n.id else fail("%s calculator letter %s: spell %d is not in the tree", cls, letter, spell) end
         end
     end
 
@@ -178,6 +201,20 @@ local function build(plansText, treesText, buildsText)
                 out[#out + 1] = string.format("\t\t[%d] = { %d, %d, %d, %d, %d, %s },", id, n.max, n.spell, n.spec, n.row, n.col, q(n.name))
             end
             out[#out + 1] = "\t},"
+            out[#out + 1] = "\t-- Icy Veins calculator letters: one a point in a link's #tc- part; letter = node"
+            out[#out + 1] = "\tcalc = {"
+            local letters = {}
+            for letter in pairs(pc.letters) do letters[#letters + 1] = letter end
+            table.sort(letters)
+            local row = {}
+            for i, letter in ipairs(letters) do
+                row[#row + 1] = string.format("[%q] = %d", letter, pc.letters[letter])
+                if #row == 6 or i == #letters then
+                    out[#out + 1] = "\t\t" .. table.concat(row, ", ") .. ","
+                    row = {}
+                end
+            end
+            out[#out + 1] = "\t},"
             out[#out + 1] = "\tbuilds = {"
             for _, b in ipairs(pc.builds) do
                 out[#out + 1] = string.format("\t\t{ key = %q, spec = %d, split = %q, link = %q, updated = %q,", b.key, b.spec, b.split, b.link, b.updated)
@@ -208,7 +245,8 @@ local function run(outDir, repo)
     repo = repo or "."
     local root = outDir .. "/AzerothRoute/Talents/"
     local text, count = build(read(repo .. "/tools/fork/icyveins/leveling.txt"),
-        read(repo .. "/tools/fork/icyveins/trees.txt"), read(root .. "Builds.lua"))
+        read(repo .. "/tools/fork/icyveins/trees.txt"), read(root .. "Builds.lua"),
+        read(repo .. "/tools/fork/icyveins/calculator.txt"))
     if not text then return nil, count end
     local f = assert(io.open(root .. "IcyVeins.lua", "wb"))
     f:write(text)

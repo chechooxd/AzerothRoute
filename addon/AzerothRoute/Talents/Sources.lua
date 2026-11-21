@@ -39,6 +39,8 @@ function T.UseSource(def)
 		}
 	end
 	data.builds = builds
+	-- Calculator letters (letter = node) for links pasted in the game (Talents/Import.lua).
+	data.calc = def.calc
 	data.source = L["Icy Veins' WoW Forever leveling guides"]
 	data.url = "https://www.icy-veins.com/wow-forever/leveling-guides"
 	-- The snapshot's summary describes its own plans.

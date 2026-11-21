@@ -128,6 +128,8 @@ FrameMeta = {
 }
 
 _G.CreateFrame = function(kind, name, parent) return newFrame(kind or "Frame", name, parent) end
+-- A font object (an edit box gets its own, Theme.OwnFont).
+_G.CreateFont = function(name) return newFrame("Font", name) end
 
 function M:Fire(event, ...)
     local errs = 0
