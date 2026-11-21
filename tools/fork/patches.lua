@@ -61,6 +61,14 @@ return {
         why = "the Battle.net look over the house style",
     },
     {
+        -- The settings' groups are tabs in the top bar (Theme/Battlenet.lua): a group folded before
+        -- would leave its tab without its pages, so none is folded.
+        file = "AzerothRoute_Options/UI/Options.lua",
+        find = "\t\t\tlocal fold = folded[g.key] and true or false\n",
+        replace = "\t\t\tlocal fold = false -- AzerothRoute: groups are top bar tabs, never folded\n",
+        why = "settings groups are never folded",
+    },
+    {
         -- The body's view height leaves out the Battle.net look's top bar (Theme/Battlenet.lua).
         file = "AzerothRoute/Theme/Widgets.lua",
         find = "\tf.psViewH = f:GetHeight() - SHELL.header - (tabs and SHELL.tabs or 0) - (foot and SHELL.footer or 0) - ph\n",

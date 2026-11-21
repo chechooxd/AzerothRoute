@@ -249,6 +249,120 @@ local function topRail(f, items, bottom, active, onSelect)
 	return #items
 end
 
+-- The settings window: a bar across the top with the emblem, the name and the side list's groups as
+-- tabs; the side column under it lists the open group's pages only (W.ShellNav below).
+local SETTINGS = "AzerothRouteOptions"
+local function groupBar(f)
+	local SH = W.SHELL
+	local TOP = B.TOP
+	local bar = CreateFrame("Frame", nil, f)
+	Theme.Skin(bar, "sidebar")
+	if ns.DragWindow then ns.DragWindow(bar, f) end
+	f.GroupBar = bar
+	f.psTopBar = TOP
+	f.psGroupBar = true
+	f.groupButtons = {}
+	f:SetHeight(f:GetHeight() + TOP)
+	bar:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -1)
+	bar:SetPoint("TOPRIGHT", f, "TOPRIGHT", -1, -1)
+	bar:SetHeight(TOP)
+	local side = f.Sidebar
+	-- The side column's own hairlines (the band's line) would cross its list.
+	if side.GetRegions then
+		for _, r in ipairs({ side:GetRegions() }) do if r ~= (side.psSkin and side.psSkin.bg) then r:Hide() end end
+	end
+	side:ClearAllPoints()
+	side:SetPoint("TOPLEFT", f, "TOPLEFT", 1 + (f.psRail or 0), -1 - TOP)
+	side:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 1 + (f.psRail or 0), 1)
+	f.psNavTop = 12
+	f.NavScroll:ClearAllPoints()
+	f.NavScroll:SetPoint("TOPLEFT", side, "TOPLEFT", 0, -f.psNavTop)
+	f.NavScroll:SetPoint("BOTTOMRIGHT", side, "BOTTOMRIGHT", -1, SH.footer)
+	f.Emblem:SetParent(bar)
+	f.Emblem:ClearAllPoints()
+	f.Emblem:SetSize(32, 32)
+	f.Emblem:SetPoint("LEFT", bar, "LEFT", 10, 0)
+	if f.Emblem.Glow then f.Emblem.Glow:SetAlpha(0) end
+	if f.Emblem.Hot then f.Emblem.Hot:SetParent(bar) end
+	f.Wordmark:SetParent(bar)
+	f.Wordmark:ClearAllPoints()
+	f.Wordmark:SetPoint("LEFT", f.Emblem, "RIGHT", 4, -1)
+	if rawget(f, "Tagline") then f.Tagline:SetAlpha(0) end
+	if W.ShellLayout then W.ShellLayout(f) end
+end
+B.GroupBar = groupBar
+
+local function groupTab(f, i)
+	local b = f.groupButtons[i]
+	if b then return b end
+	local was = f.railButtons
+	f.railButtons = f.groupButtons
+	local saved = rawget(f, "Rail")
+	f.Rail = f.GroupBar
+	b = tab(f, i)
+	f.Rail = saved
+	f.railButtons = was
+	return b
+end
+
+-- The groups (items with `group`) become the bar's tabs; the side list keeps the pages of the group
+-- holding the open page (else the first group's). A tab opens its group's first page. Lists without
+-- groups (search results) pass through. -> the items for the side list
+local function groupNav(f, items, active, onSelect)
+	local groups, cur = {}, nil
+	for _, it in ipairs(items) do
+		if it.group then
+			cur = { item = it, pages = {} }
+			groups[#groups + 1] = cur
+		elseif cur then
+			cur.pages[#cur.pages + 1] = it
+		end
+	end
+	for _, b in ipairs(f.groupButtons) do b:Hide() end
+	if #groups == 0 then return items end
+	local open = groups[1]
+	for _, g in ipairs(groups) do
+		for _, p in ipairs(g.pages) do if p.key == active then open = g end end
+	end
+	if active == nil and f.psOpenGroup then
+		for _, g in ipairs(groups) do if g.item.key == f.psOpenGroup then open = g end end
+	end
+	f.psOpenGroup = open.item.key
+	local x = 10 + 32 + 4 + 200
+	for i, g in ipairs(groups) do
+		local b = groupTab(f, i)
+		local first = g.pages[1] and g.pages[1].key
+		b.psKey = first
+		b.psOnClick = function()
+			f.psOpenGroup = g.item.key
+			if first and onSelect then onSelect(first) end
+		end
+		b.psTip = g.item.label
+		b.Icon:SetTexture(nil)
+		b.Label:SetText(g.item.label)
+		b.Label:Show()
+		b.Label:ClearAllPoints()
+		b.Label:SetPoint("CENTER", b, "CENTER", 0, 0)
+		local on = g == open
+		W.Color(b.Label, on and "text" or "textDim")
+		b.Under:SetShown(on)
+		local w = TAB_PAD * 2 + math.ceil(b.Label:GetStringWidth() or 0)
+		b:SetWidth(w)
+		b:ClearAllPoints()
+		b:SetPoint("LEFT", f.GroupBar, "LEFT", x, 0)
+		b:Show()
+		x = x + w + TAB_GAP
+	end
+	local out = {}
+	for _, p in ipairs(open.pages) do
+		local copy = {}
+		for k, v in pairs(p) do copy[k] = v end
+		copy.indent = nil
+		out[#out + 1] = copy
+	end
+	return out
+end
+
 local shell = W.Shell
 function W.Shell(name, opts)
 	local f = shell(name, opts)
@@ -256,6 +370,7 @@ function W.Shell(name, opts)
 	f:HookScript("OnShow", flatten)
 	placeTitle(f)
 	if opts and opts.rail and rawget(f, "Rail") then topBar(f) end
+	if name == SETTINGS and not rawget(f, "psTopBar") then groupBar(f) end
 	if opts and opts.rail and rawget(f, "Sidebar") then
 		local SH = W.SHELL
 		local c = W.Button(f.Sidebar, L["Continue guide"], function() B.Continue(f) end, { primary = true, height = 36, icon = "guides" })
@@ -316,8 +431,9 @@ function Theme.SwitchColors(on, hover, enabled)
 end
 
 local nav = W.ShellNav
-function W.ShellNav(f, ...)
-	local a, b2, c2 = nav(f, ...)
+function W.ShellNav(f, items, active, onSelect, ...)
+	if rawget(f, "psGroupBar") and type(items) == "table" then items = groupNav(f, items, active, onSelect) end
+	local a, b2, c2 = nav(f, items, active, onSelect, ...)
 	for _, b in ipairs(f.navButtons or {}) do block(b) end
 	return a, b2, c2
 end

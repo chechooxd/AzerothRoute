@@ -3172,7 +3172,7 @@ local function navItems()
 	for _, g in ipairs(GROUPS) do
 		local list = byGroup[g.key]
 		if list then
-			local fold = folded[g.key] and true or false
+			local fold = false -- AzerothRoute: groups are top bar tabs, never folded
 			items[#items + 1] = { group = true, key = GROUP_PREFIX .. g.key, label = g.label, folded = fold }
 			for _, p in ipairs(list) do
 				-- A folded group still shows the page on screen.

@@ -35,3 +35,7 @@ checked in game by the user).
   W.Button, Theme.SwitchColors) plus patches (primary colour in W.Button; SkinId and SkinChoices limited to
   "polestar"). Checks: load_check 20-21. Not seen in game: corner art, slice margins and spacing need the
   user's eye.
+- L4 (2026-11-21): "respecto a las ui de menu y configuraciones, siguen casi igual que antes solo que los botones y
+  algunas cosillas las cambiaste pero en si siguen muy similar a polestar, porfa cambia la distribucion" / "Yes, build
+  it" (second mockup). Built: hub rail -> top bar (sections as tabs, search, Import/Options), side list from the top,
+  header 80px; settings top bar with groups as tabs, side list = open group's pages, folding off. Checks 22-23.

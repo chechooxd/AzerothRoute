@@ -936,6 +936,33 @@ do
         end
         local plain = W.Shell("AzerothRouteBnetTopPlain", { title = "Options" })
         if rawget(plain, "psTopBar") then fail("a window without the rail got the top bar") end
+        -- 23. The settings: groups as tabs in a top bar, the side list holds the active group's pages.
+        local opt = W.Shell("AzerothRouteOptions", { title = "Settings", headerSearch = true })
+        if opt.psTopBar ~= B.TOP or not rawget(opt, "GroupBar") then fail("the settings have no top bar") else
+            local chosen
+            local items = {
+                { group = true, key = "#guided", label = "Guided" },
+                { key = "guide", label = "Guide", indent = true }, { key = "map", label = "Map", indent = true },
+                { group = true, key = "#look", label = "Look" },
+                { key = "appearance", label = "Appearance", indent = true }, { key = "arrow", label = "Arrow", indent = true }, { key = "buttons", label = "Buttons", indent = true },
+            }
+            W.ShellNav(opt, items, "arrow", function(k) chosen = k end)
+            local shown = {}
+            for _, b in ipairs(opt.navButtons) do if b:IsShown() then shown[#shown + 1] = b.psKey or b.Label:GetText() end end
+            if #shown ~= 3 then fail("the side list shows " .. #shown .. " rows, not the Look group's 3 pages") end
+            local tabs = opt.groupButtons or {}
+            local live = 0
+            for _, t in ipairs(tabs) do if t:IsShown() then live = live + 1 end end
+            if live ~= 2 then fail("the top bar shows " .. live .. " groups, not 2") end
+            if tabs[2] and not tabs[2].Under:IsShown() then fail("the open page's group is not marked") end
+            if tabs[1] then tabs[1]:Click() end
+            if chosen ~= "guide" then fail("a group tab does not open its first page: " .. tostring(chosen)) end
+            -- A search's results (no groups) stay as they are.
+            W.ShellNav(opt, { { key = "arrow", label = "Arrow" }, { key = "map", label = "Map" } }, nil, function() end)
+            local n = 0
+            for _, b in ipairs(opt.navButtons) do if b:IsShown() then n = n + 1 end end
+            if n ~= 2 then fail("search results were filtered: " .. n) end
+        end
     end
 end
 
