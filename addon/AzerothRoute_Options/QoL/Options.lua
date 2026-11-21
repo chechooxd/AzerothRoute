@@ -372,6 +372,11 @@ register(QOL, L["Vendors"], L["Trainers"], {
 register(QOL, L["Trackers & map"], L["Experience"], {
 	{ kind = "toggle", key = "qol.xpTracker", label = L["XP tracker"],
 		help = L["XP per hour, time, kills and quests to level, and level splits (/ar xp)."], search = "experience, xp per hour, exp, leveling speed, time to level" },
+	-- AzerothRoute: the milestone card (UI/Milestone.lua).
+	{ kind = "toggle", key = "qol.milestoneCard", label = L["Milestone card every 10 levels"], child = true,
+		disabled = function() return not ns.Get("qol.xpTracker") end,
+		help = L["At levels 20, 30, 40, 50 and 60, a card with those ten levels' time, kills, quests and deaths, against your best other character."],
+		search = "milestone, level 60, leveling time, deaths, speedrun" },
 	{ kind = "toggle", key = "qol.xpTargetMark", label = L["Guide level on the XP bar"],
 		help = L["A mark at the end of the game's XP bar with the level the guide wants you to reach before it moves on, and how many levels away that is when it is more than one."],
 		search = "experience bar, exp bar, target level" },

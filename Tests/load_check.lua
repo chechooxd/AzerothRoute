@@ -644,6 +644,60 @@ do
     end
 end
 
+-- 16. The milestone card: every 10 levels (20 to 60) a card sums up the last ten levels (time, kills,
+-- quests, deaths) against your best other character's same ten; deaths are counted per level.
+do
+    local Ms = ns.UI and ns.UI.Milestone
+    if not (Ms and Ms.Summary and Ms.Best and Ms.Notify) then fail("no milestone card") else
+        -- Deaths at this level, from the game's PLAYER_DEAD.
+        local xp = ns.QoL.State().xp
+        local before = xp and xp.levelDeaths or 0
+        fire("PLAYER_DEAD")
+        xp = ns.QoL.State().xp
+        if not (xp and (xp.levelDeaths or 0) == before + 1) then fail("a death was not counted at this level") end
+        local mine = {}
+        for l = 20, 29 do mine[l] = { seconds = 600, kills = 40, quests = 10, deaths = (l == 25) and 2 or 0 } end
+        local sum = Ms.Summary(mine, 20, 30)
+        if not (sum.seconds == 6000 and sum.kills == 400 and sum.quests == 100 and sum.deaths == 2 and sum.levels == 10 and sum.complete) then fail("milestone sums wrong") end
+        mine[22] = nil
+        sum = Ms.Summary(mine, 20, 30)
+        if sum.complete or sum.levels ~= 9 then fail("a missing level should make the ten partly measured") end
+        mine[22] = { seconds = 600, kills = 40, quests = 10, deaths = 0 }
+        local store = { chars = {
+            ["Jaina-Forever"] = { name = "Jaina", splits = {} },
+            ["Thrall-Forever"] = { name = "Thrall", splits = {} },
+            ["Me-Forever"] = { name = "Me", splits = {} },
+        } }
+        for l = 20, 29 do
+            store.chars["Jaina-Forever"].splits[l] = { seconds = 500 }
+            store.chars["Thrall-Forever"].splits[l] = { seconds = 400, partial = (l == 21) or nil }
+            store.chars["Me-Forever"].splits[l] = { seconds = 1 }
+        end
+        local best = Ms.Best(store, "Me-Forever", 20, 30)
+        if not (best and best.name == "Jaina" and best.seconds == 5000) then fail("best ten levels not Jaina's 5000 s (Thrall's has a partial level)") end
+        if Ms.Best({ chars = {} }, "Me-Forever", 20, 30) then fail("a best with no other character") end
+        -- The card: at 30, not at 25, not with the setting off.
+        ns.Set("qol.milestoneCard", true)
+        local stats = { level = 30, splits = mine }
+        if not Ms.Notify(30, stats) then fail("no card at level 30") end
+        local f = Ms.frame
+        if not (f and f:IsShown() and (f.Title:GetText() or ""):find("30", 1, true)) then fail("milestone card not shown for 30") end
+        if not (f.Text:GetText() or ""):find("2", 1, true) then fail("milestone card does not count the deaths") end
+        Ms.Hide()
+        if Ms.Notify(25, stats) then fail("a card at level 25") end
+        ns.Set("qol.milestoneCard", false)
+        if Ms.Notify(30, stats) then fail("a card with the setting off") end
+        ns.Set("qol.milestoneCard", true)
+        -- At 60: the whole measured run.
+        local run = {}
+        for l = 10, 59 do run[l] = { seconds = 100, kills = 1, quests = 1, deaths = 0 } end
+        if not Ms.Notify(60, { level = 60, splits = run }) then fail("no card at 60") end
+        if not (Ms.frame.Title:GetText() or ""):find("60", 1, true) then fail("no level 60 card") end
+        Ms.Hide()
+        print("milestone: checked")
+    end
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end

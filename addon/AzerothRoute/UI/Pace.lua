@@ -46,6 +46,8 @@ if GetLocale and (GetLocale() == "esMX" or GetLocale() == "esES") then
 	L["Against your best characters: %s slower over %d levels."] = "Contra tus mejores personajes: %s más lento en %d niveles."
 	L["%s faster than %s"] = "%s más rápido que %s"
 	L["%s slower than %s"] = "%s más lento que %s"
+	L["1 death"] = "1 muerte"
+	L["%d deaths"] = "%d muertes"
 end
 
 ---------------------------------------------------------------------------
@@ -80,7 +82,7 @@ function Pace.Levels(splits)
 	local out = { total = 0, longest = 0 }
 	for level, s in pairs(splits or {}) do
 		if (s.seconds or 0) > 0 then
-			out[#out + 1] = { level = level, seconds = s.seconds, kills = s.kills or 0, quests = s.quests or 0, partial = s.partial and true or false }
+			out[#out + 1] = { level = level, seconds = s.seconds, kills = s.kills or 0, quests = s.quests or 0, deaths = s.deaths or 0, partial = s.partial and true or false }
 			out.total = out.total + s.seconds
 			out.longest = max(out.longest, s.seconds)
 		end
@@ -359,7 +361,9 @@ function Pace.Render()
 			b.Ghost:Hide()
 			b.Delta:Hide()
 		end
-		b.Info:SetText(format(L["%d kills, %d quests"], l.kills, l.quests) .. (l.partial and ("  \194\183  " .. L["partly measured"]) or ""))
+		local info = format(L["%d kills, %d quests"], l.kills, l.quests)
+		if (l.deaths or 0) > 0 then info = info .. ", " .. format(l.deaths == 1 and L["1 death"] or L["%d deaths"], l.deaths) end
+		b.Info:SetText(info .. (l.partial and ("  \194\183  " .. L["partly measured"]) or ""))
 		b:Show()
 		w.y = w.y - BAR_H - BAR_GAP
 	end

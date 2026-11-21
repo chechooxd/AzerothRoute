@@ -16,6 +16,14 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 - Race your best character: every character's level times are kept for the account, and the Leveling
   pace page compares each fully measured level with your fastest other character's (a mark on the bar,
   "4m faster than Jaina") and sums it up ("12m faster over 8 levels"). Partly measured levels never count.
+- Milestone card: at levels 20, 30, 40, 50 and 60 a card sums up the last ten levels (time, kills,
+  quests, deaths) against your best other character's same ten, and at 60 the whole measured run.
+  View pace opens the Leveling pace page. Setting under Options > Quality of Life > Trackers & map.
+- Deaths are counted at each level and shown on the Leveling pace page.
+
+### Not possible in Forever
+- An in-combat rotation helper: Forever keeps cooldowns, auras, health and power secret from addons
+  in combat, and Blizzard's combat assistant is off (checked in game, 2026-11-21).
 
 ## [0.5.2] - 2026-11-21
 

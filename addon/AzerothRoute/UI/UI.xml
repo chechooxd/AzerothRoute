@@ -40,6 +40,7 @@
 	<Script file="Welcome.lua"/>
 	<Script file="WhatsNew.lua"/>
 	<Script file="Pace.lua"/>
+	<Script file="Milestone.lua"/>
 	<Script file="Copy.lua"/>
 	<Script file="QuestRoom.lua"/>
 	<Script file="Materials.lua"/>

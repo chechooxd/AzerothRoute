@@ -55,6 +55,49 @@ return {
         replace = '\t<Script file="Builds.lua"/>\n\t<Script file="Sources.lua"/>\n\t<Script file="IcyVeins.lua"/>\n\t<Script file="Import.lua"/>\n\t<Script file="Apply.lua"/>\n\t<Script file="Toast.lua"/>\n',
         why = "loads the Icy Veins plans (Sources.lua, generated IcyVeins.lua), imported plans, Apply.lua and the talent point card",
     },
+    -- Deaths at each level in the XP tracker's splits (the milestone card, UI/Milestone.lua).
+    {
+        file = "AzerothRoute/QoL/XP.lua",
+        find = "\ts.levelSeconds, s.levelXP, s.levelKills, s.levelQuests = 0, 0, 0, 0\n",
+        replace = "\ts.levelSeconds, s.levelXP, s.levelKills, s.levelQuests = 0, 0, 0, 0\n\ts.levelDeaths = 0 -- AzerothRoute: deaths at this level\n",
+        why = "a new level starts with no deaths",
+    },
+    {
+        file = "AzerothRoute/QoL/XP.lua",
+        find = "\t\tquests = s.levelQuests or 0,\n",
+        replace = "\t\tquests = s.levelQuests or 0,\n\t\tdeaths = s.levelDeaths or 0, -- AzerothRoute\n",
+        why = "each level's split keeps its deaths",
+    },
+    {
+        file = "AzerothRoute/QoL/XP.lua",
+        find = 'ns.RegisterEvent("PLAYER_LOGOUT", tick)\n',
+        replace = [=[ns.RegisterEvent("PLAYER_LOGOUT", tick)
+-- AzerothRoute: deaths at this level (PLAYER_DEAD), for the milestone card (UI/Milestone.lua).
+ns.RegisterEvent("PLAYER_DEAD", function()
+	if not enabled() then return end
+	local s = levelState()
+	s.levelDeaths = (s.levelDeaths or 0) + 1
+end)
+]=],
+        why = "counts deaths at each level",
+    },
+    {
+        file = "AzerothRoute/UI/Milestone.lua", create = true, replace = read("UI/Milestone.lua"),
+        why = "the milestone card every 10 levels",
+    },
+    {
+        file = "AzerothRoute_Options/QoL/Options.lua",
+        find = [=[		help = L["XP per hour, time, kills and quests to level, and level splits (/ar xp)."], search = "experience, xp per hour, exp, leveling speed, time to level" },
+]=],
+        replace = [=[		help = L["XP per hour, time, kills and quests to level, and level splits (/ar xp)."], search = "experience, xp per hour, exp, leveling speed, time to level" },
+	-- AzerothRoute: the milestone card (UI/Milestone.lua).
+	{ kind = "toggle", key = "qol.milestoneCard", label = L["Milestone card every 10 levels"], child = true,
+		disabled = function() return not ns.Get("qol.xpTracker") end,
+		help = L["At levels 20, 30, 40, 50 and 60, a card with those ten levels' time, kills, quests and deaths, against your best other character."],
+		search = "milestone, level 60, leveling time, deaths, speedrun" },
+]=],
+        why = "the milestone card's setting",
+    },
     {
         file = "AzerothRoute/UI/Pace.lua", create = true, replace = read("UI/Pace.lua"),
         why = "the Leveling pace section: XP per hour, time to the next level and to the cap, level bars",
@@ -62,8 +105,8 @@ return {
     {
         file = "AzerothRoute/UI/UI.xml",
         find = '\t<Script file="WhatsNew.lua"/>\n',
-        replace = '\t<Script file="WhatsNew.lua"/>\n\t<Script file="Pace.lua"/>\n',
-        why = "loads the Leveling pace section after the hub (Picker.lua)",
+        replace = '\t<Script file="WhatsNew.lua"/>\n\t<Script file="Pace.lua"/>\n\t<Script file="Milestone.lua"/>\n',
+        why = "loads the Leveling pace section after the hub (Picker.lua) and the milestone card",
     },
     {
         file = "AzerothRoute/Talents/Toast.lua", create = true, replace = read("Talents/Toast.lua"),
@@ -495,6 +538,9 @@ local NOTES = {
 		notes = {
 			{ glyph = "hourglass", color = "accent", head = L["Race your best character"], text = function()
 				return L["Leveling pace now compares every level with your fastest other character: a mark on the bar and how much faster or slower you were."]
+			end },
+			{ glyph = "icon-level", color = "accent", head = L["A card every 10 levels"], text = function()
+				return L["At 20, 30, 40, 50 and 60: those ten levels' time, kills, quests and deaths, against your best character. At 60, your whole run."]
 			end },
 		},
 	},

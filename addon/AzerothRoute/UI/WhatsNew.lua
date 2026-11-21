@@ -56,6 +56,9 @@ local NOTES = {
 			{ glyph = "hourglass", color = "accent", head = L["Race your best character"], text = function()
 				return L["Leveling pace now compares every level with your fastest other character: a mark on the bar and how much faster or slower you were."]
 			end },
+			{ glyph = "icon-level", color = "accent", head = L["A card every 10 levels"], text = function()
+				return L["At 20, 30, 40, 50 and 60: those ten levels' time, kills, quests and deaths, against your best character. At 60, your whole run."]
+			end },
 		},
 	},
 	{

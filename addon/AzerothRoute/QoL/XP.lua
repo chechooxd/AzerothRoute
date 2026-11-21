@@ -118,6 +118,7 @@ end
 local function freshLevel(s, level, partial)
 	s.level = level
 	s.levelSeconds, s.levelXP, s.levelKills, s.levelQuests = 0, 0, 0, 0
+	s.levelDeaths = 0 -- AzerothRoute: deaths at this level
 	s.partial = partial and true or nil
 end
 
@@ -144,6 +145,7 @@ local function closeLevel(s, level)
 		xp = s.levelXP or 0,
 		kills = s.levelKills or 0,
 		quests = s.levelQuests or 0,
+		deaths = s.levelDeaths or 0, -- AzerothRoute
 		at = GetServerTime and GetServerTime() or nil,
 		partial = s.partial,
 	}
@@ -290,6 +292,12 @@ ns.RegisterEvent("QUEST_TURNED_IN", onTurnedIn)
 ns.RegisterEvent("CHAT_MSG_COMBAT_XP_GAIN", onKillMessage)
 ns.RegisterEvent("UPDATE_EXHAUSTION", onExhaustion)
 ns.RegisterEvent("PLAYER_LOGOUT", tick)
+-- AzerothRoute: deaths at this level (PLAYER_DEAD), for the milestone card (UI/Milestone.lua).
+ns.RegisterEvent("PLAYER_DEAD", function()
+	if not enabled() then return end
+	local s = levelState()
+	s.levelDeaths = (s.levelDeaths or 0) + 1
+end)
 
 ---------------------------------------------------------------------------
 -- API
