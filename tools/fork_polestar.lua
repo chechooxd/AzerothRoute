@@ -18,8 +18,16 @@ local ROOT = (arg[0]:gsub("[/\\]?tools[/\\]fork_polestar%.lua$", ""))
 if ROOT == "" then ROOT = "." end
 
 local SITE = "https://github.com/chechooxd/AzerothRoute"
--- AzerothRoute's own version, in every folder in place of Polestar's release number.
-local VERSION = "2.0.0"
+-- AzerothRoute's own version (semantic versioning, from 0.1.0), read from the VERSION file at the
+-- repository root: every folder carries it in place of Polestar's release number, and patches
+-- write it wherever they say @VERSION@. Bump VERSION and add its CHANGELOG.md entry to release.
+local VERSION
+do
+    local f = io.open(ROOT .. "/VERSION", "rb")
+    VERSION = f and f:read("*a"):match("^%s*(%d+%.%d+%.%d+)%s*$")
+    if f then f:close() end
+    if not VERSION then error("VERSION must hold MAJOR.MINOR.PATCH, e.g. 0.1.0") end
+end
 local POLESTAR_VERSION = "0.4.1.1"
 
 -- Folders AzerothRoute leaves out (see THIRD_PARTY.md and odd/tasks/azerothroute-2-polestar-base.md).
@@ -301,6 +309,7 @@ local function applyPatches(outDir)
     end
     local applied, missed = 0, 0
     for _, p in ipairs(patches) do
+        p.replace = p.replace:gsub("@VERSION@", VERSION)
         local path = outDir .. "/" .. p.file
         local f = io.open(path, "rb")
         local s = f and f:read("*a")

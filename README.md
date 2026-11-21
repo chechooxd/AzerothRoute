@@ -2,10 +2,15 @@
 
 Leveling guides for World of Warcraft: Forever (Interface 16001).
 
-AzerothRoute 2 is a modified version of [Polestar](https://github.com/fitzforge/polestar)
+AzerothRoute is a modified version of [Polestar](https://github.com/fitzforge/polestar)
 (Copyright (c) 2026 The Polestar authors, GPL-3.0-only): Polestar's guides, guide engine, walking
 routes and interface under AzerothRoute's name, with AzerothRoute's own changes on top.
-AzerothRoute 1 (its own engine) is kept at the git tag `v1.0-final`.
+The earlier engine (its own code) is kept at the git tag `v1.0-final`.
+
+## Versioning
+
+Semantic versioning from 0.1.0. The version lives in [VERSION](VERSION) and each release is
+listed in [CHANGELOG.md](CHANGELOG.md) and tagged `vX.Y.Z`.
 
 ## Install
 

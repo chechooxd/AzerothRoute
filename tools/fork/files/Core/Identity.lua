@@ -25,7 +25,7 @@ local ES = {
 	["It is free and open source under the GPL-3.0."] = "Es gratis y de código abierto bajo la GPL-3.0.",
 	["It is young, so expect the odd wrong step or waypoint. Send a report with /ar report and it gets fixed."] =
 		"Es joven: puede haber algún paso o punto equivocado. Envía un informe con /ar report y se corrige.",
-	["AzerothRoute 2.0"] = "AzerothRoute 2.0",
+	["The first AzerothRoute release"] = "La primera versión de AzerothRoute",
 	["A new engine: leveling 1 to 60 for every race, class quests, professions, reputations, dungeons and rares."] =
 		"Un motor nuevo: subida del 1 al 60 para cada raza, misiones de clase, profesiones, reputaciones, calabozos y raros.",
 	["Your route, walked for you"] = "Tu ruta, trazada para ti",

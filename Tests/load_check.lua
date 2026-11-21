@@ -261,19 +261,30 @@ end
 
 -- 9. No Polestar community or history: version, thanks, recorder, Discord, release notes
 do
+    -- Every folder carries the version in VERSION (semantic versioning, from 0.1.0).
+    local want = (read("VERSION") or ""):match("^%s*(%d+%.%d+%.%d+)%s*$")
+    if not want then fail("VERSION is not MAJOR.MINOR.PATCH") end
     local h3 = io.popen('find ' .. ROOT .. ' -name "*.toc"')
     for toc in h3:lines() do
         local v = (read(toc) or ""):match("## Version:%s*([^\r\n]+)")
-        if v ~= "2.0.0" then fail(toc .. " version " .. tostring(v)) end
+        if v ~= want then fail(toc .. " version " .. tostring(v) .. ", VERSION says " .. tostring(want)) end
     end
     h3:close()
+    local wn = read(ROOT .. "/AzerothRoute/UI/WhatsNew.lua") or ""
+    if wn:match('version = "([^"]+)"') ~= want then fail("What's new does not open on " .. tostring(want)) end
+    local log = read("CHANGELOG.md") or ""
+    if not log:find("## [" .. tostring(want) .. "]", 1, true) then fail("CHANGELOG.md has no entry for " .. tostring(want)) end
     local opts = read(ROOT .. "/AzerothRoute_Options/UI/Options.lua") or ""
     if opts:find('key = "thanks"', 1, true) then fail("Options still has the thanks page") end
     if opts:find('key = "recorder"', 1, true) then fail("Options still has the Recorder page") end
     if opts:find("Cinzel", 1, true) then fail("Options credits Polestar's wordmark font") end
     if (read(ROOT .. "/AzerothRoute/Core/Commands.lua") or ""):find('RegisterCommand("discord"', 1, true) then fail("/ar discord still registered") end
     local wn = read(ROOT .. "/AzerothRoute/UI/WhatsNew.lua") or ""
-    if wn:find('version = "0.', 1, true) then fail("What's new still lists Polestar's releases") end
+    -- Only AzerothRoute's releases: every version the card lists has its CHANGELOG.md entry.
+    local changelog = read("CHANGELOG.md") or ""
+    for v in wn:gmatch('version = "([^"]+)"') do
+        if not changelog:find("## [" .. v .. "]", 1, true) then fail("What's new lists a release AzerothRoute never had: " .. v) end
+    end
     print("community: checked")
 end
 

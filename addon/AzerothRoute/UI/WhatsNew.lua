@@ -50,9 +50,9 @@ end
 -- AzerothRoute: its own release notes (Polestar's history is not AzerothRoute's).
 local NOTES = {
 	{
-		version = "2.0.0",
+		version = "0.1.0",
 		notes = {
-			{ glyph = "guides", color = "accent", head = L["AzerothRoute 2.0"], text = function()
+			{ glyph = "guides", color = "accent", head = L["The first AzerothRoute release"], text = function()
 				return L["A new engine: leveling 1 to 60 for every race, class quests, professions, reputations, dungeons and rares."]
 			end },
 			{ glyph = "icon-goto", color = "accent", head = L["Your route, walked for you"], text = function()

@@ -20,7 +20,7 @@
 ## Title-zhTW: AzerothRoute Codex
 ## Notes-zhTW: AzerothRoute 的一部分：物品、坐騎、寵物、NPC、任務及其取得方式、地城與稀有怪物，供查詢、地城與稀有頁面使用。按需載入。
 ## Author: AzerothRoute
-## Version: 2.0.0
+## Version: 0.1.0
 ## Category: AzerothRoute
 ## Group: AzerothRoute
 ## LoadOnDemand: 1
