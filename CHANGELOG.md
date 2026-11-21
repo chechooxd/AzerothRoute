@@ -10,6 +10,15 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 - MINOR (0.x.0): new features or guides.
 - MAJOR: reserved for 1.0.0, the first stable release.
 
+## [0.5.0] - 2026-11-21
+
+### Added
+- Leveling pace page in the menu: XP per hour, time to the next level and to level 60 at your pace,
+  and every level played with the XP tracker on as a bar of its play time with its kills and quests.
+  The time to 60 adds this level's XP left to every later level's at the tracker's rate, or at the
+  rate of the levels already played before there is one. Uses Polestar's XP tracker (`/ar xp`); with
+  the tracker off the page offers to turn it on.
+
 ## [0.4.0] - 2026-11-21
 
 ### Added

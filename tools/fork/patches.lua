@@ -56,6 +56,16 @@ return {
         why = "loads the Icy Veins plans (Sources.lua, generated IcyVeins.lua), imported plans, Apply.lua and the talent point card",
     },
     {
+        file = "AzerothRoute/UI/Pace.lua", create = true, replace = read("UI/Pace.lua"),
+        why = "the Leveling pace section: XP per hour, time to the next level and to the cap, level bars",
+    },
+    {
+        file = "AzerothRoute/UI/UI.xml",
+        find = '\t<Script file="WhatsNew.lua"/>\n',
+        replace = '\t<Script file="WhatsNew.lua"/>\n\t<Script file="Pace.lua"/>\n',
+        why = "loads the Leveling pace section after the hub (Picker.lua)",
+    },
+    {
         file = "AzerothRoute/Talents/Toast.lua", create = true, replace = read("Talents/Toast.lua"),
         why = "the talent point card: the plan's next talent with Apply and View plan after a level-up",
     },
@@ -469,6 +479,14 @@ end]=],
 local NOTES = {
 	{
 		version = "@VERSION@",
+		notes = {
+			{ glyph = "hourglass", color = "accent", head = L["Leveling pace"], text = function()
+				return L["A new page in the menu: your XP per hour, the time to your next level and to 60 at your pace, and every level you played as a bar."]
+			end },
+		},
+	},
+	{
+		version = "0.4.0",
 		notes = {
 			{ glyph = "icon-learn", color = "accent", head = L["Talent points, one click"], text = function()
 				return L["After a level-up a card names your plan's next talent: Apply talents spends the point without opening anything."]

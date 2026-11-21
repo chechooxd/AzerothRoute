@@ -20,7 +20,7 @@
 ## Title-zhTW: AzerothRoute 指南（部落）
 ## Notes-zhTW: AzerothRoute 的部落角色指南。按需載入。
 ## Author: AzerothRoute
-## Version: 0.4.0
+## Version: 0.5.0
 ## Category: AzerothRoute
 ## Group: AzerothRoute
 ## LoadOnDemand: 1

@@ -25,6 +25,8 @@ local ES = {
 	["It is free and open source under the GPL-3.0."] = "Es gratis y de código abierto bajo la GPL-3.0.",
 	["It is young, so expect the odd wrong step or waypoint. Send a report with /ar report and it gets fixed."] =
 		"Es joven: puede haber algún paso o punto equivocado. Envía un informe con /ar report y se corrige.",
+	["A new page in the menu: your XP per hour, the time to your next level and to 60 at your pace, and every level you played as a bar."] =
+		"Una página nueva en el menú: tu XP por hora, el tiempo para tu siguiente nivel y para el 60 a tu ritmo, y cada nivel que jugaste como una barra.",
 	["Talent points, one click"] = "Puntos de talento, en un clic",
 	["After a level-up a card names your plan's next talent: Apply talents spends the point without opening anything."] =
 		"Al subir de nivel, una tarjeta muestra el siguiente talento de tu plan: Aplicar talentos gasta el punto sin abrir nada.",

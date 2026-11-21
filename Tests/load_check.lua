@@ -555,6 +555,40 @@ do
     end
 end
 
+-- 14. Leveling pace: time to the level cap from the XP left and the rate (the tracker's, else the
+-- levels already played), every finished level as a bar, and a page that says when the tracker is off.
+do
+    local P = ns.UI and ns.UI.Pace
+    if not (P and P.Estimate and P.Levels) then fail("no leveling pace page") else
+        local levelXP = { [20] = 500, [21] = 2000, [22] = 3000 }
+        local splits = { [18] = { seconds = 1800, xp = 3000, kills = 10, quests = 4 }, [19] = { seconds = 1800, xp = 3000, kills = 8, quests = 5, partial = true } }
+        local st = { level = 20, remaining = 1000, rate = 6000, maxed = false, splits = splits }
+        local e = P.Estimate(st, levelXP, 23)
+        if not (e and e.xp == 6000 and math.abs(e.seconds - 3600) < 1e-6 and e.rate == 6000) then fail("time to the cap: " .. tostring(e and e.xp) .. " XP, " .. tostring(e and e.seconds) .. " s") end
+        st.rate = 0
+        e = P.Estimate(st, levelXP, 23)
+        if not (e and e.fromSplits and e.rate == 6000 and math.abs(e.seconds - 3600) < 1e-6) then fail("time to the cap without a live rate should use the levels played") end
+        if P.Estimate({ level = 20, remaining = 1000, rate = 0, splits = {} }, levelXP, 23) then fail("an estimate with no rate at all") end
+        local maxed = P.Estimate({ level = 23, maxed = true, rate = 0, splits = splits }, levelXP, 23)
+        if not (maxed and maxed.maxed and maxed.seconds == 0) then fail("at the cap the estimate is not done") end
+        local lv = P.Levels(splits)
+        if not (#lv == 2 and lv[1].level == 18 and lv[2].level == 19 and lv[2].partial and lv.total == 3600 and lv.longest == 1800) then fail("level bars wrong") end
+        -- The page, with the tracker's numbers and with the tracker off.
+        local QoL = ns.QoL
+        local get = QoL.GetXPStats
+        QoL.GetXPStats = function() return { level = 20, xp = 100, xpMax = 1100, remaining = 1000, percent = 9.1, rate = 6000, maxed = false, timeToLevel = 600, rested = 0, splits = splits } end
+        P.Build(CreateFrame("Frame"), nil)
+        P.Render()
+        local sh = P.Shown()
+        if not (sh.bars == 2 and sh.tiles == 3 and sh.toCap and not sh.off) then fail(string.format("pace page: %s bars, %s tiles", tostring(sh.bars), tostring(sh.tiles))) end
+        QoL.GetXPStats = function() return nil end
+        P.Render()
+        if not P.Shown().off then fail("pace page does not say the tracker is off") end
+        QoL.GetXPStats = get
+        print("pace: checked")
+    end
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end
