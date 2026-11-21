@@ -313,9 +313,71 @@ local function groupBar(f)
 	f.Wordmark:ClearAllPoints()
 	f.Wordmark:SetPoint("LEFT", f.Emblem, "RIGHT", 4, -1)
 	if rawget(f, "Tagline") then f.Tagline:SetAlpha(0) end
+	-- The window's tools go over everything, at the bar's right: each time the shell places them in the
+	-- header (W.HeaderScale's Place), they move to the bar, right to left from the close button.
+	local tools = rawget(f, "HeaderTools")
+	if tools and tools.Place then
+		local place = tools.Place
+		tools.Place = function(...)
+			place(...)
+			B.ToolsToBar(f)
+		end
+	end
+	B.ToolsToBar(f)
 	if W.ShellLayout then W.ShellLayout(f) end
 end
 B.GroupBar = groupBar
+
+-- The close button, the menu scale and the header's tools (psHeadTools: search, Peek and Fold, Install)
+-- right to left in the settings' bar. Where they would reach the group tabs, the scale's label goes
+-- first, then Install, then the search narrows. The header keeps the page title alone.
+function B.ToolsToBar(f)
+	local bar = rawget(f, "GroupBar")
+	if not bar then return end
+	local SH = W.SHELL
+	local close, scale = f.Close, rawget(f, "HeaderTools")
+	close:SetParent(bar)
+	close:ClearAllPoints()
+	close:SetPoint("RIGHT", bar, "RIGHT", -12, 0)
+	local list = {}
+	if scale then list[#list + 1] = { w = scale, gap = 14 } end
+	for _, w in ipairs(rawget(f, "psHeadTools") or {}) do list[#list + 1] = { w = w, gap = rawget(w, "psHeadGap") or 16 } end
+	local function lay()
+		local left, used = close, 12 + (close:GetWidth() or 28)
+		for _, t in ipairs(list) do
+			local w = t.w
+			if w:IsShown() or w == scale then
+				w:SetParent(bar)
+				w:ClearAllPoints()
+				w:SetPoint("RIGHT", left, "LEFT", -t.gap, 0)
+				if w == scale then w:Show() end
+				used = used + t.gap + (w:GetWidth() or 0)
+				left = w
+			end
+		end
+		return used
+	end
+	local room = (f:GetWidth() or 0) - (rawget(f, "psGroupEnd") or (10 + 32 + 4 + 140 + 16)) - 16
+	local used = lay()
+	if used > room and scale and scale.Label and scale.Label:IsShown() then
+		local lw = scale.Label:GetStringWidth() or 0
+		scale.Label:Hide()
+		scale:SetWidth(math.max(40, (scale:GetWidth() or 0) - lw - 10))
+		used = lay()
+	end
+	local install = rawget(f, "Install")
+	if used > room and install and install:IsShown() then
+		install:Hide()
+		used = lay()
+	end
+	local search = rawget(f, "Search")
+	if used > room and search and search:IsShown() then
+		search:SetWidth(math.max(160, (search:GetWidth() or 0) - (used - room)))
+		lay()
+	end
+	-- The title alone in the header, across it.
+	f.Title:SetPoint("TOPRIGHT", f.Header, "TOPRIGHT", -SH.pad, -18)
+end
 
 local function groupTab(f, i)
 	local b = f.groupButtons[i]
@@ -377,6 +439,11 @@ local function groupNav(f, items, active, onSelect)
 		b:SetPoint("LEFT", f.GroupBar, "LEFT", x, 0)
 		b:Show()
 		x = x + w + TAB_GAP
+	end
+	-- Where the tabs end: the window's tools keep right of it (B.ToolsToBar).
+	if f.psGroupEnd ~= x then
+		f.psGroupEnd = x
+		B.ToolsToBar(f)
 	end
 	local out = {}
 	for _, p in ipairs(open.pages) do

@@ -939,10 +939,17 @@ do
         local plain = W.Shell("AzerothRouteBnetTopPlain", { title = "Options" })
         if rawget(plain, "psTopBar") then fail("a window without the rail got the top bar") end
         -- 23. The settings: groups as tabs in a top bar, the side list holds the active group's pages.
-        local opt = W.Shell("AzerothRouteOptions", { title = "Settings", headerSearch = true })
+        local opt = W.Shell("AzerothRouteOptions", { title = "Settings", headerSearch = true, scalePath = "ui.menuScale" })
         if opt.psTopBar ~= B.TOP or not rawget(opt, "GroupBar") then fail("the settings have no top bar") else
             if not (opt.Emblem:IsShown() and opt.Wordmark:IsShown() and opt.Status:IsShown()) then fail("the settings lost their logo, name or version") end
             if not rawget(opt.GroupBar, "Band") then fail("the settings' top bar has no theme band") end
+            -- The window's tools (search, scale, close) sit in the top bar, over everything, and stay there.
+            for _, again in ipairs({ false, true }) do
+                if again and opt.HeaderTools then opt.HeaderTools.Place() end
+                if opt.Close:GetParent() ~= opt.GroupBar then fail("the settings' close button is not in the top bar") end
+                if not (opt.HeaderTools and opt.HeaderTools:GetParent() == opt.GroupBar and opt.HeaderTools:IsShown()) then fail("the menu scale is not in the top bar") end
+                if opt.Search:GetParent() ~= opt.GroupBar then fail("the settings search is not in the top bar") end
+            end
             local chosen
             local items = {
                 { group = true, key = "#guided", label = "Guided" },
