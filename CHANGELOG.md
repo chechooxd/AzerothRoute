@@ -10,7 +10,7 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 - MINOR (0.x.0): new features or guides.
 - MAJOR: reserved for 1.0.0, the first stable release.
 
-## [0.7.0] - 2026-11-21
+## [0.6.0] - in progress
 
 ### Added
 - Gathering routes page in the menu: for Herbalism and Mining, the three zones with most spots of the
@@ -18,10 +18,6 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
   yours), each as one closed loop through every spot (nearest neighbour, then 2-opt). Start holds the
   arrow on the nearest spot and moves on within 25 yards; Skip spot and Stop. Built from Polestar's
   node spawn data, so a spot is where a node can spawn, not a promise one is up.
-
-## [0.6.0] - 2026-11-21
-
-### Added
 - Race your best character: every character's level times are kept for the account, and the Leveling
   pace page compares each fully measured level with your fastest other character's (a mark on the bar,
   "4m faster than Jaina") and sums it up ("12m faster over 8 levels"). Partly measured levels never count.
