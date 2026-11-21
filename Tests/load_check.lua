@@ -824,7 +824,7 @@ do
 end
 
 -- 20. The Battle.net look: rounded surfaces (nine-slice art), flat headers with no night band, haze or
--- gold rim, and Battle.net blue primary buttons with white text.
+-- gold rim (kept), and primary buttons in the theme's accent.
 do
     local Theme, W = ns.Theme, ns.Widgets
     local B = Theme and Theme.Battlenet
@@ -845,13 +845,13 @@ do
         local shell = W.Shell("AzerothRouteBnetProbe", { rail = true, title = "Probe" })
         if not (shell.Band:GetAlpha() == 0 and shell.Haze:GetAlpha() == 0) then fail("the night band or haze still shows") end
         local rim = rawget(shell, "psRim") or rawget(shell, "Rim")
-        if rim and rim:GetAlpha() ~= 0 then fail("the gold rim still shows") end
+        if rim and rim:GetAlpha() == 0 then fail("the gold rim is hidden") end
         if not isRound(shell.psSkin and shell.psSkin.bg) then fail("the window is not rounded") end
-        -- Primary button: Battle.net blue, white label, no lit top line, no edge.
+        -- Primary button: the theme's accent (it follows the scheme and accent the player picks), no lit top line, no edge.
         local p = W.Button(UIParent, "Continue", nil, { primary = true })
         local r, g, b = p.psSkin.bg:GetVertexColor()
-        local br, bg2, bb = B.PRIMARY[1], B.PRIMARY[2], B.PRIMARY[3]
-        if not (math.abs(r - br) < 1e-3 and math.abs(g - bg2) < 1e-3 and math.abs(b - bb) < 1e-3) then fail(string.format("primary button is %.2f,%.2f,%.2f, not Battle.net blue", r, g, b)) end
+        local br, bg2, bb = Theme.Accent()
+        if not (math.abs(r - br) < 1e-3 and math.abs(g - bg2) < 1e-3 and math.abs(b - bb) < 1e-3) then fail(string.format("primary button is %.2f,%.2f,%.2f, not the theme's accent", r, g, b)) end
         local hi = rawget(p, "psTopHi")
         if hi and hi:IsShown() then fail("primary button keeps the lit top line") end
         if p.psSkin.ring and p.psSkin.ring:IsShown() then fail("primary button has an edge") end
@@ -883,11 +883,8 @@ do
         end
         local plain = W.Shell("AzerothRouteBnetPlain", { title = "Options" })
         if rawget(plain, "Continue") then fail("a window without the rail got the Continue guide button") end
-        -- Settings switches: on is Battle.net blue with a white knob; off keeps the house tones.
-        local on = Theme.SwitchColors(true, false, true)
-        if not (on.track[1] == B.PRIMARY[1] and on.track[3] == B.PRIMARY[3] and on.knob[1] == 1) then fail("an on switch is not Battle.net blue") end
-        local off = Theme.SwitchColors(false, false, true)
-        if off.track[1] == B.PRIMARY[1] and off.track[3] == B.PRIMARY[3] then fail("an off switch turned blue") end
+        -- Settings switches keep the theme's own colours (no fixed blue).
+        if B.PRIMARY then fail("a fixed Battle.net blue still overrides the theme") end
         -- Only AzerothRoute's own design: one theme offered, any other saved choice drawn as it.
         local choices = Theme.SkinChoices()
         if not (#choices == 1 and choices[1].value == "polestar") then fail("other looks still offered: " .. #choices) end
@@ -919,8 +916,13 @@ do
     if not (B and B.TOP) then fail("no top bar") else
         local hub = W.Shell("AzerothRouteBnetTop", { rail = true, title = "Hub" })
         if hub.psTopBar ~= B.TOP then fail("the hub has no top bar") end
-        if hub.psNavTop ~= 12 then fail("the side list does not start at the top: " .. tostring(hub.psNavTop)) end
-        if hub.Search:GetParent() ~= hub.Rail then fail("the search is not in the top bar") end
+        if hub.Search:GetParent() ~= hub.Sidebar then fail("the search is not above the side list") end
+        if hub.psNavTop ~= 52 then fail("the side list does not start under the search: " .. tostring(hub.psNavTop)) end
+        if not (hub.Emblem:IsShown() and hub.Wordmark:IsShown()) then fail("the logo or the name is hidden in the top bar") end
+        if not rawget(hub.Rail, "Band") then fail("the top bar has no theme band") end
+        local rim = rawget(hub, "psRim") or rawget(hub, "Rim")
+        if rim and rim:GetAlpha() == 0 then fail("the gold rim is hidden") end
+        if B.TabLabel({ key = "Routes", label = "Gathering routes" }) == "Gathering routes" then fail("Gathering routes has no short tab name") end
         if hub.Wordmark:GetParent() ~= hub.Rail then fail("the name is not in the top bar") end
         if Theme.Metric("shellHeader", 112) ~= B.HEADER or W.SHELL.header ~= B.HEADER then fail("the header is still tall") end
         local picked
@@ -939,6 +941,8 @@ do
         -- 23. The settings: groups as tabs in a top bar, the side list holds the active group's pages.
         local opt = W.Shell("AzerothRouteOptions", { title = "Settings", headerSearch = true })
         if opt.psTopBar ~= B.TOP or not rawget(opt, "GroupBar") then fail("the settings have no top bar") else
+            if not (opt.Emblem:IsShown() and opt.Wordmark:IsShown() and opt.Status:IsShown()) then fail("the settings lost their logo, name or version") end
+            if not rawget(opt.GroupBar, "Band") then fail("the settings' top bar has no theme band") end
             local chosen
             local items = {
                 { group = true, key = "#guided", label = "Guided" },

@@ -39,3 +39,7 @@ checked in game by the user).
   algunas cosillas las cambiaste pero en si siguen muy similar a polestar, porfa cambia la distribucion" / "Yes, build
   it" (second mockup). Built: hub rail -> top bar (sections as tabs, search, Import/Options), side list from the top,
   header 80px; settings top bar with groups as tabs, side list = open group's pages, folding off. Checks 22-23.
+- L5 (2026-11-21): "me gusta pero siento que perdio tokes del tema general ... no trabajaste bien la UX/UI ... que el
+  tema seleccionado impacte todo". Fixed: logo, name and version were hidden by the line clean-up (only white divider
+  textures are hidden now); fixed blue removed (primary, switches, tab lines use the theme accent); theme band in both
+  top bars and the gold rim back; hub tabs keep labels (short names, search moved above the side list).

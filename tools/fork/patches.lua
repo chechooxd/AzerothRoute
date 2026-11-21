@@ -93,7 +93,7 @@ return {
 			-- The house primary: one lit line inside its top edge.
 			if Theme.SkinKey() == "polestar" and not self.psGhost then]=],
         replace = [=[		if self.psPrimary then
-			-- AzerothRoute: Battle.net blue with white text (Theme/Battlenet.lua), else the accent.
+			-- AzerothRoute: a look may give primary buttons its own colour (Theme.PrimaryFill); else the accent.
 			local r, g, bb = (Theme.PrimaryFill or Theme.Accent)()
 			if d and d.bg then d.bg:SetVertexColor(r, g, bb, 1) end
 			if self.psBorder then for i = 1, 4 do self.psBorder[i]:SetVertexColor(r, g, bb, 1) end end

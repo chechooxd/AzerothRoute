@@ -1,11 +1,11 @@
 -- AzerothRoute: the Battle.net look over the house style. Every house surface (window, panel, button,
 -- dropdown, tile, edit box) is drawn with rounded corners: its ground and its hover wash take the
 -- nine-slice Media/UI/round-8 art, and its square 1px border gives way to a rounded edge
--- (round-8-ring) in the same colour. Shell windows (the hub, the settings) get a flat header: the
--- night band, its haze and the gold rim are hidden. Primary buttons are Battle.net blue with white
--- labels (Theme.PrimaryFill, read by W.Button's painter). Original AzerothRoute code (GPL-3.0-only).
+-- (round-8-ring) in the same colour. Shell windows (the hub, the settings) get a bar across the top that
+-- carries the theme's band (its sky and contour lines) under the gold rim, and a short flat header.
+-- Every accent (primary buttons, switches, the tabs' line, selections) is the theme's own, so the scheme
+-- and the accent the player picks colour all of it. Original AzerothRoute code (GPL-3.0-only).
 --
---   Theme.Battlenet.PRIMARY { r, g, b }      the primary button's blue
 --   Theme.Battlenet.Round(frame[, radius])   rounds a painted frame's ground, hover and edge
 
 local ADDON, ns = ...
@@ -15,14 +15,10 @@ if not (Theme and W and Theme.Paint and Theme.Paint.house) then return end
 local B = {}
 Theme.Battlenet = B
 
-B.PRIMARY = { 0.118, 0.482, 1 }         -- #1E7BFF, the Battle.net app's play button
-B.PRIMARY_TEXT = { 1, 1, 1 }
 B.RADIUS = { window = 10, panel = 8, button = 6, dropdown = 6, tile = 8, editbox = 6, inset = 6 }
 local FILL, RING = "round-8", "round-8-ring"
 local MARGIN = 8 -- the art's corner, in texels
 
-function Theme.PrimaryFill() return B.PRIMARY[1], B.PRIMARY[2], B.PRIMARY[3] end
-function Theme.PrimaryText() return B.PRIMARY_TEXT[1], B.PRIMARY_TEXT[2], B.PRIMARY_TEXT[3] end
 
 -- A texture drawn as nine slices of the rounded art, its corners `radius` px.
 local function slice(tex, art, radius)
@@ -71,12 +67,29 @@ for kind, radius in pairs(B.RADIUS) do
 	end
 end
 
--- Shell windows: a flat header (no night band, haze or gold rim).
+-- Shell windows: a flat header (its band and haze go to the top bar; the gold rim stays).
 local function flatten(f)
 	if rawget(f, "Band") then f.Band:SetAlpha(0) end
 	if rawget(f, "Haze") then f.Haze:SetAlpha(0) end
-	local rim = rawget(f, "psRim") or rawget(f, "Rim")
-	if rim then rim:SetAlpha(0) end
+end
+
+-- Only the divider lines of a column (plain white textures other than its ground): its emblem, name,
+-- version and the like stay.
+local function hideLines(frame)
+	if not frame.GetRegions then return end
+	local bg = frame.psSkin and frame.psSkin.bg
+	for _, r in ipairs({ frame:GetRegions() }) do
+		if r ~= bg and r.GetObjectType and r:GetObjectType() == "Texture" and r:GetTexture() == Theme.Media("white") then r:Hide() end
+	end
+end
+
+-- The theme's band (sky and contour lines) across a top bar, cropped to it, as the header had it.
+local function barBand(f, bar)
+	if not Theme.Band then return end
+	local band = Theme.Band(bar, "BACKGROUND", -5)
+	band:SetAllPoints(bar)
+	if Theme.BandCoords then band:SetTexCoord(Theme.BandCoords(f:GetWidth(), B.TOP)) end
+	bar.Band = band
 end
 B.Flatten = flatten
 
@@ -126,22 +139,33 @@ local function topBar(f)
 	f:SetWidth(f:GetWidth() - RAIL)
 	f:SetHeight(f:GetHeight() + TOP)
 	f.psRail = 0
-	-- The bar: its own ground, no hairlines of the rail.
-	if bar.GetRegions then
-		for _, r in ipairs({ bar:GetRegions() }) do if r ~= (bar.psSkin and bar.psSkin.bg) then r:Hide() end end
-	end
+	-- The bar: its own ground and the theme's band, no hairlines of the rail.
+	hideLines(bar)
 	bar:ClearAllPoints()
 	bar:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -1)
 	bar:SetPoint("TOPRIGHT", f, "TOPRIGHT", -1, -1)
 	bar:SetHeight(TOP)
-	-- The side column under it, its list from the top (no brand, no search in it).
+	barBand(f, bar)
+	-- The side column under it: the search on top (as the Battle.net app's list), then the list.
 	f.Sidebar:ClearAllPoints()
 	f.Sidebar:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -1 - TOP)
 	f.Sidebar:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 1, 1)
-	f.psNavTop = 12
-	f.NavScroll:ClearAllPoints()
-	f.NavScroll:SetPoint("TOPLEFT", f.Sidebar, "TOPLEFT", 0, -f.psNavTop)
-	f.NavScroll:SetPoint("BOTTOMRIGHT", f.Sidebar, "BOTTOMRIGHT", -1, SH.footer)
+	local function placeList()
+		local search = rawget(f, "Search")
+		f.psNavTop = (search and search:IsShown()) and (12 + 30 + 10) or 12
+		f.NavScroll:ClearAllPoints()
+		f.NavScroll:SetPoint("TOPLEFT", f.Sidebar, "TOPLEFT", 0, -f.psNavTop)
+		f.NavScroll:SetPoint("BOTTOMRIGHT", f.Sidebar, "BOTTOMRIGHT", -1, SH.footer)
+	end
+	if rawget(f, "Search") then
+		f.Search:SetParent(f.Sidebar)
+		f.Search:ClearAllPoints()
+		f.Search:SetPoint("TOPLEFT", f.Sidebar, "TOPLEFT", SH.side, -12)
+		f.Search:SetPoint("TOPRIGHT", f.Sidebar, "TOPRIGHT", -SH.side, -12)
+		f.Search:HookScript("OnShow", placeList)
+		f.Search:HookScript("OnHide", placeList)
+	end
+	placeList()
 	-- The emblem and the name in the bar.
 	f.Emblem:ClearAllPoints()
 	f.Emblem:SetSize(32, 32)
@@ -151,13 +175,6 @@ local function topBar(f)
 	f.Wordmark:ClearAllPoints()
 	f.Wordmark:SetPoint("LEFT", f.Emblem, "RIGHT", 4, -1)
 	if rawget(f, "Tagline") then f.Tagline:SetAlpha(0) end
-	-- The search at the bar's right.
-	if rawget(f, "Search") then
-		f.Search:SetParent(bar)
-		f.Search:ClearAllPoints()
-		f.Search:SetPoint("RIGHT", bar, "RIGHT", -12, 0)
-		f.Search:SetWidth(220)
-	end
 	if W.LayoutRim then W.LayoutRim(f) end
 	if W.ShellLayout then W.ShellLayout(f) end
 end
@@ -177,7 +194,7 @@ local function tab(f, i)
 	b.Under:SetHeight(2)
 	b.Under:SetPoint("BOTTOMLEFT", b, "BOTTOMLEFT", 6, 0)
 	b.Under:SetPoint("BOTTOMRIGHT", b, "BOTTOMRIGHT", -6, 0)
-	b.Under:SetVertexColor(B.PRIMARY[1], B.PRIMARY[2], B.PRIMARY[3], 1)
+	W.Color(b.Under, "accent")
 	local hl = b:CreateTexture(nil, "HIGHLIGHT")
 	slice(hl, FILL, MARGIN)
 	hl:SetAllPoints(b)
@@ -187,7 +204,16 @@ local function tab(f, i)
 	return b
 end
 
--- The sections as tabs from the name's right; the foot items as icons left of the search. Labels show
+-- A section's name on its tab: the short one where the hub's is long.
+local SHORT = { Pace = "Pace", Routes = "Routes" }
+if GetLocale and (GetLocale() == "esMX" or GetLocale() == "esES") then
+	L["Pace"] = "Ritmo"
+	L["Routes"] = "Rutas"
+end
+local function tabLabel(item) return SHORT[item.key] and L[SHORT[item.key]] or item.label end
+B.TabLabel = tabLabel
+
+-- The sections as tabs from the name's right; the foot items as icons at the bar's right. Labels show
 -- while every tab fits, else icons alone (each with its tip). -> the number of sections shown.
 local function topRail(f, items, bottom, active, onSelect)
 	local bar = f.Rail
@@ -198,7 +224,7 @@ local function topRail(f, items, bottom, active, onSelect)
 		b.psKey, b.psOnClick = item.key, item.onClick or onSelect
 		b.psTip = item.tip or item.label
 		b.Icon:SetTexture(Theme.Media(item.icon or "compact"))
-		b.Label:SetText(labelled and item.label or "")
+		b.Label:SetText(labelled and tabLabel(item) or "")
 		b.Label:SetShown(labelled)
 		b.Icon:ClearAllPoints()
 		b.Label:ClearAllPoints()
@@ -220,15 +246,15 @@ local function topRail(f, items, bottom, active, onSelect)
 		b:Show()
 		return b, w
 	end
-	-- The room between the name and the search with the foot icons.
-	local left = 10 + 32 + 4 + 200
+	-- The room between the name and the foot icons.
+	local left = 10 + 32 + 4 + 140 + 16
 	local footW = #(bottom or {}) * (ICON + TAB_PAD * 2 + TAB_GAP)
-	local room = (f:GetWidth() - 2) - left - footW - 220 - 24
+	local room = (f:GetWidth() - 2) - left - footW - 24
 	local need = 0
 	for _, item in ipairs(items) do
 		local probe = f.psTabProbe or W.Text(bar, "label", "textDim")
 		f.psTabProbe = probe
-		probe:SetText(item.label or "")
+		probe:SetText(tabLabel(item) or "")
 		probe:Hide()
 		need = need + TAB_PAD * 2 + ICON + 6 + math.ceil(probe:GetStringWidth() or 0) + TAB_GAP
 	end
@@ -239,7 +265,7 @@ local function topRail(f, items, bottom, active, onSelect)
 		b:SetPoint("LEFT", bar, "LEFT", x, 0)
 		x = x + w + TAB_GAP
 	end
-	local rx = 12 + 220 + 8
+	local rx = 12
 	for k = #(bottom or {}), 1, -1 do
 		local b, w = setup(bottom[k], false)
 		b:SetPoint("RIGHT", bar, "RIGHT", -rx, 0)
@@ -257,6 +283,7 @@ local function groupBar(f)
 	local TOP = B.TOP
 	local bar = CreateFrame("Frame", nil, f)
 	Theme.Skin(bar, "sidebar")
+	barBand(f, bar)
 	if ns.DragWindow then ns.DragWindow(bar, f) end
 	f.GroupBar = bar
 	f.psTopBar = TOP
@@ -268,9 +295,7 @@ local function groupBar(f)
 	bar:SetHeight(TOP)
 	local side = f.Sidebar
 	-- The side column's own hairlines (the band's line) would cross its list.
-	if side.GetRegions then
-		for _, r in ipairs({ side:GetRegions() }) do if r ~= (side.psSkin and side.psSkin.bg) then r:Hide() end end
-	end
+	hideLines(side)
 	side:ClearAllPoints()
 	side:SetPoint("TOPLEFT", f, "TOPLEFT", 1 + (f.psRail or 0), -1 - TOP)
 	side:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 1 + (f.psRail or 0), 1)
@@ -328,7 +353,7 @@ local function groupNav(f, items, active, onSelect)
 		for _, g in ipairs(groups) do if g.item.key == f.psOpenGroup then open = g end end
 	end
 	f.psOpenGroup = open.item.key
-	local x = 10 + 32 + 4 + 200
+	local x = 10 + 32 + 4 + 140 + 16
 	for i, g in ipairs(groups) do
 		local b = groupTab(f, i)
 		local first = g.pages[1] and g.pages[1].key
@@ -410,24 +435,6 @@ local function block(b)
 	end)
 	if b.Bar then b.Bar:SetAlpha(0) end
 	roundHover(b)
-end
-
--- Settings switches: on in Battle.net blue with a white knob (dimmed when the row is disabled); off
--- keeps the house tones.
-local switchColors = Theme.SwitchColors
-local blue = setmetatable({}, { __mode = "k" })
-function Theme.SwitchColors(on, hover, enabled)
-	local c = switchColors(on, hover, enabled)
-	if not on then return c end
-	local b = blue[c]
-	if not b then
-		local k = enabled and 1 or 0.45
-		local p = { B.PRIMARY[1] * k + c.track[1] * (1 - k), B.PRIMARY[2] * k + c.track[2] * (1 - k), B.PRIMARY[3] * k + c.track[3] * (1 - k) }
-		local knob = enabled and { 1, 1, 1 } or { c.knob[1], c.knob[2], c.knob[3] }
-		b = { track = p, edge = { p[1], p[2], p[3] }, knob = knob, shadow = c.shadow, contact = c.contact }
-		blue[c] = b
-	end
-	return b
 end
 
 local nav = W.ShellNav
