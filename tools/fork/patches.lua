@@ -52,8 +52,12 @@ return {
     {
         file = "AzerothRoute/Talents/Talents.xml",
         find = '\t<Script file="Builds.lua"/>\n',
-        replace = '\t<Script file="Builds.lua"/>\n\t<Script file="Apply.lua"/>\n',
-        why = "loads Apply.lua",
+        replace = '\t<Script file="Builds.lua"/>\n\t<Script file="Sources.lua"/>\n\t<Script file="IcyVeins.lua"/>\n\t<Script file="Apply.lua"/>\n',
+        why = "loads the Icy Veins plans (Sources.lua, generated IcyVeins.lua) and Apply.lua",
+    },
+    {
+        file = "AzerothRoute/Talents/Sources.lua", create = true, replace = read("Talents/Sources.lua"),
+        why = "T.UseSource: the talent plans from another source in place of the snapshot's",
     },
     {
         file = "AzerothRoute/Talents/View.lua",
@@ -450,9 +454,21 @@ return {
 	},
 }]=],
         replace = [=[-- AzerothRoute: its own release notes (Polestar's history is not AzerothRoute's).
+-- The newest release says @VERSION@ (from VERSION); older ones keep their number.
 local NOTES = {
 	{
 		version = "@VERSION@",
+		notes = {
+			{ glyph = "icon-learn", color = "accent", head = L["Talent plans from Icy Veins"], text = function()
+				return L["Every spec's leveling build from Icy Veins' WoW Forever guides, one point a level from 10 to 60."]
+			end },
+			{ glyph = "check", color = "success", head = L["Today's talent trees"], text = function()
+				return L["Talents Forever added or changed, like Shieldsworn or Boot Knife, are in the plans and the trees."]
+			end },
+		},
+	},
+	{
+		version = "0.1.0",
 		notes = {
 			{ glyph = "guides", color = "accent", head = L["The first AzerothRoute release"], text = function()
 				return L["A new engine: leveling 1 to 60 for every race, class quests, professions, reputations, dungeons and rares."]
@@ -585,6 +601,14 @@ local function row(i)
     {
         file = "AzerothRoute/Talents/View.lua",
         find = [=[	w.head(L["Notes"])
+	-- Keyed by the level the source plan reaches them at; shown as a rough
+	-- guide only, since points can come sooner.
+	local lvs = {}
+	for lv in pairs(build.notes) do lvs[#lvs + 1] = lv end
+	table.sort(lvs)
+	for _, lv in ipairs(lvs) do w.note(format(L["Around level %d: %s"], lv, build.notes[lv]), "text") end
+	w.head(L["Source"])
+	w.note(format(L["Picks from %s (%s), checked against the game's talent tree; notes in AzerothRoute's words."], data.source, data.url))
 ]=],
         replace = [=[	-- AzerothRoute: the plan as the class's talent trees, above the notes.
 	if TV.DrawTree then
@@ -592,8 +616,20 @@ local function row(i)
 		local th = TV.DrawTree(detail.Body, DPAD, w.y - 8, w.width, build, c, mine)
 		w.y = w.y - 8 - th - 16
 	end
-	w.head(L["Notes"])
+	-- Keyed by the level the source plan reaches them at; shown as a rough
+	-- guide only, since points can come sooner. Plans without notes skip the heading.
+	local lvs = {}
+	for lv in pairs(build.notes or {}) do lvs[#lvs + 1] = lv end
+	table.sort(lvs)
+	if #lvs > 0 then w.head(L["Notes"]) end
+	for _, lv in ipairs(lvs) do w.note(format(L["Around level %d: %s"], lv, build.notes[lv]), "text") end
+	w.head(L["Source"])
+	if build.updated then
+		w.note(format(L["Picks from %s (%s, updated %s), one point a level, checked against the game's talent tree."], data.source, build.link or data.url, build.updated))
+	else
+		w.note(format(L["Picks from %s (%s), checked against the game's talent tree; notes in AzerothRoute's words."], data.source, data.url))
+	end
 ]=],
-        why = "the talent trees in the plan page",
+        why = "the talent trees in the plan page; the plan's own source link and date",
     },
 }

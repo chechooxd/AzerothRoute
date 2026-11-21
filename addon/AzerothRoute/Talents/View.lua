@@ -403,15 +403,19 @@ function TV.Render()
 		local th = TV.DrawTree(detail.Body, DPAD, w.y - 8, w.width, build, c, mine)
 		w.y = w.y - 8 - th - 16
 	end
-	w.head(L["Notes"])
 	-- Keyed by the level the source plan reaches them at; shown as a rough
-	-- guide only, since points can come sooner.
+	-- guide only, since points can come sooner. Plans without notes skip the heading.
 	local lvs = {}
-	for lv in pairs(build.notes) do lvs[#lvs + 1] = lv end
+	for lv in pairs(build.notes or {}) do lvs[#lvs + 1] = lv end
 	table.sort(lvs)
+	if #lvs > 0 then w.head(L["Notes"]) end
 	for _, lv in ipairs(lvs) do w.note(format(L["Around level %d: %s"], lv, build.notes[lv]), "text") end
 	w.head(L["Source"])
-	w.note(format(L["Picks from %s (%s), checked against the game's talent tree; notes in AzerothRoute's words."], data.source, data.url))
+	if build.updated then
+		w.note(format(L["Picks from %s (%s, updated %s), one point a level, checked against the game's talent tree."], data.source, build.link or data.url, build.updated))
+	else
+		w.note(format(L["Picks from %s (%s), checked against the game's talent tree; notes in AzerothRoute's words."], data.source, data.url))
+	end
 	local choice = T.Choice()
 	actions(not mine or choice == "auto", choice ~= "auto")
 	local canApply = mine and c and c.staged and c.staged.status == "behind" and (c.staged.unspent or 0) > 0 or false

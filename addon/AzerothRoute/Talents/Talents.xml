@@ -1,6 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/">
 	<Script file="Talents.lua"/>
 	<Script file="Builds.lua"/>
+	<Script file="Sources.lua"/>
+	<Script file="IcyVeins.lua"/>
 	<Script file="Apply.lua"/>
 	<Script file="Overlay.lua"/>
 	<Script file="Options.lua"/>

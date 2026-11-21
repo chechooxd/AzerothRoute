@@ -10,6 +10,18 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 - MINOR (0.x.0): new features or guides.
 - MAJOR: reserved for 1.0.0, the first stable release.
 
+## [0.2.0] - 2026-11-21
+
+### Changed
+- Talent plans now follow Icy Veins' WoW Forever leveling guides: all 27 specs, one point a level
+  from 10 to 60, with each spec's guide linked and dated in the plan's Source line.
+- The talent tree data matches today's Forever trees: 30 talents with new rank counts or names are
+  corrected and 16 new talents (Shieldsworn, Boot Knife, Bloom, Reckless Swings and more) are added,
+  so plans, Apply talents and the tree view find them in the game.
+
+### Removed
+- Polestar's talent plans and their notes.
+
 ## [0.1.0] - 2026-11-20
 
 First release built on Polestar 0.4.1.1 (GPL-3.0-only).

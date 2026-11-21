@@ -1,0 +1,479 @@
+# Icy Veins' WoW Forever talent trees, read from each class's leveling guide calculator (2026-11-21).
+# CLASS <class>
+# N|<spell id>|<tree 1-3>|<max ranks>|<row>|<column>|<talent>   (rows of 4 columns; row r needs (r-1)*5 points)
+CLASS druid
+N|16814|1|5|1|2|Improved Wrath
+N|1223081|1|5|1|3|Genesis
+N|16845|1|3|2|1|Moonglow
+N|16821|1|2|2|2|Improved Moonfire
+N|1223082|1|2|2|3|Nature's Majesty
+N|16819|1|2|2|4|Nature's Reach
+N|16918|1|3|3|1|Improved Entangling Roots
+N|1223083|1|1|3|3|Nature's Splendor
+N|5570|1|1|4|1|Insect Swarm
+N|16909|1|5|4|2|Vengeance
+N|16850|1|5|4|3|Improved Starfire
+N|17245|1|2|5|1|Overgrowth
+N|16880|1|1|5|2|Nature's Grace
+N|408248|1|3|5|3|Eclipse
+N|16896|1|5|6|2|Moonfury
+N|24858|1|1|7|2|Moonkin Form
+N|16934|2|5|1|2|Ferocity
+N|17056|2|5|1|3|Furor
+N|17002|2|2|2|1|Feral Swiftness
+N|16947|2|3|2|2|Feral Instinct
+N|16940|2|2|2|3|Brutal Impact
+N|16929|2|3|2|4|Thick Hide
+N|16966|2|3|3|1|Shredding Attacks
+N|16998|2|2|3|2|Savage Fury
+N|1238122|2|1|3|3|Feral Charge
+N|16942|2|2|3|4|Sharpened Claws
+N|16972|2|3|4|1|Predatory Strikes
+N|1328617|2|1|4|2|Lacerate
+N|1328613|2|1|4|3|Predatory Discipline
+N|16958|2|2|4|4|Blood Frenzy
+N|17007|2|1|5|2|Leader of the Pack
+N|1223242|2|2|5|4|Natural Instinct
+N|1223246|2|5|6|1|Rend and Tear
+N|417051|2|5|6|4|Natural Reaction
+N|407995|2|1|7|2|Primal Bite
+N|1322605|2|1|7|3|Shifting Power
+N|17063|3|5|1|2|Nature's Focus
+N|17003|3|5|1|3|Heart of the Wild
+N|17069|3|5|2|1|Naturalist
+N|17106|3|3|2|2|Reflection
+N|16833|3|3|2|3|Natural Shapeshifter
+N|17118|3|3|3|2|Subtlety
+N|17104|3|5|3|3|Gift of Nature
+N|1328621|3|1|3|4|Bloom
+N|24968|3|5|4|2|Tranquil Spirit
+N|17111|3|3|4|3|Improved Rejuvenation
+N|18562|3|1|4|4|Swiftmend
+N|17116|3|1|5|1|Nature's Swiftness
+N|1309631|3|3|5|2|Living Spirit
+N|17123|3|2|5|4|Improved Tranquility
+N|17074|3|5|6|3|Improved Regrowth
+N|408120|3|1|7|2|Wild Growth
+CLASS hunter
+N|19552|1|5|1|2|Deadly Aspects
+N|19583|1|5|1|3|Endurance Training
+N|1223755|1|2|2|1|Focused Fire
+N|19549|1|3|2|2|Improved Aspect of the Monkey
+N|24443|1|2|2|3|Improved Revive Pet
+N|19559|1|2|3|1|Pathfinding
+N|19596|1|1|3|2|Bestial Swiftness
+N|19616|1|5|3|3|Unleashed Fury
+N|19572|1|2|4|1|Improved Mend Pet
+N|19598|1|5|4|3|Ferocity
+N|1293241|1|1|4|4|Summon Hawk
+N|19578|1|2|5|1|Spirit Bond
+N|19577|1|1|5|2|Intimidation
+N|19590|1|2|5|4|Bestial Discipline
+N|19621|1|5|6|3|Frenzy
+N|19574|1|1|7|2|Bestial Wrath
+N|19498|2|3|1|1|Hawk Eye
+N|19407|2|5|1|2|Improved Concussive Shot
+N|19426|2|5|1|3|Lethal Attacks
+N|1310661|2|3|2|1|Improved Stings
+N|19416|2|5|2|2|Efficiency
+N|1223984|2|5|2|3|Careful Aim
+N|415405|2|2|3|1|Rapid Killing
+N|19454|2|5|3|2|Improved Arcane Shot
+N|415370|2|1|3|4|Lone Wolf
+N|1299346|2|1|4|2|Trueshot Aura
+N|19485|2|5|4|3|Mortal Shots
+N|1223987|2|2|5|1|Rapid Recuperation
+N|19461|2|3|5|3|Barrage
+N|19503|2|1|5|4|Scatter Shot
+N|19507|2|5|6|3|Ranged Weapon Specialization
+N|1310687|2|1|7|2|Sniper Shot
+N|24293|3|5|1|2|Improved Tracking
+N|19295|3|5|1|3|Deflection
+N|19184|3|5|2|1|Entrapment
+N|19159|3|2|2|2|Savage Strikes
+N|19255|3|5|2|3|Survivalist
+N|19228|3|3|2|4|Improved Wing Clip
+N|19239|3|2|3|1|Clever Traps
+N|19290|3|3|3|2|Surefooted
+N|19263|3|1|3|3|Deterrence
+N|19376|3|2|4|1|Survival Tactics
+N|1310627|3|5|4|2|Predator's Edge
+N|19306|3|1|4|3|Counterattack
+N|440529|3|2|5|1|Resourcefulness
+N|1310532|3|2|5|2|Expose Prey
+N|1310496|3|2|5|3|Survivalist's Discipline
+N|1317257|3|1|5|4|Strider Kick
+N|19168|3|5|6|3|Lightning Reflexes
+N|1310533|3|1|7|2|Lacerating Strikes
+CLASS mage
+N|6057|1|2|1|1|Wand Specialization
+N|11237|1|5|1|2|Improved Channeling
+N|28574|1|3|1|3|Arcane Resilience
+N|11210|1|2|2|1|Arcane Subtlety
+N|29441|1|2|2|2|Magic Absorption
+N|11213|1|5|2|3|Arcane Concentration
+N|400588|1|2|2|4|Missile Barrage
+N|11247|1|2|3|1|Arcane Geometry
+N|11242|1|3|3|2|Arcane Impact
+N|400574|1|1|3|4|Arcane Blast
+N|11252|1|2|4|1|Arcane Shielding
+N|11255|1|2|4|2|Improved Counterspell
+N|18462|1|3|4|3|Arcane Meditation
+N|1326079|1|1|4|4|Arcane Wrath
+N|12043|1|1|5|2|Presence of Mind
+N|11232|1|5|5|3|Arcane Mind
+N|15058|1|3|6|3|Arcane Instability
+N|12042|1|1|7|2|Arcane Power
+N|18459|2|5|1|2|Incineration
+N|11069|2|5|1|3|Accelerant
+N|11119|2|5|2|1|Ignite
+N|11100|2|2|2|2|Flame Throwing
+N|11103|2|3|2|3|Impact
+N|11083|2|3|3|1|Burning Soul
+N|11108|2|3|3|2|Improved Flamestrike
+N|11366|2|1|3|3|Pyroblast
+N|11078|2|2|3|4|Improved Fire Blast
+N|11095|2|3|4|1|Improved Scorch
+N|11094|2|2|4|2|Improved Fire Ward
+N|400624|2|1|4|3|Heating Up
+N|29074|2|3|4|4|Master of Elements
+N|11115|2|3|5|2|Critical Mass
+N|11113|2|1|5|3|Blast Wave
+N|11124|2|3|6|3|Fire Power
+N|11129|2|1|7|2|Combustion
+N|11189|3|2|1|1|Frost Warding
+N|11070|3|5|1|2|Improved Frostbolt
+N|29438|3|3|1|3|Precision
+N|11207|3|5|2|1|Ice Shards
+N|11071|3|3|2|2|Frostbite
+N|11165|3|2|2|3|Improved Frost Nova
+N|11175|3|3|2|4|Permafrost
+N|11160|3|3|3|1|Frost Channeling
+N|11185|3|3|3|2|Improved Blizzard
+N|1312002|3|1|3|3|Ice Lance
+N|16757|3|2|4|1|Arctic Reach
+N|11958|3|1|4|2|Ice Block
+N|11170|3|3|4|4|Shatter
+N|11190|3|3|5|1|Improved Cone of Cold
+N|12472|3|1|5|2|Cold Snap
+N|400647|3|2|5|3|Fingers of Frost
+N|11180|3|5|6|3|Winter's Chill
+N|11426|3|1|7|2|Ice Barrier
+CLASS paladin
+N|20205|1|5|1|2|Spiritual Focus
+N|20262|1|5|1|3|Divine Strength
+N|20237|1|3|2|1|Healing Light
+N|1310899|1|2|2|2|Reverence
+N|20224|1|5|2|3|Improved Seals
+N|429144|1|2|2|4|Purifying Power
+N|20216|1|1|3|1|Divine Favor
+N|20210|1|5|3|2|Illumination
+N|1237268|1|2|3|3|Holy Conduit
+N|1310904|1|2|4|1|Divine Precision
+N|426065|1|2|4|2|Infusion of Light
+N|1328548|1|1|4|3|Oath of Light
+N|1310905|1|2|5|1|Consecrated Ground
+N|1311606|1|1|5|2|Holy Shock
+N|1328550|1|2|5|3|Boundless Light
+N|5923|1|5|6|3|Holy Power
+N|1310911|1|1|7|2|Light's Vigil
+N|20257|2|5|1|2|Divine Intellect
+N|20127|2|5|1|3|Redoubt
+N|20189|2|3|2|1|Precision
+N|20174|2|2|2|2|Guardian's Favor
+N|1224697|2|2|2|4|Sacred Duty
+N|1311015|2|1|3|1|Templar's Bulwark
+N|20487|2|3|3|2|Improved Hammer of Justice
+N|20150|2|2|3|3|Shield Specialization
+N|20143|2|5|3|4|Toughness
+N|1310994|2|1|4|1|Swift Judgement
+N|20468|2|3|4|2|Improved Righteous Fury
+N|20096|2|5|4|3|Anticipation
+N|1328546|2|2|5|1|Stoicism
+N|20925|2|1|5|2|Holy Shield
+N|20177|2|5|5|3|Reckoning
+N|1311034|2|3|6|3|Iron Creed
+N|1328544|2|1|7|2|Shieldsworn
+N|20060|3|5|1|2|Deflection
+N|20101|3|5|1|3|Benediction
+N|25956|3|2|2|1|Improved Judgement
+N|20117|3|3|2|2|Conviction
+N|1311074|3|3|2|3|Sanctified Judgement
+N|9452|3|3|3|1|Vindication
+N|9453|3|2|3|2|Unyielding Faith
+N|20375|3|1|3|3|Seal of Command
+N|26022|3|2|3|4|Pursuit of Justice
+N|9799|3|2|4|1|Eye for an Eye
+N|1311087|3|1|4|2|Sacred Arbiter
+N|20111|3|3|4|4|Two-Handed Weapon Specialization
+N|1328370|3|2|5|1|Turn Evil
+N|20066|3|1|5|2|Repentance
+N|20049|3|3|5|3|Vengeance
+N|1311084|3|5|6|3|Champion of the Light
+N|1310735|3|1|7|2|Unsealed Wrath
+CLASS priest
+N|1309969|1|5|1|1|Power in Light
+N|14524|1|2|1|2|Wand Specialization
+N|1225132|1|5|1|3|Twin Disciplines
+N|14523|1|3|2|1|Silent Resolve
+N|1309957|1|3|2|2|Holy Precision
+N|18551|1|5|2|3|Mental Strength
+N|14531|1|2|2|4|Martyrdom
+N|14520|1|3|3|1|Mental Agility
+N|14751|1|1|3|2|Inner Focus
+N|14748|1|3|3|3|Improved Power Word: Shield
+N|14521|1|3|3|4|Meditation
+N|14747|1|3|4|1|Improved Inner Fire
+N|14750|1|2|4|2|Improved Mana Burn
+N|402000|1|1|4|3|Soul Warding
+N|402174|1|1|5|2|Penance
+N|425280|1|5|5|3|Renewed Hope
+N|431622|1|3|6|3|Divine Aegis
+N|10060|1|1|7|2|Power Infusion
+N|14913|2|3|1|1|Twilight Focus
+N|14908|2|3|1|2|Improved Renew
+N|14889|2|5|1|3|Holy Specialization
+N|27900|2|5|2|2|Spell Warding
+N|18530|2|5|2|3|Divine Fury
+N|15237|2|1|3|1|Holy Nova
+N|27811|2|3|3|2|Blessed Recovery
+N|14892|2|3|3|4|Inspiration
+N|27789|2|2|4|1|Holy Reach
+N|14912|2|3|4|2|Improved Healing
+N|14909|2|2|4|3|Searing Light
+N|1328569|2|1|4|4|Holy Binding
+N|1317006|2|2|5|1|Litany of Light
+N|20711|2|1|5|2|Spirit of Redemption
+N|14901|2|5|5|3|Spiritual Guidance
+N|14898|2|3|6|3|Spiritual Healing
+N|401859|2|1|7|2|Prayer of Mending
+N|15260|3|5|1|1|Shadow Focus
+N|15326|3|5|1|2|Blackout
+N|15270|3|5|1|3|Spirit Tap
+N|15273|3|5|2|1|Improved Mind Blast
+N|15275|3|2|2|3|Improved Shadow Word: Pain
+N|17322|3|2|2|4|Shadow Reach
+N|15392|3|2|3|2|Improved Psychic Scream
+N|15407|3|1|3|3|Mind Flay
+N|1225139|3|2|3|4|Improved Mind Flay
+N|1326159|3|5|4|1|Dark Inspiration
+N|15286|3|1|4|2|Vampiric Embrace
+N|15257|3|3|4|3|Shadow Weaving
+N|15487|3|1|5|1|Silence
+N|1309950|3|2|5|3|Devouring Contagion
+N|1310076|3|2|6|1|Early Demise
+N|15259|3|5|6|3|Darkness
+N|15473|3|1|7|2|Shadowform
+CLASS rogue
+N|13741|1|3|1|1|Improved Gouge
+N|14144|1|2|1|2|Remorseless Attacks
+N|14138|1|5|1|3|Malice
+N|14156|1|3|2|1|Ruthlessness
+N|14168|1|2|2|2|Improved Expose Armor
+N|14165|1|3|2|4|Improved Slice and Dice
+N|14983|1|2|3|1|Vigor
+N|1329256|1|1|3|2|Blood Splatter
+N|14128|1|2|3|3|Lethality
+N|16513|1|5|4|1|Vile Poisons
+N|14177|1|1|4|2|Cold Blood
+N|14113|1|5|4|3|Improved Poisons
+N|14179|1|5|5|1|Relentless Strikes
+N|1329328|1|1|5|2|Venom
+N|14174|1|2|5|3|Improved Kidney Shot
+N|14186|1|3|6|3|Seal Fate
+N|399956|1|1|7|2|Mutilate
+N|14162|2|3|1|1|Coup de Grace
+N|13732|2|2|1|2|Efficient Strikes
+N|13712|2|5|1|3|Lightning Reflexes
+N|1224716|2|3|2|1|Puncturing Wounds
+N|13713|2|3|2|2|Deflection
+N|13705|2|3|2|3|Precision
+N|13743|2|2|2|4|Improved Sprint
+N|13742|2|2|3|1|Endurance
+N|14251|2|1|3|2|Riposte
+N|1329265|2|2|3|4|Composure
+N|13754|2|2|4|1|Improved Kick
+N|1310711|2|1|4|2|Flawless Execution
+N|30919|2|2|4|3|Weapon Expertise
+N|18427|2|3|4|4|Aggression
+N|13715|2|2|5|1|Dual Wield Specialization
+N|13877|2|1|5|2|Blade Flurry
+N|13960|2|5|5|3|Hack and Slash
+N|1329284|2|5|6|3|Flash of Steel
+N|13750|2|1|7|2|Adrenaline Rush
+N|13983|3|3|1|1|Setup
+N|13958|3|3|1|2|Master of Deception
+N|14057|3|5|1|3|Opportunity
+N|14082|3|2|2|1|Dirty Deeds
+N|13975|3|3|2|2|Camouflage
+N|14079|3|3|2|3|Improved Ambush
+N|1224782|3|2|2|4|Dirty Tricks
+N|13976|3|3|3|1|Initiative
+N|14183|3|1|3|2|Premeditation
+N|14171|3|3|3|3|Serrated Blades
+N|13981|3|2|4|1|Elusiveness
+N|14278|3|1|4|2|Ghostly Strike
+N|1310728|3|2|4|4|Quick Getaway
+N|30894|3|2|5|1|Heightened Senses
+N|14185|3|1|5|2|Preparation
+N|16511|3|1|5|3|Hemorrhage
+N|1329286|3|5|6|3|Boot Knife
+N|1316709|3|1|7|2|Death Mark
+CLASS shaman
+N|16039|1|5|1|2|Convection
+N|16035|1|5|1|3|Concussion
+N|30160|1|3|2|1|Elemental Devastation
+N|16040|1|5|2|2|Reverberation
+N|16578|1|3|2|3|Elemental Alacrity
+N|16038|1|3|2|4|Call of Flame
+N|16164|1|1|3|1|Elemental Focus
+N|28996|1|3|3|2|Elemental Warding
+N|16086|1|2|4|1|Trial by Fire
+N|29062|1|3|4|2|Eye of the Storm
+N|1222988|1|1|4|4|Earthbound
+N|28999|1|2|5|1|Elemental Reach
+N|16120|1|1|5|2|Call of Thunder
+N|408438|1|3|5|3|Lightning Overload
+N|16089|1|5|6|3|Elemental Fury
+N|16166|1|1|7|2|Lightning Mastery
+N|16043|2|2|1|1|Earth's Grasp
+N|16255|2|5|1|2|Thundering Strikes
+N|17485|2|5|1|3|Ancestral Knowledge
+N|16258|2|2|2|1|Guardian Totems
+N|415140|2|3|2|2|Mental Dexterity
+N|16261|2|3|2|3|Improved Lightning Shield
+N|16266|2|3|3|1|Elemental Weapons
+N|1223030|2|1|3|3|Shamanistic Focus
+N|16254|2|3|3|4|Anticipation
+N|16252|2|5|4|1|Toughness
+N|16256|2|5|4|2|Flurry
+N|17364|2|1|4|3|Stormstrike
+N|16262|2|2|4|4|Improved Ghost Wolf
+N|16268|2|1|5|1|Spirit Weapons
+N|30812|2|2|5|2|Mental Quickness
+N|1223031|2|2|5|3|Improved Stormstrike
+N|408498|2|5|6|3|Maelstrom Weapon
+N|425336|2|1|7|2|Rage of the Farseer
+N|16182|3|5|1|2|Improved Healing Wave
+N|16179|3|5|1|3|Tidal Focus
+N|1223033|3|3|2|1|Mindfulness
+N|29187|3|3|2|2|Natural Grace
+N|16173|3|5|2|3|Totemic Focus
+N|16184|3|2|2|4|Improved Reincarnation
+N|16176|3|3|3|1|Ancestral Healing
+N|16181|3|3|3|2|Healing Focus
+N|408510|3|1|3|3|Water Shield
+N|16194|3|5|4|1|Tidal Mastery
+N|16187|3|5|4|2|Restorative Totems
+N|16190|3|1|4|3|Mana Tide Totem
+N|29206|3|3|5|2|Healing Way
+N|16188|3|1|5|3|Nature's Swiftness
+N|16178|3|5|6|3|Purification
+N|408521|3|1|7|2|Riptide
+CLASS warlock
+N|18182|1|2|1|1|Improved Life Tap
+N|18174|1|5|1|2|Suppression
+N|17810|1|5|1|3|Improved Corruption
+N|18218|1|2|2|1|Grim Reach
+N|437032|1|2|2|2|Soul Harvest
+N|403511|1|3|2|3|Improved Drains
+N|18827|1|2|3|1|Improved Bane of Agony
+N|17783|1|3|3|2|Fel Concentration
+N|18288|1|1|3|3|Amplify Curse
+N|427712|1|3|3|4|Pandemic
+N|1310949|1|5|4|1|Malevolence
+N|18094|1|2|4|2|Nightfall
+N|18223|1|1|4|3|Curse of Exhaustion
+N|18265|1|1|5|2|Siphon Life
+N|17804|1|3|5|3|Soul Siphon
+N|18271|1|5|6|3|Shadow Mastery
+N|1316697|1|1|7|2|Wrack
+N|18703|2|2|1|1|Improved Health Funnel
+N|18694|2|3|1|2|Improved Imp
+N|18697|2|5|1|3|Demonic Embrace
+N|18769|2|5|1|4|Unholy Power
+N|1235316|2|2|2|1|Demonic Aegis
+N|18705|2|3|2|2|Improved Voidwalker
+N|18731|2|3|2|3|Fel Vitality
+N|1225214|2|2|2|4|Demonic Energies
+N|18754|2|3|3|1|Improved Sayaad
+N|18788|2|1|3|2|Demonic Sacrifice
+N|18709|2|2|3|3|Master Summoner
+N|440870|2|2|4|1|Decimation
+N|18708|2|1|4|3|Fel Domination
+N|1293695|2|3|4|4|Demonic Brand
+N|1225217|2|3|5|1|Improved Felhunter
+N|19028|2|1|5|2|Soul Link
+N|412732|2|3|5|3|Demonic Knowledge
+N|23785|2|5|6|3|Master Demonologist
+N|425464|2|1|7|2|Demonic Pact
+N|17917|3|2|1|1|Destructive Reach
+N|17793|3|5|1|2|Improved Shadow Bolt
+N|17788|3|5|1|3|Bane
+N|1225220|3|5|2|1|Molten Skin
+N|17778|3|3|2|2|Cataclysm
+N|18119|3|5|2|3|Aftermath
+N|17959|3|5|3|2|Ruin
+N|17877|3|1|3|3|Shadowburn
+N|18135|3|3|4|1|Intensity
+N|17927|3|3|4|2|Agonizing Flames
+N|1293817|3|1|4|3|Conflagrate
+N|18073|3|2|5|1|Pyroclasm
+N|1225228|3|1|5|2|Bane of Havoc
+N|412751|3|3|5|3|Fire and Brimstone
+N|426316|3|5|6|3|Shadow and Flame
+N|412758|3|1|7|2|Incinerate
+CLASS warrior
+N|12282|1|3|1|1|Improved Heroic Strike
+N|16462|1|5|1|2|Deflection
+N|12286|1|3|1|3|Improved Rend
+N|12285|1|2|2|1|Improved Charge
+N|12295|1|3|2|2|Improved Tactical Mastery
+N|12290|1|2|2|4|Improved Overpower
+N|12296|1|1|3|2|Anger Management
+N|12834|1|3|3|3|Deep Wounds
+N|1310222|1|1|4|1|Spearing Strike
+N|12163|1|3|4|2|Two-Handed Weapon Specialization
+N|16493|1|2|4|3|Impale
+N|1289682|1|2|5|1|Bloodthrill
+N|12292|1|1|5|2|Sweeping Strikes
+N|1290261|1|5|5|3|Weaponmaster
+N|12862|1|2|6|1|Improved Slam
+N|12289|1|3|6|3|Improved Hamstring
+N|12294|1|1|7|2|Mortal Strike
+N|12321|2|5|1|2|Booming Voice
+N|12320|2|5|1|3|Cruelty
+N|1323964|2|5|2|2|Lingering Rage
+N|12322|2|5|2|3|Unbridled Wrath
+N|1323963|2|3|3|1|Furious Precision
+N|12323|2|1|3|2|Piercing Howl
+N|16487|2|3|3|3|Blood Craze
+N|12317|2|5|3|4|Enrage
+N|23584|2|5|4|1|Dual Wield Specialization
+N|1329555|2|1|4|2|Reckless Swings
+N|20502|2|2|4|4|Improved Execute
+N|20500|2|2|5|1|Improved Berserker Rage
+N|12328|2|1|5|2|Death Wish
+N|1323967|2|2|5|3|Gore Drinker
+N|20504|2|2|5|4|Improved Intercept
+N|1310315|2|2|6|1|Improved Whirlwind
+N|12319|2|3|6|3|Flurry
+N|23881|2|1|7|2|Bloodthirst
+N|12301|3|2|1|1|Improved Bloodrage
+N|12298|3|5|1|2|Shield Specialization
+N|12962|3|5|1|3|Iron Will
+N|12297|3|5|2|1|Anticipation
+N|12797|3|3|2|3|Improved Revenge
+N|12287|3|3|2|4|Improved Thunder Clap
+N|12975|3|1|3|1|Last Stand
+N|1310316|3|2|3|2|Master of Defense
+N|12313|3|3|3|3|Improved Disarm
+N|12792|3|3|3|4|Defiance
+N|12308|3|3|4|1|Improved Sunder Armor
+N|1310317|3|1|4|2|Vanguard
+N|12311|3|2|4|3|Improved Shield Bash
+N|12312|3|2|5|1|Improved Shield Wall
+N|12809|3|1|5|2|Concussion Blow
+N|29787|3|3|5|3|Focused Rage
+N|16538|3|5|6|3|Bastion
+N|23922|3|1|7|2|Shield Slam

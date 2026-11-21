@@ -25,6 +25,12 @@ local ES = {
 	["It is free and open source under the GPL-3.0."] = "Es gratis y de código abierto bajo la GPL-3.0.",
 	["It is young, so expect the odd wrong step or waypoint. Send a report with /ar report and it gets fixed."] =
 		"Es joven: puede haber algún paso o punto equivocado. Envía un informe con /ar report y se corrige.",
+	["Talent plans from Icy Veins"] = "Planes de talentos de Icy Veins",
+	["Every spec's leveling build from Icy Veins' WoW Forever guides, one point a level from 10 to 60."] =
+		"La build de subida de cada especialización de las guías de WoW Forever de Icy Veins, un punto por nivel del 10 al 60.",
+	["Today's talent trees"] = "Los árboles de talentos actuales",
+	["Talents Forever added or changed, like Shieldsworn or Boot Knife, are in the plans and the trees."] =
+		"Los talentos que Forever agregó o cambió, como Shieldsworn o Boot Knife, están en los planes y en los árboles.",
 	["The first AzerothRoute release"] = "La primera versión de AzerothRoute",
 	["A new engine: leveling 1 to 60 for every race, class quests, professions, reputations, dungeons and rares."] =
 		"Un motor nuevo: subida del 1 al 60 para cada raza, misiones de clase, profesiones, reputaciones, calabozos y raros.",

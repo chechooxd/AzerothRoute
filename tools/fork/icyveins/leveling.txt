@@ -1,0 +1,560 @@
+# Icy Veins WoW Forever leveling talent builds, read from each spec's leveling guide
+# (https://www.icy-veins.com/wow-forever/<spec>-leveling) by stepping its level slider 10..60.
+# SPEC <slug> | <guide's Last Updated>
+# T <index> <tree>|<talent>|<spell id>
+# S <talent index of the point spent at level 10>.<level 11>....<level 60>
+SPEC affliction-warlock | Nov 16, 2026 - 12:00 PM
+T 0 Affliction|Suppression|18174
+T 1 Affliction|Improved Corruption|17810
+T 2 Affliction|Grim Reach|18218
+T 3 Affliction|Improved Bane of Agony|18827
+T 4 Affliction|Pandemic|427712
+T 5 Affliction|Nightfall|18094
+T 6 Affliction|Malevolence|1310949
+T 7 Affliction|Siphon Life|18265
+T 8 Demonology|Demonic Embrace|18697
+T 9 Demonology|Demonic Aegis|1235316
+T 10 Demonology|Fel Vitality|18731
+T 11 Demonology|Demonic Sacrifice|18788
+T 12 Affliction|Improved Life Tap|18182
+T 13 Affliction|Shadow Mastery|18271
+T 14 Affliction|Wrack|1316697
+T 15 Affliction|Soul Siphon|17804
+T 16 Affliction|Improved Drains|403511
+T 17 Affliction|Fel Concentration|17783
+S 0.0.0.0.1.1.1.1.1.2.3.3.4.4.4.5.5.6.6.6.7.8.8.8.8.8.9.9.10.10.10.11.6.6.2.12.13.13.13.13.13.14.12.15.15.15.16.16.16.17.17
+SPEC arcane-mage | Nov 4, 2026 - 12:00 PM
+T 0 Arcane|Wand Specialization|6057
+T 1 Arcane|Improved Channeling|11237
+T 2 Arcane|Missile Barrage|400588
+T 3 Arcane|Arcane Concentration|11213
+T 4 Arcane|Arcane Blast|400574
+T 5 Frost|Precision|29438
+T 6 Arcane|Arcane Wrath|1326079
+T 7 Arcane|Arcane Meditation|18462
+T 8 Arcane|Arcane Subtlety|11210
+T 9 Arcane|Presence of Mind|12043
+T 10 Arcane|Arcane Mind|11232
+T 11 Arcane|Arcane Instability|15058
+T 12 Arcane|Arcane Power|12042
+T 13 Fire|Incineration|18459
+T 14 Fire|Accelerant|11069
+T 15 Fire|Improved Fire Blast|11078
+T 16 Fire|Ignite|11119
+T 17 Fire|Pyroblast|11366
+T 18 Fire|Heating Up|400624
+S 0.0.1.1.1.2.2.3.3.3.4.5.5.1.1.3.3.6.7.7.7.8.9.10.10.10.10.10.11.11.11.8.12.13.13.13.13.13.14.14.14.14.14.15.15.16.16.17.18.16.5
+SPEC arms-warrior | Nov 16, 2026 - 12:00 PM
+T 0 Arms|Improved Rend|12286
+T 1 Arms|Deflection|16462
+T 2 Arms|Improved Overpower|12290
+T 3 Arms|Improved Charge|12285
+T 4 Arms|Improved Tactical Mastery|12295
+T 5 Arms|Anger Management|12296
+T 6 Arms|Deep Wounds|12834
+T 7 Arms|Spearing Strike|1310222
+T 8 Arms|Two-Handed Weapon Specialization|12163
+T 9 Arms|Sweeping Strikes|12292
+T 10 Arms|Bloodthrill|1289682
+T 11 Arms|Weaponmaster|1290261
+T 12 Arms|Improved Slam|12862
+T 13 Arms|Mortal Strike|12294
+T 14 Fury|Cruelty|12320
+T 15 Fury|Lingering Rage|1323964
+T 16 Fury|Enrage|12317
+T 17 Fury|Reckless Swings|1329555
+T 18 Protection|Improved Bloodrage|12301
+T 19 Arms|Impale|16493
+S 0.0.0.1.1.2.2.3.3.4.4.4.5.6.6.7.8.8.8.6.9.10.10.11.11.12.12.11.11.11.13.14.14.14.14.14.15.15.15.15.15.16.16.16.16.16.17.18.18.19.19
+SPEC assassination-rogue | Nov 18, 2026 - 12:00 PM
+T 0 Assassination|Remorseless Attacks|14144
+T 1 Assassination|Malice|14138
+T 2 Assassination|Ruthlessness|14156
+T 3 Assassination|Blood Splatter|1329256
+T 4 Assassination|Lethality|14128
+T 5 Assassination|Improved Slice and Dice|14165
+T 6 Assassination|Cold Blood|14177
+T 7 Assassination|Vile Poisons|16513
+T 8 Assassination|Venom|1329328
+T 9 Assassination|Relentless Strikes|14179
+T 10 Assassination|Seal Fate|14186
+T 11 Assassination|Mutilate|399956
+T 12 Subtlety|Opportunity|14057
+T 13 Combat|Coup de Grace|14162
+T 14 Combat|Lightning Reflexes|13712
+T 15 Combat|Precision|13705
+T 16 Combat|Puncturing Wounds|1224716
+T 17 Combat|Composure|1329265
+T 18 Combat|Endurance|13742
+S 0.0.1.1.1.2.2.2.1.1.3.4.4.5.5.6.7.7.7.7.8.9.9.9.9.10.10.10.9.7.11.12.12.12.12.12.13.13.13.14.14.15.15.15.16.16.16.17.17.18.18
+SPEC balance-druid | Nov 4, 2026 - 12:00 PM
+T 0 Balance|Improved Wrath|16814
+T 1 Restoration|Nature's Focus|17063
+T 2 Restoration|Reflection|17106
+T 3 Balance|Nature's Reach|16819
+T 4 Balance|Nature's Majesty|1223082
+T 5 Balance|Moonglow|16845
+T 6 Balance|Nature's Splendor|1223083
+T 7 Balance|Improved Moonfire|16821
+T 8 Balance|Insect Swarm|5570
+T 9 Balance|Genesis|1223081
+T 10 Balance|Nature's Grace|16880
+T 11 Restoration|Naturalist|17069
+T 12 Balance|Eclipse|408248
+T 13 Balance|Moonfury|16896
+T 14 Balance|Moonkin Form|24858
+T 15 Balance|Improved Starfire|16850
+T 16 Balance|Vengeance|16909
+S 0.0.0.0.0.1.1.1.1.1.2.2.2.3.3.4.4.5.6.5.5.7.7.8.9.9.9.9.10.9.11.11.11.11.11.12.12.12.13.13.13.13.13.14.15.15.15.15.15.16.16
+SPEC beast-mastery-hunter | Nov 16, 2026 - 12:00 PM
+T 0 Beast Mastery|Deadly Aspects|19552
+T 1 Beast Mastery|Focused Fire|1223755
+T 2 Beast Mastery|Improved Revive Pet|24443
+T 3 Beast Mastery|Endurance Training|19583
+T 4 Beast Mastery|Pathfinding|19559
+T 5 Beast Mastery|Bestial Swiftness|19596
+T 6 Beast Mastery|Unleashed Fury|19616
+T 7 Beast Mastery|Summon Hawk|1293241
+T 8 Beast Mastery|Ferocity|19598
+T 9 Beast Mastery|Bestial Discipline|19590
+T 10 Beast Mastery|Intimidation|19577
+T 11 Beast Mastery|Frenzy|19621
+T 12 Beast Mastery|Bestial Wrath|19574
+T 13 Marksmanship|Lethal Attacks|19426
+T 14 Marksmanship|Careful Aim|1223984
+T 15 Marksmanship|Rapid Killing|415405
+T 16 Survival|Improved Tracking|24293
+T 17 Marksmanship|Improved Stings|1310661
+S 0.0.0.0.0.1.1.2.2.3.4.4.5.6.6.7.6.6.6.8.9.9.8.8.8.8.10.11.11.11.12.11.13.13.13.13.13.14.14.14.14.14.15.15.16.16.16.16.16.17.17
+SPEC combat-rogue | Nov 18, 2026 - 12:00 PM
+T 0 Combat|Efficient Strikes|13732
+T 1 Combat|Coup de Grace|14162
+T 2 Combat|Precision|13705
+T 3 Combat|Deflection|13713
+T 4 Combat|Riposte|14251
+T 5 Combat|Composure|1329265
+T 6 Combat|Endurance|13742
+T 7 Combat|Flawless Execution|1310711
+T 8 Combat|Weapon Expertise|30919
+T 9 Combat|Aggression|18427
+T 10 Combat|Blade Flurry|13877
+T 11 Combat|Hack and Slash|13960
+T 12 Combat|Flash of Steel|1329284
+T 13 Combat|Adrenaline Rush|13750
+T 14 Combat|Dual Wield Specialization|13715
+T 15 Assassination|Remorseless Attacks|14144
+T 16 Assassination|Malice|14138
+T 17 Assassination|Ruthlessness|14156
+T 18 Assassination|Blood Splatter|1329256
+T 19 Assassination|Lethality|14128
+T 20 Assassination|Improved Slice and Dice|14165
+T 21 Assassination|Cold Blood|14177
+S 0.0.1.1.1.2.2.3.3.3.4.2.5.5.6.7.8.8.9.9.10.11.11.11.11.12.12.12.12.12.13.11.9.14.14.15.15.16.16.16.17.17.17.16.16.18.19.19.20.20.21
+SPEC demonology-warlock | Nov 16, 2026 - 12:00 PM
+T 0 Demonology|Unholy Power|18769
+T 1 Demonology|Demonic Energies|1225214
+T 2 Demonology|Fel Vitality|18731
+T 3 Demonology|Master Summoner|18709
+T 4 Demonology|Improved Voidwalker|18705
+T 5 Demonology|Demonic Brand|1293695
+T 6 Demonology|Fel Domination|18708
+T 7 Demonology|Demonic Sacrifice|18788
+T 8 Demonology|Soul Link|19028
+T 9 Demonology|Demonic Knowledge|412732
+T 10 Demonology|Demonic Aegis|1235316
+T 11 Demonology|Master Demonologist|23785
+T 12 Demonology|Demonic Pact|425464
+T 13 Affliction|Suppression|18174
+T 14 Affliction|Improved Corruption|17810
+T 15 Affliction|Improved Life Tap|18182
+T 16 Affliction|Improved Bane of Agony|18827
+T 17 Affliction|Pandemic|427712
+T 18 Affliction|Malevolence|1310949
+S 0.0.0.0.0.1.1.2.2.2.3.3.4.4.4.5.5.5.6.7.8.9.9.9.10.11.11.11.11.11.12.13.13.13.13.14.14.14.14.14.15.16.16.17.17.17.18.18.18.18.18
+SPEC destruction-warlock | Nov 16, 2026 - 12:00 PM
+T 0 Destruction|Bane|17788
+T 1 Destruction|Aftermath|18119
+T 2 Destruction|Shadowburn|17877
+T 3 Destruction|Destructive Reach|17917
+T 4 Destruction|Ruin|17959
+T 5 Destruction|Conflagrate|1293817
+T 6 Destruction|Intensity|18135
+T 7 Destruction|Agonizing Flames|17927
+T 8 Destruction|Fire and Brimstone|412751
+T 9 Destruction|Bane of Havoc|1225228
+T 10 Destruction|Shadow and Flame|426316
+T 11 Destruction|Incinerate|412758
+T 12 Affliction|Suppression|18174
+T 13 Demonology|Demonic Embrace|18697
+T 14 Demonology|Demonic Aegis|1235316
+T 15 Demonology|Fel Vitality|18731
+T 16 Demonology|Demonic Sacrifice|18788
+T 17 Affliction|Improved Life Tap|18182
+S 0.0.0.0.0.1.1.1.1.1.2.3.3.4.4.5.6.6.6.7.8.8.8.9.7.10.10.10.10.10.11.7.12.12.12.12.13.13.13.13.13.14.14.15.15.15.16.17.17.4.4
+SPEC discipline-priest | Nov 16, 2026 - 12:00 PM
+T 0 Discipline|Wand Specialization|14524
+T 1 Shadow Magic|Spirit Tap|15270
+T 2 Holy|Twilight Focus|14913
+T 3 Discipline|Power in Light|1309969
+T 4 Discipline|Mental Strength|18551
+T 5 Discipline|Meditation|14521
+T 6 Discipline|Improved Power Word: Shield|14748
+T 7 Discipline|Soul Warding|402000
+T 8 Discipline|Mental Agility|14520
+T 9 Discipline|Penance|402174
+T 10 Discipline|Renewed Hope|425280
+T 11 Discipline|Divine Aegis|431622
+T 12 Discipline|Power Infusion|10060
+T 13 Holy|Holy Specialization|14889
+T 14 Holy|Divine Fury|18530
+T 15 Discipline|Inner Focus|14751
+S 0.0.1.1.1.1.1.2.2.2.3.3.3.3.3.4.4.4.5.5.5.4.4.6.6.6.7.8.9.10.10.10.10.11.10.11.11.8.12.13.13.13.13.13.14.14.14.14.14.8.15
+SPEC elemental-shaman | Nov 16, 2026 - 2:00 AM
+T 0 Elemental Combat|Concussion|16035
+T 1 Elemental Combat|Elemental Alacrity|16578
+T 2 Elemental Combat|Call of Flame|16038
+T 3 Elemental Combat|Elemental Focus|16164
+T 4 Elemental Combat|Convection|16039
+T 5 Elemental Combat|Earthbound|1222988
+T 6 Elemental Combat|Trial by Fire|16086
+T 7 Elemental Combat|Eye of the Storm|29062
+T 8 Elemental Combat|Call of Thunder|16120
+T 9 Elemental Combat|Lightning Overload|408438
+T 10 Elemental Combat|Elemental Fury|16089
+T 11 Elemental Combat|Lightning Mastery|16166
+T 12 Restoration|Tidal Focus|16179
+T 13 Restoration|Mindfulness|1223033
+T 14 Restoration|Improved Reincarnation|16184
+T 15 Restoration|Water Shield|408510
+T 16 Enhancement|Thundering Strikes|16255
+T 17 Enhancement|Ancestral Knowledge|17485
+S 0.0.0.0.0.1.1.1.2.2.3.2.4.4.4.5.6.6.7.7.8.9.9.9.7.10.10.10.10.10.11.12.12.12.12.12.13.13.13.14.14.15.16.16.16.16.16.4.4.17.17
+SPEC enhancement-shaman | Nov 13, 2026 - 6:00 AM
+T 0 Enhancement|Thundering Strikes|16255
+T 1 Enhancement|Mental Dexterity|415140
+T 2 Enhancement|Ancestral Knowledge|17485
+T 3 Enhancement|Shamanistic Focus|1223030
+T 4 Enhancement|Elemental Weapons|16266
+T 5 Enhancement|Stormstrike|17364
+T 6 Enhancement|Improved Ghost Wolf|16262
+T 7 Enhancement|Flurry|16256
+T 8 Enhancement|Improved Stormstrike|1223031
+T 9 Enhancement|Spirit Weapons|16268
+T 10 Restoration|Tidal Focus|16179
+T 11 Restoration|Mindfulness|1223033
+T 12 Enhancement|Mental Quickness|30812
+T 13 Enhancement|Maelstrom Weapon|408498
+T 14 Restoration|Totemic Focus|16173
+T 15 Restoration|Water Shield|408510
+T 16 Elemental Combat|Concussion|16035
+T 17 Elemental Combat|Elemental Devastation|30160
+T 18 Elemental Combat|Call of Flame|16038
+T 19 Elemental Combat|Elemental Focus|16164
+S 0.0.0.0.0.1.1.1.2.2.3.4.4.4.2.5.6.6.7.7.8.8.9.10.10.10.10.10.11.11.11.12.12.13.14.14.15.16.16.16.16.16.17.17.17.18.18.19.7.7.7
+SPEC feral-druid | Nov 15, 2026 - 8:00 PM
+T 0 Feral Combat|Ferocity|16934
+T 1 Feral Combat|Feral Instinct|16947
+T 2 Feral Combat|Feral Swiftness|17002
+T 3 Feral Combat|Feral Charge|1238122
+T 4 Feral Combat|Savage Fury|16998
+T 5 Feral Combat|Sharpened Claws|16942
+T 6 Feral Combat|Lacerate|1328617
+T 7 Feral Combat|Blood Frenzy|16958
+T 8 Feral Combat|Predatory Discipline|1328613
+T 9 Feral Combat|Predatory Strikes|16972
+T 10 Feral Combat|Leader of the Pack|17007
+T 11 Feral Combat|Natural Instinct|1223242
+T 12 Feral Combat|Rend and Tear|1223246
+T 13 Feral Combat|Primal Bite|407995
+T 14 Feral Combat|Shifting Power|1322605
+T 15 Restoration|Heart of the Wild|17003
+T 16 Restoration|Naturalist|17069
+T 17 Balance|Genesis|1223081
+T 18 Balance|Nature's Reach|16819
+T 19 Balance|Nature's Majesty|1223082
+S 0.0.0.0.0.1.1.1.2.2.3.4.4.5.5.6.7.7.8.9.10.11.11.9.9.12.12.12.12.12.13.14.15.15.15.15.15.16.16.16.16.16.17.17.17.17.17.18.18.19.19
+SPEC fire-mage | Nov 4, 2026 - 12:00 PM
+T 0 Arcane|Wand Specialization|6057
+T 1 Arcane|Improved Channeling|11237
+T 2 Arcane|Missile Barrage|400588
+T 3 Arcane|Arcane Concentration|11213
+T 4 Arcane|Arcane Blast|400574
+T 5 Frost|Precision|29438
+T 6 Arcane|Arcane Meditation|18462
+T 7 Fire|Incineration|18459
+T 8 Fire|Accelerant|11069
+T 9 Fire|Improved Fire Blast|11078
+T 10 Fire|Ignite|11119
+T 11 Fire|Pyroblast|11366
+T 12 Fire|Heating Up|400624
+T 13 Fire|Improved Scorch|11095
+T 14 Fire|Blast Wave|11113
+T 15 Fire|Critical Mass|11115
+T 16 Fire|Fire Power|11124
+T 17 Fire|Master of Elements|29074
+T 18 Fire|Combustion|11129
+S 0.0.1.1.1.2.2.3.3.3.4.5.5.1.1.3.3.6.6.6.7.7.7.7.7.8.8.8.8.8.9.9.10.10.11.12.10.10.10.13.14.15.15.15.13.16.16.16.13.17.18
+SPEC frost-mage | Nov 17, 2026 - 12:00 PM
+T 0 Frost|Precision|29438
+T 1 Frost|Improved Frostbolt|11070
+T 2 Frost|Frostbite|11071
+T 3 Frost|Ice Lance|1312002
+T 4 Frost|Ice Shards|11207
+T 5 Frost|Shatter|11170
+T 6 Frost|Ice Block|11958
+T 7 Frost|Fingers of Frost|400647
+T 8 Frost|Cold Snap|12472
+T 9 Frost|Improved Cone of Cold|11190
+T 10 Frost|Frost Channeling|11160
+T 11 Frost|Improved Blizzard|11185
+T 12 Frost|Ice Barrier|11426
+T 13 Frost|Winter's Chill|11180
+T 14 Frost|Arctic Reach|16757
+T 15 Frost|Permafrost|11175
+T 16 Frost|Frost Warding|11189
+T 17 Arcane|Arcane Resilience|28574
+T 18 Arcane|Wand Specialization|6057
+T 19 Arcane|Arcane Subtlety|11210
+S 0.0.1.1.1.2.2.2.1.1.3.4.4.4.4.5.5.5.4.6.7.7.8.9.9.9.10.10.10.11.12.0.13.13.13.13.13.14.14.15.15.11.11.16.17.17.17.18.18.19.19
+SPEC fury-warrior | Nov 16, 2026 - 12:00 PM
+T 0 Fury|Cruelty|12320
+T 1 Fury|Unbridled Wrath|12322
+T 2 Fury|Furious Precision|1323963
+T 3 Fury|Blood Craze|16487
+T 4 Fury|Dual Wield Specialization|23584
+T 5 Fury|Death Wish|12328
+T 6 Fury|Gore Drinker|1323967
+T 7 Fury|Reckless Swings|1329555
+T 8 Fury|Improved Whirlwind|1310315
+T 9 Fury|Flurry|12319
+T 10 Fury|Bloodthirst|23881
+T 11 Fury|Improved Berserker Rage|20500
+T 12 Arms|Deflection|16462
+T 13 Arms|Improved Charge|12285
+T 14 Arms|Improved Tactical Mastery|12295
+T 15 Arms|Anger Management|12296
+T 16 Protection|Improved Bloodrage|12301
+T 17 Fury|Enrage|12317
+S 0.0.0.0.0.1.1.1.1.1.2.2.2.3.3.4.4.4.4.4.5.3.6.6.7.8.8.9.9.9.10.11.11.12.12.12.12.12.13.13.14.14.14.15.16.16.17.17.17.17.17
+SPEC holy-paladin | Nov 16, 2026 - 12:00 PM
+T 0 Retribution|Benediction|20101
+T 1 Retribution|Conviction|20117
+T 2 Retribution|Improved Judgement|25956
+T 3 Retribution|Pursuit of Justice|26022
+T 4 Holy|Spiritual Focus|20205
+T 5 Holy|Reverence|1310899
+T 6 Holy|Healing Light|20237
+T 7 Holy|Illumination|20210
+T 8 Holy|Oath of Light|1328548
+T 9 Holy|Infusion of Light|426065
+T 10 Holy|Holy Conduit|1237268
+T 11 Holy|Holy Shock|1311606
+T 12 Holy|Boundless Light|1328550
+T 13 Holy|Divine Favor|20216
+T 14 Holy|Consecrated Ground|1310905
+T 15 Holy|Holy Power|5923
+T 16 Holy|Light's Vigil|1310911
+T 17 Protection|Divine Intellect|20257
+T 18 Holy|Improved Seals|20224
+S 0.0.0.0.0.1.1.1.2.2.3.3.4.4.4.4.4.5.5.6.6.6.7.7.7.7.7.8.9.9.10.10.11.12.12.13.14.15.15.15.15.15.16.17.17.17.17.17.14.18.18
+SPEC holy-priest | Nov 16, 2026 - 12:00 PM
+T 0 Discipline|Wand Specialization|14524
+T 1 Shadow Magic|Spirit Tap|15270
+T 2 Holy|Twilight Focus|14913
+T 3 Holy|Improved Renew|14908
+T 4 Discipline|Twin Disciplines|1225132
+T 5 Discipline|Mental Strength|18551
+T 6 Discipline|Meditation|14521
+T 7 Holy|Divine Fury|18530
+T 8 Holy|Holy Nova|15237
+T 9 Holy|Inspiration|14892
+T 10 Holy|Holy Specialization|14889
+T 11 Holy|Searing Light|14909
+T 12 Holy|Improved Healing|14912
+T 13 Holy|Spirit of Redemption|20711
+T 14 Holy|Litany of Light|1317006
+T 15 Holy|Spiritual Guidance|14901
+T 16 Holy|Spiritual Healing|14898
+T 17 Holy|Prayer of Mending|401859
+T 18 Discipline|Inner Focus|14751
+S 0.0.1.1.1.1.1.2.2.2.3.3.3.4.4.4.5.5.5.5.5.6.6.6.7.7.7.7.8.9.7.10.10.11.11.12.12.12.13.14.14.15.15.16.16.16.15.15.17.15.18
+SPEC marksmanship-hunter | Nov 16, 2026 - 12:00 PM
+T 0 Marksmanship|Lethal Attacks|19426
+T 1 Marksmanship|Careful Aim|1223984
+T 2 Marksmanship|Rapid Killing|415405
+T 3 Marksmanship|Improved Stings|1310661
+T 4 Marksmanship|Trueshot Aura|1299346
+T 5 Marksmanship|Mortal Shots|19485
+T 6 Marksmanship|Rapid Recuperation|1223987
+T 7 Marksmanship|Barrage|19461
+T 8 Marksmanship|Ranged Weapon Specialization|19507
+T 9 Marksmanship|Sniper Shot|1310687
+T 10 Beast Mastery|Deadly Aspects|19552
+T 11 Beast Mastery|Focused Fire|1223755
+T 12 Beast Mastery|Improved Revive Pet|24443
+T 13 Beast Mastery|Endurance Training|19583
+T 14 Beast Mastery|Pathfinding|19559
+T 15 Beast Mastery|Bestial Swiftness|19596
+T 16 Beast Mastery|Unleashed Fury|19616
+T 17 Beast Mastery|Summon Hawk|1293241
+S 0.0.0.0.0.1.1.1.1.1.2.2.3.3.3.4.5.5.5.5.6.6.5.7.7.8.8.8.8.8.9.10.10.10.10.10.11.11.12.12.13.14.14.15.7.16.16.17.16.16.16
+SPEC protection-paladin | Nov 16, 2026 - 12:00 PM
+T 0 Retribution|Benediction|20101
+T 1 Retribution|Conviction|20117
+T 2 Retribution|Improved Judgement|25956
+T 3 Retribution|Pursuit of Justice|26022
+T 4 Protection|Redoubt|20127
+T 5 Protection|Precision|20189
+T 6 Protection|Sacred Duty|1224697
+T 7 Protection|Shield Specialization|20150
+T 8 Protection|Templar's Bulwark|1311015
+T 9 Protection|Toughness|20143
+T 10 Protection|Swift Judgement|1310994
+T 11 Protection|Improved Righteous Fury|20468
+T 12 Protection|Anticipation|20096
+T 13 Protection|Holy Shield|20925
+T 14 Protection|Reckoning|20177
+T 15 Protection|Iron Creed|1311034
+T 16 Protection|Shieldsworn|1328544
+T 17 Retribution|Sanctified Judgement|1311074
+T 18 Retribution|Sacred Arbiter|1311087
+S 0.0.0.0.0.1.1.1.2.2.3.3.4.4.4.4.4.5.5.5.6.6.7.7.8.9.9.10.11.11.11.12.13.14.14.14.14.14.15.15.15.12.16.12.12.12.17.17.17.18.9
+SPEC protection-warrior | Nov 16, 2026 - 12:00 PM
+T 0 Protection|Shield Specialization|12298
+T 1 Protection|Improved Revenge|12797
+T 2 Protection|Improved Thunder Clap|12287
+T 3 Protection|Master of Defense|1310316
+T 4 Protection|Last Stand|12975
+T 5 Protection|Defiance|12792
+T 6 Protection|Vanguard|1310317
+T 7 Protection|Improved Sunder Armor|12308
+T 8 Protection|Focused Rage|29787
+T 9 Protection|Concussion Blow|12809
+T 10 Protection|Bastion|16538
+T 11 Protection|Shield Slam|23922
+T 12 Arms|Improved Rend|12286
+T 13 Fury|Cruelty|12320
+T 14 Fury|Unbridled Wrath|12322
+T 15 Fury|Enrage|12317
+T 16 Fury|Reckless Swings|1329555
+T 17 Arms|Deflection|16462
+S 0.0.0.0.0.1.1.1.2.2.3.3.2.4.5.6.7.7.7.5.8.8.8.9.5.10.10.10.10.10.11.12.12.12.13.13.13.13.13.14.14.14.14.14.15.15.15.15.15.16.17
+SPEC restoration-druid | Nov 4, 2026 - 12:00 PM
+T 0 Balance|Improved Wrath|16814
+T 1 Restoration|Nature's Focus|17063
+T 2 Restoration|Reflection|17106
+T 3 Balance|Nature's Reach|16819
+T 4 Balance|Nature's Majesty|1223082
+T 5 Balance|Moonglow|16845
+T 6 Balance|Nature's Splendor|1223083
+T 7 Balance|Genesis|1223081
+T 8 Balance|Insect Swarm|5570
+T 9 Restoration|Naturalist|17069
+T 10 Restoration|Bloom|1328621
+T 11 Restoration|Gift of Nature|17104
+T 12 Restoration|Swiftmend|18562
+T 13 Restoration|Nature's Swiftness|17116
+T 14 Restoration|Living Spirit|1309631
+T 15 Restoration|Improved Rejuvenation|17111
+T 16 Restoration|Improved Regrowth|17074
+T 17 Restoration|Wild Growth|408120
+S 0.0.0.0.0.1.1.1.1.1.2.2.2.3.3.4.4.5.6.5.5.7.7.8.9.9.10.9.9.9.11.12.11.11.11.11.13.14.14.14.15.15.15.16.16.16.16.16.17.7.7
+SPEC restoration-shaman | Nov 16, 2026 - 2:00 AM
+T 0 Restoration|Tidal Focus|16179
+T 1 Restoration|Mindfulness|1223033
+T 2 Restoration|Improved Healing Wave|16182
+T 3 Restoration|Water Shield|408510
+T 4 Restoration|Healing Focus|16181
+T 5 Restoration|Mana Tide Totem|16190
+T 6 Restoration|Tidal Mastery|16194
+T 7 Restoration|Nature's Swiftness|16188
+T 8 Restoration|Healing Way|29206
+T 9 Restoration|Purification|16178
+T 10 Restoration|Riptide|408521
+T 11 Restoration|Ancestral Healing|16176
+T 12 Enhancement|Thundering Strikes|16255
+T 13 Restoration|Restorative Totems|16187
+T 14 Enhancement|Ancestral Knowledge|17485
+S 0.0.0.0.0.1.1.1.2.2.3.2.2.2.4.5.6.6.6.6.7.8.8.8.6.9.9.9.9.9.10.4.4.11.11.11.12.12.12.12.12.13.13.13.13.13.14.14.14.14.14
+SPEC retribution-paladin | Nov 15, 2026 - 8:00 PM
+T 0 Retribution|Deflection|20060
+T 1 Retribution|Improved Judgement|25956
+T 2 Retribution|Conviction|20117
+T 3 Retribution|Pursuit of Justice|26022
+T 4 Retribution|Seal of Command|20375
+T 5 Retribution|Sanctified Judgement|1311074
+T 6 Retribution|Sacred Arbiter|1311087
+T 7 Retribution|Two-Handed Weapon Specialization|20111
+T 8 Retribution|Vengeance|20049
+T 9 Retribution|Repentance|20066
+T 10 Retribution|Vindication|9452
+T 11 Retribution|Champion of the Light|1311084
+T 12 Retribution|Unsealed Wrath|1310735
+T 13 Holy|Divine Strength|20262
+T 14 Holy|Reverence|1310899
+T 15 Holy|Improved Seals|20224
+T 16 Holy|Holy Conduit|1237268
+T 17 Holy|Purifying Power|429144
+T 18 Holy|Divine Precision|1310904
+S 0.0.0.0.0.1.1.2.2.2.3.3.4.5.5.6.7.7.7.5.8.8.8.9.10.11.11.11.11.11.12.13.13.13.13.13.14.14.15.15.15.16.16.15.15.17.17.18.18.10.10
+SPEC shadow-priest | Nov 17, 2026 - 6:00 PM
+T 0 Discipline|Wand Specialization|14524
+T 1 Shadow Magic|Spirit Tap|15270
+T 2 Shadow Magic|Improved Shadow Word: Pain|15275
+T 3 Shadow Magic|Improved Mind Blast|15273
+T 4 Shadow Magic|Mind Flay|15407
+T 5 Shadow Magic|Improved Mind Flay|1225139
+T 6 Shadow Magic|Shadow Focus|15260
+T 7 Shadow Magic|Vampiric Embrace|15286
+T 8 Shadow Magic|Dark Inspiration|1326159
+T 9 Shadow Magic|Devouring Contagion|1309950
+T 10 Shadow Magic|Shadow Weaving|15257
+T 11 Shadow Magic|Darkness|15259
+T 12 Shadow Magic|Shadowform|15473
+T 13 Discipline|Twin Disciplines|1225132
+T 14 Discipline|Mental Strength|18551
+T 15 Discipline|Meditation|14521
+T 16 Holy|Twilight Focus|14913
+T 17 Shadow Magic|Silence|15487
+S 0.0.1.1.1.1.1.2.2.3.3.3.4.5.5.3.6.7.8.8.8.8.8.9.9.10.10.11.11.11.11.11.12.13.13.13.13.13.14.14.14.15.15.15.16.16.16.10.17.6.6
+SPEC subtlety-rogue | Nov 4, 2026 - 12:00 PM
+T 0 Subtlety|Opportunity|14057
+T 1 Subtlety|Camouflage|13975
+T 2 Subtlety|Dirty Deeds|14082
+T 3 Subtlety|Premeditation|14183
+T 4 Subtlety|Initiative|13976
+T 5 Subtlety|Serrated Blades|14171
+T 6 Subtlety|Ghostly Strike|14278
+T 7 Subtlety|Master of Deception|13958
+T 8 Subtlety|Hemorrhage|16511
+T 9 Subtlety|Preparation|14185
+T 10 Subtlety|Setup|13983
+T 11 Subtlety|Boot Knife|1329286
+T 12 Subtlety|Death Mark|1316709
+T 13 Combat|Efficient Strikes|13732
+T 14 Assassination|Malice|14138
+T 15 Assassination|Ruthlessness|14156
+T 16 Assassination|Improved Slice and Dice|14165
+T 17 Assassination|Blood Splatter|1329256
+T 18 Combat|Coup de Grace|14162
+T 19 Combat|Precision|13705
+S 0.0.0.0.0.1.1.1.2.2.3.4.4.4.5.6.5.5.7.7.8.9.10.10.10.11.11.11.11.11.12.13.13.14.14.14.14.14.15.15.15.16.16.17.18.18.18.19.19.19.16
+SPEC survival-hunter | Nov 20, 2026 - 12:00 PM
+T 0 Survival|Improved Tracking|24293
+T 1 Survival|Savage Strikes|19159
+T 2 Survival|Survivalist|19255
+T 3 Survival|Surefooted|19290
+T 4 Survival|Clever Traps|19239
+T 5 Survival|Predator's Edge|1310627
+T 6 Survival|Strider Kick|1317257
+T 7 Survival|Resourcefulness|440529
+T 8 Survival|Expose Prey|1310532
+T 9 Beast Mastery|Deadly Aspects|19552
+T 10 Beast Mastery|Focused Fire|1223755
+T 11 Marksmanship|Lethal Attacks|19426
+T 12 Marksmanship|Careful Aim|1223984
+T 13 Survival|Lightning Reflexes|19168
+T 14 Survival|Lacerating Strikes|1310533
+T 15 Survival|Survival Tactics|19376
+T 16 Survival|Survivalist's Discipline|1310496
+S 0.0.0.0.0.1.1.2.2.2.3.3.3.4.4.5.5.5.5.5.6.7.7.8.8.9.9.9.9.9.10.10.11.11.11.11.11.12.12.12.12.12.13.13.13.13.13.14.15.15.16

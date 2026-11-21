@@ -375,6 +375,16 @@ for _, folder in ipairs(listFolders(SRC)) do
     end
 end
 local applied, missed = applyPatches(OUT)
+-- Icy Veins' leveling talent plans (tools/fork/icyveins/leveling.txt), in place of Polestar's.
+do
+    local plans, errs = dofile(ROOT .. "/tools/fork/icyveins.lua").run(OUT, ROOT)
+    if not plans then
+        for _, e in ipairs(errs) do print("talent plans: " .. e) end
+        missed = missed + #errs
+    else
+        print(string.format("%d Icy Veins talent plans", plans))
+    end
+end
 -- AzerothRoute's own art (tools/fork/assets, drawn by tools/fork/make_art.lua) over Polestar's.
 local art = 0
 local assets = ROOT .. "/tools/fork/assets"

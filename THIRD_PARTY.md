@@ -22,6 +22,13 @@ The components below keep their own licences and notices; each `addon/` folder c
 - Used in: the walking router and route lines Polestar adapted (`addon/AzerothRoute_Nav/`, and the
   files `addon/AzerothRoute/LICENSE` names).
 
+## Icy Veins
+
+- Talent plans: the level-by-level leveling talent builds and talent trees of Icy Veins' WoW Forever
+  guides (https://www.icy-veins.com/wow-forever/leveling-guides), credited and linked per spec in the
+  plan's Source line. Only the talent choices and tree facts are used, no guide text.
+  Kept in `tools/fork/icyveins/` and generated into `addon/AzerothRoute/Talents/IcyVeins.lua`.
+
 ## Data
 
 The guides, names and item data carry facts from the sources each `LICENSE-DATA.txt` lists: EG Link

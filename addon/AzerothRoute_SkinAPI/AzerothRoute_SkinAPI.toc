@@ -20,7 +20,7 @@
 ## Title-zhTW: AzerothRoute 皮膚介面
 ## Notes-zhTW: AzerothRoute 的一部分：其他插件提供的皮膚需通過的檢查。使用皮膚時載入。
 ## Author: AzerothRoute
-## Version: 0.1.0
+## Version: 0.2.0
 ## Category: AzerothRoute
 ## Group: AzerothRoute
 ## LoadOnDemand: 1

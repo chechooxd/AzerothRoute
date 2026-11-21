@@ -194,6 +194,64 @@ do
     end
 end
 
+-- 6b. Talent plans from Icy Veins' WoW Forever leveling guides: one point a level 10-60 for every
+-- spec, the talents Forever added or changed on the live tree, and the generator's own rules.
+do
+    local T = ns.Talents
+    local data = T and T.Data("PALADIN")
+    local gen = read(ROOT .. "/AzerothRoute/Talents/IcyVeins.lua") or ""
+    local plans = 0
+    for _ in gen:gmatch('\n\t\t{ key = "') do plans = plans + 1 end
+    if plans ~= 27 then fail("Icy Veins plans: expected 27 (3 per class), got " .. plans) end
+    if not (data and data.url == "https://www.icy-veins.com/wow-forever/leveling-guides" and data.source:find("Icy Veins", 1, true)) then fail("Paladin plans are not from Icy Veins") end
+    local want = { holy = "holy-paladin", protection = "protection-paladin", retribution = "retribution-paladin" }
+    for _, b in ipairs(data and data.builds or {}) do
+        if #b.picks ~= 51 then fail(b.key .. ": " .. #b.picks .. " picks, not one a level 10-60") end
+        if b.link ~= "https://www.icy-veins.com/wow-forever/" .. tostring(want[b.key]) .. "-leveling" then fail(b.key .. " links " .. tostring(b.link)) end
+        if not (b.updated and b.updated:match("%d%d%d%d")) then fail(b.key .. " has no guide date") end
+        local ranks = {}
+        for _, p in ipairs(b.picks) do
+            local n = data.nodes[p.node]
+            ranks[p.node] = (ranks[p.node] or 0) + 1
+            if not n then fail(b.key .. ": pick on a node not in the tree")
+            elseif p.rank ~= ranks[p.node] or p.rank > n.max then fail(string.format("%s: %s rank %d of %d", b.key, n.name, p.rank, n.max)) end
+        end
+    end
+    -- New in Forever: Shieldsworn, in the Protection plan, found on the game's tree by its spell.
+    local sw = data and data.nodes[-1328544]
+    if not (sw and sw.name == "Shieldsworn" and sw.max == 1 and sw.spec == 2) then fail("Shieldsworn missing from the Paladin tree") end
+    -- Changed in Forever: Champion of the Light now has 5 ranks.
+    local champ
+    for _, n in pairs(data and data.nodes or {}) do if n.spell == 1311084 then champ = n end end
+    if not (champ and champ.max == 5) then fail("Champion of the Light keeps the snapshot's rank count") end
+    if data then
+        local nodes = {}
+        for id, n in pairs(data.nodes) do nodes[id > 0 and id or 900000 - id] = { active = 0, current = 0, max = n.max, spell = n.spell, name = n.name } end
+        local v = T.Validate(data, { nodes = nodes })
+        if not v.ok then fail("Icy Veins plans do not match the game's tree: " .. table.concat(v.missing, ", ")) end
+        if v.map[-1328544] ~= 900000 + 1328544 then fail("Shieldsworn not matched to the game's node") end
+    end
+    -- The generator refuses a plan that breaks the rules.
+    local gen = dofile("tools/fork/icyveins.lua")
+    local trees, snapshot = read("tools/fork/icyveins/trees.txt"), read(ROOT .. "/AzerothRoute/Talents/Builds.lua")
+    local function generate(source)
+        local text, n = gen.build(source, trees, snapshot)
+        if text then return n end
+        return nil, n
+    end
+    local source = read("tools/fork/icyveins/leveling.txt")
+    local holy = source:match("SPEC holy%-paladin.-\nS [%d%.]+\n")
+    local ok = generate(holy)
+    if ok ~= 1 then fail("generator: one valid plan gave " .. tostring(ok)) end
+    local n, errs = generate((holy:gsub("\nS ([%d%.]+)", function(s) return "\nS " .. s:gsub("%.%d+$", "") end)))
+    if n or not (errs and errs[1]:find("50 points", 1, true)) then fail("generator took a plan one point short") end
+    n, errs = generate((holy:gsub("\nS ([%d%.]+)", function(s) return "\nS " .. s:gsub("^%d+", "13") end)))
+    if n or not (errs and errs[1]:find("Divine Favor rank 2 of 1", 1, true)) then fail("generator took a rank beyond the maximum") end
+    n, errs = generate((holy:gsub("|1311606\n", "|999\n")))
+    if n or not (errs and errs[1]:find("not in the class's talent tree", 1, true)) then fail("generator took a talent outside the tree") end
+    print(string.format("icy veins: %d plans checked", plans))
+end
+
 -- 7. Identity: AzerothRoute's colours, art and words
 do
     local Th = ns.Theme

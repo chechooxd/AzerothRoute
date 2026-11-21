@@ -22,7 +22,7 @@
 ## Author: AzerothRoute
 ## X-License: GPL-3.0-only
 ## X-Website: https://github.com/chechooxd/AzerothRoute
-## Version: 0.1.0
+## Version: 0.2.0
 ## Category: AzerothRoute
 ## IconTexture: Interface\AddOns\AzerothRoute\Media\UI\logo
 ## AddonCompartmentFunc: AzerothRoute_OnAddonCompartmentClick

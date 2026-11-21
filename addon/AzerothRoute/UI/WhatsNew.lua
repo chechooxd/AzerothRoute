@@ -48,7 +48,19 @@ end
 -- theme's colours when shown), and the setting it is about when it has one
 -- (`setting`, a settings key: the note opens the settings on it).
 -- AzerothRoute: its own release notes (Polestar's history is not AzerothRoute's).
+-- The newest release says 0.2.0 (from VERSION); older ones keep their number.
 local NOTES = {
+	{
+		version = "0.2.0",
+		notes = {
+			{ glyph = "icon-learn", color = "accent", head = L["Talent plans from Icy Veins"], text = function()
+				return L["Every spec's leveling build from Icy Veins' WoW Forever guides, one point a level from 10 to 60."]
+			end },
+			{ glyph = "check", color = "success", head = L["Today's talent trees"], text = function()
+				return L["Talents Forever added or changed, like Shieldsworn or Boot Knife, are in the plans and the trees."]
+			end },
+		},
+	},
 	{
 		version = "0.1.0",
 		notes = {
