@@ -69,6 +69,29 @@ return {
         why = "settings groups are never folded",
     },
     {
+        -- The top bar's search is global (Theme/Battlenet.lua): typed outside a section with its own search,
+        -- it looks the text up in Lookup (guides, items, mounts, NPCs, quests, places) instead of the guide list.
+        file = "AzerothRoute/UI/Picker.lua",
+        find = [=[	if s and text ~= "" then section = nil end
+	-- A new search looks through every guide; a category picked while
+	-- searching narrows it.]=],
+        replace = [=[	-- AzerothRoute: the global search: Lookup takes the text.
+	if text ~= "" and UI.ShowLookup then
+		UI.ShowLookup({ query = text })
+		return
+	end
+	if s and text ~= "" then section = nil end
+	-- A new search looks through every guide; a category picked while
+	-- searching narrows it.]=],
+        why = "the hub's search is global (Lookup)",
+    },
+    {
+        file = "AzerothRoute/UI/Picker.lua",
+        find = "\twin.Search:SetShown(not s or s.search ~= nil)\n",
+        replace = "\twin.Search:Show() -- AzerothRoute: the global search is there in every section\n",
+        why = "the global search shows in every section",
+    },
+    {
         -- Folded under the top bar (Theme/Battlenet.lua): the bar alone, the header and its title go too.
         file = "AzerothRoute_Options/UI/Options.lua",
         find = [=[		away(rawget(win, "ThanksLink"))

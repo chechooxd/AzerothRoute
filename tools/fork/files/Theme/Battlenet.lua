@@ -186,7 +186,7 @@ B.TopBar = topBar
 
 -- The hub's tools right to left from the bar's close button: the menu scale (its slider and value; the
 -- label is its tip) and the search. f.psToolsW: the room they take from the bar's right.
-local SEARCH_W = 200
+local SEARCH_W = 160
 function B.HubTools(f)
 	local bar, close = rawget(f, "Rail"), rawget(f, "BarClose")
 	if not (bar and close) then return end
@@ -248,6 +248,7 @@ if GetLocale and (GetLocale() == "esMX" or GetLocale() == "esES") then
 	L["Pace"] = "Ritmo"
 	L["Routes"] = "Rutas"
 end
+B.NO_TAB = { Lookup = true }
 local function tabLabel(item) return SHORT[item.key] and L[SHORT[item.key]] or item.label end
 B.TabLabel = tabLabel
 
@@ -255,6 +256,10 @@ B.TabLabel = tabLabel
 -- tab is named while all fit, else the open one alone (the others an icon with its tip), so the bar
 -- always says where you are. -> the number of sections shown.
 local function topRail(f, items, bottom, active, onSelect)
+	-- The bar's search is the global one (UI/Picker.lua opens Lookup with it): no Lookup tab.
+	local kept = {}
+	for _, item in ipairs(items) do if not B.NO_TAB[item.key] then kept[#kept + 1] = item end end
+	items = kept
 	local bar = f.Rail
 	local i = 0
 	local function setup(item, labelled)
@@ -278,7 +283,7 @@ local function topRail(f, items, bottom, active, onSelect)
 			w = TAB_PAD * 2 + ICON + 6 + math.ceil(b.Label:GetStringWidth() or 0)
 		else
 			b.Icon:SetPoint("CENTER", b, "CENTER", 0, 0)
-			w = ICON + TAB_PAD * 2
+			w = ICON + 16
 		end
 		b:SetWidth(w)
 		b:ClearAllPoints()
@@ -287,7 +292,7 @@ local function topRail(f, items, bottom, active, onSelect)
 	end
 	-- The room between the name and the foot icons.
 	local left = 10 + 32 + 4 + 140 + 16
-	local footW = #(bottom or {}) * (ICON + TAB_PAD * 2 + TAB_GAP)
+	local footW = #(bottom or {}) * (ICON + 16 + TAB_GAP)
 	local room = (f:GetWidth() - 2) - left - footW - 24 - (rawget(f, "psToolsW") or 0)
 	local need = 0
 	for _, item in ipairs(items) do

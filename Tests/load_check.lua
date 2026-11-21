@@ -946,6 +946,10 @@ do
             hub.railButtons[1]:Click()
             if picked ~= "Guides" then fail("a top bar tab does not open its section") end
             if not hub.railButtons[2].Under:IsShown() or hub.railButtons[1].Under:IsShown() then fail("the active tab is not marked") end
+            -- The bar's search is the global one: no Lookup tab beside it.
+            W.ShellRail(hub, { { key = "Guides", label = "Guides", icon = "guides" }, { key = "Lookup", label = "Lookup", icon = "search" } }, foot, "Guides", function() end)
+            for _, b in ipairs(hub.railButtons) do if b:IsShown() and b.psKey == "Lookup" then fail("the Lookup tab is still in the top bar") end end
+            W.ShellRail(hub, items, foot, "Talents", function(k) picked = k end)
             -- Too narrow for every name (the mock's window is 100 wide): the active tab keeps its name.
             if (hub.railButtons[2].Label:GetText() or "") == "" then fail("the active tab lost its name") end
             if (hub.railButtons[1].Label:GetText() or "") ~= "" then fail("an inactive tab kept its name in a narrow bar") end
@@ -1008,6 +1012,30 @@ do
             for _, b in ipairs(opt.navButtons) do if b:IsShown() then n = n + 1 end end
             if n ~= 2 then fail("search results were filtered: " .. n) end
         end
+    end
+end
+
+-- 24. The hub's search is global: typed in a section without its own search (Talents), it opens Lookup
+-- with the text; in a section with its own search it stays there.
+do
+    local P = ns.UI and ns.UI.Picker
+    if not (P and ns.UI.ShowPicker and P.ShowSection) then fail("no hub to search from") else
+        pcall(ns.UI.ShowPicker)
+        local win = P.frame
+        local box = win and win.Search
+        local changed = box and box._scripts and box._scripts.OnTextChanged
+        if not changed then fail("the hub's search box has no text handler") else
+            P.ShowSection("Talents")
+            if not box:IsShown() then fail("the global search is hidden in Talents") end
+            box:SetText("Peacebloom")
+            changed(box, true)
+            M:RunTimers(3)
+            if P.Section() ~= "Lookup" then fail("typing in Talents did not open the global search: " .. tostring(P.Section())) end
+            box:SetText("")
+            pcall(changed, box, true)
+            pcall(M.RunTimers, M, 3)
+        end
+        if win then win:Hide() end
     end
 end
 

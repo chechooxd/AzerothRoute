@@ -1857,7 +1857,7 @@ local function sectionLayout(s)
 	if not on then win.Close:SetFrameLevel(details.Scrim:GetFrameLevel() + 2) end
 	if win.PlaceThanks then win.PlaceThanks() end
 	W.SetSearchPlaceholder(win.Search, (s and s.searchPlaceholder) or (s and s.search and L["Search"]) or HUB_SEARCH)
-	win.Search:SetShown(not s or s.search ~= nil)
+	win.Search:Show() -- AzerothRoute: the global search is there in every section
 end
 
 local function renderSection(s)
@@ -2217,6 +2217,11 @@ local function onSearch(text)
 	if s and s.search then
 		query = text
 		s.search(text)
+		return
+	end
+	-- AzerothRoute: the global search: Lookup takes the text.
+	if text ~= "" and UI.ShowLookup then
+		UI.ShowLookup({ query = text })
 		return
 	end
 	if s and text ~= "" then section = nil end

@@ -26,6 +26,8 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
   the search, Peek and Fold, the menu scale, close) sit in the top bar, over everything; the header keeps the title.
   Folded, the settings keep their top bar only. The hub's top bar has its search, the menu scale and a close
   button at the right; where not every tab fits, the open one keeps its name and the others show their icon.
+  The hub's search is global and always there: typed in a section without its own search it opens Lookup
+  (guides, items, mounts, NPCs, quests, places); the Lookup tab left the bar.
 - The target button and its list draw common mobs in the accent gold instead of red; elites, rares and
   bosses stay Forever blue, NPCs green, and an item out of range still turns red.
 - Only AzerothRoute's own design is offered and drawn: Polestar's other looks (Halo, Hearth, the game looks
