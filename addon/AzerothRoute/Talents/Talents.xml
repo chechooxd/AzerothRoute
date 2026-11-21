@@ -5,6 +5,7 @@
 	<Script file="IcyVeins.lua"/>
 	<Script file="Import.lua"/>
 	<Script file="Apply.lua"/>
+	<Script file="Toast.lua"/>
 	<Script file="Overlay.lua"/>
 	<Script file="Options.lua"/>
 	<Script file="View.lua"/>

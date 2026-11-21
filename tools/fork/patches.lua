@@ -52,8 +52,34 @@ return {
     {
         file = "AzerothRoute/Talents/Talents.xml",
         find = '\t<Script file="Builds.lua"/>\n',
-        replace = '\t<Script file="Builds.lua"/>\n\t<Script file="Sources.lua"/>\n\t<Script file="IcyVeins.lua"/>\n\t<Script file="Import.lua"/>\n\t<Script file="Apply.lua"/>\n',
-        why = "loads the Icy Veins plans (Sources.lua, generated IcyVeins.lua), imported plans and Apply.lua",
+        replace = '\t<Script file="Builds.lua"/>\n\t<Script file="Sources.lua"/>\n\t<Script file="IcyVeins.lua"/>\n\t<Script file="Import.lua"/>\n\t<Script file="Apply.lua"/>\n\t<Script file="Toast.lua"/>\n',
+        why = "loads the Icy Veins plans (Sources.lua, generated IcyVeins.lua), imported plans, Apply.lua and the talent point card",
+    },
+    {
+        file = "AzerothRoute/Talents/Toast.lua", create = true, replace = read("Talents/Toast.lua"),
+        why = "the talent point card: the plan's next talent with Apply and View plan after a level-up",
+    },
+    {
+        file = "AzerothRoute/Talents/Talents.lua",
+        find = [=[	ns.Print(format(L["Talent point: %s (%s plan)."], T.PickText(c.data, s.next, c.valid), c.build.specName))
+end]=],
+        replace = [=[	ns.Print(format(L["Talent point: %s (%s plan)."], T.PickText(c.data, s.next, c.valid), c.build.specName))
+	-- AzerothRoute: and the talent point card, with Apply (Talents/Toast.lua).
+	if T.Toast then T.Toast.Notify(c) end
+end]=],
+        why = "shows the talent point card after a level-up",
+    },
+    {
+        file = "AzerothRoute_Options/Talents/Options.lua",
+        find = [=[			help = L["A chat line naming the plan's next talent when a point is waiting."] },
+]=],
+        replace = [=[			help = L["A chat line naming the plan's next talent when a point is waiting."] },
+		-- AzerothRoute: the talent point card (Talents/Toast.lua).
+		{ kind = "toggle", key = "talents.toast", label = L["Show a card with Apply when a point is waiting"], disabled = function() return off() or not T.Get("reminder") end, child = true,
+			search = "talents, talent points, card, toast, apply, level up",
+			help = L["After a level-up, a card names the plan's next talent with Apply talents and View plan."] },
+]=],
+        why = "the talent point card's setting",
     },
     {
         file = "AzerothRoute/Talents/Sources.lua", create = true, replace = read("Talents/Sources.lua"),
@@ -443,6 +469,14 @@ return {
 local NOTES = {
 	{
 		version = "@VERSION@",
+		notes = {
+			{ glyph = "icon-learn", color = "accent", head = L["Talent points, one click"], text = function()
+				return L["After a level-up a card names your plan's next talent: Apply talents spends the point without opening anything."]
+			end },
+		},
+	},
+	{
+		version = "0.3.0",
 		notes = {
 			{ glyph = "plus", color = "accent", head = L["Import your own talent plan"], text = function()
 				return L["Paste an Icy Veins talent calculator link under Talents > Import a plan: it becomes a plan you can follow and apply, in the order of its points."]

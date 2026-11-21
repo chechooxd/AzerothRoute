@@ -10,6 +10,14 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 - MINOR (0.x.0): new features or guides.
 - MAJOR: reserved for 1.0.0, the first stable release.
 
+## [0.4.0] - 2026-11-21
+
+### Added
+- Talent point card: after a level-up with a point waiting, a card at the top of the screen names the
+  followed plan's next talent, with Apply talents and View plan. It closes on its own after 25 seconds
+  (not while the cursor is on it) or once no point waits. Setting under Options > Questing > Talents,
+  "Show a card with Apply when a point is waiting" (on by default, with the chat reminder).
+
 ## [0.3.0] - 2026-11-21
 
 ### Added

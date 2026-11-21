@@ -48,8 +48,16 @@ end
 -- theme's colours when shown), and the setting it is about when it has one
 -- (`setting`, a settings key: the note opens the settings on it).
 -- AzerothRoute: its own release notes (Polestar's history is not AzerothRoute's).
--- The newest release says 0.3.0 (from VERSION); older ones keep their number.
+-- The newest release says 0.4.0 (from VERSION); older ones keep their number.
 local NOTES = {
+	{
+		version = "0.4.0",
+		notes = {
+			{ glyph = "icon-learn", color = "accent", head = L["Talent points, one click"], text = function()
+				return L["After a level-up a card names your plan's next talent: Apply talents spends the point without opening anything."]
+			end },
+		},
+	},
 	{
 		version = "0.3.0",
 		notes = {

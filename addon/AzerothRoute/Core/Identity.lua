@@ -25,6 +25,9 @@ local ES = {
 	["It is free and open source under the GPL-3.0."] = "Es gratis y de código abierto bajo la GPL-3.0.",
 	["It is young, so expect the odd wrong step or waypoint. Send a report with /ar report and it gets fixed."] =
 		"Es joven: puede haber algún paso o punto equivocado. Envía un informe con /ar report y se corrige.",
+	["Talent points, one click"] = "Puntos de talento, en un clic",
+	["After a level-up a card names your plan's next talent: Apply talents spends the point without opening anything."] =
+		"Al subir de nivel, una tarjeta muestra el siguiente talento de tu plan: Aplicar talentos gasta el punto sin abrir nada.",
 	["Import your own talent plan"] = "Importa tu propio plan de talentos",
 	["Paste an Icy Veins talent calculator link under Talents > Import a plan: it becomes a plan you can follow and apply, in the order of its points."] =
 		"Pega un enlace del calculador de talentos de Icy Veins en Talentos > Importar un plan: se vuelve un plan que puedes seguir y aplicar, en el orden de sus puntos.",

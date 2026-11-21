@@ -429,6 +429,8 @@ local function remind()
 	local s = c and c.state
 	if not (s and T.Get("reminder")) or s.unspent == 0 or not s.next or s.status ~= "behind" then return end
 	ns.Print(format(L["Talent point: %s (%s plan)."], T.PickText(c.data, s.next, c.valid), c.build.specName))
+	-- AzerothRoute: and the talent point card, with Apply (Talents/Toast.lua).
+	if T.Toast then T.Toast.Notify(c) end
 end
 
 ns.OnLogin(function()

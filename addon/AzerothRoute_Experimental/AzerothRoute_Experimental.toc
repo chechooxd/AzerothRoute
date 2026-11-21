@@ -20,7 +20,7 @@
 ## Title-zhTW: AzerothRoute 實驗指南
 ## Notes-zhTW: AzerothRoute 的一部分：Forever 新區域的實驗性指南（Alpha 版），與 AzerothRoute 的指南一同列出。
 ## Author: AzerothRoute
-## Version: 0.3.0
+## Version: 0.4.0
 ## Category: AzerothRoute
 ## Group: AzerothRoute
 ## LoadOnDemand: 1

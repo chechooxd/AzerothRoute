@@ -27,6 +27,10 @@ local ok, err = ns.RegisterOptions({
 			help = L["A line in each talent's tooltip: where it comes in the plan, or that it is off the plan."] },
 		{ kind = "toggle", key = "talents.reminder", label = L["Remind me of unspent points"], disabled = off, search = "talents, talent points, unspent, level up",
 			help = L["A chat line naming the plan's next talent when a point is waiting."] },
+		-- AzerothRoute: the talent point card (Talents/Toast.lua).
+		{ kind = "toggle", key = "talents.toast", label = L["Show a card with Apply when a point is waiting"], disabled = function() return off() or not T.Get("reminder") end, child = true,
+			search = "talents, talent points, card, toast, apply, level up",
+			help = L["After a level-up, a card names the plan's next talent with Apply talents and View plan."] },
 	},
 })
 if not ok and geterrorhandler then geterrorhandler()(err) end

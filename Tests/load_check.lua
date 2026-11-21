@@ -514,6 +514,47 @@ do
     end
 end
 
+-- 13. The talent point card: on a level-up with a point waiting, a card names the plan's next talent
+-- with Apply and View plan; the setting turns it off; nothing shows with no point to spend.
+do
+    local T = ns.Talents
+    local TT = T and T.Toast
+    local data = T and T.Data("PALADIN")
+    if not (TT and data) then fail("no talent point card") else
+        local build = T.BuildByKey(data, "holy")
+        local valid = { names = {}, map = {}, back = {}, ok = true, missing = {} }
+        local function state(unspent, status)
+            local s = { status = status, unspent = unspent, next = build.picks[4], done = 3, total = #build.picks }
+            return { data = data, build = build, valid = valid, state = s, staged = s }
+        end
+        local c = state(2, "behind")
+        ns.Set("talents.toast", true)
+        if not TT.Notify(c) then fail("card did not show for 2 waiting points") end
+        local f = TT.frame
+        if not (f and f:IsShown()) then fail("card frame not shown") else
+            local want = T.PickText(data, build.picks[4], valid)
+            if not (f.Text:GetText() or ""):find(want, 1, true) then fail("card does not name the next talent: " .. tostring(f.Text:GetText())) end
+            if not (f.Title:GetText() or ""):find("2", 1, true) then fail("card does not count the waiting points") end
+            local applied, shown = 0, 0
+            local run, show = T.Apply.Run, T.Show
+            T.Apply.Run = function() applied = applied + 1 return 2 end
+            T.Show = function() shown = shown + 1 end
+            f.Apply:Click()
+            f.View:Click()
+            T.Apply.Run, T.Show = run, show
+            if applied ~= 1 then fail("card's Apply did not apply the plan") end
+            if shown ~= 1 then fail("card's View plan did not open the plan") end
+            if f:IsShown() then fail("card stayed open after View plan") end
+        end
+        TT.Hide()
+        if TT.Notify(state(0, "onplan")) then fail("card showed with no point to spend") end
+        ns.Set("talents.toast", false)
+        if TT.Notify(c) then fail("card showed with the setting off") end
+        ns.Set("talents.toast", true)
+        print("talent card: checked")
+    end
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end
