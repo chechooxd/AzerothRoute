@@ -4,4 +4,5 @@
 	<Script file="SkinApi.lua"/>
 	<Script file="Anim.lua"/>
 	<Script file="Widgets.lua"/>
+	<Script file="Battlenet.lua"/>
 </Ui>

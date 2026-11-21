@@ -823,6 +823,42 @@ do
     end
 end
 
+-- 20. The Battle.net look: rounded surfaces (nine-slice art), flat headers with no night band, haze or
+-- gold rim, and Battle.net blue primary buttons with white text.
+do
+    local Theme, W = ns.Theme, ns.Widgets
+    local B = Theme and Theme.Battlenet
+    if not B then fail("no Battle.net look") else
+        for _, name in ipairs({ "round-8", "round-8-ring" }) do
+            if not read("tools/fork/assets/AzerothRoute/Media/UI/" .. name .. ".tga") then fail("missing art " .. name) end
+        end
+        local function isRound(tex) return tex and type(tex:GetTexture()) == "string" and tex:GetTexture():find("round%-8") end
+        for _, kind in ipairs({ "panel", "button", "dropdown", "tile", "editbox" }) do
+            local f = CreateFrame(kind == "button" and "Button" or "Frame", nil, UIParent)
+            Theme.Skin(f, kind)
+            local d = f.psSkin
+            if not (d and isRound(d.bg)) then fail(kind .. " ground is not rounded") end
+            if not (d and d.ring and d.ring:IsShown() and isRound(d.ring)) then fail(kind .. " has no rounded edge") end
+            if f.psBorder then for i = 1, 4 do if f.psBorder[i]:IsShown() then fail(kind .. " keeps its square border") break end end end
+        end
+        -- The hub's shell: flat header.
+        local shell = W.Shell("AzerothRouteBnetProbe", { rail = true, title = "Probe" })
+        if not (shell.Band:GetAlpha() == 0 and shell.Haze:GetAlpha() == 0) then fail("the night band or haze still shows") end
+        local rim = rawget(shell, "psRim") or rawget(shell, "Rim")
+        if rim and rim:GetAlpha() ~= 0 then fail("the gold rim still shows") end
+        if not isRound(shell.psSkin and shell.psSkin.bg) then fail("the window is not rounded") end
+        -- Primary button: Battle.net blue, white label, no lit top line, no edge.
+        local p = W.Button(UIParent, "Continue", nil, { primary = true })
+        local r, g, b = p.psSkin.bg:GetVertexColor()
+        local br, bg2, bb = B.PRIMARY[1], B.PRIMARY[2], B.PRIMARY[3]
+        if not (math.abs(r - br) < 1e-3 and math.abs(g - bg2) < 1e-3 and math.abs(b - bb) < 1e-3) then fail(string.format("primary button is %.2f,%.2f,%.2f, not Battle.net blue", r, g, b)) end
+        local hi = rawget(p, "psTopHi")
+        if hi and hi:IsShown() then fail("primary button keeps the lit top line") end
+        if p.psSkin.ring and p.psSkin.ring:IsShown() then fail("primary button has an edge") end
+        print("battle.net look: checked")
+    end
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end

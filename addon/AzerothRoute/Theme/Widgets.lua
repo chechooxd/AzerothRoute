@@ -770,14 +770,15 @@ function W.Button(parent, text, onClick, opts)
 		local d = self.psSkin
 		local hi = rawget(self, "psTopHi")
 		if self.psPrimary then
-			local r, g, bb = Theme.Accent()
+			-- AzerothRoute: Battle.net blue with white text (Theme/Battlenet.lua), else the accent.
+			local r, g, bb = (Theme.PrimaryFill or Theme.Accent)()
 			if d and d.bg then d.bg:SetVertexColor(r, g, bb, 1) end
 			if self.psBorder then for i = 1, 4 do self.psBorder[i]:SetVertexColor(r, g, bb, 1) end end
 			W.Uncolor(self.Label)
-			self.Label:SetTextColor(Theme.Color("onAccent"))
-			if icon then icon:SetVertexColor(Theme.Color("onAccent")) end
-			-- The house primary: one lit line inside its top edge.
-			if Theme.SkinKey() == "polestar" and not self.psGhost then
+			if Theme.PrimaryText then self.Label:SetTextColor(Theme.PrimaryText()) else self.Label:SetTextColor(Theme.Color("onAccent")) end
+			if icon then if Theme.PrimaryText then icon:SetVertexColor(Theme.PrimaryText()) else icon:SetVertexColor(Theme.Color("onAccent")) end end
+			-- The house primary: one lit line inside its top edge (not on the Battle.net look's rounded button).
+			if Theme.SkinKey() == "polestar" and not self.psGhost and not Theme.Battlenet then
 				if not hi then
 					hi = self:CreateTexture(nil, "ARTWORK", nil, 7)
 					hi:SetTexture(WHITE)

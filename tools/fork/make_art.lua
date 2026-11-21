@@ -264,3 +264,22 @@ end
 -- Ink widths match Polestar's (181 and 125 px): the menus size their columns to them.
 wordmark("wordmark", "AZEROTHROUTE", 11, 17, 4.1, 2.1)
 wordmark("wordmark-small", "AZEROTHROUTE", 7.4, 12, 3, 1.6)
+
+-- round-8 and round-8-ring: a white rounded rectangle (32 x 32, corners of radius 8) and its 1px edge,
+-- drawn as nine-slice textures (slice margins 8) for the Battle.net look's surfaces (Theme/Battlenet.lua).
+local function roundRect(x0, y0, x1, y1, r)
+    return function(u, v)
+        local qx = max(x0 + r - u, 0, u - (x1 - r))
+        local qy = max(y0 + r - v, 0, v - (y1 - r))
+        return sqrt(qx * qx + qy * qy) - r
+    end
+end
+do
+    local cv = canvas(32, 32)
+    shape(cv, 1, roundRect(0, 0, 32, 32, 8), WHITE)
+    writeTGA(cv, "round-8")
+    local ring = canvas(32, 32)
+    shape(ring, 1, roundRect(0, 0, 32, 32, 8), WHITE)
+    shape(ring, 1, roundRect(1.2, 1.2, 30.8, 30.8, 6.8), nil, true)
+    writeTGA(ring, "round-8-ring")
+end

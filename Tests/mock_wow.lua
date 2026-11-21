@@ -75,7 +75,10 @@ function Frame:GetText() return self._text end
 function Frame:SetFormattedText(fmt, ...) self._text = string.format(fmt, ...) end
 function Frame:GetFont() return "Fonts\\FRIZQT__.TTF", 12, "" end
 function Frame:GetTextColor() return 1, 1, 1, 1 end
-function Frame:GetVertexColor() return 1, 1, 1, 1 end
+function Frame:SetVertexColor(r, g, b, a) self._vc = { r, g, b, a or 1 } end
+function Frame:GetVertexColor() local c = self._vc if c then return c[1], c[2], c[3], c[4] end return 1, 1, 1, 1 end
+function Frame:SetAlpha(a) self._alpha = a end
+function Frame:GetAlpha() return self._alpha or 1 end
 function Frame:GetPoint() return nil end
 function Frame:GetSize() return 100, 20 end
 function Frame:GetCenter() return 50, 10 end
