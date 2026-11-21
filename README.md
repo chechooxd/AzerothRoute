@@ -56,6 +56,8 @@ minimap button settings carry over on the first login.
 - Players can import their own plan: Talents > Import a plan takes an Icy Veins talent calculator
   link, whose `#tc-` part holds one letter per point in pick order. `tools/fork/icyveins/calculator.txt`
   maps each class's letters to talents; `Talents/Import.lua` decodes a link and saves it per character.
+- Gathering routes (`Core/Routes.lua`, `UI/Routes.lua`) are built in the game from Polestar's node spawn
+  data (`Core/GatherData.lua`, read through `Gather.Spots`): no route is copied from a guide.
 - `tools/fork/patches.lua` can also replace a whole file (`overwrite = true`): AzerothRoute owns
   `Talents/View.lua` that way (`tools/fork/files/Talents/View.lua`).
 

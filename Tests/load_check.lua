@@ -723,6 +723,106 @@ do
     end
 end
 
+-- 18. Gathering routes: node spawn spots per zone, the kinds that still teach the skill, the zones with
+-- most spots, the spots as one closed loop, and the arrow held on each spot in turn.
+do
+    local G, R = ns.Gather, ns.Routes
+    if not (G and G.Spots and R and R.Order and R.KindsFor and R.Candidates and R.Build and R.Advance and R.Start) then fail("no gathering routes") else
+        -- Spots of one zone, decoded from the generated data.
+        local spots = G.Spots(1440)
+        local ok = #spots > 20
+        for _, s in ipairs(spots) do if not (s.k and s.x >= 0 and s.x <= 100 and s.y >= 0 and s.y <= 100 and s.f == "e") then ok = false break end end
+        if not ok then fail("Ashenvale spots not decoded: " .. #spots) end
+        -- The kinds that still teach Mining at 120: ores needing 21-120, none above.
+        local kinds = R.KindsFor(186, 120)
+        if #kinds == 0 then fail("no ores for Mining 120") end
+        for _, k in ipairs(kinds) do
+            local kind = G.Kind(k)
+            if not (kind.line == 186 and kind.skill <= 120 and kind.skill > 20) then fail("ore " .. kind.name .. " (" .. kind.skill .. ") is not for Mining 120") end
+        end
+        if #R.KindsFor(182, 0) ~= 0 then fail("herbs for a skill of 0") end
+        -- A square's corners, shuffled, come back as its perimeter.
+        local pts = { { wx = 0, wy = 0 }, { wx = 100, wy = 100 }, { wx = 100, wy = 0 }, { wx = 0, wy = 100 } }
+        local order, len = R.Order(pts)
+        if #order ~= 4 or math.abs(len - 400) > 1e-6 then fail("square loop: " .. #order .. " points, " .. tostring(len) .. " yards") end
+        -- A grid of 25 points: every point once, no longer than the snake through it plus the way back.
+        local grid = {}
+        for i = 0, 4 do for j = 0, 4 do grid[#grid + 1] = { wx = i * 50 + (j % 2) * 3, wy = j * 50 } end end
+        local go, glen = R.Order(grid)
+        local seen = {}
+        for _, p in ipairs(go) do seen[p] = true end
+        local n = 0
+        for _ in pairs(seen) do n = n + 1 end
+        if n ~= 25 then fail("grid loop visits " .. n .. " of 25") end
+        if glen > 25 * 50 + 300 then fail("grid loop too long: " .. glen) end
+        -- Candidates: zones with spots of those kinds, the most first, none far above the level.
+        local cands = R.Candidates(186, 120, 25)
+        if #cands == 0 then fail("no zone for Mining 120") else
+            for i = 2, #cands do if cands[i].count > cands[i - 1].count then fail("zones not by spot count") break end end
+            for _, c in ipairs(cands) do
+                local lo = ns.Maps and ns.Maps.GetZoneLevels and ns.Maps.GetZoneLevels(c.map)
+                if lo and lo > 25 + R.LEVEL_SLACK then fail("zone " .. c.map .. " (level " .. lo .. ") above level 25") end
+            end
+            -- Every zone offered, for any skill, makes a route.
+            for _, case in ipairs({ { 182, 40, 12 }, { 182, 140, 28 }, { 186, 70, 18 }, { 186, 180, 38 }, { 186, 260, 55 }, { 182, 290, 60 } }) do
+                for _, c in ipairs(R.Candidates(case[1], case[2], case[3])) do
+                    if not R.Build(c.map, c.kinds, case[1]) then fail(string.format("zone %d offered for skill %d makes no route", c.map, case[2])) end
+                end
+            end
+            local route = R.Build(cands[1].map, cands[1].kinds, 186)
+            if not (route and #route.points == cands[1].count and route.length > 0) then fail("route not built from the best zone") end
+            -- Following: the arrow holds the nearest spot, moves on within reach, and lets go on Stop.
+            local held, unheld = {}, 0
+            local Nav = ns.Nav
+            local hold, unhold = Nav.Hold, Nav.Unhold
+            Nav.Hold = function(map, x, y, label) held[#held + 1] = { map = map, x = x, y = y, label = label } end
+            Nav.Unhold = function() unheld = unheld + 1 end
+            local p1 = route.points[1]
+            if R.Advance(route, 1, p1.wx + 5, p1.wy) ~= 2 then fail("not moved on within reach") end
+            if R.Advance(route, 1, p1.wx + 500, p1.wy) ~= 1 then fail("moved on while far away") end
+            if R.Advance(route, #route.points, route.points[#route.points].wx, route.points[#route.points].wy) ~= 1 then fail("the loop does not wrap") end
+            R.Start(route, 1)
+            if not (R.Active() == route and #held == 1 and held[1].map == route.map and held[1].label) then fail("start did not hold the first spot") end
+            R.Skip()
+            if #held ~= 2 or held[2].x ~= route.points[2].x then fail("skip did not hold the next spot") end
+            R.Stop()
+            if R.Active() or unheld ~= 1 then fail("stop did not let go of the arrow") end
+            Nav.Hold, Nav.Unhold = hold, unhold
+        end
+        print("routes: checked")
+    end
+end
+
+-- 19. The Gathering routes page: a route per zone for each gathering skill the character has, Start
+-- follows one, and the page then shows it with Skip and Stop; no skill, a note saying so.
+do
+    local RV, R = ns.UI and ns.UI.Routes, ns.Routes
+    if not (RV and RV.Build and RV.Render and RV.Shown) then fail("no gathering routes page") else
+        local C = ns.Compat
+        local rank = C.GetSkillRank
+        local Nav = ns.Nav
+        local hold, unhold = Nav.Hold, Nav.Unhold
+        Nav.Hold, Nav.Unhold = function() end, function() end
+        C.GetSkillRank = function(line) if line == 186 then return 180, 225 end return nil end
+        RV.Build(CreateFrame("Frame"), nil)
+        RV.Render()
+        local sh = RV.Shown()
+        if not (sh.skills == 1 and sh.rows and sh.rows > 0) then fail(string.format("routes page: %s skills, %s rows", tostring(sh.skills), tostring(sh.rows))) end
+        RV.StartRow(1)
+        if not R.Active() then fail("Start did not follow the route") end
+        RV.Render()
+        if not RV.Shown().active then fail("the page does not show the route being followed") end
+        RV.StopActive()
+        if R.Active() then fail("Stop on the page did not stop the route") end
+        C.GetSkillRank = function() return nil end
+        RV.Render()
+        if not RV.Shown().none then fail("no note for a character without gathering skills") end
+        C.GetSkillRank = rank
+        Nav.Hold, Nav.Unhold = hold, unhold
+        print("routes page: checked")
+    end
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end

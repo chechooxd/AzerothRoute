@@ -55,6 +55,53 @@ return {
         replace = '\t<Script file="Builds.lua"/>\n\t<Script file="Sources.lua"/>\n\t<Script file="IcyVeins.lua"/>\n\t<Script file="Import.lua"/>\n\t<Script file="Apply.lua"/>\n\t<Script file="Toast.lua"/>\n',
         why = "loads the Icy Veins plans (Sources.lua, generated IcyVeins.lua), imported plans, Apply.lua and the talent point card",
     },
+    -- Gathering routes (Core/Routes.lua, UI/Routes.lua): every spot of a zone from the gather data.
+    {
+        file = "AzerothRoute/Core/Gather.lua",
+        find = 'ns.RegisterEvent("MINIMAP_UPDATE_TRACKING", function() ns.Fire("GATHER_UP_CHANGED") end)\n',
+        replace = [=[ns.RegisterEvent("MINIMAP_UPDATE_TRACKING", function() ns.Fire("GATHER_UP_CHANGED") end)
+
+-- AzerothRoute: every spot of a zone, whatever the character gathers now (Core/Routes.lua):
+-- { { k, x, y, f }... }, x and y in map percent, f "e" on an Era frame.
+function Gather.Spots(map)
+	local out = {}
+	local text = data and data.maps and data.maps[map]
+	if not text then return out end
+	local frame = text:sub(1, 1) == "e" and "e" or nil
+	for k, spots in text:gmatch(";(%d+):([^;]*)") do
+		k = tonumber(k)
+		for p = 1, #spots - 3, 4 do
+			local x, y = percent(spots, p), percent(spots, p + 2)
+			if k and x and y then out[#out + 1] = { k = k, x = x, y = y, f = frame } end
+		end
+	end
+	return out
+end
+
+-- AzerothRoute: the zones the data has spots for (uiMapIDs, sorted).
+function Gather.Maps()
+	local out = {}
+	for map in pairs(data and data.maps or {}) do out[#out + 1] = map end
+	table.sort(out)
+	return out
+end
+]=],
+        why = "gathering routes read every spot of a zone",
+    },
+    {
+        file = "AzerothRoute/Core/Core.xml",
+        find = '\t<Script file="GatherData.lua"/>\n',
+        replace = '\t<Script file="GatherData.lua"/>\n\t<Script file="Routes.lua"/>\n',
+        why = "loads the gathering routes after the gather data",
+    },
+    {
+        file = "AzerothRoute/Core/Routes.lua", create = true, replace = read("Core/Routes.lua"),
+        why = "gathering routes: loops of node spawn spots for the character's skill",
+    },
+    {
+        file = "AzerothRoute/UI/Routes.lua", create = true, replace = read("UI/Routes.lua"),
+        why = "the Gathering routes section of the hub",
+    },
     -- Self-found characters have no auction house: no buys on the card, the reminder or the list.
     {
         file = "AzerothRoute/Quests/AuctionBuys.lua",
@@ -117,7 +164,7 @@ end)
     {
         file = "AzerothRoute/UI/UI.xml",
         find = '\t<Script file="WhatsNew.lua"/>\n',
-        replace = '\t<Script file="WhatsNew.lua"/>\n\t<Script file="Pace.lua"/>\n\t<Script file="Milestone.lua"/>\n',
+        replace = '\t<Script file="WhatsNew.lua"/>\n\t<Script file="Pace.lua"/>\n\t<Script file="Milestone.lua"/>\n\t<Script file="Routes.lua"/>\n',
         why = "loads the Leveling pace section after the hub (Picker.lua) and the milestone card",
     },
     {
@@ -547,6 +594,14 @@ end]=],
 local NOTES = {
 	{
 		version = "@VERSION@",
+		notes = {
+			{ glyph = "icon-collect", color = "accent", head = L["Gathering routes"], text = function()
+				return L["A new page in the menu: a loop of herb or ore spots for your Herbalism or Mining in the best zones, and the arrow takes you round it."]
+			end },
+		},
+	},
+	{
+		version = "0.6.0",
 		notes = {
 			{ glyph = "hourglass", color = "accent", head = L["Race your best character"], text = function()
 				return L["Leveling pace now compares every level with your fastest other character: a mark on the bar and how much faster or slower you were."]

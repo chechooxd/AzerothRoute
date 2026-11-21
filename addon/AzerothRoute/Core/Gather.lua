@@ -224,3 +224,28 @@ ns.RegisterEvent("PLAYER_SOFT_INTERACT_CHANGED", function(_, _, guid)
 end)
 
 ns.RegisterEvent("MINIMAP_UPDATE_TRACKING", function() ns.Fire("GATHER_UP_CHANGED") end)
+
+-- AzerothRoute: every spot of a zone, whatever the character gathers now (Core/Routes.lua):
+-- { { k, x, y, f }... }, x and y in map percent, f "e" on an Era frame.
+function Gather.Spots(map)
+	local out = {}
+	local text = data and data.maps and data.maps[map]
+	if not text then return out end
+	local frame = text:sub(1, 1) == "e" and "e" or nil
+	for k, spots in text:gmatch(";(%d+):([^;]*)") do
+		k = tonumber(k)
+		for p = 1, #spots - 3, 4 do
+			local x, y = percent(spots, p), percent(spots, p + 2)
+			if k and x and y then out[#out + 1] = { k = k, x = x, y = y, f = frame } end
+		end
+	end
+	return out
+end
+
+-- AzerothRoute: the zones the data has spots for (uiMapIDs, sorted).
+function Gather.Maps()
+	local out = {}
+	for map in pairs(data and data.maps or {}) do out[#out + 1] = map end
+	table.sort(out)
+	return out
+end

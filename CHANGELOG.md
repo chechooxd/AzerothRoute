@@ -10,6 +10,15 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 - MINOR (0.x.0): new features or guides.
 - MAJOR: reserved for 1.0.0, the first stable release.
 
+## [0.7.0] - 2026-11-21
+
+### Added
+- Gathering routes page in the menu: for Herbalism and Mining, the three zones with most spots of the
+  herbs or ores that still teach your skill (up to 100 points below it, zones up to 5 levels above
+  yours), each as one closed loop through every spot (nearest neighbour, then 2-opt). Start holds the
+  arrow on the nearest spot and moves on within 25 yards; Skip spot and Stop. Built from Polestar's
+  node spawn data, so a spot is where a node can spawn, not a promise one is up.
+
 ## [0.6.0] - 2026-11-21
 
 ### Added

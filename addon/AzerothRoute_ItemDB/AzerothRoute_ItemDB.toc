@@ -21,7 +21,7 @@
 ## Notes-zhTW: AzerothRoute 裝備建議所用的物品屬性。按需載入。
 ## Author: AzerothRoute
 ## X-License: GPL-3.0-only
-## Version: 0.6.0
+## Version: 0.7.0
 ## Category: AzerothRoute
 ## Group: AzerothRoute
 ## LoadOnDemand: 1
