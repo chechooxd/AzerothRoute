@@ -4257,7 +4257,7 @@ local function build()
 	end
 	win:HookScript("OnSizeChanged", function()
 		if rawget(win, "psHeadTools") then placeInstall() end
-		win.PlaceThanks()
+		if rawget(win, "PlaceThanks") then win.PlaceThanks() end
 	end)
 	-- After the shell's own scale handler: the size follows the scale's room.
 	ns.On("SETTING_CHANGED", function(path)

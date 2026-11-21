@@ -48,8 +48,19 @@ end
 -- theme's colours when shown), and the setting it is about when it has one
 -- (`setting`, a settings key: the note opens the settings on it).
 -- AzerothRoute: its own release notes (Polestar's history is not AzerothRoute's).
--- The newest release says 0.5.1 (from VERSION); older ones keep their number.
+-- The newest release says 0.5.2 (from VERSION); older ones keep their number.
 local NOTES = {
+	{
+		version = "0.5.2",
+		notes = {
+			{ glyph = "check", color = "success", head = L["Options window fix"], text = function()
+				return L["Resizing the Options window no longer shows an error."]
+			end },
+			{ glyph = "palette", color = "accent", head = L["WoW Forever's blue and gold"], text = function()
+				return L["The Azeroth colours now match WoW Forever: night blue grounds, gold, and Forever blue for quests and the route."]
+			end },
+		},
+	},
 	{
 		version = "0.5.1",
 		notes = {

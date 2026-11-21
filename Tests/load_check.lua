@@ -340,6 +340,17 @@ do
     if opts:find('key = "recorder"', 1, true) then fail("Options still has the Recorder page") end
     if opts:find("Cinzel", 1, true) then fail("Options credits Polestar's wordmark font") end
     if (read(ROOT .. "/AzerothRoute/Core/Commands.lua") or ""):find('RegisterCommand("discord"', 1, true) then fail("/ar discord still registered") end
+    -- The special-thanks line is off (Thanks.HeaderLink returns early), so PlaceThanks is never set:
+    -- every call must check for it first (0.5.1: resizing Options called it bare and errored).
+    for _, file in ipairs({ "AzerothRoute_Options/UI/Options.lua", "AzerothRoute/UI/Picker.lua" }) do
+        local n = 0
+        for line in ((read(ROOT .. "/" .. file) or "") .. "\n"):gmatch("([^\n]*)\n") do
+            n = n + 1
+            if line:find("PlaceThanks()", 1, true) and not line:find("if [%w%.%(%)\", ]*PlaceThanks[\"%)]* then") then
+                fail(string.format("%s:%d calls PlaceThanks without checking it exists", file, n))
+            end
+        end
+    end
     local wn = read(ROOT .. "/AzerothRoute/UI/WhatsNew.lua") or ""
     -- Only AzerothRoute's releases: every version the card lists has its CHANGELOG.md entry.
     local changelog = read("CHANGELOG.md") or ""

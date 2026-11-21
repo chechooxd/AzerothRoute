@@ -27,6 +27,8 @@ local ES = {
 		"Es joven: puede haber algún paso o punto equivocado. Envía un informe con /ar report y se corrige.",
 	["A new page in the menu: your XP per hour, the time to your next level and to 60 at your pace, and every level you played as a bar."] =
 		"Una página nueva en el menú: tu XP por hora, el tiempo para tu siguiente nivel y para el 60 a tu ritmo, y cada nivel que jugaste como una barra.",
+	["Options window fix"] = "Arreglo de la ventana de Opciones",
+	["Resizing the Options window no longer shows an error."] = "Cambiar el tamaño de la ventana de Opciones ya no muestra un error.",
 	["WoW Forever's blue and gold"] = "El azul y dorado de WoW Forever",
 	["The Azeroth colours now match WoW Forever: night blue grounds, gold, and Forever blue for quests and the route."] =
 		"Los colores Azeroth ahora son los de WoW Forever: fondos azul noche, dorado y el azul de Forever para misiones y la ruta.",

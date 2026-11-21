@@ -10,6 +10,12 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 - MINOR (0.x.0): new features or guides.
 - MAJOR: reserved for 1.0.0, the first stable release.
 
+## [0.5.2] - 2026-11-21
+
+### Fixed
+- Resizing the Options window raised "Options.lua:4260: attempt to call a nil value": it still
+  called the special-thanks line's placer, which no longer exists.
+
 ## [0.5.1] - 2026-11-21
 
 ### Changed

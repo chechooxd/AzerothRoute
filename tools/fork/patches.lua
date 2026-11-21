@@ -330,6 +330,18 @@ end]=],
         why = "no thanks page (Polestar's supporters and contributors)",
     },
     {
+        -- With the special-thanks line off (Thanks.HeaderLink returns early) PlaceThanks is never
+        -- set; Polestar's resize handler called it bare (0.5.1: an error on resizing Options).
+        file = "AzerothRoute_Options/UI/Options.lua",
+        find = [=[		if rawget(win, "psHeadTools") then placeInstall() end
+		win.PlaceThanks()
+	end)]=],
+        replace = [=[		if rawget(win, "psHeadTools") then placeInstall() end
+		if rawget(win, "PlaceThanks") then win.PlaceThanks() end
+	end)]=],
+        why = "resizing Options no longer calls the missing special-thanks placer",
+    },
+    {
         file = "AzerothRoute_Options/UI/Options.lua",
         find = [=[		.. L["Wordmark set in Cinzel by The Cinzel Project Authors, SIL Open Font License 1.1."] .. "\n"
 ]=],
@@ -480,6 +492,17 @@ end]=],
 local NOTES = {
 	{
 		version = "@VERSION@",
+		notes = {
+			{ glyph = "check", color = "success", head = L["Options window fix"], text = function()
+				return L["Resizing the Options window no longer shows an error."]
+			end },
+			{ glyph = "palette", color = "accent", head = L["WoW Forever's blue and gold"], text = function()
+				return L["The Azeroth colours now match WoW Forever: night blue grounds, gold, and Forever blue for quests and the route."]
+			end },
+		},
+	},
+	{
+		version = "0.5.1",
 		notes = {
 			{ glyph = "palette", color = "accent", head = L["WoW Forever's blue and gold"], text = function()
 				return L["The Azeroth colours now match WoW Forever: night blue grounds, gold, and Forever blue for quests and the route."]
