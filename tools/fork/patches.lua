@@ -69,6 +69,22 @@ return {
         why = "settings groups are never folded",
     },
     {
+        -- Folded under the top bar (Theme/Battlenet.lua): the bar alone, the header and its title go too.
+        file = "AzerothRoute_Options/UI/Options.lua",
+        find = [=[		away(rawget(win, "ThanksLink"))
+		O.HideMore()
+		W.HideMenu()
+		win:SetHeight(SH.header + 2)]=],
+        replace = [=[		away(rawget(win, "ThanksLink"))
+		-- AzerothRoute: under the top bar the window folds to the bar; the header (its title) goes too.
+		local bar = rawget(win, "psTopBar")
+		if bar then away(win.Header) end
+		O.HideMore()
+		W.HideMenu()
+		win:SetHeight(bar and (bar + 2) or (SH.header + 2))]=],
+        why = "folded settings keep the top bar only",
+    },
+    {
         -- The body's view height leaves out the Battle.net look's top bar (Theme/Battlenet.lua).
         file = "AzerothRoute/Theme/Widgets.lua",
         find = "\tf.psViewH = f:GetHeight() - SHELL.header - (tabs and SHELL.tabs or 0) - (foot and SHELL.footer or 0) - ph\n",

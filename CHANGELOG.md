@@ -24,6 +24,8 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
   side list shows the open group's pages only. Headers are shorter (80px); the hub's search sits above its
   side list and its tabs use short names (Pace, Routes) so they keep their labels. The settings' tools (Install,
   the search, Peek and Fold, the menu scale, close) sit in the top bar, over everything; the header keeps the title.
+  Folded, the settings keep their top bar only. The hub's top bar has its search, the menu scale and a close
+  button at the right; where not every tab fits, the open one keeps its name and the others show their icon.
 - The target button and its list draw common mobs in the accent gold instead of red; elites, rares and
   bosses stay Forever blue, NPCs green, and an item out of range still turns red.
 - Only AzerothRoute's own design is offered and drawn: Polestar's other looks (Halo, Hearth, the game looks

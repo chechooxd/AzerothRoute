@@ -3651,9 +3651,12 @@ function O.Fold(on)
 		away(win.Status)
 		away(rawget(win, "Grip"))
 		away(rawget(win, "ThanksLink"))
+		-- AzerothRoute: under the top bar the window folds to the bar; the header (its title) goes too.
+		local bar = rawget(win, "psTopBar")
+		if bar then away(win.Header) end
 		O.HideMore()
 		W.HideMenu()
-		win:SetHeight(SH.header + 2)
+		win:SetHeight(bar and (bar + 2) or (SH.header + 2))
 	elseif not on and Fold.state then
 		local f = Fold.state
 		Fold.state = nil

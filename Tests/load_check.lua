@@ -914,10 +914,21 @@ do
     local Theme, W = ns.Theme, ns.Widgets
     local B = Theme and Theme.Battlenet
     if not (B and B.TOP) then fail("no top bar") else
-        local hub = W.Shell("AzerothRouteBnetTop", { rail = true, title = "Hub" })
+        local hub = W.Shell("AzerothRouteBnetTop", { rail = true, title = "Hub", scalePath = "ui.menuScale" })
         if hub.psTopBar ~= B.TOP then fail("the hub has no top bar") end
-        if hub.Search:GetParent() ~= hub.Sidebar then fail("the search is not above the side list") end
-        if hub.psNavTop ~= 52 then fail("the side list does not start under the search: " .. tostring(hub.psNavTop)) end
+        -- The window's tools in the bar: the search, the menu scale and a close button anyone finds.
+        if hub.Search:GetParent() ~= hub.Rail then fail("the hub's search is not in the top bar") end
+        if hub.psNavTop ~= 12 then fail("the side list does not start at the top: " .. tostring(hub.psNavTop)) end
+        local bc = rawget(hub, "BarClose")
+        if not (bc and bc:GetParent() == hub.Rail) then fail("the hub has no close button in the top bar") else
+            hub:Show()
+            bc:Click()
+            if hub:IsShown() then fail("the top bar's close button did not close the hub") end
+        end
+        if hub.Close:GetAlpha() ~= 0 then fail("the old close button over the map still shows") end
+        if not (hub.HeaderTools and hub.HeaderTools:GetParent() == hub.Rail and hub.HeaderTools:IsShown()) then fail("the hub's menu scale is not in the top bar") end
+        hub.HeaderTools.Place()
+        if hub.HeaderTools:GetParent() ~= hub.Rail or hub.Search:GetParent() ~= hub.Rail then fail("the hub's tools left the top bar when placed again") end
         if not (hub.Emblem:IsShown() and hub.Wordmark:IsShown()) then fail("the logo or the name is hidden in the top bar") end
         if not rawget(hub.Rail, "Band") then fail("the top bar has no theme band") end
         local rim = rawget(hub, "psRim") or rawget(hub, "Rim")
@@ -935,6 +946,9 @@ do
             hub.railButtons[1]:Click()
             if picked ~= "Guides" then fail("a top bar tab does not open its section") end
             if not hub.railButtons[2].Under:IsShown() or hub.railButtons[1].Under:IsShown() then fail("the active tab is not marked") end
+            -- Too narrow for every name (the mock's window is 100 wide): the active tab keeps its name.
+            if (hub.railButtons[2].Label:GetText() or "") == "" then fail("the active tab lost its name") end
+            if (hub.railButtons[1].Label:GetText() or "") ~= "" then fail("an inactive tab kept its name in a narrow bar") end
         end
         local plain = W.Shell("AzerothRouteBnetTopPlain", { title = "Options" })
         if rawget(plain, "psTopBar") then fail("a window without the rail got the top bar") end
@@ -943,6 +957,26 @@ do
         if opt.psTopBar ~= B.TOP or not rawget(opt, "GroupBar") then fail("the settings have no top bar") else
             if not (opt.Emblem:IsShown() and opt.Wordmark:IsShown() and opt.Status:IsShown()) then fail("the settings lost their logo, name or version") end
             if not rawget(opt.GroupBar, "Band") then fail("the settings' top bar has no theme band") end
+            -- Folded, the real settings window keeps its top bar only (the title goes with the rest).
+            local O = ns.UI and ns.UI.Options
+            if O and O.Fold and ns.UI.ShowOptions then
+                pcall(ns.UI.ShowOptions)
+                local win = rawget(_G, "AzerothRouteOptions")
+                if win and rawget(win, "psTopBar") then
+                    local setH = win.SetHeight
+                    local lastH
+                    win.SetHeight = function(self, h) lastH = h return setH(self, h) end
+                    O.Fold(true)
+                    if lastH ~= win.psTopBar + 2 then fail("folded settings are " .. tostring(lastH) .. " tall, not the top bar's " .. (win.psTopBar + 2)) end
+                    if win.Header:IsShown() then fail("folded settings keep the header (its title hangs below the bar)") end
+                    O.Fold(false)
+                    if not win.Header:IsShown() then fail("unfolded settings lost the header") end
+                    win.SetHeight = setH
+                    win:Hide()
+                else
+                    fail("the real settings window has no top bar")
+                end
+            end
             -- The window's tools (search, scale, close) sit in the top bar, over everything, and stay there.
             for _, again in ipairs({ false, true }) do
                 if again and opt.HeaderTools then opt.HeaderTools.Place() end

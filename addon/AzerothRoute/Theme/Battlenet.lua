@@ -146,26 +146,30 @@ local function topBar(f)
 	bar:SetPoint("TOPRIGHT", f, "TOPRIGHT", -1, -1)
 	bar:SetHeight(TOP)
 	barBand(f, bar)
-	-- The side column under it: the search on top (as the Battle.net app's list), then the list.
+	-- The side column under it, its list from the top.
 	f.Sidebar:ClearAllPoints()
 	f.Sidebar:SetPoint("TOPLEFT", f, "TOPLEFT", 1, -1 - TOP)
 	f.Sidebar:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", 1, 1)
-	local function placeList()
-		local search = rawget(f, "Search")
-		f.psNavTop = (search and search:IsShown()) and (12 + 30 + 10) or 12
-		f.NavScroll:ClearAllPoints()
-		f.NavScroll:SetPoint("TOPLEFT", f.Sidebar, "TOPLEFT", 0, -f.psNavTop)
-		f.NavScroll:SetPoint("BOTTOMRIGHT", f.Sidebar, "BOTTOMRIGHT", -1, SH.footer)
+	f.psNavTop = 12
+	f.NavScroll:ClearAllPoints()
+	f.NavScroll:SetPoint("TOPLEFT", f.Sidebar, "TOPLEFT", 0, -f.psNavTop)
+	f.NavScroll:SetPoint("BOTTOMRIGHT", f.Sidebar, "BOTTOMRIGHT", -1, SH.footer)
+	-- The window's tools at the bar's right, as in the settings: a close button there (the hub's own one
+	-- moves over the details' art, where it was hard to find), the menu scale and the search.
+	local close = W.IconButton(bar, "close", 28, L["Close"], function() f:Hide() end, 14)
+	close:SetPoint("RIGHT", bar, "RIGHT", -12, 0)
+	f.BarClose = close
+	f.Close:SetAlpha(0)
+	f.Close:EnableMouse(false)
+	local tools = rawget(f, "HeaderTools")
+	if tools and tools.Place then
+		local place = tools.Place
+		tools.Place = function(...)
+			place(...)
+			B.HubTools(f)
+		end
 	end
-	if rawget(f, "Search") then
-		f.Search:SetParent(f.Sidebar)
-		f.Search:ClearAllPoints()
-		f.Search:SetPoint("TOPLEFT", f.Sidebar, "TOPLEFT", SH.side, -12)
-		f.Search:SetPoint("TOPRIGHT", f.Sidebar, "TOPRIGHT", -SH.side, -12)
-		f.Search:HookScript("OnShow", placeList)
-		f.Search:HookScript("OnHide", placeList)
-	end
-	placeList()
+	B.HubTools(f)
 	-- The emblem and the name in the bar.
 	f.Emblem:ClearAllPoints()
 	f.Emblem:SetSize(32, 32)
@@ -179,6 +183,40 @@ local function topBar(f)
 	if W.ShellLayout then W.ShellLayout(f) end
 end
 B.TopBar = topBar
+
+-- The hub's tools right to left from the bar's close button: the menu scale (its slider and value; the
+-- label is its tip) and the search. f.psToolsW: the room they take from the bar's right.
+local SEARCH_W = 200
+function B.HubTools(f)
+	local bar, close = rawget(f, "Rail"), rawget(f, "BarClose")
+	if not (bar and close) then return end
+	local left, used = close, 12 + 28
+	local scale = rawget(f, "HeaderTools")
+	if scale then
+		scale:SetParent(bar)
+		scale:ClearAllPoints()
+		scale:SetPoint("RIGHT", left, "LEFT", -14, 0)
+		scale:Show()
+		if scale.Label and scale.Label:IsShown() then
+			local lw = scale.Label:GetStringWidth() or 0
+			scale.Label:Hide()
+			scale:SetWidth(math.max(40, (scale:GetWidth() or 0) - lw - 10))
+		end
+		used = used + 14 + (scale:GetWidth() or 0)
+		left = scale
+	end
+	local search = rawget(f, "Search")
+	if search then
+		search:SetParent(bar)
+		search:ClearAllPoints()
+		search:SetPoint("RIGHT", left, "LEFT", -16, 0)
+		search:SetWidth(SEARCH_W)
+		used = used + 16 + SEARCH_W
+	end
+	f.psToolsW = used
+	-- The title alone in the header.
+	if rawget(f, "Title") then f.Title:SetPoint("TOPRIGHT", f.Header, "TOPRIGHT", -W.SHELL.pad, -18) end
+end
 
 local function tab(f, i)
 	local b = f.railButtons[i]
@@ -213,8 +251,9 @@ end
 local function tabLabel(item) return SHORT[item.key] and L[SHORT[item.key]] or item.label end
 B.TabLabel = tabLabel
 
--- The sections as tabs from the name's right; the foot items as icons at the bar's right. Labels show
--- while every tab fits, else icons alone (each with its tip). -> the number of sections shown.
+-- The sections as tabs from the name's right; the foot items as icons left of the window's tools. Every
+-- tab is named while all fit, else the open one alone (the others an icon with its tip), so the bar
+-- always says where you are. -> the number of sections shown.
 local function topRail(f, items, bottom, active, onSelect)
 	local bar = f.Rail
 	local i = 0
@@ -249,7 +288,7 @@ local function topRail(f, items, bottom, active, onSelect)
 	-- The room between the name and the foot icons.
 	local left = 10 + 32 + 4 + 140 + 16
 	local footW = #(bottom or {}) * (ICON + TAB_PAD * 2 + TAB_GAP)
-	local room = (f:GetWidth() - 2) - left - footW - 24
+	local room = (f:GetWidth() - 2) - left - footW - 24 - (rawget(f, "psToolsW") or 0)
 	local need = 0
 	for _, item in ipairs(items) do
 		local probe = f.psTabProbe or W.Text(bar, "label", "textDim")
@@ -258,14 +297,14 @@ local function topRail(f, items, bottom, active, onSelect)
 		probe:Hide()
 		need = need + TAB_PAD * 2 + ICON + 6 + math.ceil(probe:GetStringWidth() or 0) + TAB_GAP
 	end
-	local labelled = need <= room
+	local all = need <= room
 	local x = left
 	for _, item in ipairs(items) do
-		local b, w = setup(item, labelled)
+		local b, w = setup(item, all or item.key == active)
 		b:SetPoint("LEFT", bar, "LEFT", x, 0)
 		x = x + w + TAB_GAP
 	end
-	local rx = 12
+	local rx = 12 + (rawget(f, "psToolsW") or 0) + 8
 	for k = #(bottom or {}), 1, -1 do
 		local b, w = setup(bottom[k], false)
 		b:SetPoint("RIGHT", bar, "RIGHT", -rx, 0)
