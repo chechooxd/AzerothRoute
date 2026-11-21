@@ -21,9 +21,14 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
   View pace opens the Leveling pace page. Setting under Options > Quality of Life > Trackers & map.
 - Deaths are counted at each level and shown on the Leveling pace page.
 
+### Fixed
+- Self-found characters no longer get auction house buys (the guide's card, the town reminder and the
+  list): they cannot use the auction house.
+
 ### Not possible in Forever
 - An in-combat rotation helper: Forever keeps cooldowns, auras, health and power secret from addons
   in combat, and Blizzard's combat assistant is off (checked in game, 2026-11-21).
+- Hardcore death alerts with a place and level: Forever's HARDCORE_DEATHS gives only a name.
 
 ## [0.5.2] - 2026-11-21
 

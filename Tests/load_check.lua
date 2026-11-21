@@ -698,6 +698,31 @@ do
     end
 end
 
+-- 17. Self-found: a self-found character (C_PlayerInfo.IsSelfFoundActive) gets no auction house buys
+-- (card, reminder, list), whatever the setting; anyone else follows qol.auctionBuys.
+do
+    local AB, Mat = ns.AuctionBuys, ns.Materials
+    if not (AB and AB.On and Mat and Mat.SelfFound) then fail("no auction house buys module") else
+        local PI = rawget(_G, "C_PlayerInfo")
+        local saved = PI and rawget(PI, "IsSelfFoundActive")
+        if not PI then PI = {} rawset(_G, "C_PlayerInfo", PI) end
+        local selfFound = false
+        rawset(PI, "IsSelfFoundActive", function() return selfFound end)
+        ns.Set("qol.auctionBuys", true)
+        if not AB.On() then fail("auction house buys off for a character who can trade") end
+        selfFound = true
+        if AB.On() then fail("auction house buys offered to a self-found character") end
+        local list = AB.List("all")
+        if list and #list > 0 then fail("a self-found character got auction house items") end
+        selfFound = false
+        ns.Set("qol.auctionBuys", false)
+        if AB.On() then fail("auction house buys on with the setting off") end
+        ns.Set("qol.auctionBuys", true)
+        rawset(PI, "IsSelfFoundActive", saved)
+        print("self-found: checked")
+    end
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end

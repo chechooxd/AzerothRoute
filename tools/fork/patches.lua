@@ -55,6 +55,18 @@ return {
         replace = '\t<Script file="Builds.lua"/>\n\t<Script file="Sources.lua"/>\n\t<Script file="IcyVeins.lua"/>\n\t<Script file="Import.lua"/>\n\t<Script file="Apply.lua"/>\n\t<Script file="Toast.lua"/>\n',
         why = "loads the Icy Veins plans (Sources.lua, generated IcyVeins.lua), imported plans, Apply.lua and the talent point card",
     },
+    -- Self-found characters have no auction house: no buys on the card, the reminder or the list.
+    {
+        file = "AzerothRoute/Quests/AuctionBuys.lua",
+        find = 'function AB.On() return ns.Get("qol.auctionBuys") and true or false end',
+        replace = [=[function AB.On()
+	-- AzerothRoute: never for a self-found character (C_PlayerInfo.IsSelfFoundActive), who has no auction house.
+	local M = ns.Materials
+	if M and M.SelfFound and M.SelfFound() then return false end
+	return ns.Get("qol.auctionBuys") and true or false
+end]=],
+        why = "no auction house buys for self-found characters",
+    },
     -- Deaths at each level in the XP tracker's splits (the milestone card, UI/Milestone.lua).
     {
         file = "AzerothRoute/QoL/XP.lua",
@@ -541,6 +553,9 @@ local NOTES = {
 			end },
 			{ glyph = "icon-level", color = "accent", head = L["A card every 10 levels"], text = function()
 				return L["At 20, 30, 40, 50 and 60: those ten levels' time, kills, quests and deaths, against your best character. At 60, your whole run."]
+			end },
+			{ glyph = "check", color = "success", head = L["Self-found, respected"], text = function()
+				return L["Self-found characters no longer get auction house buys."]
 			end },
 		},
 	},

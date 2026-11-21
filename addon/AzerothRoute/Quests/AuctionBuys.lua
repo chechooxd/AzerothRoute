@@ -73,7 +73,12 @@ local BIND_ON_PICKUP, BIND_QUEST = 1, 4
 -- (skill line 182), metal and stone (7) with Mining (186).
 local GATHER = { [9] = 182, [7] = 186 }
 
-function AB.On() return ns.Get("qol.auctionBuys") and true or false end
+function AB.On()
+	-- AzerothRoute: never for a self-found character (C_PlayerInfo.IsSelfFoundActive), who has no auction house.
+	local M = ns.Materials
+	if M and M.SelfFound and M.SelfFound() then return false end
+	return ns.Get("qol.auctionBuys") and true or false
+end
 
 local function C() return ns.Compat end
 

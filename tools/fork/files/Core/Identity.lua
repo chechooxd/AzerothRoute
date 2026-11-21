@@ -27,6 +27,8 @@ local ES = {
 		"Es joven: puede haber algún paso o punto equivocado. Envía un informe con /ar report y se corrige.",
 	["A new page in the menu: your XP per hour, the time to your next level and to 60 at your pace, and every level you played as a bar."] =
 		"Una página nueva en el menú: tu XP por hora, el tiempo para tu siguiente nivel y para el 60 a tu ritmo, y cada nivel que jugaste como una barra.",
+	["Self-found, respected"] = "Autosuficiente, respetado",
+	["Self-found characters no longer get auction house buys."] = "Los personajes autosuficientes ya no reciben compras de la casa de subastas.",
 	["A card every 10 levels"] = "Una tarjeta cada 10 niveles",
 	["At 20, 30, 40, 50 and 60: those ten levels' time, kills, quests and deaths, against your best character. At 60, your whole run."] =
 		"En el 20, 30, 40, 50 y 60: el tiempo, enemigos, misiones y muertes de esos diez niveles, contra tu mejor personaje. En el 60, toda tu subida.",

@@ -59,6 +59,9 @@ local NOTES = {
 			{ glyph = "icon-level", color = "accent", head = L["A card every 10 levels"], text = function()
 				return L["At 20, 30, 40, 50 and 60: those ten levels' time, kills, quests and deaths, against your best character. At 60, your whole run."]
 			end },
+			{ glyph = "check", color = "success", head = L["Self-found, respected"], text = function()
+				return L["Self-found characters no longer get auction house buys."]
+			end },
 		},
 	},
 	{
