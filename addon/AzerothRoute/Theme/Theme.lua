@@ -665,8 +665,8 @@ function Theme.SkinId()
 	if drawing.id then return drawing.id end
 	if skinMemo and skinMemo.id then return skinMemo.id end
 	local k = get("ui.skin")
+	-- AzerothRoute: its own design only; the saved choice is kept, never drawn.
 	local id = "polestar"
-	if SKINS[k] and not FAILED[k] and (Theme._testShowHidden or not HIDDEN_SKINS[k]) then id = k end
 	if skinMemo then skinMemo.id = id end
 	return id
 end
@@ -681,7 +681,8 @@ function Theme.SkinChoices()
 	local out = {}
 	for _, id in ipairs(Theme.SKIN_ORDER) do
 		local s = SKINS[id]
-		if s and (Theme._testShowHidden or not HIDDEN_SKINS[id]) then
+		-- AzerothRoute: its own design only.
+		if s and id == "polestar" and (Theme._testShowHidden or not HIDDEN_SKINS[id]) then
 			if s.builtin then
 				out[#out + 1] = { value = id, text = s.label() }
 			else

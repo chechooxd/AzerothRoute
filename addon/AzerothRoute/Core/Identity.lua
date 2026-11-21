@@ -27,6 +27,8 @@ local ES = {
 		"Es joven: puede haber algún paso o punto equivocado. Envía un informe con /ar report y se corrige.",
 	["A new page in the menu: your XP per hour, the time to your next level and to 60 at your pace, and every level you played as a bar."] =
 		"Una página nueva en el menú: tu XP por hora, el tiempo para tu siguiente nivel y para el 60 a tu ritmo, y cada nivel que jugaste como una barra.",
+	["Rounded windows and buttons, a flat header, blue buttons and switches, and Continue guide at the foot of the menu, in the style of the Battle.net app."] =
+		"Ventanas y botones redondeados, una cabecera plana, botones e interruptores azules, y Continuar guía al pie del menú, al estilo de la app de Battle.net.",
 	["A new page in the menu: a loop of herb or ore spots for your Herbalism or Mining in the best zones, and the arrow takes you round it."] =
 		"Una página nueva en el menú: un circuito de puntos de hierbas o vetas para tu Herboristería o Minería en las mejores zonas, y la flecha te lleva por él.",
 	["Self-found, respected"] = "Autosuficiente, respetado",

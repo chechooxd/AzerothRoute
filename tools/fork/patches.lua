@@ -89,6 +89,24 @@ return {
 			if Theme.SkinKey() == "polestar" and not self.psGhost and not Theme.Battlenet then]=],
         why = "primary buttons in Battle.net blue with white text",
     },
+    -- Only AzerothRoute's own design (the Battle.net look): Polestar's other looks are neither drawn nor offered.
+    {
+        file = "AzerothRoute/Theme/Theme.lua",
+        find = [=[	local id = "polestar"
+	if SKINS[k] and not FAILED[k] and (Theme._testShowHidden or not HIDDEN_SKINS[k]) then id = k end]=],
+        replace = [=[	-- AzerothRoute: its own design only; the saved choice is kept, never drawn.
+	local id = "polestar"]=],
+        why = "only AzerothRoute's design is drawn",
+    },
+    {
+        file = "AzerothRoute/Theme/Theme.lua",
+        find = [=[		if s and (Theme._testShowHidden or not HIDDEN_SKINS[id]) then
+			if s.builtin then]=],
+        replace = [=[		-- AzerothRoute: its own design only.
+		if s and id == "polestar" and (Theme._testShowHidden or not HIDDEN_SKINS[id]) then
+			if s.builtin then]=],
+        why = "only AzerothRoute's design is offered",
+    },
     -- Gathering routes (Core/Routes.lua, UI/Routes.lua): every spot of a zone from the gather data.
     {
         file = "AzerothRoute/Core/Gather.lua",
@@ -629,6 +647,9 @@ local NOTES = {
 	{
 		version = "@VERSION@",
 		notes = {
+			{ glyph = "palette", color = "accent", head = L["A new look"], text = function()
+				return L["Rounded windows and buttons, a flat header, blue buttons and switches, and Continue guide at the foot of the menu, in the style of the Battle.net app."]
+			end },
 			{ glyph = "icon-collect", color = "accent", head = L["Gathering routes"], text = function()
 				return L["A new page in the menu: a loop of herb or ore spots for your Herbalism or Mining in the best zones, and the arrow takes you round it."]
 			end },

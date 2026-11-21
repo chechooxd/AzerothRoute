@@ -20,8 +20,8 @@ checked in game by the user).
   dropdowns; flat header (no night band, haze, gold rim or edge light); Battle.net blue primary buttons - inline
 - T2 S2 hub layout: bigger icon rail with the logo, sidebar navigation as top tabs, guide list as cards, primary
   "Continue guide" button bottom left - inline
-- T3 S2 settings layout: categories on the left, options in cards, blue switches, Reset and Done in the footer - inline
-- T4 S3 only the AzerothRoute design offered (other looks hidden), docs, CHANGELOG 0.6.0, install, commit - inline
+- T3 S2 settings layout: categories on the left, options in cards, blue switches, Reset and Done in the footer - inline - done (rows on rounded panels read as cards; blue switches)
+- T4 S3 only the AzerothRoute design offered (other looks hidden), docs, CHANGELOG 0.6.0, install, commit - inline - done
 
 ## Log
 
@@ -31,3 +31,7 @@ checked in game by the user).
 - L2 (2026-11-21): Polestar's skins only recolour and repaint (Theme.Skin kinds, SkinAPI); the shell layout
   (rail, 240px sidebar, header, tab row) is fixed in W.Shell (Theme/Widgets.lua:4219). No rounded art exists;
   Forever's client has SetTextureSliceMargins/SetTextureSliceMode for nine-slice.
+- L3 (2026-11-21): built in Theme/Battlenet.lua (wraps house painters, W.Shell, W.ShellNav, W.ShellRail,
+  W.Button, Theme.SwitchColors) plus patches (primary colour in W.Button; SkinId and SkinChoices limited to
+  "polestar"). Checks: load_check 20-21. Not seen in game: corner art, slice margins and spacing need the
+  user's eye.

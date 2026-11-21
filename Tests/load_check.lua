@@ -859,6 +859,50 @@ do
     end
 end
 
+-- 21. The Battle.net hub: rounded selection blocks (no accent bar) in the side list and the icon rail,
+-- and a big blue "Continue guide" button at the foot of the side column that opens the guide window.
+do
+    local Theme, W = ns.Theme, ns.Widgets
+    local B = Theme and Theme.Battlenet
+    if not (B and B.Continue) then fail("no Battle.net hub") else
+        local function isRound(tex) return tex and type(tex:GetTexture()) == "string" and tex:GetTexture():find("round%-8") end
+        local hub = W.Shell("AzerothRouteBnetHub", { rail = true, title = "Hub" })
+        W.ShellNav(hub, { { key = "a", label = "Elwynn" }, { key = "b", label = "Westfall" } }, "a", function() end)
+        local nb = hub.navButtons[1]
+        if not (nb and isRound(nb.Selected)) then fail("side list selection is not a rounded block") end
+        if nb and nb.Bar:GetAlpha() ~= 0 then fail("side list keeps the accent bar") end
+        -- A foot item (Options): the mock's windows are too short for top items to fit.
+        W.ShellRail(hub, {}, { { key = "g", label = "Guides", icon = "guides" } }, "g", function() end)
+        local rb = hub.railButtons[1]
+        if not (rb and isRound(rb.Selected)) then fail("rail selection is not a rounded block") end
+        if rb and rb.Bar:GetAlpha() ~= 0 then fail("rail keeps the accent bar") end
+        local c = rawget(hub, "Continue")
+        if not (c and c.psPrimary) then fail("no Continue guide button on the hub") else
+            local shown = 0
+            ns.On("SHOW_FRAME", function() shown = shown + 1 end)
+            hub:Show()
+            c:Click()
+            if shown ~= 1 then fail("Continue guide did not open the guide window") end
+            if hub:IsShown() then fail("the hub stayed open after Continue guide") end
+        end
+        local plain = W.Shell("AzerothRouteBnetPlain", { title = "Options" })
+        if rawget(plain, "Continue") then fail("a window without the rail got the Continue guide button") end
+        -- Settings switches: on is Battle.net blue with a white knob; off keeps the house tones.
+        local on = Theme.SwitchColors(true, false, true)
+        if not (on.track[1] == B.PRIMARY[1] and on.track[3] == B.PRIMARY[3] and on.knob[1] == 1) then fail("an on switch is not Battle.net blue") end
+        local off = Theme.SwitchColors(false, false, true)
+        if off.track[1] == B.PRIMARY[1] and off.track[3] == B.PRIMARY[3] then fail("an off switch turned blue") end
+        -- Only AzerothRoute's own design: one theme offered, any other saved choice drawn as it.
+        local choices = Theme.SkinChoices()
+        if not (#choices == 1 and choices[1].value == "polestar") then fail("other looks still offered: " .. #choices) end
+        local saved = ns.Get("ui.skin")
+        ns.Set("ui.skin", "halo")
+        if Theme.SkinId() ~= "polestar" then fail("a saved Polestar look is still drawn: " .. tostring(Theme.SkinId())) end
+        ns.Set("ui.skin", saved)
+        print("battle.net hub: checked")
+    end
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end

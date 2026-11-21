@@ -12,6 +12,14 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 
 ## [0.6.0] - in progress
 
+### Changed
+- A Battle.net style look for the hub and the settings: rounded windows, panels, buttons, tiles, fields and
+  menus; flat headers without the night band, haze or gold rim; rounded selection blocks in the side list
+  and the icon rail, with bigger rail icons; Battle.net blue primary buttons and switches with white text.
+- The hub has a big blue "Continue guide" button at the foot of its side column that opens the guide window.
+- Only AzerothRoute's own design is offered and drawn: Polestar's other looks (Halo, Hearth, the game looks
+  and skin addons) are hidden; a saved choice is kept.
+
 ### Added
 - Gathering routes page in the menu: for Herbalism and Mining, the three zones with most spots of the
   herbs or ores that still teach your skill (up to 100 points below it, zones up to 5 levels above

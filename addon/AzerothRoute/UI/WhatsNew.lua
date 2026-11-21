@@ -53,6 +53,9 @@ local NOTES = {
 	{
 		version = "0.6.0",
 		notes = {
+			{ glyph = "palette", color = "accent", head = L["A new look"], text = function()
+				return L["Rounded windows and buttons, a flat header, blue buttons and switches, and Continue guide at the foot of the menu, in the style of the Battle.net app."]
+			end },
 			{ glyph = "icon-collect", color = "accent", head = L["Gathering routes"], text = function()
 				return L["A new page in the menu: a loop of herb or ore spots for your Herbalism or Mining in the best zones, and the arrow takes you round it."]
 			end },
