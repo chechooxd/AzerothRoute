@@ -224,13 +224,48 @@ local function curve(a, b, c, n)
 end
 
 -- Flight: a winged boot facing right, the wing at the back of the shaft.
-G.wingboot = U(
-    D(grow(poly({ { 14, 6.5 }, { 21.5, 6.5 }, { 21.5, 17 }, { 27, 19.2 }, { 29.5, 22.5 }, { 29.5, 26.5 }, { 12.5, 26.5 }, { 12.5, 20 } }), 0.8),
-        box(21, 24, 9.5, 0.6)),
-    box(17.7, 5.6, 5.2, 1.7, 0.8),
-    line(curve({ 13.5, 8.5 }, { 8, 6 }, { 4, 0.8 }), 3.6),
-    line(curve({ 13.5, 12 }, { 7, 11 }, { 2, 6.2 }), 3.2),
-    line(curve({ 13.5, 15.5 }, { 7.5, 15.5 }, { 3.2, 12 }), 2.8))
+-- A stroke along a polyline whose width runs from w0 at the first point to w1 at the last.
+local function taper(pts, w0, w1)
+    local lens, total = {}, 0
+    for i = 1, #pts - 1 do
+        local a, b = pts[i], pts[i + 1]
+        lens[i] = sqrt((b[1] - a[1]) ^ 2 + (b[2] - a[2]) ^ 2)
+        total = total + lens[i]
+    end
+    return function(u, v)
+        local best, acc = 1e9, 0
+        for i = 1, #pts - 1 do
+            local a, b = pts[i], pts[i + 1]
+            local dx, dy = b[1] - a[1], b[2] - a[2]
+            local t = max(0, min(1, ((u - a[1]) * dx + (v - a[2]) * dy) / max(1e-9, dx * dx + dy * dy)))
+            local d = sqrt((u - a[1] - t * dx) ^ 2 + (v - a[2] - t * dy) ^ 2)
+            local k = (acc + t * lens[i]) / total
+            best = min(best, d - (w0 + (w1 - w0) * k) / 2)
+            acc = acc + lens[i]
+        end
+        return best
+    end
+end
+
+-- The boot: a folded cuff, a heel, a toe that curls up.
+local bootShape = U(
+    grow(poly({ { 15, 12 }, { 22.5, 12 }, { 22.5, 18.5 }, { 25.5, 20.5 }, { 28.5, 21.5 }, { 30.5, 20.5 }, { 31.2, 22.5 },
+        { 30, 26 }, { 27.5, 28.2 }, { 14, 28.2 }, { 13.6, 22 } }), 0.6),
+    grow(poly({ { 13.6, 7.5 }, { 23.6, 7.5 }, { 24.2, 12 }, { 13, 12 } }), 0.7))
+local boot = D(bootShape, box(18.6, 12.8, 6, 0.55), box(19.4, 26.8, 0.55, 1.6))
+-- The wing: four layered feathers sweeping back from the ankle and curling up at their tips, each lower
+-- one shorter and set apart from the one above it, their roots under a rounded shoulder.
+local feathers = {
+    taper(curve({ 14, 10 }, { 6.5, 9.5 }, { 3, 1.8 }, 16), 4.4, 2.6),
+    taper(curve({ 14, 13.2 }, { 6.5, 13.5 }, { 1.8, 7.6 }, 16), 4.2, 2.4),
+    taper(curve({ 14, 16.4 }, { 7.5, 17 }, { 2.4, 13.4 }, 16), 3.9, 2.2),
+    taper(curve({ 14, 19.4 }, { 9, 20.2 }, { 5, 18.6 }, 16), 3.6, 2),
+}
+local layered = { feathers[1] }
+for k = 2, #feathers do layered[k] = D(feathers[k], grow(feathers[k - 1], 0.9)) end
+local shoulder = ellipse(14.2, 13.5, 3.2, 6.5)
+local wing = U(D(U(unpack(layered)), grow(shoulder, 0.9)), shoulder)
+G.wingboot = U(D(wing, grow(bootShape, 1.3)), boot)
 G.getfp = U(move(scale(G.wingboot, 16, 30, 0.86), 0, 0.5), box(26.5, 5.5, 4.6, 1.3, 0.6), box(26.5, 5.5, 1.3, 4.6, 0.6))
 
 G.gate = U(
@@ -502,6 +537,27 @@ local function medallion()
     return cv
 end
 
+-- The point marker on the map and minimap (Media/Nav/pin, 64 x 64, white: tinted, laid over the coloured
+-- disc of Media/Nav/pin-fill, radius 21): a ring round the disc and a compass needle, north solid, south
+-- faint, east and west ticks.
+local function navPin()
+    local cv = canvas(64, 64)
+    local ring = rim(circle(32, 32, 23.6), 5.2)
+    local north = grow(poly({ { 32, 13.5 }, { 37.2, 32 }, { 26.8, 32 } }), 0.4)
+    local south = grow(poly({ { 26.8, 32 }, { 37.2, 32 }, { 32, 50.5 } }), 0.4)
+    local ticks = U(box(16.4, 32, 2.6, 1.2, 0.6), box(47.6, 32, 2.6, 1.2, 0.6))
+    local hub = circle(32, 32, 2.4)
+    for y = 0, 63 do
+        for x = 0, 63 do
+            blend(cv, x, y, WHITE, cover(ring, x, y, 1, 0, 0))
+            blend(cv, x, y, WHITE, cover(ticks, x, y, 1, 0, 0) * 0.8)
+            blend(cv, x, y, WHITE, cover(D(south, hub), x, y, 1, 0, 0) * 0.5)
+            blend(cv, x, y, WHITE, cover(D(north, hub), x, y, 1, 0, 0))
+        end
+    end
+    return cv
+end
+
 local function sorted(t)
     local keys = {}
     for k in pairs(t) do keys[#keys + 1] = k end
@@ -521,5 +577,6 @@ for _, name in ipairs(sorted(MAP_ICONS)) do
     count = count + 1
 end
 writeTGA(medallion(), "Map/medallion-polestar")
-count = count + 1
+writeTGA(navPin(), "Nav/pin")
+count = count + 2
 print(string.format("%d icons", count))

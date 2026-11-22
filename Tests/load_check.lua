@@ -1131,6 +1131,8 @@ do
     list:close()
     if own < 70 then fail("too few icons drawn: " .. own) end
     if not read("tools/fork/assets/AzerothRoute/Media/Map/medallion-polestar.tga") then fail("the medallion is not drawn") end
+    local pin = read("tools/fork/assets/AzerothRoute/Media/Nav/pin.tga")
+    if not pin or pin ~= read(ROOT .. "/AzerothRoute/Media/Nav/pin.tga") then fail("the map point marker is not the drawn one") end
     print("own icons: " .. own)
 end
 
