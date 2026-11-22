@@ -1117,6 +1117,23 @@ do
     print("unused folders: checked")
 end
 
+-- 28. Every guide step and map icon is AzerothRoute's own drawing (tools/fork/make_icons.lua), flight a
+-- winged boot: the shipped file is the drawn one, byte for byte.
+do
+    local own, list = 0, io.popen('find ' .. ROOT .. '/AzerothRoute/Media/UI ' .. ROOT .. '/AzerothRoute/Media/Map -name "icon-*.tga"')
+    for p in list:lines() do
+        local rel = p:sub(#ROOT + 2)
+        local drawn = read("tools/fork/assets/" .. rel)
+        if not drawn then fail("not drawn by AzerothRoute: " .. rel)
+        elseif drawn ~= read(p) then fail("not the drawn icon: " .. rel)
+        else own = own + 1 end
+    end
+    list:close()
+    if own < 70 then fail("too few icons drawn: " .. own) end
+    if not read("tools/fork/assets/AzerothRoute/Media/Map/medallion-polestar.tga") then fail("the medallion is not drawn") end
+    print("own icons: " .. own)
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end

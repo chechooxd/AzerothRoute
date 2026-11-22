@@ -11,8 +11,8 @@ Branch: claude/azerothroute-2. Delivery: commits merged into master, inside the 
 
 ## Tasks
 
-- T1 (S1, inline): exclude the skin folders, drop them from companion checks, installer cleanup.
-- T2 (S2, S3, inline): tools/fork/make_icons.lua draws the step and map icons into tools/fork/assets.
+- T1 (S1, inline): exclude the skin folders, drop them from companion checks, installer cleanup. Done: 6daa1bf.
+- T2 (S2, S3, inline): tools/fork/make_icons.lua draws the step and map icons into tools/fork/assets. Done: see the icons commit.
 
 ## Log
 

@@ -10,6 +10,17 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 - MINOR (0.x.0): new features or guides.
 - MAJOR: reserved for 1.0.0, the first stable release.
 
+## [Unreleased]
+
+### Changed
+- The guide step icons and the map icons are AzerothRoute's own drawings in place of Polestar's; flight is a
+  winged boot, the inn a tankard, mail a sealed envelope, a corpse a ghost, a rare a gem, selling a price tag
+  and using an item a potion. The map medallion is a sapphire disc with a gold rim.
+
+### Removed
+- Polestar's looks, skin checks and skin folders (AzerothRoute_Looks, AzerothRoute_SkinAPI, AzerothRoute_Skin_*)
+  are no longer shipped: only AzerothRoute's own look is offered. install.sh deletes old copies.
+
 ## [0.6.0] - 2026-11-21
 
 ### Changed
