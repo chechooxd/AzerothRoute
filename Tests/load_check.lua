@@ -1437,5 +1437,47 @@ do
     end
 end
 
+-- 33. Kill targets wait for the quest: a kill goal before its quest is taken (the step's own accept still
+-- open, or no accept in the step) names no mob on the target button; once the quest is in the log it does.
+do
+    local E, Buttons = ns.Engine, ns.QoL and ns.QoL.Buttons
+    if not (E and E.WaitsAccept and E.SetGuide and Buttons and Buttons.TargetNames) then fail("no Engine.WaitsAccept") else
+        local okReg, why = ns.RegisterGuide({
+            id = "draft/test-kill-waits", pack = "guides", title = "Kill waits", category = "Leveling", author = "AzerothRoute",
+            steps = {
+                { title = "Bears", goals = {
+                    { t = "accept", quest = 990001, title = "Bear Trouble", npc = 990100, npcName = "Ranger" },
+                    { t = "kill", quest = 990001, title = "Bear Trouble", target = "Test Bear", npc = 990200, count = 5, oi = 1 },
+                } },
+                { title = "Wolves", goals = {
+                    { t = "kill", quest = 990002, title = "Wolf Trouble", target = "Test Wolf", npc = 990300, count = 5, oi = 1 },
+                } },
+            },
+        })
+        if not okReg then fail("the test guide was refused: " .. tostring(why)) end
+        local onQuest = {}
+        local saved = C_QuestLog
+        C_QuestLog = setmetatable({ IsOnQuest = function(q) return onQuest[q] == true end }, { __index = saved })
+        local function names()
+            local view = E.GetStepView(E.GetStepIndex())
+            local out = {}
+            for _, n in ipairs(Buttons.TargetNames(view, view and view.raw) or {}) do out[n] = true end
+            return out
+        end
+        if not E.SetGuide("draft/test-kill-waits") then fail("the test guide did not load") else
+            if not E.WaitsAccept(1, 2) then fail("a kill before its step's accept does not wait") end
+            if names()["Test Bear"] then fail("the target button names a mob before its quest is taken") end
+            if E.WaitsAccept(1, 1) then fail("an accept waits for itself") end
+            if not E.WaitsAccept(2, 1) then fail("a kill for a quest not in the log does not wait") end
+            onQuest[990001], onQuest[990002] = true, true
+            if E.WaitsAccept(1, 2) or E.WaitsAccept(2, 1) then fail("a kill still waits with its quest in the log") end
+            if not names()["Test Bear"] then fail("the target button does not name the mob of a taken quest") end
+        end
+        C_QuestLog = saved
+        pcall(E.SetGuide, nil)
+        print("kill targets wait: checked")
+    end
+end
+
 print(failures == 0 and "OK" or (failures .. " failure(s)"))
 os.exit(failures == 0 and 0 or 1)

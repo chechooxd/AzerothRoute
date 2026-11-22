@@ -1667,7 +1667,11 @@ function Buttons.TargetNames(view, raw, npcs, here, cap, info)
 	for g = 1, #goals do
 		local gv = goals[g]
 		local rg = raws and raws[g] or gv
-		if QoL.Open(gv) and mobGoal(gv, rg) then
+		-- AzerothRoute: not a goal that waits for its quest (Engine.WaitsAccept).
+		local ws, wg = stepIndex, gv.index or g
+		if g > own then ws, wg = gv.step, gv.index end
+		local waits = E and E.WaitsAccept and ws and wg and E.WaitsAccept(ws, wg)
+		if QoL.Open(gv) and mobGoal(gv, rg) and not waits then
 			if g <= own then newGoal(gv.t, stepIndex, g) else newGoal(gv.t, gv.step, gv.index) end
 			addGoalNames(gv, rg, qdb)
 			named = named or #goalNames[goalCount] > 0

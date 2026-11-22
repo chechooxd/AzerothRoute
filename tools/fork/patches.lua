@@ -1134,4 +1134,71 @@ local NOTES = {
 ]=],
         why = "loads Tree.lua after View.lua",
     },
+    -- Kill targets and kill areas wait for the quest (user, 2026-11-22: "me marcaron una zona de matar osos, me
+    -- puse a matar pero aun no tenia la quest"). The arrow already waited (Own.acceptFirst); the target button,
+    -- its list, the step key and the map's goal pins and areas did not.
+    {
+        file = "AzerothRoute/Core/Engine.lua",
+        find = "\treturn nil\nend\n\n-- Lead the arrow to an open, located goal of a listed along step",
+        replace = [=[	return nil
+end
+
+-- AzerothRoute: true while goal g of step s waits for its quest: a goal before
+-- the step's own open accept (Own.acceptFirst), or a kill for a quest not in
+-- the log and not done (its mobs count for nothing yet). The target button, its
+-- list and the map's goal pins and areas pass such a goal over.
+function Engine.WaitsAccept(s, g)
+	local step = guide and guide.steps and guide.steps[s]
+	local goal = step and step.goals and step.goals[g]
+	if not (goal and goal.quest) then return false end
+	if Own.acceptFirst(s, goal) then return true end
+	if goal.t == "kill" then
+		local q = goal.quest
+		return not (Compat().IsOnQuest(q) or questDone(q))
+	end
+	return false
+end
+
+-- Lead the arrow to an open, located goal of a listed along step]=],
+        why = "Engine.WaitsAccept: a goal waiting for its quest",
+    },
+    {
+        file = "AzerothRoute/QoL/Buttons.lua",
+        find = "\t\tif QoL.Open(gv) and mobGoal(gv, rg) then\n\t\t\tif g <= own then newGoal(gv.t, stepIndex, g) else newGoal(gv.t, gv.step, gv.index) end\n",
+        replace = [=[		-- AzerothRoute: not a goal that waits for its quest (Engine.WaitsAccept).
+		local ws, wg = stepIndex, gv.index or g
+		if g > own then ws, wg = gv.step, gv.index end
+		local waits = E and E.WaitsAccept and ws and wg and E.WaitsAccept(ws, wg)
+		if QoL.Open(gv) and mobGoal(gv, rg) and not waits then
+			if g <= own then newGoal(gv.t, stepIndex, g) else newGoal(gv.t, gv.step, gv.index) end
+]=],
+        why = "the target button and its list pass over goals waiting for their quest",
+    },
+    {
+        file = "AzerothRoute/Nav/Layers.lua",
+        find = "\tfor i, goal in ipairs(list) do\n\t\tif goal.map and goal.x and goal.y and (goal.status == \"active\" or goal.status == \"pending\")\n",
+        replace = [=[	for i, goal in ipairs(list) do
+		-- AzerothRoute: not a goal that waits for its quest (Engine.WaitsAccept).
+		local ws, wg = index, goal.index
+		if i > own then ws, wg = goal.step, goal.index end
+		local waits = Engine.WaitsAccept and ws and wg and Engine.WaitsAccept(ws, wg)
+		if not waits and goal.map and goal.x and goal.y and (goal.status == "active" or goal.status == "pending")
+]=],
+        why = "the map's goal pins pass over goals waiting for their quest",
+    },
+    {
+        file = "AzerothRoute/Nav/Layers.lua",
+        find = "\t\t\tlocal goal = (v.status == \"active\" or v.status == \"pending\") and step.goals and step.goals[v.index]\n",
+        replace = "\t\t\tlocal goal = (v.status == \"active\" or v.status == \"pending\") and step.goals and step.goals[v.index]\n"
+            .. "\t\t\tif goal and Engine.WaitsAccept and Engine.WaitsAccept(index, v.index) then goal = nil end -- AzerothRoute\n",
+        why = "the map's kill areas pass over the step's goals waiting for their quest",
+    },
+    {
+        file = "AzerothRoute/Nav/Layers.lua",
+        find = "\t\t\t\t\tlocal goal = Engine.AlongGoal(v.step, v.index)\n\t\t\t\t\tlocal places = placesOf(goal)\n",
+        replace = "\t\t\t\t\tlocal goal = Engine.AlongGoal(v.step, v.index)\n"
+            .. "\t\t\t\t\tif goal and Engine.WaitsAccept and Engine.WaitsAccept(v.step, v.index) then goal = nil end -- AzerothRoute\n"
+            .. "\t\t\t\t\tlocal places = placesOf(goal)\n",
+        why = "the map's kill areas pass over along goals waiting for their quest",
+    },
 }

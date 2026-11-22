@@ -15490,6 +15490,22 @@ function Own.acceptFirst(s, goal)
 	return nil
 end
 
+-- AzerothRoute: true while goal g of step s waits for its quest: a goal before
+-- the step's own open accept (Own.acceptFirst), or a kill for a quest not in
+-- the log and not done (its mobs count for nothing yet). The target button, its
+-- list and the map's goal pins and areas pass such a goal over.
+function Engine.WaitsAccept(s, g)
+	local step = guide and guide.steps and guide.steps[s]
+	local goal = step and step.goals and step.goals[g]
+	if not (goal and goal.quest) then return false end
+	if Own.acceptFirst(s, goal) then return true end
+	if goal.t == "kill" then
+		local q = goal.quest
+		return not (Compat().IsOnQuest(q) or questDone(q))
+	end
+	return false
+end
+
 -- Lead the arrow to an open, located goal of a listed along step (a row
 -- click under the step). The choice lasts while the goal is listed and open,
 -- also when the route moves on. True if the arrow can lead there.

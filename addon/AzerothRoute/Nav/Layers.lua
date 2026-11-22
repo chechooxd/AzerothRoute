@@ -204,7 +204,11 @@ local function updateGoals(world, index, view)
 		end
 	end
 	for i, goal in ipairs(list) do
-		if goal.map and goal.x and goal.y and (goal.status == "active" or goal.status == "pending")
+		-- AzerothRoute: not a goal that waits for its quest (Engine.WaitsAccept).
+		local ws, wg = index, goal.index
+		if i > own then ws, wg = goal.step, goal.index end
+		local waits = Engine.WaitsAccept and ws and wg and Engine.WaitsAccept(ws, wg)
+		if not waits and goal.map and goal.x and goal.y and (goal.status == "active" or goal.status == "pending")
 			and not (target and target.map == goal.map and target.x == goal.x and target.y == goal.y) then
 			local text = goal.text
 			pins[#pins + 1] = {
@@ -324,6 +328,7 @@ local function updateAreas(world, minimap, index, view)
 		local tg = target and target.stepIndex == index and target.goalIndex or nil
 		for _, v in ipairs(view.goals) do
 			local goal = (v.status == "active" or v.status == "pending") and step.goals and step.goals[v.index]
+			if goal and Engine.WaitsAccept and Engine.WaitsAccept(index, v.index) then goal = nil end -- AzerothRoute
 			local places = placesOf(goal)
 			local mine = v.index == tg
 			if places and not (mine and places == goal) then
@@ -338,6 +343,7 @@ local function updateAreas(world, minimap, index, view)
 			for _, s in ipairs(Engine.GetAlong()) do
 				for _, v in ipairs(s.goals) do
 					local goal = Engine.AlongGoal(v.step, v.index)
+					if goal and Engine.WaitsAccept and Engine.WaitsAccept(v.step, v.index) then goal = nil end -- AzerothRoute
 					local places = placesOf(goal)
 					local mine = target and target.stepIndex == v.step and target.goalIndex == v.index or false
 					if places and not (mine and places == goal) then
