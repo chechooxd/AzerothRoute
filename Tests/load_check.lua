@@ -1152,5 +1152,61 @@ for name in bindings:gmatch('<Binding name="([%w_]+)"') do
     if not name:match("^AZEROTHROUTE_") then fail("binding " .. name) end
 end
 
+-- 29. Flight games: the game window holds AzerothRoute's games (no Doom); Space starts, P pauses, Esc
+-- closes and pauses; the flight offer opens them and puts them away.
+do
+    local G, A = ns.Games, ns.Arcade
+    if not (G and G.Register and A) then fail("no flight games") else
+        local made = {}
+        G.Register({ id = "zz_test", name = "Test", blurb = "b", keys = "k", width = 120, height = 100, order = 99,
+            New = function(view, host)
+                local game = { resets = 0, steps = 0, keys = {} }
+                function game:Reset() self.resets = self.resets + 1 end
+                function game:Update(dt) self.steps = self.steps + 1 if self.steps == 3 then host.Score(7) host.Over(7) end end
+                function game:Key(key, down) self.keys[#self.keys + 1] = key end
+                made[#made + 1] = game
+                return game
+            end })
+        if not A.Available() then fail("the games are not available") end
+        if not G.Open("zz_test") or not G.IsOpen() then fail("the game window does not open") end
+        local game = G.Game("zz_test")
+        if not game or game.resets ~= 1 then fail("a game is not reset before its first start") end
+        if G.State() ~= "ready" then fail("a game does not wait for Space: " .. tostring(G.State())) end
+        local win = G.Window()
+        local down = win:GetScript("OnKeyDown")
+        down(win, "LEFT")
+        if #game.keys ~= 0 then fail("a key reached a game that has not started") end
+        down(win, "SPACE")
+        if G.State() ~= "run" then fail("Space does not start the game") end
+        down(win, "LEFT")
+        if game.keys[1] ~= "LEFT" then fail("a key does not reach the running game") end
+        down(win, "P")
+        if G.State() ~= "pause" then fail("P does not pause") end
+        G.Step(0.016)
+        if game.steps ~= 0 then fail("a paused game moves") end
+        down(win, "P")
+        down(win, "ESCAPE")
+        if G.IsOpen() or G.State() ~= "pause" then fail("Esc does not close and pause") end
+        A.Open("zz_test")
+        down(win, "SPACE")
+        for _ = 1, 3 do G.Step(0.016) end
+        if G.State() ~= "over" or G.Best("zz_test") ~= 7 then fail("game over does not keep the best: " .. tostring(G.Best("zz_test"))) end
+        down(win, "SPACE")
+        if game.resets ~= 2 or G.State() ~= "run" then fail("Space after game over does not play again") end
+        local closed = A.PutAway()
+        if not closed or G.IsOpen() or G.State() ~= "pause" then fail("the flight guard does not put the game away") end
+        local src = read(ROOT .. "/AzerothRoute/Maps/Arcade.lua") or ""
+        if src:find("Freedoom", 1, true) or src:find("Doom", 1, true) then fail("the flight offer still speaks of Doom") end
+        -- The games themselves bring their own checks (Tests/game_*.lua: chunk(ns, fail, G)).
+        for _, t in ipairs({ "Tests/game_runefall.lua", "Tests/game_skypatrol.lua" }) do
+            local chunk = loadfile(t)
+            if chunk then chunk(ns, fail, G) end
+        end
+        G.defs.zz_test = nil
+        for k, id in ipairs(G.order) do if id == "zz_test" then table.remove(G.order, k) break end end
+        print("flight games: checked")
+    end
+end
+
 print(failures == 0 and "OK" or (failures .. " failure(s)"))
 os.exit(failures == 0 and 0 or 1)

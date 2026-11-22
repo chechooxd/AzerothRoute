@@ -43,6 +43,7 @@ QoL\QoL.xml
 Lookup\Lookup.xml
 Dungeons\Dungeons.xml
 UI\UI.xml
+Games\Games.xml
 Rares\Rares.xml
 Talents\Talents.xml
 Alts\Alts.xml

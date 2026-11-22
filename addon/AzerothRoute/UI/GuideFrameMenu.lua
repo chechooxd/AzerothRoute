@@ -76,7 +76,7 @@ ns.UI.GuideFrame.Part(function(GF)
 		-- Freedoom Arcade (Maps/Arcade.lua), while a copy of it is there.
 		local arcade = ns.Arcade
 		if arcade and arcade.Available() then
-			table.insert(items, 5, { text = L["Play Freedoom Arcade"], icon = "gamepad", onClick = function() arcade.Open() end })
+			table.insert(items, 5, { text = L["Play a game"], icon = "gamepad", onClick = function() arcade.Open() end })
 		end
 		-- The Recorder's window, while the Recorder addon is loaded.
 		if type(AzerothRouteRecorder_Command) == "function" then

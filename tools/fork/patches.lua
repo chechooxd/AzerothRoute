@@ -12,6 +12,40 @@ local function read(rel)
 end
 
 return {
+    -- Flight games (odd/tasks/flight-games.md): AzerothRoute's own games on long flights, in place of
+    -- Polestar's Freedoom Arcade (user, 2026-11-22: "se pueda jugar algo ligero ... menos Doom").
+    { file = "AzerothRoute/Games/Games.xml", create = true, replace = read("Games/Games.xml"), why = "flight games: load list" },
+    { file = "AzerothRoute/Games/Host.lua", create = true, replace = read("Games/Host.lua"), why = "flight games: the game window" },
+    { file = "AzerothRoute/Games/RuneFall.lua", create = true, replace = read("Games/RuneFall.lua"), why = "flight games: Rune Fall" },
+    { file = "AzerothRoute/Games/SkyPatrol.lua", create = true, replace = read("Games/SkyPatrol.lua"), why = "flight games: Sky Patrol" },
+    {
+        file = "AzerothRoute/Maps/Arcade.lua", overwrite = true, replace = read("Maps/Arcade.lua"),
+        why = "flight games: the offer on flights opens AzerothRoute's games",
+    },
+    {
+        file = "AzerothRoute/AzerothRoute.toc",
+        find = "UI\\UI.xml\r\n",
+        replace = "UI\\UI.xml\r\nGames\\Games.xml\r\n",
+        why = "flight games: loaded after the interface",
+    },
+    {
+        file = "AzerothRoute_Options/Maps/Options.lua",
+        find = [=[	register({ page = L["Integrations"], section = "Freedoom Arcade", controls = {
+		{ kind = "toggle", key = "maps.flightArcade", label = L["Offer Freedoom Arcade on flights"],
+			help = L["On a flight with a minute or more to go, AzerothRoute asks if you want to play Freedoom Arcade by petllama while you wait: three levels of Freedoom, or the whole game when the Freedoom Arcade addon is installed. 10 seconds before you land, the game is saved, paused and closed. /ar arcade opens it any time."],
+			search = "doom, freedoom, arcade, game, flight, taxi, petllama",]=],
+        replace = [=[	register({ page = L["Integrations"], section = L["Flight games"], controls = {
+		{ kind = "toggle", key = "maps.flightArcade", label = L["Offer a game on long flights"],
+			help = L["On a flight with a minute or more to go, AzerothRoute asks if you want to play one of its light games while you wait: Rune Fall or Sky Patrol. 10 seconds before you land, or in a fight, the game is paused and closed, and it goes on where it was. /ar arcade opens them any time."],
+			search = "game, games, arcade, flight, taxi, rune fall, sky patrol, play",]=],
+        why = "flight games: the option names AzerothRoute's games",
+    },
+    {
+        file = "AzerothRoute/UI/GuideFrameMenu.lua",
+        find = [=[table.insert(items, 5, { text = L["Play Freedoom Arcade"], icon = "gamepad", onClick = function() arcade.Open() end })]=],
+        replace = [=[table.insert(items, 5, { text = L["Play a game"], icon = "gamepad", onClick = function() arcade.Open() end })]=],
+        why = "flight games: the menu row",
+    },
     -- The looks and skin folders are not shipped (tools/fork_polestar.lua EXCLUDE): nothing asks for them.
     {
         file = "AzerothRoute/Core/Data.lua",
