@@ -2,4 +2,5 @@
 	<Script file="Host.lua"/>
 	<Script file="RuneFall.lua"/>
 	<Script file="SkyPatrol.lua"/>
+	<Script file="GemBazaar.lua"/>
 </Ui>

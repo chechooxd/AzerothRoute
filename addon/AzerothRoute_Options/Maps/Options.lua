@@ -28,7 +28,7 @@ end
 if ns.Arcade then
 	register({ page = L["Integrations"], section = L["Flight games"], controls = {
 		{ kind = "toggle", key = "maps.flightArcade", label = L["Offer a game on long flights"],
-			help = L["On a flight with a minute or more to go, AzerothRoute asks if you want to play one of its light games while you wait: Rune Fall or Sky Patrol. 10 seconds before you land, or in a fight, the game is paused and closed, and it goes on where it was. /ar arcade opens them any time."],
+			help = L["On a flight with a minute or more to go, AzerothRoute asks if you want to play one of its light games while you wait: Rune Fall, Sky Patrol or Gem Bazaar. 10 seconds before you land, or in a fight, the game is paused and closed, and it goes on where it was. /ar arcade opens them any time."],
 			search = "game, games, arcade, flight, taxi, rune fall, sky patrol, play",
 			needs = function() return ns.Arcade.Available() end },
 	} })

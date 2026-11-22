@@ -80,8 +80,8 @@ local ES = {
 	["Play a game"] = "Jugar un juego",
 	["Flight games"] = "Juegos en vuelo",
 	["Offer a game on long flights"] = "Ofrecer un juego en vuelos largos",
-	["On a flight with a minute or more to go, AzerothRoute asks if you want to play one of its light games while you wait: Rune Fall or Sky Patrol. 10 seconds before you land, or in a fight, the game is paused and closed, and it goes on where it was. /ar arcade opens them any time."] =
-		"En un vuelo de un minuto o más, AzerothRoute te pregunta si quieres jugar uno de sus juegos ligeros mientras esperas: Rune Fall o Sky Patrol. 10 segundos antes de aterrizar, o en un combate, el juego se pausa y se cierra, y sigue donde quedó. /ar arcade los abre cuando quieras.",
+	["On a flight with a minute or more to go, AzerothRoute asks if you want to play one of its light games while you wait: Rune Fall, Sky Patrol or Gem Bazaar. 10 seconds before you land, or in a fight, the game is paused and closed, and it goes on where it was. /ar arcade opens them any time."] =
+		"En un vuelo de un minuto o más, AzerothRoute te pregunta si quieres jugar uno de sus juegos ligeros mientras esperas: Rune Fall, Sky Patrol o Gem Bazaar. 10 segundos antes de aterrizar, o en un combate, el juego se pausa y se cierra, y sigue donde quedó. /ar arcade los abre cuando quieras.",
 	["Long flight ahead. Play while you wait?"] = "Vuelo largo por delante. ¿Juegas mientras esperas?",
 	["Light games of AzerothRoute's own. Esc closes them, and they wait for you."] =
 		"Juegos ligeros propios de AzerothRoute. Esc los cierra y te esperan donde quedaron.",
@@ -106,6 +106,14 @@ local ES = {
 	["Hold off the bats and harpies from your gryphon."] = "Detén a los murciélagos y arpías desde tu grifo.",
 	["Arrows or A/D: fly   Space: throw"] = "Flechas o A/D: volar   Espacio: lanzar",
 	["Wave %d"] = "Oleada %d",
+	["Gem Bazaar"] = "Gem Bazaar",
+	["Swap neighbouring gems to line up three or more. Reach the level's target before your moves run out."] =
+		"Intercambia gemas vecinas para alinear tres o más. Alcanza el objetivo del nivel antes de quedarte sin movimientos.",
+	["Click two gems, or arrows or WASD and Space: pick, then an arrow swaps"] =
+		"Haz clic en dos gemas, o flechas o WASD y Espacio: elige, y una flecha intercambia",
+	["Level %d   Target %d   Moves %d"] = "Nivel %d   Objetivo %d   Movimientos %d",
+	["Cascade x%d"] = "¡Cascada x%d!",
+	["No moves: new gems"] = "Sin jugadas: gemas nuevas",
 	["Sound on"] = "Sonido activado",
 	["Sound off"] = "Sonido desactivado",
 	-- AzerothRoute's skins (Theme/SkinClassic.lua, Theme/SkinMarble.lua).

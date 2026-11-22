@@ -21,6 +21,11 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
   The games have sound (the game's own effects: turns, landings, cleared rows, level ups, throws, hits, waves,
   game over and a new best), on the effects volume; the speaker in the window's bar mutes them. The window keeps a wide column (the tabs, sound and close in its
   bar, the score on a line of its own under it, the keys under the game) and Rune Fall has larger stones (22 px).
+  A third game, Gem Bazaar: swap neighbouring gems on an 8 x 8 board to line up three or more of a kind; they
+  shatter, the gems above fall and every cascade counts more. Four in a line leave a flare gem (it clears its row
+  and column), five or more a prism (swapped with a gem, every gem of that kind shatters). Each level has a target
+  score and 20 moves; a hint pulses after 7 seconds without a move, and a board with no move is dealt again.
+  Mouse (click two gems) or keyboard (arrows or WASD, Space picks, an arrow swaps).
 - Three skins for the new look, in Options > Theme and on the welcome looks next to AzerothRoute's own: Classic (the
   game's red buttons, its gold-trimmed dialog border on windows and tooltip border on menus, gold titles, dark
   grounds, square corners), Marble (white marble with beige veins and gold threads, gold edges, an antique gold

@@ -18,6 +18,7 @@ return {
     { file = "AzerothRoute/Games/Host.lua", create = true, replace = read("Games/Host.lua"), why = "flight games: the game window" },
     { file = "AzerothRoute/Games/RuneFall.lua", create = true, replace = read("Games/RuneFall.lua"), why = "flight games: Rune Fall" },
     { file = "AzerothRoute/Games/SkyPatrol.lua", create = true, replace = read("Games/SkyPatrol.lua"), why = "flight games: Sky Patrol" },
+    { file = "AzerothRoute/Games/GemBazaar.lua", create = true, replace = read("Games/GemBazaar.lua"), why = "flight games: Gem Bazaar" },
     {
         file = "AzerothRoute/Maps/Arcade.lua", overwrite = true, replace = read("Maps/Arcade.lua"),
         why = "flight games: the offer on flights opens AzerothRoute's games",
@@ -36,7 +37,7 @@ return {
 			search = "doom, freedoom, arcade, game, flight, taxi, petllama",]=],
         replace = [=[	register({ page = L["Integrations"], section = L["Flight games"], controls = {
 		{ kind = "toggle", key = "maps.flightArcade", label = L["Offer a game on long flights"],
-			help = L["On a flight with a minute or more to go, AzerothRoute asks if you want to play one of its light games while you wait: Rune Fall or Sky Patrol. 10 seconds before you land, or in a fight, the game is paused and closed, and it goes on where it was. /ar arcade opens them any time."],
+			help = L["On a flight with a minute or more to go, AzerothRoute asks if you want to play one of its light games while you wait: Rune Fall, Sky Patrol or Gem Bazaar. 10 seconds before you land, or in a fight, the game is paused and closed, and it goes on where it was. /ar arcade opens them any time."],
 			search = "game, games, arcade, flight, taxi, rune fall, sky patrol, play",]=],
         why = "flight games: the option names AzerothRoute's games",
     },

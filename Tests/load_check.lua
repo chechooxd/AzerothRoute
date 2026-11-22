@@ -1226,7 +1226,7 @@ do
         local src = read(ROOT .. "/AzerothRoute/Maps/Arcade.lua") or ""
         if src:find("Freedoom", 1, true) or src:find("Doom", 1, true) then fail("the flight offer still speaks of Doom") end
         -- The games themselves bring their own checks (Tests/game_*.lua: chunk(ns, fail, G)).
-        for _, t in ipairs({ "Tests/game_runefall.lua", "Tests/game_skypatrol.lua" }) do
+        for _, t in ipairs({ "Tests/game_runefall.lua", "Tests/game_skypatrol.lua", "Tests/game_gembazaar.lua" }) do
             local chunk = loadfile(t)
             if chunk then chunk(ns, fail, G) end
         end
