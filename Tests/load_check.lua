@@ -1081,6 +1081,30 @@ do
     end
 end
 
+-- 26. Quest icons on enemy nameplates: on by default, the sword when the quest needs the mob killed,
+-- the bag when it needs an item it drops (the sword when it needs both), as the target list shows them.
+do
+    local Q = ns.QuestDB
+    if not (Q and Q.NameplateLook) then fail("no nameplate kill/loot icon") else
+        if ns.Get("qol.nameplateIcons") ~= true then fail("nameplate quest icons are off by default") end
+        local get = Q.ObjectivesForNpc
+        local lists = {
+            [1] = { { kind = 1, done = false, entry = {} } },
+            [2] = { { kind = 2, done = false, entry = {} } },
+            [3] = { { kind = 2, done = false, entry = {} }, { kind = 1, done = false, entry = {} } },
+            [4] = { { kind = 1, done = true, entry = {} }, { kind = 2, done = false, entry = {} } },
+        }
+        Q.ObjectivesForNpc = function(id) return lists[id] end
+        local function look(id) return (Q.NameplateLook(id)) end
+        if look(1) ~= "icon-kill" then fail("a mob to kill does not get the sword: " .. tostring(look(1))) end
+        if look(2) ~= "icon-collect" then fail("a mob to loot does not get the bag: " .. tostring(look(2))) end
+        if look(3) ~= "icon-kill" then fail("a mob to kill and loot does not get the sword") end
+        if look(4) ~= "icon-collect" then fail("a mob already killed enough still gets the sword") end
+        Q.ObjectivesForNpc = get
+        print("nameplate icons: checked")
+    end
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end

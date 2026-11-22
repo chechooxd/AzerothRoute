@@ -32,7 +32,7 @@ ns.RegisterDefaults("qol", {
 	questTooltipsNpc = false, -- ... and on an NPC, the quests it gives now and the ready ones it takes
 	questSellWarning = true, -- at a vendor, offer to buy back a sold item a quest needs
 	questBagMarks = true, -- a quest mark on bag items a quest (in the log or ahead in the guide) still needs
-	nameplateIcons = false, -- quest icon on nameplates of objective mobs
+	nameplateIcons = true, -- quest icon on nameplates of objective mobs (AzerothRoute: on)
 	nameplateIconSide = "left", -- ... left or right of the health bar, or above the name
 	questLevels = true, -- "[12]" before quest titles the client lists without a level (gossip, greeting, details)
 	guideHighlight = true, -- the active guide step's quests stand out on the maps

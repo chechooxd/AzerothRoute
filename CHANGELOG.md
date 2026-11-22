@@ -34,6 +34,8 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
   and skin addons) are hidden; a saved choice is kept.
 
 ### Added
+- Quest icons on enemy nameplates, on by default: a sword when a quest needs the mob killed, a bag when it
+  needs an item the mob drops (the sword when both), in the theme's accent. Off in Options > Quests.
 - Lookup previews: a mount as the mount collection shows it, gear tried on your character as the
   appearances collection does, and NPCs and rares as themselves, under the result's title; drag to turn them.
 - Gathering routes page in the menu: for Herbalism and Mining, the three zones with most spots of the

@@ -586,11 +586,11 @@ local function updatePlate(unit)
 			end)
 		end
 	end
-	-- All objectives on nameplates are mobs to kill or loot: show the game's skull.
-	local skullTex = ns.Theme and ns.Theme.Media and ns.Theme.Media("icon-skull")
-		or "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8"
-	f.tex:SetTexture(skullTex)
-	f.tex:SetVertexColor(1, 1, 1, 1)
+		-- AzerothRoute: what the quest needs from the mob, as the target list shows it: the sword to kill
+	-- it, the bag to loot an item it drops; in the accent.
+	local T = ns.Theme
+	f.tex:SetTexture(T and T.Media and T.Media((Q.NameplateLook(npc))) or "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8")
+	if T and T.Accent then f.tex:SetVertexColor(T.Accent()) else f.tex:SetVertexColor(1, 1, 1, 1) end
 	-- Show our count left of the bar only when no other addon is already showing
 	-- an "N/M" FontString on the plate (e.g. EllesmereUINameplates classText).
 	-- Walk plate + children to depth 3; skip our own frames via isIcon.
@@ -644,6 +644,20 @@ local function refreshPlates()
 		if not plateUnits[unit] then release(unit) end
 	end
 	for unit in pairs(plateUnits) do updatePlate(unit) end
+end
+
+-- AzerothRoute: the nameplate icon for NPC id: "icon-kill" while an open objective needs it killed, else
+-- "icon-collect" while one needs an item it drops (the sword when both). -> media name
+function Q.NameplateLook(npcID)
+	local list = npcID and Q.ObjectivesForNpc(npcID)
+	local loot = false
+	for _, o in ipairs(list or {}) do
+		if not o.done and not (o.entry and o.entry.ready) then
+			if o.kind == 1 then return "icon-kill" end
+			if o.kind == 2 then loot = true end
+		end
+	end
+	return loot and "icon-collect" or "icon-kill"
 end
 
 -- Units currently showing a quest icon (tests, debugging).
