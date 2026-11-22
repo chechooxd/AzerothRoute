@@ -15,8 +15,9 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 ### Changed
 - The guide step icons and the map icons are AzerothRoute's own drawings in place of Polestar's; flight is a
   winged boot, the inn a tankard, mail a sealed envelope, a corpse a ghost, a rare a gem, selling a price tag
-  and using an item a potion. The map medallion is a sapphire disc with a gold rim, and the marker of a point on the map and
-  minimap is a ring with a compass needle instead of Polestar's star.
+  and using an item a potion. The map medallion is a rounded square badge, sapphire with a gold rim; the guide's places on the map
+  are a compass needle (in a ring for the arrow's target), stops and spots a diamond, and the marker of a point
+  on the map and minimap is a ring with a compass needle instead of Polestar's star.
 
 ### Removed
 - Polestar's looks, skin checks and skin folders (AzerothRoute_Looks, AzerothRoute_SkinAPI, AzerothRoute_Skin_*)

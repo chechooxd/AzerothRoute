@@ -281,6 +281,15 @@ G.pinSolid = brandPin(16, 11, 8.4, 30)
 G.pin = D(G.pinSolid, circle(16, 11, 3.2))
 G.pinRing = U(D(G.pinSolid, circle(16, 11, 4.6)), circle(16, 11, 2.2))
 G.pinStar = D(G.pinSolid, star4(16, 11, 5.2, 0.34))
+-- The guide's own marks on the map: a compass needle (north solid, south drawn in outline) for a place to
+-- go, the needle in a ring for the arrow's target, a diamond for a stop and, small, for a spot.
+local northHalf = poly({ { 16, 2 }, { 24.5, 16 }, { 7.5, 16 } })
+local southHalf = poly({ { 7.5, 16 }, { 24.5, 16 }, { 16, 30 } })
+G.needle = D(U(grow(northHalf, 0.5), I(rim(grow(southHalf, 0.5), 5.2), grow(southHalf, 0.5))), circle(16, 16, 2.4))
+G.needleRing = U(scale(G.needle, 16, 16, 0.7), rim(circle(16, 16, 13.4), 2.6))
+local diamond = grow(poly({ { 16, 3.5 }, { 28.5, 16 }, { 16, 28.5 }, { 3.5, 16 } }), 1.2)
+G.diamondStop = D(diamond, circle(16, 16, 3.6))
+G.diamond = diamond
 
 G.hearth = D(rot(ellipse(16, 16.5, 10.5, 13), 16, 16.5, 20),
     poly({ { 16, 9.5 }, { 22, 15 }, { 20.2, 15 }, { 20.2, 22.5 }, { 11.8, 22.5 }, { 11.8, 15 }, { 10, 15 } }))
@@ -428,9 +437,9 @@ local MAP_ICONS = {
     ankh = "ankh", auction = "gavel", bank = "vault", battlemaster = "flag", boat = "boat", bridge = "bridge",
     cave = "cave", corpse = "ghost", dungeon = "dungeon", elevator = "elevator", explore = "compass",
     flightmaster = "wingboot", inn = "tankard", kill = "sword", loot = "bag", mailbox = "mailbox", pass = "pass",
-    ["pin-small"] = "pinSolid", pin = "pin", portal = "portal", ["quest-available"] = "exclaim",
+    ["pin-small"] = "diamond", pin = "needle", portal = "portal", ["quest-available"] = "exclaim",
     ["quest-turnin"] = "question", raid = "castle", rare = "gem", repair = "repair", stable = "horseshoe",
-    stop = "pinRing", target = "pinStar", ["trainer-class"] = "book", ["trainer-profession"] = "pickaxe",
+    stop = "diamondStop", target = "needleRing", ["trainer-class"] = "book", ["trainer-profession"] = "pickaxe",
     ["trainer-weapon"] = "swordShield", tram = "tram", transmog = "tunic", treasure = "chest", use = "potion",
     vendor = "coins", zeppelin = "zeppelin",
 }
@@ -516,22 +525,20 @@ local function marked(f)
     return cv
 end
 
--- The medallion under every map mark: a sapphire disc deepening to night, a gold rim.
+-- The medallion under every map mark: a rounded square badge, sapphire deepening to night, a gold rim.
+local BADGE = box(32, 32, 27.5, 27.5, 11)
 local function medallion()
     local cv = canvas(64, 64)
     for y = 0, 63 do
         for x = 0, 63 do
-            local d = sqrt((x + 0.5 - 32) ^ 2 + (y + 0.5 - 32) ^ 2)
-            local body = max(0, min(1, 29.5 - d))
+            local body = cover(BADGE, x, y, 1, 0, 0)
             if body > 0 then
-                local t = min(1, d / 29)
+                local t = min(1, (x + y) / 110)
                 local col = { SAPPHIRE[1] + (NIGHT[1] - SAPPHIRE[1]) * t, SAPPHIRE[2] + (NIGHT[2] - SAPPHIRE[2]) * t, SAPPHIRE[3] + (NIGHT[3] - SAPPHIRE[3]) * t }
                 blend(cv, x, y, col, body)
             end
-            local ring = max(0, min(1, 1.5 - abs(d - 28.2)))
-            if ring > 0 then blend(cv, x, y, GOLD, ring) end
-            local inner = max(0, min(1, 0.6 - abs(d - 25.2)))
-            if inner > 0 then blend(cv, x, y, GOLD, inner * 0.35) end
+            blend(cv, x, y, GOLD, cover(rim(BADGE, 2.6), x, y, 1, 0, 0) * cover(grow(BADGE, 0.2), x, y, 1, 0, 0))
+            blend(cv, x, y, GOLD, cover(rim(grow(BADGE, -4.2), 0.9), x, y, 1, 0, 0) * 0.35)
         end
     end
     return cv
