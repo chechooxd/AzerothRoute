@@ -11,9 +11,10 @@ Install
    World of Warcraft/_forever_/Interface/AddOns/ (AzerothRoute, AzerothRoute_Guides,
    AzerothRoute_Guides_Horde, AzerothRoute_Guides_Alliance, AzerothRoute_Options,
    AzerothRoute_Nav, AzerothRoute_Nav_EK, AzerothRoute_Nav_Kalimdor, AzerothRoute_ItemDB,
-   AzerothRoute_QuestDB, AzerothRoute_Codex, AzerothRoute_Experimental,
-   AzerothRoute_Looks, AzerothRoute_SkinAPI, the AzerothRoute_Skin_ folders and the language
+   AzerothRoute_QuestDB, AzerothRoute_Codex, AzerothRoute_Experimental and the language
    folders such as AzerothRoute_esMX). From the repository: bash tools/install.sh.
+   Older AzerothRoute_Looks, AzerothRoute_SkinAPI and AzerothRoute_Skin_ folders can be deleted;
+   install.sh deletes them.
 2. Quit the game completely and start it again. A /reload does not load new addon folders.
 3. Run AzerothRoute or Polestar, not both: they do the same jobs (accepting quests, the arrow).
    Turn one of them off in the AddOns list on the character screen.

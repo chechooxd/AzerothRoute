@@ -1105,6 +1105,18 @@ do
     end
 end
 
+-- 27. Polestar's looks and skin folders are not shipped, and nothing asks for them.
+do
+    for _, name in ipairs({ "AzerothRoute_Looks", "AzerothRoute_SkinAPI", "AzerothRoute_Skin_Hairline", "AzerothRoute_Skin_Waymark" }) do
+        if read(ROOT .. "/" .. name .. "/" .. name .. ".toc") then fail(name .. " is still shipped") end
+    end
+    local data = read(ROOT .. "/AzerothRoute/Core/Data.lua") or ""
+    local packs = read(ROOT .. "/AzerothRoute/UI/Packs.lua") or ""
+    if data:find('AzerothRoute_Looks = true', 1, true) or data:find('"AzerothRoute_Looks"', 1, true) then fail("the looks folder is still a companion") end
+    if packs:find('AzerothRoute_Looks = true', 1, true) then fail("the looks folder is still turned back on") end
+    print("unused folders: checked")
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end

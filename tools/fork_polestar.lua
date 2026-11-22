@@ -42,6 +42,19 @@ local EXCLUDE = {
     Polestar_Guides_Skyborne = "Legs.lua only",
     Polestar_Guides_Tauren = "Legs.lua only",
     Polestar_Guides_Troll = "Legs.lua only",
+    -- Only AzerothRoute's own look is offered (Theme/Battlenet.lua; user, 2026-11-22: "eliminar las
+    -- carpetas o archivos que no se usan"): Polestar's game looks, skin addons and skin checks stay out.
+    Polestar_Looks = "Polestar's game looks (only AzerothRoute's look is offered)",
+    Polestar_SkinAPI = "skin checks for skins from other addons (not offered)",
+    Polestar_Skin_Aurora = "Polestar skin (not offered)",
+    Polestar_Skin_Beacon = "Polestar skin (not offered)",
+    Polestar_Skin_Hairline = "Polestar skin (not offered)",
+    Polestar_Skin_Lanterns = "Polestar skin (not offered)",
+    Polestar_Skin_Lumen = "Polestar skin (not offered)",
+    Polestar_Skin_Sheen = "Polestar skin (not offered)",
+    Polestar_Skin_Umbra = "Polestar skin (not offered)",
+    Polestar_Skin_Vellum = "Polestar skin (not offered)",
+    Polestar_Skin_Waymark = "Polestar skin (not offered)",
 }
 -- Decision D2 (2026-11-20): the QuestDB, Codex and Experimental packs ship as Polestar ships them,
 -- QuestieDB-derived facts included. --without-questie leaves them out (on a rights holder's request).

@@ -1,9 +1,0 @@
-This folder is part of AzerothRoute, a modified version of Polestar.
-
-Polestar: Copyright (c) 2026 The Polestar authors, https://github.com/fitzforge/polestar,
-licensed under the GNU General Public License, version 3 only (see LICENSE in the AzerothRoute
-folder, and this folder's own LICENSE or LICENSE-DATA.txt where it has one).
-
-AzerothRoute renamed the addon, its folders, globals, saved variables, commands and visible name,
-and changed the files listed by tools/fork/patches.lua in AzerothRoute's repository
-(https://github.com/chechooxd/AzerothRoute). Generated from Polestar 0.4.1.1 by tools/fork_polestar.lua.

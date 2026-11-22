@@ -10,6 +10,15 @@ if [ ! -d "$dest" ]; then
 	echo "Pass it as the first argument." >&2
 	exit 1
 fi
+# Folders an older AzerothRoute shipped and this one does not (Polestar's looks and skins) go.
+for old in "$dest"/AzerothRoute_Looks/ "$dest"/AzerothRoute_SkinAPI/ "$dest"/AzerothRoute_Skin_*/; do
+	[ -d "$old" ] || continue
+	name="$(basename "$old")"
+	if [ ! -d "$here/addon/$name" ]; then
+		rm -rf "${dest:?}/$name"
+		echo "removed $name"
+	fi
+done
 for dir in "$here"/addon/*/; do
 	name="$(basename "$dir")"
 	rm -rf "${dest:?}/$name"

@@ -12,6 +12,21 @@ local function read(rel)
 end
 
 return {
+    -- The looks and skin folders are not shipped (tools/fork_polestar.lua EXCLUDE): nothing asks for them.
+    {
+        file = "AzerothRoute/Core/Data.lua",
+        find = [[local COMPANIONS = { "AzerothRoute_Guides", "AzerothRoute_Codex", "AzerothRoute_Options", "AzerothRoute_Looks", "AzerothRoute_Nav", "AzerothRoute_SkinAPI", "AzerothRoute_Arcade", "AzerothRoute_QuestDB", "AzerothRoute_ItemDB" }
+local REQUIRED = { AzerothRoute_Guides = true, AzerothRoute_Codex = true, AzerothRoute_Options = true, AzerothRoute_Looks = true }]],
+        replace = [[local COMPANIONS = { "AzerothRoute_Guides", "AzerothRoute_Codex", "AzerothRoute_Options", "AzerothRoute_Nav", "AzerothRoute_QuestDB", "AzerothRoute_ItemDB" }
+local REQUIRED = { AzerothRoute_Guides = true, AzerothRoute_Codex = true, AzerothRoute_Options = true }]],
+        why = "the looks, skin checks and arcade folders are not shipped, so they are neither required nor compared",
+    },
+    {
+        file = "AzerothRoute/UI/Packs.lua",
+        find = "local NEEDED = { AzerothRoute_Options = true, AzerothRoute_Looks = true }",
+        replace = "local NEEDED = { AzerothRoute_Options = true }",
+        why = "the looks folder is not shipped, so it is not turned back on",
+    },
     {
         file = "AzerothRoute/README.txt", create = true, replace = read("README.txt"),
         why = "AzerothRoute's install notes and credits in place of Polestar's README",

@@ -76,7 +76,7 @@ local OWN = "AzerothRoute_Guides"
 -- its looks (load on demand). An update can leave them unticked (#2594, on
 -- GeForce NOW): Options then cannot open. Polestar asks before it turns them
 -- back on, never on its own.
-local NEEDED = { AzerothRoute_Options = true, AzerothRoute_Looks = true }
+local NEEDED = { AzerothRoute_Options = true }
 
 -- Ours to turn on with it: its race and faction parts, the walking packs
 -- (Polestar_Nav*) and the needed parts, never the 0.2.x language folders a

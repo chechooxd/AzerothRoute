@@ -113,8 +113,8 @@ end
 -- straight lines, the interface, names and guide texts to English; a source
 -- install may not build the packs), but when present they must be the same
 -- version.
-local COMPANIONS = { "AzerothRoute_Guides", "AzerothRoute_Codex", "AzerothRoute_Options", "AzerothRoute_Looks", "AzerothRoute_Nav", "AzerothRoute_SkinAPI", "AzerothRoute_Arcade", "AzerothRoute_QuestDB", "AzerothRoute_ItemDB" }
-local REQUIRED = { AzerothRoute_Guides = true, AzerothRoute_Codex = true, AzerothRoute_Options = true, AzerothRoute_Looks = true }
+local COMPANIONS = { "AzerothRoute_Guides", "AzerothRoute_Codex", "AzerothRoute_Options", "AzerothRoute_Nav", "AzerothRoute_QuestDB", "AzerothRoute_ItemDB" }
+local REQUIRED = { AzerothRoute_Guides = true, AzerothRoute_Codex = true, AzerothRoute_Options = true }
 
 local function installed(name)
 	local A = C_AddOns
