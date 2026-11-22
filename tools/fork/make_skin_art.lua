@@ -1,4 +1,4 @@
--- AzerothRoute: draws the Marble skin's art (Theme/SkinMarble.lua): a 512x512 warm white marble that
+-- AzerothRoute: draws the skins' art. The Marble skin's (Theme/SkinMarble.lua): a 512x512 warm white marble that
 -- tiles, soft beige veins with fine grey cores and thin gold threads, as an uncompressed 32-bit TGA.
 --   luajit tools/fork/make_skin_art.lua [OUTDIR]   (default tools/fork/assets/AzerothRoute/Media/UI)
 -- Prints the texture's mean brightness, the GRAIN Theme/SkinMarble.lua lifts its colours by.
@@ -79,3 +79,18 @@ local f = assert(io.open(OUT .. "/marble.tga", "wb"))
 f:write(header, table.concat(chars))
 f:close()
 print(string.format("marble.tga: mean brightness %.3f", total / (N * N)))
+
+-- The Terminal skin's scanlines (Theme/SkinTerminal.lua): a 64x64 tile, one dark line every 3 rows
+-- over clear, laid over its grounds like a CRT's.
+do
+	local S = 64
+	local px = {}
+	for y = 0, S - 1 do
+		local a = (y % 3 == 0) and 110 or 0
+		for _ = 0, S - 1 do px[#px + 1] = string.char(0, 0, 0, a) end
+	end
+	local out = assert(io.open(OUT .. "/scanlines.tga", "wb"))
+	out:write(string.char(0, 0, 2) .. string.rep("\0", 5) .. u16(0) .. u16(0) .. u16(S) .. u16(S) .. string.char(32, 40), table.concat(px))
+	out:close()
+	print("scanlines.tga: written")
+end

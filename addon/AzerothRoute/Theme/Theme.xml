@@ -8,4 +8,5 @@
 	<Script file="Battlenet.lua"/>
 	<Script file="SkinClassic.lua"/>
 	<Script file="SkinMarble.lua"/>
+	<Script file="SkinTerminal.lua"/>
 </Ui>

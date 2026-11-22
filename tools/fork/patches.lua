@@ -241,7 +241,7 @@ end
     {
         file = "AzerothRoute/Theme/Theme.xml",
         find = '\t<Script file="Widgets.lua"/>\n',
-        replace = '\t<Script file="Widgets.lua"/>\n\t<Script file="Battlenet.lua"/>\n\t<Script file="SkinClassic.lua"/>\n\t<Script file="SkinMarble.lua"/>\n',
+        replace = '\t<Script file="Widgets.lua"/>\n\t<Script file="Battlenet.lua"/>\n\t<Script file="SkinClassic.lua"/>\n\t<Script file="SkinMarble.lua"/>\n\t<Script file="SkinTerminal.lua"/>\n',
         why = "loads the Battle.net look after the widgets it wraps, then AzerothRoute's skins over it",
     },
     -- AzerothRoute's own skins (user, 2026-11-22: "crea 2 nuevas skin para esta nueva ui"): Classic (the game's
@@ -260,6 +260,11 @@ end
     {
         file = "AzerothRoute/Theme/SkinMarble.lua", create = true, replace = read("Theme/SkinMarble.lua"),
         why = "the Marble skin",
+    },
+    -- A third (user, 2026-11-22: "agrega otra skin tipo terminal code, cyberpunk").
+    {
+        file = "AzerothRoute/Theme/SkinTerminal.lua", create = true, replace = read("Theme/SkinTerminal.lua"),
+        why = "the Terminal skin",
     },
     {
         file = "AzerothRoute/Theme/Widgets.lua",

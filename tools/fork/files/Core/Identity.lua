@@ -115,6 +115,9 @@ local ES = {
 	["Marble"] = "Mármol",
 	["White marble with beige veins and gold threads, gold trim and dark ink."] =
 		"Mármol blanco con vetas beige e hilos dorados, bordes dorados y tinta oscura.",
+	["Terminal"] = "Terminal",
+	["A neon code terminal: phosphor green text on black under scanlines, cyan edges and HUD corners."] =
+		"Una terminal de código de neón: texto verde fósforo sobre negro con líneas de escaneo, bordes cian y esquinas de HUD.",
 }
 
 local loc = GetLocale and GetLocale()

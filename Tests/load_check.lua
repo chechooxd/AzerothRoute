@@ -885,12 +885,12 @@ do
         if rawget(plain, "Continue") then fail("a window without the rail got the Continue guide button") end
         -- Settings switches keep the theme's own colours (no fixed blue).
         if B.PRIMARY then fail("a fixed Battle.net blue still overrides the theme") end
-        -- Only AzerothRoute's own designs: its look and its two skins offered (section 30), any other saved
+        -- Only AzerothRoute's own designs: its look and its three skins offered (section 30), any other saved
         -- choice drawn as its look.
         local choices = Theme.SkinChoices()
         local offered = {}
         for _, c in ipairs(choices) do offered[#offered + 1] = c.value end
-        if table.concat(offered, ",") ~= "polestar,classicwow,marble" then fail("looks offered: " .. table.concat(offered, ",")) end
+        if table.concat(offered, ",") ~= "polestar,classicwow,marble,terminal" then fail("looks offered: " .. table.concat(offered, ",")) end
         local saved = ns.Get("ui.skin")
         ns.Set("ui.skin", "halo")
         if Theme.SkinId() ~= "polestar" then fail("a saved Polestar look is still drawn: " .. tostring(Theme.SkinId())) end
@@ -1217,8 +1217,9 @@ do
     end
 end
 
--- 30. AzerothRoute's two skins over the new UI: Classic (the game's red buttons, its gold dialog
--- border, square corners) and Marble (the marble art, gold edges). Both register through the Skin
+-- 30. AzerothRoute's skins over the new UI: Classic (the game's red buttons, its gold dialog
+-- border, square corners), Marble (the marble art, gold edges) and Terminal (scanlines, neon edges,
+-- HUD corners). They register through the Skin
 -- API's checks, now in the core (no skin folder), are drawn when chosen, paint every kind of frame
 -- without failing, and give the rounded look back when the player returns to AzerothRoute's own.
 do
@@ -1226,7 +1227,8 @@ do
     if read(ROOT .. "/AzerothRoute_SkinAPI/AzerothRoute_SkinAPI.toc") then fail("the skin checks still ship as a folder") end
     if not read(ROOT .. "/AzerothRoute/Theme/SkinCheck.lua") then fail("the skin checks are not in the core") end
     if not read(ROOT .. "/AzerothRoute/Media/UI/marble.tga") then fail("no marble art") end
-    for _, rec in ipairs({ { "classicwow", Theme.ClassicSkin }, { "marble", Theme.MarbleSkin } }) do
+    if not read(ROOT .. "/AzerothRoute/Media/UI/scanlines.tga") then fail("no scanline art") end
+    for _, rec in ipairs({ { "classicwow", Theme.ClassicSkin }, { "marble", Theme.MarbleSkin }, { "terminal", Theme.TerminalSkin } }) do
         if not (rec[2] and rec[2].ok) then fail("skin " .. rec[1] .. " did not register: " .. tostring(rec[2] and rec[2].why)) end
     end
     local KINDS = { "window", "panel", "sidebar", "inset", "button", "dropdown", "editbox", "checkbox", "tab", "tile" }
@@ -1267,9 +1269,22 @@ do
     local or_, og, ob = Theme.Color("onAccent")
     if not (mr == or_ and mg == og and mb == ob) then fail("Marble: primary buttons' words are not onAccent") end
 
+    ns.Set("ui.skin", "terminal")
+    if Theme.SkinId() ~= "terminal" then fail("Terminal is not drawn when chosen: " .. tostring(Theme.SkinId())) end
+    if stone:IsShown() then fail("Terminal: Marble's stone stayed") end
+    local scan = own(win).scan
+    if not (scan and scan:IsShown() and tostring(scan:GetTexture()):find("scanlines", 1, true)) then fail("Terminal: no scanlines on the window") end
+    if not (own(win).brackets and #own(win).brackets == 8 and own(win).brackets[1]:IsShown()) then fail("Terminal: no HUD corners") end
+    if win.psSkin.bg:GetTexture() ~= white then fail("Terminal: the window is still rounded") end
+    if Theme.SkinInfo("terminal").failed then fail("Terminal failed painting: " .. tostring(Theme.SkinInfo("terminal").failed)) end
+
     ns.Set("ui.skin", "polestar")
     if win.psSkin.bg:GetTexture() ~= round then fail("back on AzerothRoute's look the window is not rounded") end
     if stone:IsShown() then fail("back on AzerothRoute's look the marble stayed") end
+    -- own() reads the store of the skin in use; the Terminal's pieces live in its own store.
+    local term = win.psSkin.kit.api.terminal
+    if term.brackets[1]:IsShown() then fail("back on AzerothRoute's look the HUD corners stayed") end
+    if scan:IsShown() then fail("back on AzerothRoute's look the scanlines stayed") end
     ns.Set("ui.skin", saved)
     print("skins: checked")
 end

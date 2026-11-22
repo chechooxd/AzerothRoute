@@ -21,10 +21,11 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
   The games have sound (the game's own effects: turns, landings, cleared rows, level ups, throws, hits, waves,
   game over and a new best), on the effects volume; the speaker in the window's bar mutes them. The window keeps a wide column (the tabs, sound and close in its
   bar, the score on a line of its own under it, the keys under the game) and Rune Fall has larger stones (22 px).
-- Two skins for the new look, in Options > Theme and on the welcome looks next to AzerothRoute's own: Classic (the
+- Three skins for the new look, in Options > Theme and on the welcome looks next to AzerothRoute's own: Classic (the
   game's red buttons, its gold-trimmed dialog border on windows and tooltip border on menus, gold titles, dark
   grounds, square corners) and Marble (white marble with beige veins and gold threads, gold edges, an antique gold
-  accent and dark ink). Both keep the top bar and tabs. They ship inside the main folder: no skin folder to install.
+  accent and dark ink) and Terminal (a neon code terminal: phosphor green text on black under scanlines, cyan edges
+  and HUD brackets on the corners). All keep the top bar and tabs. They ship inside the main folder: no skin folder to install.
 
 ### Changed
 - The guide step icons and the map icons are AzerothRoute's own drawings in place of Polestar's; flight is a
