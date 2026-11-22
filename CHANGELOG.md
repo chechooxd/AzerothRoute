@@ -34,6 +34,8 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
   and skin addons) are hidden; a saved choice is kept.
 
 ### Added
+- Lookup previews: a mount as the mount collection shows it, gear tried on your character as the
+  appearances collection does, and NPCs and rares as themselves, under the result's title; drag to turn them.
 - Gathering routes page in the menu: for Herbalism and Mining, the three zones with most spots of the
   herbs or ores that still teach your skill (up to 100 points below it, zones up to 5 levels above
   yours), each as one closed loop through every spot (nearest neighbour, then 2-opt). Start holds the

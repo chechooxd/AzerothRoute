@@ -1039,6 +1039,48 @@ do
     end
 end
 
+-- 25. Lookup's preview: a mount as the mount collection shows it (its creature display), gear tried on
+-- the player as the appearances collection does, an NPC as itself; nothing for a quest or a zone.
+do
+    local PV = ns.UI and ns.UI.LookupPreview
+    if not (PV and PV.Show and PV.Hide) then fail("no Lookup preview") else
+        local d = CreateFrame("Frame", nil, UIParent)
+        local MJ = rawget(_G, "C_MountJournal")
+        rawset(_G, "C_MountJournal", {
+            GetMountFromItem = function(id) return id == 100 and 7 or nil end,
+            GetMountFromSpell = function() return nil end,
+            GetMountInfoExtraByID = function(m) return m == 7 and 4321 or nil end,
+        })
+        local calls = {}
+        local h = PV.Show(d, "mount", 100, 10, 300)
+        local m = PV.Models and PV.Models.creature
+        if not (h and h > 0 and m and m:IsShown()) then fail("a mount got no model") end
+        if m then
+            m.SetDisplayInfo = function(_, id) calls.display = id end
+            m.SetCreature = function(_, id) calls.creature = id end
+            PV.Show(d, "mount", 100, 10, 300)
+            if calls.display ~= 4321 then fail("the mount model is not its creature display: " .. tostring(calls.display)) end
+            PV.Show(d, "npc", 299, 10, 300)
+            if calls.creature ~= 299 then fail("the NPC model is not the NPC") end
+        end
+        local IE = rawget(_G, "C_Item")
+        rawset(_G, "C_Item", setmetatable({ IsEquippableItem = function(id) return id == 200 end }, { __index = IE }))
+        local dh = PV.Show(d, "item", 200, 10, 300)
+        local dm = PV.Models and PV.Models.dress
+        if dm then
+            dm.TryOn = function(_, link) calls.tryOn = link end
+            PV.Show(d, "item", 200, 10, 300)
+        end
+        if not (dh and dh > 0 and calls.tryOn and tostring(calls.tryOn):find("200", 1, true)) then fail("gear is not tried on the player") end
+        if (PV.Show(d, "item", 201, 10, 300) or 0) ~= 0 then fail("a preview for an item nobody wears") end
+        if (PV.Show(d, "quest", 5, 10, 300) or 0) ~= 0 or (PV.Show(d, "zone", 12, 10, 300) or 0) ~= 0 then fail("a preview for a quest or a zone") end
+        if m and m:IsShown() then fail("the model stayed for a quest") end
+        rawset(_G, "C_MountJournal", MJ)
+        rawset(_G, "C_Item", IE)
+        print("lookup preview: checked")
+    end
+end
+
 -- 4. names
 if _G.AzerothRoute ~= ns then fail("global AzerothRoute is not the addon table") end
 if rawget(_G, "Polestar") ~= nil then fail("a global named Polestar exists") end

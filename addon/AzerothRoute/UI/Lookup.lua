@@ -887,6 +887,7 @@ local function emptyDetails(title, note)
 	local d = details
 	d.psArt = ZoneArt.Paint(d.Art, nil, nil, nil, 1)
 	for _, p in ipairs({ d.Well, d.Title, d.Sub, d.Status, d.Head, d.Scroll, d.Note, d.Primary, d.Secondary }) do p:Hide() end
+	if UI.LookupPreview then UI.LookupPreview.Hide(d) end -- AzerothRoute
 	for _, f in ipairs(d.Facts) do
 		f.Label:Hide()
 		f.Value:Hide()
@@ -993,6 +994,8 @@ local function renderDetails(loaded, reason)
 	else
 		d.Status:Hide()
 	end
+	-- AzerothRoute: the thing itself, as the game's collections show it (UI/Preview.lua).
+	if UI.LookupPreview then y = y + UI.LookupPreview.Show(d, s.kind, s.id, y, DETAIL_W - DPAD * 2) end
 	local Lk = ns.Lookup
 	local chain = s.kind == "quest" and Lk and Lk.ChainProgress and Lk.ChainProgress(s.id) or nil
 	local facts = factsFor(s, entity, list, chain)

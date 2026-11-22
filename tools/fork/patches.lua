@@ -91,6 +91,38 @@ return {
         replace = "\twin.Search:Show() -- AzerothRoute: the global search is there in every section\n",
         why = "the global search shows in every section",
     },
+    -- Lookup's preview (UI/Preview.lua): mounts, gear and NPCs as the collections show them.
+    {
+        file = "AzerothRoute/UI/Preview.lua", create = true, replace = read("UI/Preview.lua"),
+        why = "Lookup's model preview",
+    },
+    {
+        file = "AzerothRoute/UI/Lookup.lua",
+        find = [=[	else
+		d.Status:Hide()
+	end
+	local Lk = ns.Lookup]=],
+        replace = [=[	else
+		d.Status:Hide()
+	end
+	-- AzerothRoute: the thing itself, as the game's collections show it (UI/Preview.lua).
+	if UI.LookupPreview then y = y + UI.LookupPreview.Show(d, s.kind, s.id, y, DETAIL_W - DPAD * 2) end
+	local Lk = ns.Lookup]=],
+        why = "the preview under a result's title",
+    },
+    {
+        file = "AzerothRoute/UI/Lookup.lua",
+        find = [=[	for _, p in ipairs({ d.Well, d.Title, d.Sub, d.Status, d.Head, d.Scroll, d.Note, d.Primary, d.Secondary }) do p:Hide() end]=],
+        replace = [=[	for _, p in ipairs({ d.Well, d.Title, d.Sub, d.Status, d.Head, d.Scroll, d.Note, d.Primary, d.Secondary }) do p:Hide() end
+	if UI.LookupPreview then UI.LookupPreview.Hide(d) end -- AzerothRoute]=],
+        why = "no preview on an empty page",
+    },
+    {
+        file = "AzerothRoute/UI/UI.xml",
+        find = '\t<Script file="Lookup.lua"/>\n',
+        replace = '\t<Script file="Preview.lua"/>\n\t<Script file="Lookup.lua"/>\n',
+        why = "loads the preview before Lookup",
+    },
     {
         -- Folded under the top bar (Theme/Battlenet.lua): the bar alone, the header and its title go too.
         file = "AzerothRoute_Options/UI/Options.lua",
