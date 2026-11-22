@@ -117,7 +117,9 @@ local ES = {
 	["Sound on"] = "Sonido activado",
 	["Sound off"] = "Sonido desactivado",
 	-- The perf probe (Core/Perf.lua).
-	["/ar perf: on, off, report or reset"] = "/ar perf: on, off, report o reset",
+	["/ar perf: on, off, login, report or reset"] = "/ar perf: on, off, login, report o reset",
+	["The perf probe starts at your next login or /reload and times the login too. Then type /ar perf report."] =
+		"La sonda de rendimiento arranca en tu próximo inicio de sesión o /reload y mide también la entrada. Luego escribe /ar perf report.",
 	["AzerothRoute perf report"] = "Informe de rendimiento de AzerothRoute",
 	["Find what makes your game stutter: times AzerothRoute's own work (on, off, report, reset)"] =
 		"Encuentra qué hace que tu juego se trabe: mide el trabajo propio de AzerothRoute (on, off, report, reset)",

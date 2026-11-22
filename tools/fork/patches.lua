@@ -1202,4 +1202,52 @@ end
             .. "\t\t\t\t\tlocal places = placesOf(goal)\n",
         why = "the map's kill areas pass over along goals waiting for their quest",
     },
+    -- /ar perf login: the probe starts as the addon loads at the next login or /reload, so it times the
+    -- login's own work too (user, 2026-11-22: a 1250 ms peak before the probe was on; "Sí, búscalo").
+    {
+        file = "AzerothRoute/Core/Perf.lua",
+        find = "ns.RegisterCommand(\"perf\", function(rest)\n",
+        replace = [=[-- AzerothRoute: /ar perf login asks for the probe at the next login: it starts
+-- when the addon's saved settings load, before the login's handlers run.
+function Perf.LoginStart()
+	local db = _G.AzerothRouteDB
+	if type(db) == "table" and db.perfAtLogin then
+		db.perfAtLogin = nil
+		Perf.atLogin = Perf.Start() and true or nil
+	end
+	return Perf.atLogin == true
+end
+do
+	local f = CreateFrame("Frame")
+	f:RegisterEvent("ADDON_LOADED")
+	f:SetScript("OnEvent", function(self, _, name)
+		if name ~= ADDON then return end
+		self:UnregisterEvent("ADDON_LOADED")
+		Perf.LoginStart()
+	end)
+end
+
+ns.RegisterCommand("perf", function(rest)
+]=],
+        why = "the perf probe can start at the next login",
+    },
+    {
+        file = "AzerothRoute/Core/Perf.lua",
+        find = "\telseif arg == \"reset\" then\n",
+        replace = [=[	elseif arg == "login" then
+		local db = _G.AzerothRouteDB
+		if type(db) == "table" then
+			db.perfAtLogin = true
+			ns.Print(L["The perf probe starts at your next login or /reload and times the login too. Then type /ar perf report."])
+		end
+	elseif arg == "reset" then
+]=],
+        why = "/ar perf login",
+    },
+    {
+        file = "AzerothRoute/Core/Perf.lua",
+        find = "\t\tns.Print(L[\"/ar perf: on, off, report or reset\"])\n",
+        replace = "\t\tns.Print(L[\"/ar perf: on, off, login, report or reset\"])\n",
+        why = "/ar perf names login",
+    },
 }

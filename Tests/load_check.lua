@@ -1479,5 +1479,22 @@ do
     end
 end
 
+-- 34. /ar perf login: the probe starts as the addon loads at the next login, once.
+do
+    local Perf = ns.Perf
+    local slash = _G.SlashCmdList and _G.SlashCmdList.AZEROTHROUTE
+    if not (Perf and Perf.LoginStart and slash) then fail("no perf login") else
+        _G.AzerothRouteDB = _G.AzerothRouteDB or {}
+        slash("perf login")
+        if _G.AzerothRouteDB.perfAtLogin ~= true then fail("/ar perf login does not ask for the probe at the next login") end
+        local started = Perf.LoginStart()
+        if not started or _G.AzerothRouteDB.perfAtLogin then fail("the probe does not start at login, or asks again") end
+        Perf.Stop()
+        Perf.atLogin = nil
+        if Perf.LoginStart() then fail("the probe starts at a login nobody asked for") end
+        print("perf login: checked")
+    end
+end
+
 print(failures == 0 and "OK" or (failures .. " failure(s)"))
 os.exit(failures == 0 and 0 or 1)

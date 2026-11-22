@@ -586,6 +586,26 @@ end
 function Perf.Spikes() return spikeList() end
 function Perf.Calls() return calls end
 
+-- AzerothRoute: /ar perf login asks for the probe at the next login: it starts
+-- when the addon's saved settings load, before the login's handlers run.
+function Perf.LoginStart()
+	local db = _G.AzerothRouteDB
+	if type(db) == "table" and db.perfAtLogin then
+		db.perfAtLogin = nil
+		Perf.atLogin = Perf.Start() and true or nil
+	end
+	return Perf.atLogin == true
+end
+do
+	local f = CreateFrame("Frame")
+	f:RegisterEvent("ADDON_LOADED")
+	f:SetScript("OnEvent", function(self, _, name)
+		if name ~= ADDON then return end
+		self:UnregisterEvent("ADDON_LOADED")
+		Perf.LoginStart()
+	end)
+end
+
 ns.RegisterCommand("perf", function(rest)
 	local arg = (rest or ""):lower()
 	if arg == "" then arg = on and "off" or "on" end
@@ -605,10 +625,16 @@ ns.RegisterCommand("perf", function(rest)
 		else
 			ns.Print(L["The perf probe has not run yet: type /ar perf to start it."])
 		end
+	elseif arg == "login" then
+		local db = _G.AzerothRouteDB
+		if type(db) == "table" then
+			db.perfAtLogin = true
+			ns.Print(L["The perf probe starts at your next login or /reload and times the login too. Then type /ar perf report."])
+		end
 	elseif arg == "reset" then
 		Perf.Reset()
 		ns.Print(L["Perf probe: measurements cleared."])
 	else
-		ns.Print(L["/ar perf: on, off, report or reset"])
+		ns.Print(L["/ar perf: on, off, login, report or reset"])
 	end
 end, L["Find what makes your game stutter: times AzerothRoute's own work (on, off, report, reset)"], true)
