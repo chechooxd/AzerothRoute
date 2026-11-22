@@ -8,7 +8,7 @@
 -- Exit code 0 when every check passes.
 
 package.path = "./?.lua;" .. package.path
-local ROOT = "addon"
+local ROOT = (arg and arg[1]) or "addon" -- the generated folders (a writer may generate elsewhere)
 local failures = 0
 local function fail(msg)
     failures = failures + 1
