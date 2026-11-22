@@ -10,7 +10,7 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 - MINOR (0.x.0): new features or guides.
 - MAJOR: reserved for 1.0.0, the first stable release.
 
-## [0.6.0] - in progress
+## [0.6.0] - 2026-11-21
 
 ### Changed
 - A Battle.net style look for the hub and the settings: rounded windows, panels, buttons, tiles, fields and
