@@ -8,7 +8,7 @@ local L = ns.L
 local G = ns.Games
 if not G then return end
 
-local COLS, ROWS, CELL = 9, 16, 18
+local COLS, ROWS, CELL = 9, 16, 22
 local WIDTH, HEIGHT = COLS * CELL, ROWS * CELL
 local REPEAT_DELAY, REPEAT_EVERY = 0.17, 0.05
 local ROWS_PER_LEVEL = 8
@@ -116,7 +116,7 @@ local function New(view, host)
     end
 
     -- The next piece, small and see-through in the top right corner.
-    local NEXT_CELL = 7
+    local NEXT_CELL = 9
     local nextBack = view:CreateTexture(nil, "OVERLAY", nil, 1)
     nextBack:SetSize(4 * NEXT_CELL + 6, 4 * NEXT_CELL + 6)
     nextBack:SetPoint("TOPRIGHT", view, "TOPRIGHT", -3, -3)

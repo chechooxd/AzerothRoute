@@ -7,7 +7,7 @@ local L = ns.L
 local def = G.defs and G.defs.runefall
 if not def then fail("rune fall: not registered") return end
 if def.name ~= L["Rune Fall"] then fail("rune fall: wrong name " .. tostring(def.name)) end
-if def.width ~= 162 or def.height ~= 288 then fail("rune fall: wrong size") end
+if def.width ~= 9 * 22 or def.height ~= 16 * 22 then fail("rune fall: wrong size") end
 
 if not G.Open("runefall") then fail("rune fall: does not open") return end
 local game = G.Game("runefall")

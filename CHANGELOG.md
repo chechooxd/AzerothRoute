@@ -19,7 +19,8 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
   game is paused and closed; it goes on where it was. Best scores are kept. Esc closes, P pauses; /ar arcade and the
   guide window's menu open them any time; off in Options > Integrations > Flight games. Polestar's Doom stays out.
   The games have sound (the game's own effects: turns, landings, cleared rows, level ups, throws, hits, waves,
-  game over and a new best), on the effects volume; the speaker in the window's bar mutes them.
+  game over and a new best), on the effects volume; the speaker in the window's bar mutes them. The window keeps a wide column (the tabs, sound and close in its
+  bar, the score on a line of its own under it, the keys under the game) and Rune Fall has larger stones (22 px).
 
 ### Changed
 - The guide step icons and the map icons are AzerothRoute's own drawings in place of Polestar's; flight is a

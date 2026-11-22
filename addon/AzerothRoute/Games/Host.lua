@@ -28,7 +28,10 @@ local L = ns.L
 local Games = { defs = {}, order = {} }
 ns.Games = Games
 
-local PAD, BAR_H, FOOT_H = 12, 34, 24
+-- The window: the bar (tabs, sound, close), a line for the score, the game centred in a column at least
+-- MIN_W wide, the keys under it (two lines at most).
+local PAD, BAR_H, INFO_H, FOOT_H, GAP = 14, 38, 26, 40, 8
+local MIN_W = 340
 local MAX_DT = 0.05
 local MEDIA = "Interface\\AddOns\\" .. ADDON .. "\\Media\\Arcade\\"
 
@@ -139,9 +142,11 @@ local function overlay(parent)
     o.Line = W.Text(o, "body", "text")
     o.Line:SetPoint("TOP", o.Title, "BOTTOM", 0, -10)
     o.Line:SetJustifyH("CENTER")
+    o.Line:SetWordWrap(true)
     o.Hint = W.Text(o, "note", "textDim")
     o.Hint:SetPoint("TOP", o.Line, "BOTTOM", 0, -8)
     o.Hint:SetJustifyH("CENTER")
+    o.Hint:SetWordWrap(true)
     return o
 end
 
@@ -170,20 +175,27 @@ local function build()
     f.Close:SetPoint("RIGHT", bar, "RIGHT", -6, 0)
     f.Mute = W.IconButton(bar, "speaker", 22, L["Sound on"], function() Games.SetMuted(not Games.Muted()) end)
     f.Mute:SetPoint("RIGHT", f.Close, "LEFT", -2, 0)
-    f.Score = W.Text(bar, "number", "accent")
-    f.Score:SetPoint("RIGHT", f.Mute, "LEFT", -10, 0)
-    f.Score:SetJustifyH("RIGHT")
+    f.Score = W.Text(f, "label", "accent")
+    f.Score:SetPoint("TOPLEFT", f, "TOPLEFT", PAD, -BAR_H - 4)
+    f.Score:SetPoint("TOPRIGHT", f, "TOPRIGHT", -PAD, -BAR_H - 4)
+    f.Score:SetHeight(INFO_H - 8)
+    f.Score:SetJustifyH("CENTER")
     f.Tabs = {}
 
     f.Body = CreateFrame("Frame", nil, f)
-    f.Body:SetPoint("TOPLEFT", f, "TOPLEFT", PAD, -BAR_H)
+    f.Body:SetPoint("TOP", f, "TOP", 0, -BAR_H - INFO_H)
     f.BodyBack = f.Body:CreateTexture(nil, "BACKGROUND")
     f.BodyBack:SetAllPoints(f.Body)
     f.BodyBack:SetColorTexture(0.02, 0.05, 0.1, 1)
 
     f.Keys = W.Text(f, "note", "textDim")
-    f.Keys:SetPoint("BOTTOMLEFT", f, "BOTTOMLEFT", PAD, 7)
-    f.Keys:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -PAD, 7)
+    f.Keys:SetPoint("TOPLEFT", f.Body, "BOTTOMLEFT", 0, -GAP)
+    f.Keys:SetPoint("LEFT", f, "LEFT", PAD, 0)
+    f.Keys:SetPoint("RIGHT", f, "RIGHT", -PAD, 0)
+    f.Keys:SetJustifyH("CENTER")
+    f.Keys:SetJustifyV("TOP")
+    f.Keys:SetWordWrap(true)
+    f.Keys:SetHeight(FOOT_H - GAP)
 
     f.Over = overlay(f.Body)
 
@@ -256,8 +268,10 @@ end
 function paint()
     if not (win and current) then return end
     local def, s = Games.defs[current], slots[current]
-    win:SetSize(def.width + 2 * PAD, def.height + BAR_H + FOOT_H + 6)
+    win:SetSize(math.max(def.width, MIN_W) + 2 * PAD, BAR_H + INFO_H + def.height + FOOT_H + PAD / 2)
     win.Body:SetSize(def.width, def.height)
+    win.Over.Line:SetWidth(def.width - 20)
+    win.Over.Hint:SetWidth(def.width - 20)
     for id, other in pairs(slots) do other.view:SetShown(id == current) end
     tabs()
     win.Score:SetText(L["Score %d   Best %d"]:format(s.score or 0, math.max(Games.Best(current), s.score or 0)))
