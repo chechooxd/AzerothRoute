@@ -18,6 +18,12 @@
 local ADDON, ns = ...
 local Compat, L = ns.Compat, ns.L
 
+-- A secret value (Forever, in combat) reads as nil: never indexed, compared or parsed.
+local function readable(v)
+	if Compat and Compat.IsSecret and Compat.IsSecret(v) then return nil end
+	return v
+end
+
 local Glow = {}
 ns.ObjectGlow = Glow
 
@@ -45,7 +51,7 @@ local function getCVar(name)
 	local C = C_CVar
 	local v
 	if C and C.GetCVar then v = C.GetCVar(name) elseif GetCVar then v = GetCVar(name) end
-	return Compat and Compat.Readable and Compat.Readable(v) or v
+	return readable(v)
 end
 
 local function setCVar(name, value)
@@ -99,13 +105,8 @@ end)
 ---------------------------------------------------------------------------
 
 local function objectIdOf(guid)
-	guid = Compat and Compat.Readable and Compat.Readable(guid) or guid
+	guid = readable(guid)
 	return type(guid) == "string" and tonumber(guid:match("^GameObject%-[^-]*%-[^-]*%-[^-]*%-[^-]*%-(%d+)")) or nil
-end
-
-local function readable(v)
-	if Compat and Compat.IsSecret and Compat.IsSecret(v) then return nil end
-	return v
 end
 
 -- The open quest objectives object `id` (or named `name`) still serves: { objective, ... } or nil.

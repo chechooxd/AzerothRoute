@@ -1356,6 +1356,15 @@ do
         if pick(900002) ~= "herb" then fail("a herb does not glow as a herb") end
         if pick(900003) ~= "ore" then fail("an ore does not glow as an ore") end
         if pick(900004) then fail("a plain object glows") end
+        -- In combat Forever hands out a secret GUID: indexing it throws. It reads as no object.
+        -- (A plain string here: the mock cannot make one throw, so the check is that it is not parsed.)
+        local secretGuid = "GameObject-0-1-2-3-900001-0000SECRET"
+        local realSecret = _G.issecretvalue
+        _G.issecretvalue = function(v) return v == secretGuid end
+        picked = nil
+        fire("PLAYER_SOFT_INTERACT_CHANGED", nil, secretGuid)
+        _G.issecretvalue = realSecret
+        if select(1, Glow.Current()) ~= nil then fail("a secret GUID is read as an object") end
         need[1].done = true
         if pick(900001) then fail("an object of a finished objective glows") end
         need[1].done = false

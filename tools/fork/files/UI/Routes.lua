@@ -148,7 +148,8 @@ end
 
 local function level()
 	local lv = UnitLevel and UnitLevel("player")
-	return ns.Compat and ns.Compat.Readable and ns.Compat.Readable(lv) or lv or 60
+	if ns.Compat and ns.Compat.IsSecret and ns.Compat.IsSecret(lv) then return 60 end -- secret in combat: read as unknown
+	return tonumber(lv) or 60
 end
 
 function RV.Render()

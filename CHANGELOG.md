@@ -53,6 +53,9 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 ### Fixed
 - The guide's level mark ("Guide: 14 (2 levels)") and completed quest XP now show on a classic-style XP bar
   (MainMenuExpBar) and on a UI addon's own XP bar, not only on the game's tracking bars.
+- "ObjectGlow.lua:103: attempt to index local 'guid' (a secret string value)": in combat the game hides the object's
+  id; the world object glow now reads it as no object instead of an error. The gathering routes read a hidden level
+  the same way.
 - Kill targets wait for the quest: before you take a quest, its mobs are no longer on the target button, its list
   or the step key, and its kill areas and goal pins are no longer drawn on the map and minimap (the arrow already
   led to the quest giver first). Mobs killed then count for nothing.
