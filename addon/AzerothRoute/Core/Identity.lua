@@ -76,6 +76,36 @@ local ES = {
 	["This translation was made with AI."] = "Esta traducción se hizo con IA.",
 	["Played to the end in tests, but not yet by players. If a step is wrong, press %s in the guide window and send a report with /ar report."] =
 		"Se recorrió hasta el final en pruebas, pero todavía no la han probado jugadores. Si un paso está mal, pulsa %s en la ventana de la guía y envía un informe con /ar report.",
+	-- Flight games (Games/Host.lua, Maps/Arcade.lua).
+	["Play a game"] = "Jugar un juego",
+	["Flight games"] = "Juegos en vuelo",
+	["Offer a game on long flights"] = "Ofrecer un juego en vuelos largos",
+	["On a flight with a minute or more to go, AzerothRoute asks if you want to play one of its light games while you wait: Rune Fall or Sky Patrol. 10 seconds before you land, or in a fight, the game is paused and closed, and it goes on where it was. /ar arcade opens them any time."] =
+		"En un vuelo de un minuto o más, AzerothRoute te pregunta si quieres jugar uno de sus juegos ligeros mientras esperas: Rune Fall o Sky Patrol. 10 segundos antes de aterrizar, o en un combate, el juego se pausa y se cierra, y sigue donde quedó. /ar arcade los abre cuando quieras.",
+	["Long flight ahead. Play while you wait?"] = "Vuelo largo por delante. ¿Juegas mientras esperas?",
+	["Light games of AzerothRoute's own. Esc closes them, and they wait for you."] =
+		"Juegos ligeros propios de AzerothRoute. Esc los cierra y te esperan donde quedaron.",
+	["Your game is paused for the fight: type %s to go on."] = "Tu juego quedó en pausa por el combate: escribe %s para seguir.",
+	["Your game is paused."] = "Tu juego quedó en pausa.",
+	["Landed. Your game is paused: type %s to go on."] = "Aterrizaste. Tu juego quedó en pausa: escribe %s para seguir.",
+	["The games open after the fight."] = "Los juegos se abren después del combate.",
+	["Score %d   Best %d"] = "Puntos %d   Récord %d",
+	["Score %d"] = "Puntos %d",
+	["P: pause   Esc: close"] = "P: pausa   Esc: cerrar",
+	["Space to start"] = "Espacio para empezar",
+	["Paused"] = "En pausa",
+	["Space or P to go on"] = "Espacio o P para seguir",
+	["Game over"] = "Fin del juego",
+	["New best: %d"] = "¡Nuevo récord: %d!",
+	["Space to play again"] = "Espacio para jugar otra vez",
+	["Rune Fall"] = "Rune Fall",
+	["Fit the falling runestones into full rows to dissolve them."] = "Encaja las runas que caen en filas completas para disolverlas.",
+	["Arrows or WASD: move, turn (up), drop (down)   Space: slam"] = "Flechas o WASD: mover, girar (arriba), bajar (abajo)   Espacio: soltar",
+	["Level %d"] = "Nivel %d",
+	["Sky Patrol"] = "Sky Patrol",
+	["Hold off the bats and harpies from your gryphon."] = "Detén a los murciélagos y arpías desde tu grifo.",
+	["Arrows or A/D: fly   Space: throw"] = "Flechas o A/D: volar   Espacio: lanzar",
+	["Wave %d"] = "Oleada %d",
 }
 
 local loc = GetLocale and GetLocale()

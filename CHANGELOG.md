@@ -12,6 +12,13 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 
 ## [Unreleased]
 
+### Added
+- Games on long flights: with a minute or more of flight left, a card under the flight timer offers two light
+  games of AzerothRoute's own, Rune Fall (a falling runestones puzzle) and Sky Patrol (a gryphon rider shooting
+  bats and harpies), once per flight, then a row to play. 10 seconds before landing, on landing and in a fight the
+  game is paused and closed; it goes on where it was. Best scores are kept. Esc closes, P pauses; /ar arcade and the
+  guide window's menu open them any time; off in Options > Integrations > Flight games. Polestar's Doom stays out.
+
 ### Changed
 - The guide step icons and the map icons are AzerothRoute's own drawings in place of Polestar's; flight is a
   winged boot, the inn a tankard, mail a sealed envelope, a corpse a ghost, a rare a gem, selling a price tag

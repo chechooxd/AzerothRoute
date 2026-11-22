@@ -12,10 +12,10 @@ Branch: claude/azerothroute-2. Delivery: work-unit commits merged into master, i
 
 ## Tasks
 
-- T1 (S1, S3, S4, inline): the game window and host (Games/Host.lua, the contract the games implement) and the flight launcher (Maps/Arcade.lua replaced).
-- T2 (S2, delegated: parallel unit): Rune Fall, the falling runestones puzzle (Games/RuneFall.lua).
-- T3 (S2, delegated: parallel unit): Sky Patrol, the gryphon rider shooter (Games/SkyPatrol.lua, its sprites).
-- T4 (S1-S4, inline): Spanish texts, changelog, seam check (full suite), install.
+- T1 (S1, S3, S4, inline): the game window and host (Games/Host.lua, the contract the games implement) and the flight launcher (Maps/Arcade.lua replaced). Done: adad9b7.
+- T2 (S2, delegated: parallel unit): Rune Fall, the falling runestones puzzle (Games/RuneFall.lua). Done (writer, checks pass).
+- T3 (S2, delegated: parallel unit): Sky Patrol, the gryphon rider shooter (Games/SkyPatrol.lua, its sprites). Done (writer, checks pass).
+- T4 (S1-S4, inline): Spanish texts, changelog, seam check (full suite), install. Done; not yet played in game.
 
 ## Log
 

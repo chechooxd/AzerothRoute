@@ -190,9 +190,9 @@ local function slot(id)
             return 1, 1, 1
         end,
     }
+    slots[id] = s
     s.game = def.New(view, host)
     if s.game and s.game.Reset then s.game:Reset() end
-    slots[id] = s
     return s
 end
 
@@ -258,9 +258,10 @@ function keyDown(key)
     if s.game.Key then s.game:Key(key, true) end
 end
 
+-- A key going up always reaches the game, paused or not, so it never keeps a key held that was let go.
 function keyUp(key)
     local s = current and slots[current]
-    if s and s.state == "run" and s.game.Key then s.game:Key(key, false) end
+    if s and s.game.Key then s.game:Key(key, false) end
 end
 
 -- One frame: the shown game moves while it runs.
