@@ -261,6 +261,29 @@ end
         file = "AzerothRoute/Theme/SkinMarble.lua", create = true, replace = read("Theme/SkinMarble.lua"),
         why = "the Marble skin",
     },
+    -- World objects that glow (user, 2026-11-22: "cuando se trate de misiones de interactuar con cosas del
+    -- mundo ... estos objetos brillen como en wow retail y que esa opcion se pueda activar o no"): the object
+    -- the game's interact targeting picks, when a quest needs it or it is a herb or ore vein.
+    {
+        file = "AzerothRoute/QoL/ObjectGlow.lua", create = true, replace = read("QoL/ObjectGlow.lua"),
+        why = "the glow on quest objects, herbs and ore",
+    },
+    {
+        file = "AzerothRoute/QoL/QoL.xml",
+        find = '\t<Script file="InstanceTrack.lua"/>\n',
+        replace = '\t<Script file="InstanceTrack.lua"/>\n\t<Script file="ObjectGlow.lua"/>\n',
+        why = "loads the object glow",
+    },
+    {
+        file = "AzerothRoute_Options/QoL/ObjectGlowOptions.lua", create = true, replace = read("QoL/ObjectGlowOptions.lua"),
+        why = "the World objects settings",
+    },
+    {
+        file = "AzerothRoute_Options/AzerothRoute_Options.toc",
+        find = "Quests\\Options.lua\r\n",
+        replace = "Quests\\Options.lua\r\nQoL\\ObjectGlowOptions.lua\r\n",
+        why = "loads the World objects settings",
+    },
     -- A third (user, 2026-11-22: "agrega otra skin tipo terminal code, cyberpunk").
     {
         file = "AzerothRoute/Theme/SkinTerminal.lua", create = true, replace = read("Theme/SkinTerminal.lua"),

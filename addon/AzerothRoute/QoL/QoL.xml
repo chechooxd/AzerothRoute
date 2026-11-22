@@ -31,4 +31,5 @@
 	<Script file="Riding.lua"/>
 	<Script file="ClassQuests.lua"/>
 	<Script file="InstanceTrack.lua"/>
+	<Script file="ObjectGlow.lua"/>
 </Ui>

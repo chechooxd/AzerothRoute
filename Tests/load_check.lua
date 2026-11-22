@@ -1289,5 +1289,85 @@ do
     print("skins: checked")
 end
 
+-- 31. World objects that glow (QoL/ObjectGlow.lua): while on, the client's interact targeting is set for
+-- objects and the player's own values are kept; off puts them back. The object the targeting picks
+-- glows gold when an open quest needs it (by id or by name), green for a herb, copper for an ore, and
+-- not at all for anything else, a finished objective, or a kind turned off in the settings.
+do
+    local Glow = ns.ObjectGlow
+    if not Glow then fail("no object glow") else
+        if ns.GetDefault("qol.objectGlow") ~= true then fail("the object glow is not on by default") end
+        local cv = { SoftTargetInteract = "1", SoftTargetIconGameObject = "0", SoftTargetNameplateInteract = "0", SoftTargetInteractRange = "10" }
+        local realCVar, realUnitName, realPlate = _G.C_CVar, _G.UnitName, _G.C_NamePlate
+        _G.C_CVar = { GetCVar = function(n) return cv[n] end, SetCVar = function(n, v) cv[n] = tostring(v) return true end }
+        local db = _G.AzerothRouteDB
+        db.objectGlowCVars = nil
+        Glow.Apply()
+        if not (cv.SoftTargetInteract == "3" and cv.SoftTargetIconGameObject == "1" and cv.SoftTargetNameplateInteract == "1" and cv.SoftTargetInteractRange == "15") then
+            fail("the interact targeting is not set for the glow")
+        end
+        local kept = db.objectGlowCVars or {}
+        if not (kept.SoftTargetInteract == "1" and kept.SoftTargetInteractRange == "10") then fail("the player's own targeting was not kept") end
+        ns.Set("qol.objectGlowRange", 22)
+        if cv.SoftTargetInteractRange ~= "22" then fail("the range setting does not reach the targeting: " .. tostring(cv.SoftTargetInteractRange)) end
+
+        -- A quest object (by id), a herb, an ore and a plain object, as the targeting picks them.
+        local Q, G = ns.QuestDB, ns.Gather
+        local byId, byName, kindOf, kindRec = Q.ObjectivesForObject, Q.ObjectivesForObjectName, G.KindOf, G.Kind
+        local need = { { q = 4242, kind = "object", cur = 2, max = 8, done = false } }
+        Q.ObjectivesForObject = function(id) return id == 900001 and need or nil end
+        Q.ObjectivesForObjectName = function(name) return name == "Lost Crate" and { { q = 4243, cur = 0, max = 1 } } or nil end
+        G.KindOf = function(id) return (id == 900002 and 1) or (id == 900003 and 2) or nil end
+        G.Kind = function(k) return k == 1 and { line = 182 } or k == 2 and { line = 186 } or nil end
+        local names = { [900001] = "Bundle of Wood", [900002] = "Peacebloom", [900003] = "Copper Vein", [900004] = "Mailbox", [900005] = "Lost Crate" }
+        local picked
+        _G.UnitName = function(u) if u == "softinteract" then return names[picked] end return realUnitName and realUnitName(u) end
+        _G.C_NamePlate = nil
+        local function pick(id)
+            picked = id
+            fire("PLAYER_SOFT_INTERACT_CHANGED", nil, id and ("GameObject-0-1-2-3-" .. id .. "-0000ABCD") or nil)
+            local f = Glow.Frame()
+            return f and f:IsShown() and select(3, Glow.Current()) or nil, f
+        end
+        local kind, f = pick(900001)
+        if kind ~= "quest" then fail("a quest object does not glow as a quest: " .. tostring(kind)) end
+        if f and f.onPlate then fail("without a nameplate the glow should be the card on screen") end
+        if f and not tostring(f.Note:GetText()):find("2/8", 1, true) then fail("the quest glow does not show the progress: " .. tostring(f.Note:GetText())) end
+        if pick(900005) ~= "quest" then fail("a quest object named in the log (no id) does not glow") end
+        if pick(900002) ~= "herb" then fail("a herb does not glow as a herb") end
+        if pick(900003) ~= "ore" then fail("an ore does not glow as an ore") end
+        if pick(900004) then fail("a plain object glows") end
+        need[1].done = true
+        if pick(900001) then fail("an object of a finished objective glows") end
+        need[1].done = false
+        ns.Set("qol.objectGlowGather", false)
+        if pick(900002) then fail("a herb glows with Herbs and ore off") end
+        ns.Set("qol.objectGlowGather", true)
+        ns.Set("qol.objectGlowQuest", false)
+        if pick(900001) then fail("a quest object glows with Quest objects off") end
+        ns.Set("qol.objectGlowQuest", true)
+        -- On a nameplate the glow sits on it.
+        local plate = CreateFrame("Frame", nil, UIParent)
+        _G.C_NamePlate = { GetNamePlateForUnit = function(u) return u == "softinteract" and plate or nil end }
+        kind, f = pick(900001)
+        if not (kind == "quest" and f.onPlate) then fail("the glow does not sit on the object's nameplate") end
+        if pick(nil) then fail("the glow stays when nothing is picked") end
+
+        -- Off: no glow, and the player's own targeting is back.
+        ns.Set("qol.objectGlow", false)
+        if pick(900001) then fail("an object glows with the option off") end
+        if not (cv.SoftTargetInteract == "1" and cv.SoftTargetIconGameObject == "0" and cv.SoftTargetInteractRange == "10") then
+            fail("the player's own targeting is not back: " .. tostring(cv.SoftTargetInteract) .. " " .. tostring(cv.SoftTargetInteractRange))
+        end
+        if db.objectGlowCVars then fail("the kept targeting was not cleared") end
+        ns.Set("qol.objectGlow", true)
+        ns.Set("qol.objectGlowRange", nil)
+        Q.ObjectivesForObject, Q.ObjectivesForObjectName, G.KindOf, G.Kind = byId, byName, kindOf, kindRec
+        _G.C_CVar, _G.UnitName, _G.C_NamePlate = realCVar, realUnitName, realPlate
+        pick(nil)
+        print("object glow: checked")
+    end
+end
+
 print(failures == 0 and "OK" or (failures .. " failure(s)"))
 os.exit(failures == 0 and 0 or 1)

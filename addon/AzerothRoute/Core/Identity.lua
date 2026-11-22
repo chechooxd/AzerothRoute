@@ -115,6 +115,20 @@ local ES = {
 	["Marble"] = "Mármol",
 	["White marble with beige veins and gold threads, gold trim and dark ink."] =
 		"Mármol blanco con vetas beige e hilos dorados, bordes dorados y tinta oscura.",
+	-- World objects that glow (QoL/ObjectGlow.lua and its settings).
+	["World objects"] = "Objetos del mundo",
+	["Make world objects glow"] = "Hacer brillar objetos del mundo",
+	["When you face an object a quest still needs, or a herb or ore vein, near you, it glows with an icon and its name. The game only tells addons about the nearest object in front of you, so that one glows. AzerothRoute turns on the game's interact targeting for objects while this is on and puts your own settings back when you turn it off."] =
+		"Cuando miras un objeto cercano que una misión todavía necesita, o una hierba o veta de mineral, brilla con un ícono y su nombre. El juego solo informa a los addons del objeto más cercano frente a ti, así que ese es el que brilla. Mientras esto está activo, AzerothRoute activa la selección de interacción del juego para objetos y devuelve tus ajustes al desactivarlo.",
+	["Quest objects"] = "Objetos de misión",
+	["Objects an open quest still needs glow gold, with the quest and your progress under them."] =
+		"Los objetos que una misión abierta todavía necesita brillan dorados, con la misión y tu progreso debajo.",
+	["Herbs and ore"] = "Hierbas y minerales",
+	["Herbs glow green and ore veins copper."] = "Las hierbas brillan en verde y las vetas de mineral en cobre.",
+	["Detection range"] = "Distancia de detección",
+	["How far away an object can be for the game to pick it."] = "Qué tan lejos puede estar un objeto para que el juego lo detecte.",
+	["Herb"] = "Hierba",
+	["Ore"] = "Mineral",
 	["Terminal"] = "Terminal",
 	["A neon code terminal: phosphor green text on black under scanlines, cyan edges and HUD corners."] =
 		"Una terminal de código de neón: texto verde fósforo sobre negro con líneas de escaneo, bordes cian y esquinas de HUD.",

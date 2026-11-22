@@ -23,9 +23,16 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
   bar, the score on a line of its own under it, the keys under the game) and Rune Fall has larger stones (22 px).
 - Three skins for the new look, in Options > Theme and on the welcome looks next to AzerothRoute's own: Classic (the
   game's red buttons, its gold-trimmed dialog border on windows and tooltip border on menus, gold titles, dark
-  grounds, square corners) and Marble (white marble with beige veins and gold threads, gold edges, an antique gold
+  grounds, square corners), Marble (white marble with beige veins and gold threads, gold edges, an antique gold
   accent and dark ink) and Terminal (a neon code terminal: phosphor green text on black under scanlines, cyan edges
   and HUD brackets on the corners). All keep the top bar and tabs. They ship inside the main folder: no skin folder to install.
+- World objects that glow: the object in front of you that the game's interact targeting picks glows gold with a
+  quest icon, its name, the quest and your progress when an open quest still needs it (wood, crates, scattered
+  parts...), green for a herb and copper for an ore vein. The glow sits on the object's nameplate, or on a small card
+  under the middle of the screen. The game only tells addons about that one object, so only the nearest object in
+  front of you glows. Options > Questing > Quests > World objects: on or off, quest objects, herbs and ore, and the
+  detection range. While on, AzerothRoute sets the game's interact targeting for objects and puts your own settings
+  back when you turn it off.
 
 ### Changed
 - The guide step icons and the map icons are AzerothRoute's own drawings in place of Polestar's; flight is a
