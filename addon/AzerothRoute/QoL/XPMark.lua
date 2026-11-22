@@ -57,9 +57,45 @@ local function xpBar()
 		local bar = type(bars) == "table" and bars[exp]
 		if type(bar) == "table" and bar.StatusBar and bar.IsShown and bar:IsShown() then return bar end
 	end
-	return nil
+	return Mark.ClassicBar()
 end
 Mark.Bar = xpBar
+
+-- AzerothRoute: without the game's tracking bars, the classic XP bar (MainMenuExpBar), or a UI addon's own,
+-- found by its values: a shown StatusBar, named like an XP bar, holding the player's XP out of the level's.
+-- The search runs once every 30 seconds at most while none is found; the bar found is kept.
+local found, searched
+local function isXPBar(sb)
+	local ok, kind = pcall(sb.GetObjectType, sb)
+	if not ok or kind ~= "StatusBar" then return false end
+	local okShown, shown = pcall(sb.IsShown, sb)
+	if not (okShown and shown) then return false end
+	local xp = readable(UnitXP and UnitXP("player"))
+	local limit = readable(UnitXPMax and UnitXPMax("player"))
+	if type(xp) ~= "number" or type(limit) ~= "number" or limit <= 0 then return false end
+	local okRange, _, hi = pcall(sb.GetMinMaxValues, sb)
+	local okValue, value = pcall(sb.GetValue, sb)
+	return okRange and okValue and readable(hi) == limit and readable(value) == xp
+end
+Mark.IsXPBar = isXPBar
+function Mark.ClassicBar()
+	local classic = _G.MainMenuExpBar
+	if type(classic) == "table" and classic.IsShown and classic:IsShown() then return classic end
+	if found and found:IsShown() then return found end
+	local now = GetTime and GetTime() or 0
+	if searched and now - searched < 30 then return nil end
+	searched = now
+	for name, v in pairs(_G) do
+		if type(name) == "string" and type(v) == "table" and type(v.GetObjectType) == "function"
+			and (name:find("[Xx][Pp]") or name:find("[Ee]xp")) and isXPBar(v) then
+			found = v
+			return v
+		end
+	end
+	return nil
+end
+-- The part of the bar its fill covers: the tracking bar's StatusBar, or the bar itself.
+function Mark.Fill(bar) return type(bar.StatusBar) == "table" and bar.StatusBar or bar end
 
 -- PLAYER_LEVEL_UP's level: UnitLevel can lag the event.
 local levelSeen = 0
@@ -152,10 +188,10 @@ local function attach(bar)
 		frame.bar = bar
 		frame:SetParent(bar)
 		frame:ClearAllPoints()
-		frame:SetAllPoints(bar.StatusBar)
+		frame:SetAllPoints(Mark.Fill(bar))
 	end
 	frame:SetFrameStrata("MEDIUM")
-	local over = bar.OverlayFrame
+	local over = type(bar.OverlayFrame) == "table" and bar.OverlayFrame or nil
 	frame:SetFrameLevel(((over and over:GetFrameLevel()) or bar:GetFrameLevel() or 1) + 1)
 	return frame
 end

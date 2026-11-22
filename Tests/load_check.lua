@@ -1369,5 +1369,54 @@ do
     end
 end
 
+-- 32. The XP bar's marks on a classic-style XP bar: without the game's tracking bars, the guide's level
+-- mark goes on MainMenuExpBar, over its fill, or on a UI addon's own XP bar found by its values (a shown
+-- StatusBar holding the player's XP out of the level's); a bar holding other values is not taken.
+do
+    local Mark, QuestXP = ns.QoL and ns.QoL.XPMark, ns.QoL and ns.QoL.QuestXP
+    if not (Mark and Mark.ClassicBar) then fail("no classic XP bar support") else
+        local realXP, realMax, realLevel, realSTB = _G.UnitXP, _G.UnitXPMax, _G.UnitLevel, _G.StatusTrackingBarManager
+        local E = ns.Engine
+        local realTarget = E.LevelTarget
+        _G.UnitXP, _G.UnitXPMax, _G.UnitLevel = function() return 400 end, function() return 1000 end, function() return 12 end
+        _G.StatusTrackingBarManager = nil
+        E.LevelTarget = function() return 14 end
+        local function xpLike(bar, value, hi)
+            bar.GetMinMaxValues = function() return 0, hi end
+            bar.GetValue = function() return value end
+            bar:Show()
+            return bar
+        end
+        local classic = xpLike(CreateFrame("StatusBar", "MainMenuExpBar", UIParent), 400, 1000)
+        if Mark.Bar() ~= classic then fail("the classic XP bar is not found") end
+        Mark.Refresh()
+        local m = Mark.frame
+        if not (m and m:IsShown()) then fail("no guide mark on the classic XP bar") end
+        if m and m.bar ~= classic then fail("the guide mark is not on the classic XP bar") end
+        if m and not tostring(m.Label:GetText()):find("14", 1, true) then fail("the guide mark does not name the level: " .. tostring(m.Label:GetText())) end
+        if QuestXP and QuestXP.Refresh then
+            local ok, err = pcall(QuestXP.Refresh)
+            if not ok then fail("completed quest XP fails on the classic XP bar: " .. tostring(err)) end
+        end
+        -- A UI addon's own bar, found by its values; a bar of other values is not taken.
+        classic:Hide()
+        _G.MainMenuExpBar = nil
+        xpLike(CreateFrame("StatusBar", "SomeUIRepBar", UIParent), 400, 1000) -- not named like an XP bar
+        xpLike(CreateFrame("StatusBar", "SomeUIHonorXPBar", UIParent), 3, 10)  -- named so, other values
+        local own = xpLike(CreateFrame("StatusBar", "SomeUIExpBar", UIParent), 400, 1000)
+        -- The search waits 30 seconds after the last one (the login's found nothing here).
+        local realTime = _G.GetTime
+        _G.GetTime = function() return (realTime and realTime() or 0) + 3600 end
+        if Mark.ClassicBar() ~= own then fail("a UI addon's XP bar is not found by its values") end
+        _G.GetTime = realTime
+        own:Hide()
+        _G.SomeUIExpBar, _G.SomeUIRepBar, _G.SomeUIHonorXPBar = nil, nil, nil
+        _G.UnitXP, _G.UnitXPMax, _G.UnitLevel, _G.StatusTrackingBarManager = realXP, realMax, realLevel, realSTB
+        E.LevelTarget = realTarget
+        Mark.Refresh()
+        print("classic xp bar: checked")
+    end
+end
+
 print(failures == 0 and "OK" or (failures .. " failure(s)"))
 os.exit(failures == 0 and 0 or 1)

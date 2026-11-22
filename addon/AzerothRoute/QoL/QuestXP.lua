@@ -90,15 +90,16 @@ local function attach(bar)
 		frame.bar = bar
 		frame:SetParent(bar)
 		frame:ClearAllPoints()
-		frame:SetAllPoints(bar.StatusBar)
+		frame:SetAllPoints(type(bar.StatusBar) == "table" and bar.StatusBar or bar)
 	end
 	-- Strata and levels only where they differ: each set re-sorts the frame
 	-- and its children, and a refresh runs on every kill's XP.
 	if frame:GetFrameStrata() ~= "MEDIUM" then frame:SetFrameStrata("MEDIUM") end
-	local overlay = bar.OverlayFrame
+	local overlay = type(bar.OverlayFrame) == "table" and bar.OverlayFrame or nil
 	local level = max(1, (overlay and overlay:GetFrameLevel() or bar:GetFrameLevel()) - 1)
 	if frame:GetFrameLevel() ~= level then frame:SetFrameLevel(level) end
-	local tick = type(bar.ExhaustionTick) == "table" and bar.ExhaustionTick or nil
+	local tick = type(bar.ExhaustionTick) == "table" and bar.ExhaustionTick
+		or (bar == _G.MainMenuExpBar and type(_G.ExhaustionTick) == "table" and _G.ExhaustionTick) or nil
 	local rested = frame.Rested
 	local strata = frame:GetFrameStrata()
 	if rested:GetFrameStrata() ~= strata then rested:SetFrameStrata(strata) end
@@ -198,6 +199,8 @@ function QuestXP.Refresh()
 	hookBars()
 	local bar = QoL.XPMark.Bar()
 	if not bar then if frame then frame:Hide() end; return end
+	-- A classic-style bar is hooked as the tracking bars are (hookBars).
+	if type(bar.StatusBar) ~= "table" and bar.HookScript then hook(bar) end
 	local xp = C.Readable(UnitXP and UnitXP("player"))
 	local limit = C.Readable(UnitXPMax and UnitXPMax("player"))
 	local level = C.Readable(UnitLevel and UnitLevel("player"))

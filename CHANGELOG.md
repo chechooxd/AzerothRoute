@@ -45,6 +45,10 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 - Polestar's looks, skin checks and skin folders (AzerothRoute_Looks, AzerothRoute_SkinAPI, AzerothRoute_Skin_*)
   are no longer shipped: only AzerothRoute's own look is offered. install.sh deletes old copies.
 
+### Fixed
+- The guide's level mark ("Guide: 14 (2 levels)") and completed quest XP now show on a classic-style XP bar
+  (MainMenuExpBar) and on a UI addon's own XP bar, not only on the game's tracking bars.
+
 ## [0.6.0] - 2026-11-21
 
 ### Changed

@@ -284,6 +284,96 @@ end
         replace = "Quests\\Options.lua\r\nQoL\\ObjectGlowOptions.lua\r\n",
         why = "loads the World objects settings",
     },
+    -- The XP bar's marks (the guide's level, completed quest XP) on a classic-style XP bar too (user,
+    -- 2026-11-22: "en la barra de experiencia no se ve el dato que generamos", a screenshot of a classic bar):
+    -- Polestar only looked for the game's tracking bars (StatusTrackingBarManager).
+    {
+        file = "AzerothRoute/QoL/XPMark.lua",
+        find = [=[		if type(bar) == "table" and bar.StatusBar and bar.IsShown and bar:IsShown() then return bar end
+	end
+	return nil
+end
+Mark.Bar = xpBar]=],
+        replace = [=[		if type(bar) == "table" and bar.StatusBar and bar.IsShown and bar:IsShown() then return bar end
+	end
+	return Mark.ClassicBar()
+end
+Mark.Bar = xpBar
+
+-- AzerothRoute: without the game's tracking bars, the classic XP bar (MainMenuExpBar), or a UI addon's own,
+-- found by its values: a shown StatusBar, named like an XP bar, holding the player's XP out of the level's.
+-- The search runs once every 30 seconds at most while none is found; the bar found is kept.
+local found, searched
+local function isXPBar(sb)
+	local ok, kind = pcall(sb.GetObjectType, sb)
+	if not ok or kind ~= "StatusBar" then return false end
+	local okShown, shown = pcall(sb.IsShown, sb)
+	if not (okShown and shown) then return false end
+	local xp = readable(UnitXP and UnitXP("player"))
+	local limit = readable(UnitXPMax and UnitXPMax("player"))
+	if type(xp) ~= "number" or type(limit) ~= "number" or limit <= 0 then return false end
+	local okRange, _, hi = pcall(sb.GetMinMaxValues, sb)
+	local okValue, value = pcall(sb.GetValue, sb)
+	return okRange and okValue and readable(hi) == limit and readable(value) == xp
+end
+Mark.IsXPBar = isXPBar
+function Mark.ClassicBar()
+	local classic = _G.MainMenuExpBar
+	if type(classic) == "table" and classic.IsShown and classic:IsShown() then return classic end
+	if found and found:IsShown() then return found end
+	local now = GetTime and GetTime() or 0
+	if searched and now - searched < 30 then return nil end
+	searched = now
+	for name, v in pairs(_G) do
+		if type(name) == "string" and type(v) == "table" and type(v.GetObjectType) == "function"
+			and (name:find("[Xx][Pp]") or name:find("[Ee]xp")) and isXPBar(v) then
+			found = v
+			return v
+		end
+	end
+	return nil
+end
+-- The part of the bar its fill covers: the tracking bar's StatusBar, or the bar itself.
+function Mark.Fill(bar) return type(bar.StatusBar) == "table" and bar.StatusBar or bar end]=],
+        why = "the guide mark on a classic-style XP bar",
+    },
+    {
+        file = "AzerothRoute/QoL/XPMark.lua",
+        find = "\t\tframe:SetAllPoints(bar.StatusBar)\n",
+        replace = "\t\tframe:SetAllPoints(Mark.Fill(bar))\n",
+        why = "the guide mark over a classic bar's fill",
+    },
+    {
+        file = "AzerothRoute/QoL/QuestXP.lua",
+        find = "\t\tframe:SetAllPoints(bar.StatusBar)\n",
+        replace = "\t\tframe:SetAllPoints(type(bar.StatusBar) == \"table\" and bar.StatusBar or bar)\n",
+        why = "completed quest XP over a classic bar's fill",
+    },
+    {
+        file = "AzerothRoute/QoL/QuestXP.lua",
+        find = "\tlocal tick = type(bar.ExhaustionTick) == \"table\" and bar.ExhaustionTick or nil\n",
+        replace = "\tlocal tick = type(bar.ExhaustionTick) == \"table\" and bar.ExhaustionTick\n\t\tor (bar == _G.MainMenuExpBar and type(_G.ExhaustionTick) == \"table\" and _G.ExhaustionTick) or nil\n",
+        why = "the classic bar's rested tick",
+    },
+    {
+        file = "AzerothRoute/QoL/QuestXP.lua",
+        find = "\tlocal bar = QoL.XPMark.Bar()\n\tif not bar then if frame then frame:Hide() end; return end\n",
+        replace = "\tlocal bar = QoL.XPMark.Bar()\n\tif not bar then if frame then frame:Hide() end; return end\n\t-- A classic-style bar is hooked as the tracking bars are (hookBars).\n\tif type(bar.StatusBar) ~= \"table\" and bar.HookScript then hook(bar) end\n",
+        why = "a classic bar's show and tooltip hooks",
+    },
+    -- A classic bar has no OverlayFrame (a UI addon's may hold anything there): only a frame's level is read.
+    {
+        file = "AzerothRoute/QoL/XPMark.lua",
+        find = "\tlocal over = bar.OverlayFrame\n",
+        replace = "\tlocal over = type(bar.OverlayFrame) == \"table\" and bar.OverlayFrame or nil\n",
+        why = "a classic bar without an overlay frame",
+    },
+    {
+        file = "AzerothRoute/QoL/QuestXP.lua",
+        find = "\tlocal overlay = bar.OverlayFrame\n",
+        replace = "\tlocal overlay = type(bar.OverlayFrame) == \"table\" and bar.OverlayFrame or nil\n",
+        why = "a classic bar without an overlay frame",
+    },
     -- A third (user, 2026-11-22: "agrega otra skin tipo terminal code, cyberpunk").
     {
         file = "AzerothRoute/Theme/SkinTerminal.lua", create = true, replace = read("Theme/SkinTerminal.lua"),
