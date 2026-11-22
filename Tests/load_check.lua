@@ -1176,8 +1176,14 @@ do
         local down = win:GetScript("OnKeyDown")
         down(win, "LEFT")
         if #game.keys ~= 0 then fail("a key reached a game that has not started") end
+        G.lastSound = nil
         down(win, "SPACE")
         if G.State() ~= "run" then fail("Space does not start the game") end
+        if G.lastSound ~= "start" then fail("starting a game makes no sound") end
+        G.SetMuted(true)
+        if G.Sound("kill") ~= nil then fail("a muted game still plays sounds") end
+        G.SetMuted(false)
+        if not G.Muted() and G.Sound("hurt") == nil then fail("a game sound does not play") end
         down(win, "LEFT")
         if game.keys[1] ~= "LEFT" then fail("a key does not reach the running game") end
         down(win, "P")

@@ -16,6 +16,8 @@
 --   host.Best()           the best score of this game so far
 --   host.Media(name)      the path of Media/Arcade/<name>
 --   host.Color(name)      r, g, b of a theme colour ("accent", "text", "textDim", "danger", ...)
+--   host.Sound(name)      plays one of the game sounds below (the client's own sound kits, on the effects
+--                         channel, so the game's effects volume applies), unless the player muted the games
 --
 --   Games.Open(id)  Games.Close() -> closed   Games.IsOpen()   Games.Current() -> id   Games.List() -> defs
 --   Games.State() -> "ready" | "run" | "pause" | "over" | nil
@@ -33,6 +35,29 @@ local MEDIA = "Interface\\AddOns\\" .. ADDON .. "\\Media\\Arcade\\"
 local win -- the window
 local slots = {} -- id -> { game, view, state, score }
 local current -- id of the game shown
+
+-- The game sounds: the client's own sound kits by name (SOUNDKIT), with their ids when the table lacks
+-- one. A sound plays at most once in GAP seconds (a burst of hits stays one sound).
+local SOUNDS = {
+    start = { "IG_QUEST_LIST_OPEN", 875 },
+    pause = { "IG_MAINMENU_OPTION_CHECKBOX_OFF", 857 },
+    over = { "IG_QUEST_FAILED", 847 },
+    best = { "IG_QUEST_LIST_COMPLETE", 878 },
+    turn = { "IG_MAINMENU_OPTION_CHECKBOX_ON", 856 },
+    land = { "IG_ABILITY_PAGE_TURN", 836 },
+    slam = { "IG_BACKPACK_CLOSE", 863 },
+    clear = { "LOOT_WINDOW_COIN_SOUND", 120 },
+    big = { "IG_QUEST_LIST_COMPLETE", 878 },
+    levelup = { "LEVELUPSOUND", 888 },
+    throw = { "IG_CHARACTER_INFO_TAB", 841 },
+    hit = { "IG_MAINMENU_OPTION_CHECKBOX_ON", 856 },
+    kill = { "LOOT_WINDOW_COIN_SOUND", 120 },
+    hurt = { "IG_CREATURE_AGGRO_SELECT", 873 },
+    wave = { "MAP_PING", 3175 },
+}
+local GAP = 0.05
+local lastPlayed = {}
+Games.SOUNDS = SOUNDS
 
 local function store()
     local db = _G.AzerothRouteDB
@@ -53,6 +78,34 @@ function Games.List()
     local out = {}
     for _, id in ipairs(Games.order) do out[#out + 1] = Games.defs[id] end
     return out
+end
+
+function Games.Muted()
+    local s = store()
+    return s ~= nil and s.mute == true
+end
+
+function Games.SetMuted(on)
+    local s = store()
+    if s then s.mute = on and true or nil end
+    if win and win.Mute then
+        win.Mute.Icon:SetAlpha(on and 0.35 or 1)
+        win.Mute.psTip = on and L["Sound off"] or L["Sound on"]
+    end
+end
+
+-- Plays a game sound by name. -> the sound kit id played, or nil (muted, unknown, too soon).
+function Games.Sound(name)
+    local def = SOUNDS[name]
+    if not def or Games.Muted() then return nil end
+    local now = GetTime and GetTime() or 0
+    if lastPlayed[name] and now - lastPlayed[name] < GAP then return nil end
+    lastPlayed[name] = now
+    local kits = _G.SOUNDKIT
+    local id = type(kits) == "table" and tonumber(kits[def[1]]) or def[2]
+    Games.lastSound = name
+    if type(PlaySound) == "function" then pcall(PlaySound, id, "SFX") end
+    return id
 end
 
 function Games.Best(id)
@@ -115,8 +168,10 @@ local function build()
     f.Bar = bar
     f.Close = W.IconButton(bar, "close", 22, L["Close"], function() Games.Close() end)
     f.Close:SetPoint("RIGHT", bar, "RIGHT", -6, 0)
+    f.Mute = W.IconButton(bar, "speaker", 22, L["Sound on"], function() Games.SetMuted(not Games.Muted()) end)
+    f.Mute:SetPoint("RIGHT", f.Close, "LEFT", -2, 0)
     f.Score = W.Text(bar, "number", "accent")
-    f.Score:SetPoint("RIGHT", f.Close, "LEFT", -10, 0)
+    f.Score:SetPoint("RIGHT", f.Mute, "LEFT", -10, 0)
     f.Score:SetJustifyH("RIGHT")
     f.Tabs = {}
 
@@ -180,10 +235,12 @@ local function slot(id)
             s.score = score or s.score
             s.newBest = setBest(id, s.score)
             s.state = "over"
+            Games.Sound(s.newBest and "best" or "over")
             if current == id then paint() end
         end,
         Best = function() return Games.Best(id) end,
         Media = function(name) return MEDIA .. name end,
+        Sound = function(name) return Games.Sound(name) end,
         Color = function(name)
             local T = ns.Theme
             if T and T.Color then return T.Color(name) end
@@ -241,6 +298,7 @@ function keyDown(key)
     if key == "ESCAPE" then Games.Close() return end
     if key == "P" and (s.state == "run" or s.state == "pause") then
         s.state = s.state == "run" and "pause" or "run"
+        Games.Sound(s.state == "pause" and "pause" or "start")
         paint()
         return
     end
@@ -251,6 +309,7 @@ function keyDown(key)
                 if s.game.Reset then s.game:Reset() end
             end
             s.state = "run"
+            Games.Sound("start")
             paint()
         end
         return
@@ -291,6 +350,7 @@ function Games.Open(id)
         win:Show()
     end
     takeKeys(true)
+    Games.SetMuted(Games.Muted())
     Games.last = id
     return true
 end

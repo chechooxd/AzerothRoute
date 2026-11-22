@@ -266,16 +266,20 @@ local function New(view, host)
     end
 
     -- The piece becomes part of the well; full rows go; the next piece comes in or the game ends.
-    local function lock()
+    local function lock(slammed)
         local cells = ROT[kind][rot]
         for n = 1, #cells, 2 do
             board[(py + cells[n + 1] - 1) * COLS + px + cells[n]] = kind
         end
         local cleared = clearRows()
         if cleared > 0 then
+            local was = level
             score = score + LINE_SCORE[cleared > 4 and 4 or cleared] * level
             lines = lines + cleared
             setLevel()
+            host.Sound(level > was and "levelup" or cleared >= 4 and "big" or "clear")
+        else
+            host.Sound(slammed and "slam" or "land")
         end
         host.Score(score)
         local k = nextKind
@@ -319,6 +323,7 @@ local function New(view, host)
             if fits(kind, r, px + dx, py) then
                 rot, px = r, px + dx
                 dirty = true
+                host.Sound("turn")
                 return true
             end
         end
@@ -330,7 +335,7 @@ local function New(view, host)
         local d = 0
         while fits(kind, rot, px, py + 1) do py, d = py + 1, d + 1 end
         score = score + 2 * d
-        lock()
+        lock(true)
         return true
     end
 

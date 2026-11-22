@@ -195,6 +195,7 @@ function Game:Fire()
             b.tex:Show()
             place(b.tex, self.canvas, b.x, b.y)
             self.cool = BOLT_COOLDOWN
+            self.host.Sound("throw")
             return
         end
     end
@@ -227,6 +228,7 @@ end
 -- The rider is hit: a life lost, a blink of safety, or the end.
 function Game:Hurt()
     self.lives = self.lives - 1
+    self.host.Sound("hurt")
     self:Lives()
     self:Spark(self.player.x, self.player.y)
     if self.lives <= 0 then
@@ -281,6 +283,7 @@ function Game:Wave(n)
     end
     self.diveIn, self.dropIn = 3.5, 2.5
     self.banner:SetText(L["Wave %d"]:format(n))
+    if n > 1 then self.host.Sound("wave") end
     self.banner:SetAlpha(1)
     self.banner:Show()
     self.bannerT = BANNER_TIME
@@ -412,10 +415,12 @@ function Game:Bolts(dt)
                             off(b)
                             e.hp = e.hp - 1
                             if e.hp <= 0 then
+                                self.host.Sound("kill")
                                 self:Spark(e.x, e.y)
                                 off(e)
                                 self:Points(k.points * (e.mode == "dive" and 2 or 1))
                             else
+                                self.host.Sound("hit")
                                 tint(e.tex, HURT)
                             end
                             break

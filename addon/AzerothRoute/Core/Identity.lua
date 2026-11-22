@@ -106,6 +106,8 @@ local ES = {
 	["Hold off the bats and harpies from your gryphon."] = "Detén a los murciélagos y arpías desde tu grifo.",
 	["Arrows or A/D: fly   Space: throw"] = "Flechas o A/D: volar   Espacio: lanzar",
 	["Wave %d"] = "Oleada %d",
+	["Sound on"] = "Sonido activado",
+	["Sound off"] = "Sonido desactivado",
 }
 
 local loc = GetLocale and GetLocale()
