@@ -48,6 +48,8 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 ### Fixed
 - The guide's level mark ("Guide: 14 (2 levels)") and completed quest XP now show on a classic-style XP bar
   (MainMenuExpBar) and on a UI addon's own XP bar, not only on the game's tracking bars.
+- The guide menu's favourite star sits in the picture's corner on a dark ground of its own; the ground no longer
+  stretches over the empty spot of the old close button, which is in the top bar now.
 
 ## [0.6.0] - 2026-11-21
 

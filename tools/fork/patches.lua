@@ -140,6 +140,25 @@ local REQUIRED = { AzerothRoute_Guides = true, AzerothRoute_Codex = true, Azerot
         replace = "\twin.Search:Show() -- AzerothRoute: the global search is there in every section\n",
         why = "the global search shows in every section",
     },
+    -- The hub's close lives in the top bar (Theme/Battlenet.lua: BarClose, the old one hidden), so the star
+    -- takes the art's corner and its dark ground holds the star alone (user, 2026-11-22: "eso deberia ser
+    -- solo para la estrella (marcar como favorito) ya que la x de antesx esta fuera").
+    {
+        file = "AzerothRoute/UI/Picker.lua",
+        find = "\td.Star:SetPoint(\"RIGHT\", win.Close, \"LEFT\", -4, 0)\n",
+        replace = "\tif rawget(win, \"BarClose\") then -- AzerothRoute: the close is in the top bar\n"
+            .. "\t\td.Star:SetPoint(\"TOPRIGHT\", d.Art, \"TOPRIGHT\", -12, -12)\n"
+            .. "\telse\n"
+            .. "\t\td.Star:SetPoint(\"RIGHT\", win.Close, \"LEFT\", -4, 0)\n"
+            .. "\tend\n",
+        why = "the favourite star takes the art's corner when the close is in the top bar",
+    },
+    {
+        file = "AzerothRoute/UI/Picker.lua",
+        find = "\t\tlocal alone = Theme.Kit() ~= nil\n",
+        replace = "\t\tlocal alone = Theme.Kit() ~= nil or rawget(win, \"BarClose\") ~= nil -- AzerothRoute\n",
+        why = "the star's dark ground holds the star alone when the close is in the top bar",
+    },
     -- Quest icons on enemy nameplates: on by default; the sword to kill, the bag to loot, as the target list
     -- (user, 2026-11-21: "que la barra del enemigo salga el saquito o espada segun lo que se requiera").
     {

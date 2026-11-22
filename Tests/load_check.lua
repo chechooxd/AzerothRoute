@@ -1023,8 +1023,27 @@ end
 do
     local P = ns.UI and ns.UI.Picker
     if not (P and ns.UI.ShowPicker and P.ShowSection) then fail("no hub to search from") else
+        -- The mock keeps no sizes or points: keep the painters the hub registers to run them on a spy.
+        local W, painted = ns.Widgets, {}
+        local painter = W.Painter
+        W.Painter = function(obj, fn, ...) painted[obj] = fn; return painter(obj, fn, ...) end
         pcall(ns.UI.ShowPicker)
+        W.Painter = painter
         local win = P.frame
+        -- The close is in the top bar, so the star's dark ground holds the star alone.
+        local d = P.details
+        local paint = d and d.Scrim and painted[d.Scrim]
+        if not (win and rawget(win, "BarClose") and d and d.Star and paint) then fail("the hub has no favourite star or top bar close")
+        else
+            local width, anchor
+            local spy = setmetatable({
+                SetWidth = function(_, w) width = w end,
+                SetPoint = function(_, _, rel) anchor = rel end,
+            }, { __index = function() return function() end end })
+            paint(spy)
+            if width ~= 36 then fail("the star's ground still spans the old close: " .. tostring(width)) end
+            if anchor ~= d.Star then fail("the star's ground is not on the star") end
+        end
         local box = win and win.Search
         local changed = box and box._scripts and box._scripts.OnTextChanged
         if not changed then fail("the hub's search box has no text handler") else

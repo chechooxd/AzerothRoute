@@ -1294,7 +1294,11 @@ local function buildDetails()
 	d.Star = W.IconButton(d.Art.Over, "star", 28, L["Add to favourites"], function()
 		P.ToggleFavorite(P.Selected())
 	end, 14)
-	d.Star:SetPoint("RIGHT", win.Close, "LEFT", -4, 0)
+	if rawget(win, "BarClose") then -- AzerothRoute: the close is in the top bar
+		d.Star:SetPoint("TOPRIGHT", d.Art, "TOPRIGHT", -12, -12)
+	else
+		d.Star:SetPoint("RIGHT", win.Close, "LEFT", -4, 0)
+	end
 	-- On a bright painting the glyphs need a dark ground of their own: 4 past
 	-- them at either end, 2 above and below. In the game's looks the close is
 	-- the frame's own, on its corner (W.FrameClose), and the ground holds the
@@ -1303,7 +1307,7 @@ local function buildDetails()
 	W.Painter(d.Scrim, function(p)
 		local r, g, b = Theme.Color("scrim")
 		p:SetColor(r, g, b, 0.6)
-		local alone = Theme.Kit() ~= nil
+		local alone = Theme.Kit() ~= nil or rawget(win, "BarClose") ~= nil -- AzerothRoute
 		p:SetWidth(alone and 36 or 68)
 		p:ClearAllPoints()
 		p:SetPoint("TOPRIGHT", alone and d.Star or win.Close, "TOPRIGHT", 4, 2)
