@@ -885,9 +885,12 @@ do
         if rawget(plain, "Continue") then fail("a window without the rail got the Continue guide button") end
         -- Settings switches keep the theme's own colours (no fixed blue).
         if B.PRIMARY then fail("a fixed Battle.net blue still overrides the theme") end
-        -- Only AzerothRoute's own design: one theme offered, any other saved choice drawn as it.
+        -- Only AzerothRoute's own designs: its look and its two skins offered (section 30), any other saved
+        -- choice drawn as its look.
         local choices = Theme.SkinChoices()
-        if not (#choices == 1 and choices[1].value == "polestar") then fail("other looks still offered: " .. #choices) end
+        local offered = {}
+        for _, c in ipairs(choices) do offered[#offered + 1] = c.value end
+        if table.concat(offered, ",") ~= "polestar,classicwow,marble" then fail("looks offered: " .. table.concat(offered, ",")) end
         local saved = ns.Get("ui.skin")
         ns.Set("ui.skin", "halo")
         if Theme.SkinId() ~= "polestar" then fail("a saved Polestar look is still drawn: " .. tostring(Theme.SkinId())) end
@@ -1212,6 +1215,63 @@ do
         for k, id in ipairs(G.order) do if id == "zz_test" then table.remove(G.order, k) break end end
         print("flight games: checked")
     end
+end
+
+-- 30. AzerothRoute's two skins over the new UI: Classic (the game's red buttons, its gold dialog
+-- border, square corners) and Marble (the marble art, gold edges). Both register through the Skin
+-- API's checks, now in the core (no skin folder), are drawn when chosen, paint every kind of frame
+-- without failing, and give the rounded look back when the player returns to AzerothRoute's own.
+do
+    local Theme, B = ns.Theme, ns.Theme and ns.Theme.Battlenet
+    if read(ROOT .. "/AzerothRoute_SkinAPI/AzerothRoute_SkinAPI.toc") then fail("the skin checks still ship as a folder") end
+    if not read(ROOT .. "/AzerothRoute/Theme/SkinCheck.lua") then fail("the skin checks are not in the core") end
+    if not read(ROOT .. "/AzerothRoute/Media/UI/marble.tga") then fail("no marble art") end
+    for _, rec in ipairs({ { "classicwow", Theme.ClassicSkin }, { "marble", Theme.MarbleSkin } }) do
+        if not (rec[2] and rec[2].ok) then fail("skin " .. rec[1] .. " did not register: " .. tostring(rec[2] and rec[2].why)) end
+    end
+    local KINDS = { "window", "panel", "sidebar", "inset", "button", "dropdown", "editbox", "checkbox", "tab", "tile" }
+    local frames = {}
+    for _, kind in ipairs(KINDS) do
+        local f = CreateFrame("Frame", nil, UIParent)
+        f:SetSize(200, 120)
+        Theme.Skin(f, kind)
+        frames[kind] = f
+    end
+    local primary = CreateFrame("Button", nil, UIParent)
+    primary.psPrimary = true
+    Theme.Skin(primary, "button")
+    local saved = ns.Get("ui.skin")
+    local white, round = Theme.Media("white"), Theme.Media("round-8")
+    local function own(f) return f.psSkin and f.psSkin.kit and f.psSkin.kit.api and f.psSkin.kit.api[Theme.SkinId()] or {} end
+
+    ns.Set("ui.skin", "classicwow")
+    if Theme.SkinId() ~= "classicwow" then fail("Classic is not drawn when chosen: " .. tostring(Theme.SkinId())) end
+    local win, btn = frames.window, frames.button
+    if win.psSkin.bg:GetTexture() ~= white then fail("Classic: the window is still rounded") end
+    if win.psSkin.ring and win.psSkin.ring:IsShown() then fail("Classic: the rounded edge still shows") end
+    if not (own(win).edge and own(win).edge:IsShown()) then fail("Classic: the window has no dialog border") end
+    if not (btn.psSkin.red and btn.psSkin.red[2]:IsShown()) then fail("Classic: buttons are not the game's red buttons") end
+    if btn.psSkin.bg:IsShown() then fail("Classic: the house ground shows under the red button") end
+    local pr, pg, pb = Theme.PrimaryText()
+    if not (pr == 1 and pb == 0) then fail("Classic: primary buttons' words are not gold") end
+    if Theme.SkinInfo("classicwow").failed then fail("Classic failed painting: " .. tostring(Theme.SkinInfo("classicwow").failed)) end
+
+    ns.Set("ui.skin", "marble")
+    if Theme.SkinId() ~= "marble" then fail("Marble is not drawn when chosen: " .. tostring(Theme.SkinId())) end
+    if btn.psSkin.red and btn.psSkin.red[2]:IsShown() then fail("Marble: Classic's red buttons stayed") end
+    local stone = own(win).stone
+    if not (stone and stone:IsShown() and tostring(stone:GetTexture()):find("marble", 1, true)) then fail("Marble: the window is not marble") end
+    if not (own(win).rule and own(win).rule[1]:IsShown()) then fail("Marble: the window has no gold line") end
+    if Theme.SkinInfo("marble").failed then fail("Marble failed painting: " .. tostring(Theme.SkinInfo("marble").failed)) end
+    local mr, mg, mb = Theme.PrimaryText()
+    local or_, og, ob = Theme.Color("onAccent")
+    if not (mr == or_ and mg == og and mb == ob) then fail("Marble: primary buttons' words are not onAccent") end
+
+    ns.Set("ui.skin", "polestar")
+    if win.psSkin.bg:GetTexture() ~= round then fail("back on AzerothRoute's look the window is not rounded") end
+    if stone:IsShown() then fail("back on AzerothRoute's look the marble stayed") end
+    ns.Set("ui.skin", saved)
+    print("skins: checked")
 end
 
 print(failures == 0 and "OK" or (failures .. " failure(s)"))

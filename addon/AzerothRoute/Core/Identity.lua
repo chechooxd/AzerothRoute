@@ -108,6 +108,13 @@ local ES = {
 	["Wave %d"] = "Oleada %d",
 	["Sound on"] = "Sonido activado",
 	["Sound off"] = "Sonido desactivado",
+	-- AzerothRoute's skins (Theme/SkinClassic.lua, Theme/SkinMarble.lua).
+	["Classic"] = "Clásico",
+	["The game's own red buttons, gold-trimmed dialog frames and gold titles on dark grounds."] =
+		"Los botones rojos del juego, marcos de diálogo con borde dorado y títulos dorados sobre fondos oscuros.",
+	["Marble"] = "Mármol",
+	["White marble with beige veins and gold threads, gold trim and dark ink."] =
+		"Mármol blanco con vetas beige e hilos dorados, bordes dorados y tinta oscura.",
 }
 
 local loc = GetLocale and GetLocale()

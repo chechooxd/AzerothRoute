@@ -665,8 +665,11 @@ function Theme.SkinId()
 	if drawing.id then return drawing.id end
 	if skinMemo and skinMemo.id then return skinMemo.id end
 	local k = get("ui.skin")
-	-- AzerothRoute: its own design only; the saved choice is kept, never drawn.
+	-- AzerothRoute: its own designs only (its look and its own skins, Theme/SkinClassic.lua,
+	-- SkinMarble.lua); another saved choice is kept, never drawn.
 	local id = "polestar"
+	local own = SKINS[k]
+	if own and not own.builtin and own.addon == ADDON and not FAILED[k] then id = k end
 	if skinMemo then skinMemo.id = id end
 	return id
 end
@@ -681,8 +684,8 @@ function Theme.SkinChoices()
 	local out = {}
 	for _, id in ipairs(Theme.SKIN_ORDER) do
 		local s = SKINS[id]
-		-- AzerothRoute: its own design only.
-		if s and id == "polestar" and (Theme._testShowHidden or not HIDDEN_SKINS[id]) then
+		-- AzerothRoute: its own designs only (its look and its own skins).
+		if s and (id == "polestar" or (not s.builtin and s.addon == ADDON)) and (Theme._testShowHidden or not HIDDEN_SKINS[id]) then
 			if s.builtin then
 				out[#out + 1] = { value = id, text = s.label() }
 			else

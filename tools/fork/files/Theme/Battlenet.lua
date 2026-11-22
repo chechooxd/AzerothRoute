@@ -30,9 +30,23 @@ local function slice(tex, art, radius)
 	end
 end
 
+-- The skins drawn with square corners (skin id -> true: Theme/SkinClassic.lua, SkinMarble.lua). Under
+-- them a surface keeps the house's square ground, hover and 1px border, and the skin frames it.
+B.SQUARE = {}
+local function unslice(tex)
+	tex:SetTexture(Theme.Media("white"))
+	if tex.SetTextureSliceMargins then tex:SetTextureSliceMargins(0, 0, 0, 0) end
+end
+
 function B.Round(f, radius)
 	local d = f.psSkin
 	if not d then return end
+	if B.SQUARE[Theme.SkinId()] then
+		if d.bg then unslice(d.bg) end
+		if d.hover then unslice(d.hover) end
+		if d.ring then d.ring:Hide() end
+		return
+	end
 	radius = radius or MARGIN
 	if d.bg and d.bg:GetTexture() ~= Theme.Media(FILL) then slice(d.bg, FILL, radius) end
 	if d.hover and d.hover:GetTexture() ~= Theme.Media(FILL) then slice(d.hover, FILL, radius) end

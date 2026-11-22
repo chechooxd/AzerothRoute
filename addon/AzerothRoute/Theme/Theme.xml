@@ -2,7 +2,10 @@
 	<Script file="House.lua"/>
 	<Script file="Theme.lua"/>
 	<Script file="SkinApi.lua"/>
+	<Script file="SkinCheck.lua"/>
 	<Script file="Anim.lua"/>
 	<Script file="Widgets.lua"/>
 	<Script file="Battlenet.lua"/>
+	<Script file="SkinClassic.lua"/>
+	<Script file="SkinMarble.lua"/>
 </Ui>

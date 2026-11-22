@@ -45,7 +45,7 @@ local EXCLUDE = {
     -- Only AzerothRoute's own look is offered (Theme/Battlenet.lua; user, 2026-11-22: "eliminar las
     -- carpetas o archivos que no se usan"): Polestar's game looks, skin addons and skin checks stay out.
     Polestar_Looks = "Polestar's game looks (only AzerothRoute's look is offered)",
-    Polestar_SkinAPI = "skin checks for skins from other addons (not offered)",
+    Polestar_SkinAPI = "skin checks: SkinCheck.lua moves into AzerothRoute/Theme (MOVE)",
     Polestar_Skin_Aurora = "Polestar skin (not offered)",
     Polestar_Skin_Beacon = "Polestar skin (not offered)",
     Polestar_Skin_Hairline = "Polestar skin (not offered)",
@@ -395,6 +395,16 @@ for _, folder in ipairs(listFolders(SRC)) do
             write(OUT .. "/" .. target .. "/NOTICE.txt", string.format(NOTICE, SITE, version))
         end
     end
+end
+-- MOVE: files AzerothRoute takes into its own folders from a Polestar folder it leaves out. The Skin
+-- API's checks: AzerothRoute's own skins (Theme/SkinClassic.lua, SkinMarble.lua) register through them.
+local MOVE = { { "Polestar_SkinAPI/SkinCheck.lua", "AzerothRoute/Theme/SkinCheck.lua" } }
+for _, m in ipairs(MOVE) do
+    local data = read(SRC .. "/" .. m[1])
+    local outData = transform(m[1]:match("[^/]+$"), data)
+    if outData ~= data then renamed = renamed + 1 end
+    write(OUT .. "/" .. m[2], outData)
+    files = files + 1
 end
 local applied, missed = applyPatches(OUT)
 -- Icy Veins' leveling talent plans (tools/fork/icyveins/leveling.txt), in place of Polestar's.

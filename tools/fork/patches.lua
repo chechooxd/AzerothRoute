@@ -241,8 +241,25 @@ end
     {
         file = "AzerothRoute/Theme/Theme.xml",
         find = '\t<Script file="Widgets.lua"/>\n',
-        replace = '\t<Script file="Widgets.lua"/>\n\t<Script file="Battlenet.lua"/>\n',
-        why = "loads the Battle.net look after the widgets it wraps",
+        replace = '\t<Script file="Widgets.lua"/>\n\t<Script file="Battlenet.lua"/>\n\t<Script file="SkinClassic.lua"/>\n\t<Script file="SkinMarble.lua"/>\n',
+        why = "loads the Battle.net look after the widgets it wraps, then AzerothRoute's skins over it",
+    },
+    -- AzerothRoute's own skins (user, 2026-11-22: "crea 2 nuevas skin para esta nueva ui"): Classic (the game's
+    -- buttons and frames) and Marble (white marble and gold), registered through the Skin API's checks,
+    -- which now load with the core (tools/fork_polestar.lua MOVE) instead of a folder of their own.
+    {
+        file = "AzerothRoute/Theme/Theme.xml",
+        find = '\t<Script file="SkinApi.lua"/>\n',
+        replace = '\t<Script file="SkinApi.lua"/>\n\t<Script file="SkinCheck.lua"/>\n',
+        why = "loads the Skin API's checks with the core",
+    },
+    {
+        file = "AzerothRoute/Theme/SkinClassic.lua", create = true, replace = read("Theme/SkinClassic.lua"),
+        why = "the Classic skin",
+    },
+    {
+        file = "AzerothRoute/Theme/SkinMarble.lua", create = true, replace = read("Theme/SkinMarble.lua"),
+        why = "the Marble skin",
     },
     {
         file = "AzerothRoute/Theme/Widgets.lua",
@@ -300,18 +317,21 @@ end
         file = "AzerothRoute/Theme/Theme.lua",
         find = [=[	local id = "polestar"
 	if SKINS[k] and not FAILED[k] and (Theme._testShowHidden or not HIDDEN_SKINS[k]) then id = k end]=],
-        replace = [=[	-- AzerothRoute: its own design only; the saved choice is kept, never drawn.
-	local id = "polestar"]=],
-        why = "only AzerothRoute's design is drawn",
+        replace = [=[	-- AzerothRoute: its own designs only (its look and its own skins, Theme/SkinClassic.lua,
+	-- SkinMarble.lua); another saved choice is kept, never drawn.
+	local id = "polestar"
+	local own = SKINS[k]
+	if own and not own.builtin and own.addon == ADDON and not FAILED[k] then id = k end]=],
+        why = "only AzerothRoute's designs are drawn",
     },
     {
         file = "AzerothRoute/Theme/Theme.lua",
         find = [=[		if s and (Theme._testShowHidden or not HIDDEN_SKINS[id]) then
 			if s.builtin then]=],
-        replace = [=[		-- AzerothRoute: its own design only.
-		if s and id == "polestar" and (Theme._testShowHidden or not HIDDEN_SKINS[id]) then
+        replace = [=[		-- AzerothRoute: its own designs only (its look and its own skins).
+		if s and (id == "polestar" or (not s.builtin and s.addon == ADDON)) and (Theme._testShowHidden or not HIDDEN_SKINS[id]) then
 			if s.builtin then]=],
-        why = "only AzerothRoute's design is offered",
+        why = "only AzerothRoute's designs are offered",
     },
     -- Gathering routes (Core/Routes.lua, UI/Routes.lua): every spot of a zone from the gather data.
     {
