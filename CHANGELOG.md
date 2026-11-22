@@ -53,6 +53,8 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 ### Fixed
 - The guide's level mark ("Guide: 14 (2 levels)") and completed quest XP now show on a classic-style XP bar
   (MainMenuExpBar) and on a UI addon's own XP bar, not only on the game's tracking bars.
+- The instance tracker no longer draws the wait over the count ("1/5 esta hora" under "la más antigua expira en
+  44:05"): where both do not fit on one line, the wait takes a line of its own under the count.
 - "ObjectGlow.lua:103: attempt to index local 'guid' (a secret string value)": in combat the game hides the object's
   id; the world object glow now reads it as no object instead of an error. The gathering routes read a hidden level
   the same way.

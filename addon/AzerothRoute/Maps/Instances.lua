@@ -342,12 +342,28 @@ local function fill(f, st)
 	-- The player's larger type (frame.psTextK, Options > Trackers) makes room for itself.
 	local k = math.max(1, frame.psTextK or 1)
 	local top = math.floor(14 * k + 0.5)
+	-- AzerothRoute: the wait beside the count where both fit (the lock, 7, the count, 12, the wait, in the
+	-- tracker's 10 margins), else on a line of its own under the count.
+	local waitText = frame.Wait:GetText()
+	local need = 10 + 14 + 7 + (frame.Count:GetStringWidth() or 0) + 12 + (frame.Wait:GetStringWidth() or 0) + 10
+	local below = waitText ~= nil and waitText ~= "" and need > (frame:GetWidth() or 230)
+	local extra = below and math.floor(14 * k + 0.5) or 0
+	frame.Wait:ClearAllPoints()
+	if below then
+		frame.Wait:SetPoint("TOPLEFT", frame, "TOPLEFT", 31, -(12 + top))
+		frame.Wait:SetPoint("RIGHT", frame, "RIGHT", -10, 0)
+		frame.Wait:SetJustifyH("LEFT")
+	else
+		frame.Wait:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -10, -9)
+		frame.Wait:SetJustifyH("RIGHT")
+	end
+	frame.psWaitBelow = below or nil
 	frame.Run:ClearAllPoints()
-	frame.Run:SetPoint("TOPLEFT", frame, "TOPLEFT", 10, -(16 + top))
+	frame.Run:SetPoint("TOPLEFT", frame, "TOPLEFT", 10, -(16 + top + extra))
 	frame.RunInfo:ClearAllPoints()
-	frame.RunInfo:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -10, -(16 + top))
+	frame.RunInfo:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -10, -(16 + top + extra))
 	frame.Run:SetPoint("RIGHT", frame.RunInfo, "LEFT", -8, 0)
-	local h = 16 + top
+	local h = 16 + top + extra
 	if st.run then h = h + 22 * k end
 	frame:SetHeight(math.floor(h + 0.5))
 	return st

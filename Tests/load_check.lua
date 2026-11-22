@@ -1505,5 +1505,27 @@ do
     end
 end
 
+-- 35. The instance tracker: the wait beside the count where both fit, on a line of its own under it
+-- where they do not (a long translation: "la más antigua expira en 44:05").
+do
+    local Maps = ns.Maps
+    if not (Maps and Maps.NewInstanceTracker and Maps.FillInstanceTracker) then fail("no instance tracker") else
+        local f = Maps.NewInstanceTracker(UIParent)
+        f.GetWidth = function() return 230 end
+        f.Count.GetStringWidth = function() return 70 end
+        local st = { inHour = 1, perHour = 5, wait = 0, clears = 2645, now = 0 }
+        f.Wait.GetStringWidth = function() return 80 end
+        Maps.FillInstanceTracker(f, st)
+        if f.psWaitBelow then fail("a short wait leaves the count's line") end
+        f.Wait.GetStringWidth = function() return 150 end
+        Maps.FillInstanceTracker(f, st)
+        if not f.psWaitBelow then fail("a wait too long for the count's line is drawn over the count") end
+        st.clears = nil
+        Maps.FillInstanceTracker(f, st)
+        if f.psWaitBelow then fail("an empty wait takes a line") end
+        print("instance tracker: checked")
+    end
+end
+
 print(failures == 0 and "OK" or (failures .. " failure(s)"))
 os.exit(failures == 0 and 0 or 1)
