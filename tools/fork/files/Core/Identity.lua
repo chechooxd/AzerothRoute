@@ -116,6 +116,20 @@ local ES = {
 	["No moves: new gems"] = "Sin jugadas: gemas nuevas",
 	["Sound on"] = "Sonido activado",
 	["Sound off"] = "Sonido desactivado",
+	-- The perf probe (Core/Perf.lua).
+	["/ar perf: on, off, report or reset"] = "/ar perf: on, off, report o reset",
+	["AzerothRoute perf report"] = "Informe de rendimiento de AzerothRoute",
+	["Find what makes your game stutter: times AzerothRoute's own work (on, off, report, reset)"] =
+		"Encuentra qué hace que tu juego se trabe: mide el trabajo propio de AzerothRoute (on, off, report, reset)",
+	["Perf probe off. What it measured stays in /ar report until you reload."] =
+		"Sonda de rendimiento apagada. Lo que midió queda en /ar report hasta que recargues.",
+	["Perf probe on: AzerothRoute now times its own work. Play as usual, then type /ar report and paste it."] =
+		"Sonda de rendimiento encendida: AzerothRoute ahora mide su propio trabajo. Juega como siempre, luego escribe /ar report y pégalo.",
+	["Perf probe: measurements cleared."] = "Sonda de rendimiento: mediciones borradas.",
+	["The perf probe has not run yet: type /ar perf to start it."] =
+		"La sonda de rendimiento todavía no se ha encendido: escribe /ar perf para empezar.",
+	["The perf probe needs debugprofilestop, which this client does not have."] =
+		"La sonda de rendimiento necesita debugprofilestop, y este cliente no lo tiene.",
 	-- AzerothRoute's skins (Theme/SkinClassic.lua, Theme/SkinMarble.lua).
 	["Classic"] = "Clásico",
 	["The game's own red buttons, gold-trimmed dialog frames and gold titles on dark grounds."] =
