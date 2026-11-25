@@ -4285,7 +4285,7 @@ function W.Shell(name, opts)
 	-- into its 44px box and is 32px wide (emblem.tga).
 	local WORD_INK, WORD_TOP, EMBLEM, EMBLEM_INK, EMBLEM_INK_W = 2, 22, 44, 6, 32
 	local railFrame = rawget(f, "Rail")
-	f.Emblem = W.Tex(railFrame or side, "ARTWORK", "emblem", "accent")
+	f.Emblem = W.Tex(railFrame or side, "ARTWORK", "emblem-color")
 	f.Emblem:SetSize(EMBLEM, EMBLEM)
 	local textX = SHELL.side
 	if railFrame then
@@ -4295,12 +4295,8 @@ function W.Shell(name, opts)
 		-- 12px of air between the emblem's ink and the wordmark's.
 		textX = SHELL.side + EMBLEM_INK_W + 12
 	end
-	-- As on the website and the app icon: the gold star's bright centre over
-	-- it (emblem-hot.tga, the same box) and a soft accent glow behind it.
+	-- A soft accent glow behind the colour emblem.
 	local emblemParent = railFrame or side
-	f.Emblem.Hot = W.Tex(emblemParent, "OVERLAY", "emblem-hot")
-	f.Emblem.Hot:SetAllPoints(f.Emblem)
-	f.Emblem.Hot:SetVertexColor(1, 0.93, 0.76)
 	f.Emblem.Glow = W.Tex(emblemParent, "BORDER", "glow")
 	f.Emblem.Glow:SetSize(EMBLEM * 2, EMBLEM * 2)
 	f.Emblem.Glow:SetPoint("CENTER", f.Emblem, "CENTER", 0, 0)

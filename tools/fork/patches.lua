@@ -695,42 +695,65 @@ end]=],
         replace = [[	tag:SetText(L["Your route through Azeroth"])]],
         why = "AzerothRoute's tagline in the game's AddOns options",
     },
-    -- The colour emblem (Media/UI/emblem-color.tga, the painted compass "A") on the setup pages and the
-    -- Options lockups, untinted. Its ink spans 0.91 of the texture, the tinted emblem's 0.72, so it is
-    -- drawn at 0.79 of the old size and keeps the old centre.
+    -- The colour emblem (Media/UI/emblem-color.tga, the painted compass "A", untinted) wherever the
+    -- brand stands: the hub and options lockup (and the Battle.net look's bar, which reuses it), the
+    -- setup pages and What's new, the Options About hero, the game's AddOns options, the guide end, the
+    -- route choice, the thanks podium and the empty guide window. Its ink fills the box as the tinted
+    -- emblem's does (0.72), so sizes and places stay. The bright pin core (emblem-hot) is the old
+    -- mark's and is not laid over it. The tinted emblem stays for one-colour icons and menus.
+    { file = "AzerothRoute/UI/Welcome.lua", find = [[	local e = W.Tex(parent, "ARTWORK", "emblem", "accent")]],
+        replace = [[	local e = W.Tex(parent, "ARTWORK", "emblem-color")]], why = "setup and What's new: the colour emblem" },
+    { file = "AzerothRoute_Options/UI/Options.lua", find = [[	local emblem = W.Tex(hero, "ARTWORK", "emblem", "accent")]],
+        replace = [[	local emblem = W.Tex(hero, "ARTWORK", "emblem-color")]], why = "Options About: the colour emblem" },
+    { file = "AzerothRoute/UI/OptionsLoader.lua", find = [[	local emblem = W.Tex(canvas, "ARTWORK", "emblem", "accent")]],
+        replace = [[	local emblem = W.Tex(canvas, "ARTWORK", "emblem-color")]], why = "the game's AddOns options: the colour emblem" },
+    { file = "AzerothRoute/Theme/Widgets.lua", find = [[	f.Emblem = W.Tex(railFrame or side, "ARTWORK", "emblem", "accent")]],
+        replace = [[	f.Emblem = W.Tex(railFrame or side, "ARTWORK", "emblem-color")]], why = "hub and options lockup: the colour emblem" },
     {
-        file = "AzerothRoute/UI/Welcome.lua",
-        find = [[	local e = W.Tex(parent, "ARTWORK", "emblem", "accent")
-	e:SetSize(size, size)]],
-        replace = [[	local e = W.Tex(parent, "ARTWORK", "emblem-color")
-	e:SetSize(floor(size * 0.79 + 0.5), floor(size * 0.79 + 0.5))]],
-        why = "setup: the colour emblem",
+        file = "AzerothRoute/Theme/Widgets.lua",
+        find = [[	-- As on the website and the app icon: the gold star's bright centre over
+	-- it (emblem-hot.tga, the same box) and a soft accent glow behind it.
+	local emblemParent = railFrame or side
+	f.Emblem.Hot = W.Tex(emblemParent, "OVERLAY", "emblem-hot")
+	f.Emblem.Hot:SetAllPoints(f.Emblem)
+	f.Emblem.Hot:SetVertexColor(1, 0.93, 0.76)
+]],
+        replace = [[	-- A soft accent glow behind the colour emblem.
+	local emblemParent = railFrame or side
+]],
+        why = "hub and options lockup: no old pin core over the colour emblem",
     },
+    { file = "AzerothRoute/UI/GuideEnd.lua", find = [[	F.Emblem = W.Tex(head, "ARTWORK", "emblem", "accent")]],
+        replace = [[	F.Emblem = W.Tex(head, "ARTWORK", "emblem-color")]], why = "guide end: the colour emblem" },
     {
-        file = "AzerothRoute/UI/Welcome.lua",
-        find = [[	beam:SetPoint("BOTTOM", e, "TOP", 0, -4)]],
-        replace = [[	beam:SetPoint("BOTTOM", e, "TOP", 0, 0)]],
-        why = "setup: the beam stops just above the colour emblem's ink",
+        file = "AzerothRoute/UI/GuideEnd.lua",
+        find = [[	F.Hot = W.Tex(head, "OVERLAY", "emblem-hot")
+	F.Hot:SetAllPoints(F.Emblem)
+	F.Hot:SetVertexColor(1, 0.93, 0.76)
+]],
+        replace = "",
+        why = "guide end: no old pin core over the colour emblem",
     },
+    { file = "AzerothRoute/UI/RouteChoice.lua", find = [[	F.Emblem = W.Tex(head, "ARTWORK", "emblem", "accent")]],
+        replace = [[	F.Emblem = W.Tex(head, "ARTWORK", "emblem-color")]], why = "route choice: the colour emblem" },
+    { file = "AzerothRoute/UI/Thanks.lua", find = [[	p.Emblem = W.Tex(p, "ARTWORK", "emblem", "accent")]],
+        replace = [[	p.Emblem = W.Tex(p, "ARTWORK", "emblem-color")]], why = "thanks podium: the colour emblem" },
     {
-        file = "AzerothRoute_Options/UI/Options.lua",
-        find = [[	local emblem = W.Tex(hero, "ARTWORK", "emblem", "accent")
-	emblem:SetSize(64, 64)
-	emblem:SetPoint("TOPLEFT", hero, "TOPLEFT", -9, -16)]],
-        replace = [[	local emblem = W.Tex(hero, "ARTWORK", "emblem-color")
-	emblem:SetSize(50, 50)
-	emblem:SetPoint("CENTER", hero, "TOPLEFT", 23, -48)]],
-        why = "Options About: the colour emblem",
-    },
-    {
-        file = "AzerothRoute/UI/OptionsLoader.lua",
-        find = [[	local emblem = W.Tex(canvas, "ARTWORK", "emblem", "accent")
-	emblem:SetSize(48, 48)
-	emblem:SetPoint("TOPLEFT", canvas, "TOPLEFT", 16 - 7, -16)]],
-        replace = [[	local emblem = W.Tex(canvas, "ARTWORK", "emblem-color")
-	emblem:SetSize(38, 38)
-	emblem:SetPoint("CENTER", canvas, "TOPLEFT", 33, -40)]],
-        why = "the game's AddOns options: the colour emblem",
+        file = "AzerothRoute/UI/GuideFrame.lua",
+        find = [[		empty.Glyph:SetTexture(Theme.Media(glyph))
+		W.Color(empty.Glyph, color)
+]],
+        replace = [[		if glyph == "emblem" then
+			-- AzerothRoute: the brand in colour, untinted.
+			empty.Glyph:SetTexture(Theme.Media("emblem-color"))
+			W.Uncolor(empty.Glyph)
+			empty.Glyph:SetVertexColor(1, 1, 1, 1)
+		else
+			empty.Glyph:SetTexture(Theme.Media(glyph))
+			W.Color(empty.Glyph, color)
+		end
+]],
+        why = "empty guide window: the colour emblem",
     },
     {
         file = "AzerothRoute/UI/Welcome.lua",

@@ -98,7 +98,7 @@ local function build()
 	f:EnableMouse(true)
 	Theme.Skin(f, "window")
 	if W.Rim then W.Rim(f) end
-	f.Glyph = W.Tex(f, "ARTWORK", "emblem", "accent")
+	f.Glyph = W.Tex(f, "ARTWORK", "emblem-color")
 	f.Glyph:SetSize(40, 40)
 	f.Glyph:SetPoint("TOPLEFT", f, "TOPLEFT", PAD, -PAD)
 	f.Title = W.Text(f, "display", "accent")

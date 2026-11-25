@@ -173,13 +173,13 @@ function TV.Build(parent, shell)
 	d.Title = W.Text(d.Body, "display", "text")
 	d.Sub = W.Text(d.Body, "small", "textDim")
 
-	-- Coming soon (T.SOON): the Polestar emblem in its soft glow (as on the
+	-- Coming soon (T.SOON): the AzerothRoute emblem in colour, in its soft glow (as on the
 	-- options' About page), the heading, why, and what still follows the
 	-- player's own talents, centred on the panel.
 	soon = CreateFrame("Frame", nil, root)
 	soon:SetAllPoints(root)
 	W.Fill(soon, "panel")
-	soon.Glyph = W.Tex(soon, "ARTWORK", "emblem", "accent")
+	soon.Glyph = W.Tex(soon, "ARTWORK", "emblem-color")
 	soon.Glyph:SetSize(72, 72)
 	soon.Glyph:SetPoint("CENTER", soon, "CENTER", 0, 92)
 	soon.Glow = W.Tex(soon, "BACKGROUND", "glow")

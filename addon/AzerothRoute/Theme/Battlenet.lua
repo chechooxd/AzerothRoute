@@ -366,7 +366,7 @@ local function groupBar(f)
 	f.Emblem:SetSize(32, 32)
 	f.Emblem:SetPoint("LEFT", bar, "LEFT", 10, 0)
 	if f.Emblem.Glow then f.Emblem.Glow:SetAlpha(0) end
-	if f.Emblem.Hot then f.Emblem.Hot:SetParent(bar) end
+	if rawget(f.Emblem, "Hot") then f.Emblem.Hot:SetParent(bar) end
 	f.Wordmark:SetParent(bar)
 	f.Wordmark:ClearAllPoints()
 	f.Wordmark:SetPoint("LEFT", f.Emblem, "RIGHT", 4, -1)

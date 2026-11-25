@@ -41,8 +41,9 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
 
 ### Changed
 - New AzerothRoute logo: the gold compass "A" with a blue route and map pins, on the minimap button, the floating
-  launcher, the update card and the AddOns list. The setup pages and the Options lockups show the same emblem in
-  colour in place of the gold glyph.
+  launcher, the update card and the AddOns list. The same emblem in colour replaces the gold glyph wherever the brand
+  stands: the guide center and options header (and the Battle.net bar), setup, What's new, the guide end, the route
+  choice, milestones, the talents preview and the empty guide window.
 - The guide step icons and the map icons are AzerothRoute's own drawings in place of Polestar's; flight is a
   winged boot, the inn a tankard, mail a sealed envelope, a corpse a ghost, a rare a gem, selling a price tag
   and using an item a potion. The map medallion is a rounded square badge, sapphire with a gold rim; the guide's places on the map

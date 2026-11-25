@@ -1846,8 +1846,15 @@ GF.Part(function(GF)
 			-- A leveling guide's end: the quests left in the log, said.
 			if guide and not (back or afterRun) then GF.EndQuestLines(guide.id) end
 		end
-		empty.Glyph:SetTexture(Theme.Media(glyph))
-		W.Color(empty.Glyph, color)
+		if glyph == "emblem" then
+			-- AzerothRoute: the brand in colour, untinted.
+			empty.Glyph:SetTexture(Theme.Media("emblem-color"))
+			W.Uncolor(empty.Glyph)
+			empty.Glyph:SetVertexColor(1, 1, 1, 1)
+		else
+			empty.Glyph:SetTexture(Theme.Media(glyph))
+			W.Color(empty.Glyph, color)
+		end
 		empty.Glyph:SetSize(36, 36)
 		W.Color(empty.Glyph.Glow, color, 0.16)
 	end
