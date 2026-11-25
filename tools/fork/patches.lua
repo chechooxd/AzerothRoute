@@ -695,6 +695,43 @@ end]=],
         replace = [[	tag:SetText(L["Your route through Azeroth"])]],
         why = "AzerothRoute's tagline in the game's AddOns options",
     },
+    -- The colour emblem (Media/UI/emblem-color.tga, the painted compass "A") on the setup pages and the
+    -- Options lockups, untinted. Its ink spans 0.91 of the texture, the tinted emblem's 0.72, so it is
+    -- drawn at 0.79 of the old size and keeps the old centre.
+    {
+        file = "AzerothRoute/UI/Welcome.lua",
+        find = [[	local e = W.Tex(parent, "ARTWORK", "emblem", "accent")
+	e:SetSize(size, size)]],
+        replace = [[	local e = W.Tex(parent, "ARTWORK", "emblem-color")
+	e:SetSize(floor(size * 0.79 + 0.5), floor(size * 0.79 + 0.5))]],
+        why = "setup: the colour emblem",
+    },
+    {
+        file = "AzerothRoute/UI/Welcome.lua",
+        find = [[	beam:SetPoint("BOTTOM", e, "TOP", 0, -4)]],
+        replace = [[	beam:SetPoint("BOTTOM", e, "TOP", 0, 0)]],
+        why = "setup: the beam stops just above the colour emblem's ink",
+    },
+    {
+        file = "AzerothRoute_Options/UI/Options.lua",
+        find = [[	local emblem = W.Tex(hero, "ARTWORK", "emblem", "accent")
+	emblem:SetSize(64, 64)
+	emblem:SetPoint("TOPLEFT", hero, "TOPLEFT", -9, -16)]],
+        replace = [[	local emblem = W.Tex(hero, "ARTWORK", "emblem-color")
+	emblem:SetSize(50, 50)
+	emblem:SetPoint("CENTER", hero, "TOPLEFT", 23, -48)]],
+        why = "Options About: the colour emblem",
+    },
+    {
+        file = "AzerothRoute/UI/OptionsLoader.lua",
+        find = [[	local emblem = W.Tex(canvas, "ARTWORK", "emblem", "accent")
+	emblem:SetSize(48, 48)
+	emblem:SetPoint("TOPLEFT", canvas, "TOPLEFT", 16 - 7, -16)]],
+        replace = [[	local emblem = W.Tex(canvas, "ARTWORK", "emblem-color")
+	emblem:SetSize(38, 38)
+	emblem:SetPoint("CENTER", canvas, "TOPLEFT", 33, -40)]],
+        why = "the game's AddOns options: the colour emblem",
+    },
     {
         file = "AzerothRoute/UI/Welcome.lua",
         find = [[L["AzerothRoute guides you step by step: who to talk to, what to kill or collect, and where to go."]],

@@ -172,6 +172,7 @@ end
 
 -- logo (minimap button, launcher, update card, AddOns list icon) is not drawn here: it is the painted
 -- AzerothRoute emblem (gold compass "A" with a blue route), scaled to 64 x 64 in the same TGA format.
+-- emblem-color (setup pages, Options) is the same painting at 128 x 128, in colour and never tinted.
 
 -- emblem: white, tinted by the accent.
 do

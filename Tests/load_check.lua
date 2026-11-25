@@ -264,7 +264,7 @@ do
     if not (dusk and math.abs(dusk.text[1] - 0.961) < 1e-6 and math.abs(dusk.text[2] - 0.937) < 1e-6 and math.abs(dusk.text[3] - 0.878) < 1e-6) then fail("default scheme text is not warm white #F5EFE0") end
     local houseSrc = read(ROOT .. "/AzerothRoute/Theme/House.lua") or ""
     if not houseSrc:find("quest = { 0.302, 0.706, 1, 1 }", 1, true) then fail("quests and the route are not Forever blue #4DB4FF") end
-    for _, name in ipairs({ "emblem", "logo", "wordmark", "wordmark-small", "watermark", "band-stars", "emblem-hot" }) do
+    for _, name in ipairs({ "emblem", "emblem-color", "logo", "wordmark", "wordmark-small", "watermark", "band-stars", "emblem-hot" }) do
         local mine = read("tools/fork/assets/AzerothRoute/Media/UI/" .. name .. ".tga")
         local shipped = read(ROOT .. "/AzerothRoute/Media/UI/" .. name .. ".tga")
         if not mine or mine ~= shipped then fail("texture " .. name .. " is not AzerothRoute's") end

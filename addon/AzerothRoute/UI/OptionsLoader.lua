@@ -83,9 +83,9 @@ local function registerSettingsCategory()
 	canvas:Hide()
 	-- The About lockup at 48: the emblem's ink on the canvas's 16 edge, the
 	-- wordmark (1:1) and the tagline centred on it, then the pitch.
-	local emblem = W.Tex(canvas, "ARTWORK", "emblem", "accent")
-	emblem:SetSize(48, 48)
-	emblem:SetPoint("TOPLEFT", canvas, "TOPLEFT", 16 - 7, -16)
+	local emblem = W.Tex(canvas, "ARTWORK", "emblem-color")
+	emblem:SetSize(38, 38)
+	emblem:SetPoint("CENTER", canvas, "TOPLEFT", 33, -40)
 	local word = W.Tex(canvas, "ARTWORK", "wordmark", "text")
 	word:SetSize(256, 32)
 	word:SetPoint("TOPLEFT", canvas, "TOPLEFT", 66 - 3, -14)
