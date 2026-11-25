@@ -40,6 +40,8 @@ To release: bump `VERSION`, add its entry here, regenerate, commit, and tag `vX.
   back when you turn it off.
 
 ### Changed
+- New AzerothRoute logo: the gold compass "A" with a blue route and map pins, on the minimap button, the floating
+  launcher, the update card and the AddOns list.
 - The guide step icons and the map icons are AzerothRoute's own drawings in place of Polestar's; flight is a
   winged boot, the inn a tankard, mail a sealed envelope, a corpse a ghost, a rare a gem, selling a price tag
   and using an item a potion. The map medallion is a rounded square badge, sapphire with a gold rim; the guide's places on the map

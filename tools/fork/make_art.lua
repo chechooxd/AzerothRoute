@@ -10,8 +10,6 @@ local OUT = "tools/fork/assets/AzerothRoute/Media/UI/"
 -- WoW Forever's blue and gold.
 local GOLD = { 0.949, 0.757, 0.306 } -- #F2C14E
 local BLUE = { 0.302, 0.706, 1 } -- #4DB4FF
-local WARM = { 0.961, 0.937, 0.878 } -- #F5EFE0
-local NIGHT = { 0.039, 0.102, 0.2 } -- #0A1A33
 local WHITE = { 1, 1, 1 }
 
 local sqrt, max, min, abs, floor = math.sqrt, math.max, math.min, math.abs, math.floor
@@ -172,15 +170,8 @@ end
 
 -- Textures -------------------------------------------------------------------------------------
 
--- logo: in colour on a night blue disc with a gold rim (minimap button, launcher, update card).
-do
-    local cv = canvas(64, 64)
-    local s = 64 / 120
-    shape(cv, s, disc(60, 60, 58), NIGHT)
-    shape(cv, s, ring(60, 60, 57, 2), GOLD)
-    mark(cv, 64, { ring = GOLD, route = BLUE, dot = WARM, pin = GOLD }, 0.92)
-    writeTGA(cv, "logo")
-end
+-- logo (minimap button, launcher, update card, AddOns list icon) is not drawn here: it is the painted
+-- AzerothRoute emblem (gold compass "A" with a blue route), scaled to 64 x 64 in the same TGA format.
 
 -- emblem: white, tinted by the accent.
 do
